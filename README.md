@@ -1,2 +1,2 @@
 # backend
-LIVOApp backend
+LIVOApp application backend

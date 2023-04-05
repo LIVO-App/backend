@@ -1,5 +1,8 @@
 'use strict';
 
+var db = require('db.js')
+
+db.getConnection();
 /*var mongoose = require('mongoose');
 require('dotenv').config();
 

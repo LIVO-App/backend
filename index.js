@@ -2,6 +2,8 @@
 
 //const config = require('./config');
 const app = require('./app');
+var pool = require('./db.js');
+//require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 
@@ -13,6 +15,13 @@ app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)
 })
 
+pool.getConnection()
+    .then(msg => {
+        console.log(msg);
+    })
+    .catch(err => {
+        throw(new Error(err));
+    });
 //config.initDB()
     /*.then(msg => {
         console.log(msg);

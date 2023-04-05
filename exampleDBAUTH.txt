@@ -1,0 +1,5 @@
+SELECT username,AES_DECRYPT(name,?),AES_DECRYPT(surname,?),email,role FROM USERS WHERE AES_DECRYPT(username,?) = ?
+
+INSERT INTO USERS
+(USERNAME,EMAIL,ROLE,PASS)
+VALUES(AES_ENCRYPT(‘John’,?),AES_ENCRYPT(’a@myemail.com’,?),’USER’,’mypassword’);

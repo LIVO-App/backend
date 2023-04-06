@@ -106,8 +106,8 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 0xd6f6113915cafea1a4175fed8ffa007e8e64ce873f174dbb2423fcd814580e15, 'Teacher1', 0x7229bd349d81f86f262ed75f954e010a, 'Stefano', 'Arcibaldi', 0xd150986669fada97d8b78cf00b1b4de2, 0xa48b184e19c1909bcd27009af0d23806, '?0aܸl ??q??3r??\n?>!???b?͆?/'),
-(2, 0x9888b6e1710cfc4efc1af706aedc359a8e64ce873f174dbb2423fcd814580e15, 'Teacher2', 0x7229bd349d81f86f262ed75f954e010a, 'Federica', 'Nizza', 0x213b2f47a0d27911c5f99a7473e8feb5, 0x58b58a89d6b015e808191619bb832660, '?ؑ\"?7??\0??-??|<?ww?yG?y&\\?');
+(1, AES_ENCRYPT('RCBSTF77R19H200K','abcdefghijklmnop'), 'Teacher1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Stefano', 'Arcibaldi', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('19/10/1977','abcdefghijklmnop'), AES_ENCRYPT('Piazza 110, Raveo (UD)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('NZZFDR82M63L649S','abcdefghijklmnop'), 'Teacher2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Federica', 'Nizza', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('23/08/1982','abcdefghijklmnop'), AES_ENCRYPT('Via Milano, 315, Valsecca (BG)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 
@@ -722,10 +722,10 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 0x1e8559bbd7f3299c066d9846a21750fb8e64ce873f174dbb2423fcd814580e15, 'Student1', 0x7229bd349d81f86f262ed75f954e010a, 'Simone', 'Fronza', 0xd150986669fada97d8b78cf00b1b4de2, 0xe64cf1c26ca695f3f3dfcb0712b2d72a, '{???ۀ?????Nn?5??ͩ?{IZ?N??L????/MH??'),
-(2, 0x734d657264d55ed3b9e0ecd7d655004b8e64ce873f174dbb2423fcd814580e15, 'Student2', 0x7229bd349d81f86f262ed75f954e010a, 'Pietro', 'Compri', 0xd150986669fada97d8b78cf00b1b4de2, 0x036d47728d5faa48a8927c33a3ece89f, '?%?ɑ????? ???X???\0?^D??!?\'tR]ݎd·?M?$#??X'),
-(3, 0xf7cc952eaffe248dbdb2918b619a51498e64ce873f174dbb2423fcd814580e15, 'Student3', 0x7229bd349d81f86f262ed75f954e010a, 'Giovanni', 'Paoli', 0x603ddb1dfeec7480a0778ff84da9f19f, 0x71bdccf4a0b896b69c4c8a7aead3a7f6, '~??J????	7???m?+?5??Z??L?F)|'),
-(4, 0x7870a6ecea409ac84e91531f634ada7a8e64ce873f174dbb2423fcd814580e15, 'Student4', 0x7229bd349d81f86f262ed75f954e010a, 'Sara', 'Azzoni', 0x213b2f47a0d27911c5f99a7473e8feb5, 0x16a9dbff36508850c300e5299cd05459, 'x$???k?݁???$?݋9??]?\n???');
+(1, AES_ENCRYPT('FRNSMN00D12E355G','abcdefghijklmnop'), 'Student1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Simone', 'Fronza', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('12/04/2000','abcdefghijklmnop'), AES_ENCRYPT('Via di qua 7, Isola D\'istria (PL)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('CMPPTR00A15A555J','abcdefghijklmnop'), 'Student2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Pietro', 'Compri', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('15/01/2000','abcdefghijklmnop'), AES_ENCRYPT('Via del Castel, 3, Bagnasco (CN)','abcdefghijklmnop')),
+(3, AES_ENCRYPT('PLAGVN05E15E348V','abcdefghijklmnop'), 'Student3', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Giovanni', 'Paoli', AES_ENCRYPT('O','abcdefghijklmnop'), AES_ENCRYPT('15/05/2005','abcdefghijklmnop'), AES_ENCRYPT('Isola Del Giglio (GR)','abcdefghijklmnop')),
+(4, AES_ENCRYPT('ZZNSRA07A42F356O','abcdefghijklmnop'), 'Student4', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Sara', 'Azzoni', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('02/01/2005','abcdefghijklmnop'), AES_ENCRYPT('Via dell\'acqua, Monfalcone (GO)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 
@@ -795,9 +795,9 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 0x7718e0c56e6441dd19f125c236ee847f8e64ce873f174dbb2423fcd814580e15, 'Teacher1', 0x7229bd349d81f86f262ed75f954e010a, 'Francesco', 'Bianchi', 0xd150986669fada97d8b78cf00b1b4de2, 0x34eaa0a49bfe1dc932a89782eec68f0f, '?qV3Gi?r>̠O?(c7r/?ދy??/?4'),
-(2, 0xd88fc58cd21932ed9cdc92d4dbafee678e64ce873f174dbb2423fcd814580e15, 'Teacher2', 0x7229bd349d81f86f262ed75f954e010a, 'Anna', 'Mazzari', 0x213b2f47a0d27911c5f99a7473e8feb5, 0x328a8b68e69b44e87b51699976a63984, '͈wH??)$??P??wP?dܘ??R??!gW?\'?'),
-(3, 0xc05372d56dadcb1df78905bbb8adb4208e64ce873f174dbb2423fcd814580e15, 'Teacher3', 0x7229bd349d81f86f262ed75f954e010a, 'Martina', 'Adami', 0x213b2f47a0d27911c5f99a7473e8feb5, 0x3dc7d026aa581caaec81749337cae0a2, 'w5??~??91????˯4??1?w_?H?Y?');
+(1, AES_ENCRYPT('BNCFRN65P25E366K','abcdefghijklmnop'), 'Teacher1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Francesco', 'Bianchi', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('25/09/1965','abcdefghijklmnop'), AES_ENCRYPT('Viale Traiano 10, Ispica (RG)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('MZZNNA80L50B555E','abcdefghijklmnop'), 'Teacher2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Anna', 'Mazzari', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('10/07/1980','abcdefghijklmnop'), AES_ENCRYPT('Via Roma, 3, Campora (SA)','abcdefghijklmnop')),
+(3, AES_ENCRYPT('DMAMRT75T69A135I','abcdefghijklmnop'), 'Teacher3', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Martina', 'Adami', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('29/12/1975','abcdefghijklmnop'), AES_ENCRYPT('Albaredo Per San Marco (SO)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 

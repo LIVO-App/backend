@@ -1,3 +1,35 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+ 
+@PietroFronzaUniTn 
+LIVO-App
+/
+backend
+Public
+Fork your own copy of LIVO-App/backend
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+backend/livoapp_db.sql
+@S0n0i0
+S0n0i0 Encription in db
+Latest commit 625d625 8 hours ago
+ History
+ 1 contributor
+1246 lines (1057 sloc)  62.9 KB
+ 
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.0
 -- https://www.phpmyadmin.net/
@@ -91,14 +123,14 @@ INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `pre
 
 CREATE TABLE `admin` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(32) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varbinary(64) NOT NULL,
+  `password` varbinary(35) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL
+  `gender` varbinary(20) NOT NULL,
+  `birth_date` varbinary(20) NOT NULL,
+  `address` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -106,8 +138,8 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 'U2FsdGVkX1+tSsB3z29Ij1wJ3p7TMS4HN8Yh/9i+qUea7PY8P/s5r4fkwPMYVjwJ', 'Teacher1', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Stefano', 'Arcibaldi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1+C1GnsrPdN1uhPEd0wp8QNjHT205eDZ4c=', 'U2FsdGVkX19lYHyte9dZB/cLtERcde42yfP6EPpu+nAHLSkadqu30XbvOtugDxZp'),
-(2, 'U2FsdGVkX18/+kbgR7n+/fHVBBxIqirpM1jz9mg1oUlsTYnBDbKwF5RBlRyryKGQ', 'Teacher2', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Federica', 'Nizza', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/HuS6hXB6trH7aXzWY7O630h0QvQRCna8=', 'U2FsdGVkX1/uWxYKeAPjuUNCUU7HolRaItvrXw1UD0NmuGP+1B6tCAYt4mU0juvP');
+(1, AES_ENCRYPT('RCBSTF77R19H200K','abcdefghijklmnop'), 'Teacher1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Stefano', 'Arcibaldi', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('19/10/1977','abcdefghijklmnop'), AES_ENCRYPT('Piazza 110, Raveo (UD)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('NZZFDR82M63L649S','abcdefghijklmnop'), 'Teacher2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Federica', 'Nizza', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('23/08/1982','abcdefghijklmnop'), AES_ENCRYPT('Via Milano, 315, Valsecca (BG)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 
@@ -707,14 +739,14 @@ INSERT INTO `project_teach` (`teacher_id`, `project_class_course_id`, `project_c
 
 CREATE TABLE `student` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(32) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varbinary(64) NOT NULL,
+  `password` varbinary(35) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL
+  `gender` varbinary(20) NOT NULL,
+  `birth_date` varbinary(20) NOT NULL,
+  `address` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -722,10 +754,10 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 'U2FsdGVkX19ocoZH/Qb3aHrH7rZ2VEIc2I0o3rgtyFu3kvCxnawsGL0Mh6SG7eGR', 'Student1', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Simone', 'Fronza', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/2PBGMe+CdoLxjV62cm5Y7bx1kEr6Ri28=', 'U2FsdGVkX18NK9HzW60oTz7mKU+3tBzZtpv6U6Hxxj7/t0koY2KtgkJBUf3f1XkXBV7yfzIsfuFyf6MqJ4PPew=='),
-(2, 'U2FsdGVkX18YKCy8ONJqLm3DF3he/VudEwcxKORIHQR1RFau1rMzv4Dp5/yD9pOg', 'Student2', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Pietro', 'Compri', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/XT7AtfadfPbOS/1mKDZmPrvqZLATS1PM=', 'U2FsdGVkX1/5RDEhuyvYc44ZBZxqI7MvuULEtNbnhgBcmldMg3mkC9R2CAi2zxdL99TDhd6F/P2BCr4r7Hn+Bg=='),
-(3, 'U2FsdGVkX18kGEZpOUK5eW1CEmk1EBOrJJrqNqQ/c5c3D1rq6ZeA/SEyTcWnD2Zw', 'Student3', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Giovanni', 'Paoli', 'U2FsdGVkX1+go4QttyMN2vMbI/n1elpRt6Lae8oRo6o=', 'U2FsdGVkX1+59zNNxJdlJ6OOIwhquZbw74a6tFcuixo=', 'U2FsdGVkX19W1QK7SbwyD6MgYB1NQe9+CHoWxRQlPPUbwcxpr07nSpB+wMCHGobA'),
-(4, 'U2FsdGVkX19L21id+geyNA1iFCLp7kMKV3tCkpqzE0vLb6mBuZ+zuI6F1XbOmTk2', 'Student4', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Sara', 'Azzoni', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX18ijo+OzeWuQ41WDdKRJEXy9IjCcGWDVrs=', 'U2FsdGVkX1/HA1V6Ke3lrKeimigSFfWhoLDyS5la5FYjfSCnYEShtoTyf1VaUOjG');
+(1, AES_ENCRYPT('FRNSMN00D12E355G','abcdefghijklmnop'), 'Student1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Simone', 'Fronza', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('12/04/2000','abcdefghijklmnop'), AES_ENCRYPT('Via di qua 7, Isola D\'istria (PL)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('CMPPTR00A15A555J','abcdefghijklmnop'), 'Student2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Pietro', 'Compri', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('15/01/2000','abcdefghijklmnop'), AES_ENCRYPT('Via del Castel, 3, Bagnasco (CN)','abcdefghijklmnop')),
+(3, AES_ENCRYPT('PLAGVN05E15E348V','abcdefghijklmnop'), 'Student3', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Giovanni', 'Paoli', AES_ENCRYPT('O','abcdefghijklmnop'), AES_ENCRYPT('15/05/2005','abcdefghijklmnop'), AES_ENCRYPT('Isola Del Giglio (GR)','abcdefghijklmnop')),
+(4, AES_ENCRYPT('ZZNSRA07A42F356O','abcdefghijklmnop'), 'Student4', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Sara', 'Azzoni', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('02/01/2005','abcdefghijklmnop'), AES_ENCRYPT('Via dell\'acqua, Monfalcone (GO)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 
@@ -780,14 +812,14 @@ INSERT INTO `study_year` (`id`) VALUES
 
 CREATE TABLE `teacher` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(32) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varbinary(64) NOT NULL,
+  `password` varbinary(35) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL
+  `gender` varbinary(20) NOT NULL,
+  `birth_date` varbinary(20) NOT NULL,
+  `address` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -795,9 +827,9 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`id`, `cf`, `username`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`) VALUES
-(1, 'U2FsdGVkX18tZtTcMyTGY8FcT5BuOEeSWPwj+f0q2LBuCgEzqw0XLK3J6r0jwcWi', 'Teacher1', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Francesco', 'Bianchi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX18Ga0SI9mVf5jEodnBSJbn6cXhPlNhgA0g=', 'U2FsdGVkX1/3yGRkyjyq7eSuDiycBBA5JKFhDmans/lPLd+hD3cHjVUbIiT9V4ye'),
-(2, 'U2FsdGVkX19ftz7Uvteyh3c/oB6Mf8pDYSbKqU2eMcjMd5aIVKVkF0VE4L4aKuC5', 'Teacher2', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Anna', 'Mazzari', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/qk+TeOnfoouaXTtuk2laJF5GaD1eJh8w=', 'U2FsdGVkX18SNMYIxPO0rkIvDqnjVoRH2fTBzFZ4RpVuy9fT24/tnfPa36B6GmCj'),
-(3, 'U2FsdGVkX19+i+4+n+ge/4fQih4HaYxP2n1rODhtKpeoj0WO9Qm3oDLk0Okb9l0a', 'Teacher3', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Martina', 'Adami', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/iIKJ/NoP5eHSHhEMq95MjA0Ttwbvk6iU=', 'U2FsdGVkX18+bkapPbdjeRbPXR/ZaanVnJP98zUrhGrphIAyA0vDy6WX7/keE2Z4');
+(1, AES_ENCRYPT('BNCFRN65P25E366K','abcdefghijklmnop'), 'Teacher1', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Francesco', 'Bianchi', AES_ENCRYPT('M','abcdefghijklmnop'), AES_ENCRYPT('25/09/1965','abcdefghijklmnop'), AES_ENCRYPT('Viale Traiano 10, Ispica (RG)','abcdefghijklmnop')),
+(2, AES_ENCRYPT('MZZNNA80L50B555E','abcdefghijklmnop'), 'Teacher2', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Anna', 'Mazzari', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('10/07/1980','abcdefghijklmnop'), AES_ENCRYPT('Via Roma, 3, Campora (SA)','abcdefghijklmnop')),
+(3, AES_ENCRYPT('DMAMRT75T69A135I','abcdefghijklmnop'), 'Teacher3', AES_ENCRYPT('Password','abcdefghijklmnop'), 'Martina', 'Adami', AES_ENCRYPT('F','abcdefghijklmnop'), AES_ENCRYPT('29/12/1975','abcdefghijklmnop'), AES_ENCRYPT('Albaredo Per San Marco (SO)','abcdefghijklmnop'));
 
 -- --------------------------------------------------------
 
@@ -1244,3 +1276,18 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+backend/livoapp_db.sql at init_webapp · LIVO-App/backend

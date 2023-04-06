@@ -2,25 +2,31 @@
 
 //const config = require('./config');
 const app = require('./app');
-var pool = require('./db.js');
+var pool = require('./utils/db.js');
 //require('dotenv').config();
 
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
+
 
 app.get("/", (req, res) => {
     res.send('Hello World!')
 })
 
-app.listen(PORT, () => {
-    console.log(`Example app listening on port ${PORT}`)
-})
+/*app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})*/
 
 pool.getConnection()
-    .then(msg => {
+    .then((msg) => {
         console.log(msg);
+
+        app.listen(port, function() {
+            console.log('Server listening on port ', port);
+        });
     })
-    .catch(err => {
-        throw(new Error(err));
+    .catch((err) => {
+        console.error("ERROR: db connection error");
+        console.error(err)
     });
 //config.initDB()
     /*.then(msg => {

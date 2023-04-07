@@ -32,10 +32,17 @@ module.exports = {
             console.log(err);
         }
     },
-    async areValidCredentials(username, password) {
+    async areValidCredentials(username, password, type) {
         try{
             conn = await pool.getConnection();
-            sql = "SELECT password FROM student WHERE username = ?";
+            if (type === 'student') {
+                sql = "SELECT id, username, password FROM student WHERE username = ?";
+            } else if (type==='teacher'){
+                sql = "SELECT id, username, password FROM teacher WHERE username = ?";
+            } else {
+                sql = "SELECT id, username, password FROM admin WHERE username = ?";
+            }
+            
             const rows = await conn.query(sql, username);
             conn.end();
 

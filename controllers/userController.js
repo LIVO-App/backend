@@ -34,7 +34,7 @@ module.exports.student_login = async (req, res) => {
         res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
-    let msg = await studentSchema.areValidCredentials(username,psw)
+    let msg = await studentSchema.areValidCredentials(username, psw,'student');
     if(msg){
         var token = generateToken(user);
         res.status(200).json({
@@ -49,28 +49,6 @@ module.exports.student_login = async (req, res) => {
         res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
-    /*studentSchema.areValidCredentials(username,psw)
-        .then(msg => {
-            
-        })*/
-    //console.log(studentSchema.areValidCredentials(username,psw));
-    /*studentSchema.areValidCredentials(username,psw)
-        .then(msg => {
-            if (msg){
-                var token = generateToken(user);
-                res.status(200).json({
-                    success: true,
-                    message: 'Authentication OK',
-                    user: "student",
-                    token: token,
-                    username: user.username,
-                    id: user.id
-                });
-            } else {
-                res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
-                return;
-            }
-        });*/
 }
 
 /*userSchema.list()

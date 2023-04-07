@@ -19,6 +19,7 @@ module.exports = {
                 default:
                     break;
             }     
+            //console.log(sql, username);
             if(sql){
                 const rows = await conn.query(sql, username);
                 conn.end();

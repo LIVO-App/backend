@@ -2,7 +2,6 @@
 
 const mariadb = require('mariadb');
 const jwt = require('jsonwebtoken');
-const studentSchema = require('../models/studentModel');
 const crypto = require('../utils/cipher');
 const userSchema = require('../models/userModel');
 
@@ -36,6 +35,7 @@ module.exports.student_login = async (req, res) => {
         return;
     }
     if(user){
+        //console.log(user);
         var token = generateToken(user);
         res.status(200).json({
             success: true,
@@ -51,6 +51,62 @@ module.exports.student_login = async (req, res) => {
     }
 }
 
+module.exports.teacher_login = async (req, res) => {
+    //console.log(req);
+    let username = req.body.username;
+    //console.log(username);
+    let psw = req.body.password;
+    //console.log(psw);
+    let user = await userSchema.areValidCredentials(username, psw,"teacher");
+    //console.log(user);
+    if(user === null){
+        res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        return;
+    }
+    if(user){
+        //console.log(user);
+        var token = generateToken(user);
+        res.status(200).json({
+            success: true,
+            message: 'Authentication OK',
+            user: "teacher",
+            token: token,
+            username: user.username,
+            id: user.id
+        });
+    } else {
+        res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        return;
+    }
+}
+
+module.exports.admin_login = async (req, res) => {
+    //console.log(req);
+    let username = req.body.username;
+    //console.log(username);
+    let psw = req.body.password;
+    //console.log(psw);
+    let user = await userSchema.areValidCredentials(username, psw,"admin");
+    //console.log(user);
+    if(user === null){
+        res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        return;
+    }
+    if(user){
+        var token = generateToken(user);
+        res.status(200).json({
+            success: true,
+            message: 'Authentication OK',
+            user: "admin",
+            token: token,
+            username: user.username,
+            id: user.id
+        });
+    } else {
+        res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        return;
+    }
+}
 /*userSchema.list()
     .then(msg => {
         //console.log(msg.length);

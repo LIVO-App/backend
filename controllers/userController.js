@@ -4,6 +4,7 @@ const mariadb = require('mariadb');
 const jwt = require('jsonwebtoken');
 const studentSchema = require('../models/studentModel');
 const crypto = require('../utils/cipher');
+const userSchema = require('../models/userModel');
 
 let MSG = {
     errorDuplicateUser: "The username inserted already exists.",
@@ -28,14 +29,13 @@ module.exports.student_login = async (req, res) => {
     //console.log(username);
     let psw = req.body.password;
     //console.log(psw);
-    let user = await studentSchema.read(username);
+    let user = await userSchema.areValidCredentials(username, psw,"student");
     //console.log(user);
-    if(!user){
+    if(user === null){
         res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
-    let msg = await studentSchema.areValidCredentials(username, psw,'student');
-    if(msg){
+    if(user){
         var token = generateToken(user);
         res.status(200).json({
             success: true,

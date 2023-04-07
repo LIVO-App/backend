@@ -1,6 +1,6 @@
 const ptstr = require('../utils/toString.js');
 const pool = require('../utils/db.js');
-const crypto = require('../utils/cipher.js')
+const crypto = require('../utils/cipher.js');
 
 module.exports = {
     async read(username){
@@ -28,29 +28,6 @@ module.exports = {
             conn.end();
             //console.log("end");
             return rows;
-        } catch (err) {
-            console.log(err);
-        }
-    },
-    async areValidCredentials(username, password, type) {
-        try{
-            conn = await pool.getConnection();
-            if (type === 'student') {
-                sql = "SELECT id, username, password FROM student WHERE username = ?";
-            } else if (type==='teacher'){
-                sql = "SELECT id, username, password FROM teacher WHERE username = ?";
-            } else {
-                sql = "SELECT id, username, password FROM admin WHERE username = ?";
-            }
-            
-            const rows = await conn.query(sql, username);
-            conn.end();
-
-            if(rows.length == 1 && ptstr.printString(rows[0].password)=== ptstr.printString(crypto.encrypt_password(password))){
-                return true;
-            } else {
-                return false;
-            }
         } catch (err) {
             console.log(err);
         }

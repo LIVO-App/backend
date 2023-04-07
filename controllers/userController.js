@@ -12,27 +12,30 @@ let MSG = {
 }
 
 let generateToken = (user) => {
-    return jwt.sign(
-        {
-            _id: user.id,
-            username: user.username
-        },
-        process.env.SUPER_SECRET,
-        {
-            expiresIn: 86400 //expires in 24 hours
-        }
-    );
+    let payload = {
+        _id: user.id,
+        username: user.username
+    }
+    let option = {
+        expiresIn: 86400 //expires in 24 hours
+    }
+    return jwt.sign(payload, process.env.SUPER_SECRET, option);
 }
 
-module.exports.login = (req, res) => {
+module.exports.student_login = async (req, res) => {
+    //console.log(req);
     let username = req.body.username;
+    //console.log(username);
     let psw = req.body.password;
-    let user = studentSchema.read(username);
+    //console.log(psw);
+    let user = await studentSchema.read(username);
+    //console.log(user);
     if(!user){
         res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
-    if (studentSchema.areValidCredentials(username,psw)){
+    let msg = await studentSchema.areValidCredentials(username,psw)
+    if(msg){
         var token = generateToken(user);
         res.status(200).json({
             success: true,
@@ -44,8 +47,30 @@ module.exports.login = (req, res) => {
         });
     } else {
         res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
-		return;
+        return;
     }
+    /*studentSchema.areValidCredentials(username,psw)
+        .then(msg => {
+            
+        })*/
+    //console.log(studentSchema.areValidCredentials(username,psw));
+    /*studentSchema.areValidCredentials(username,psw)
+        .then(msg => {
+            if (msg){
+                var token = generateToken(user);
+                res.status(200).json({
+                    success: true,
+                    message: 'Authentication OK',
+                    user: "student",
+                    token: token,
+                    username: user.username,
+                    id: user.id
+                });
+            } else {
+                res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+                return;
+            }
+        });*/
 }
 
 /*userSchema.list()
@@ -67,9 +92,9 @@ module.exports.login = (req, res) => {
             console.log("=============");
         }
     });
+*/
 
-
-userSchema.read("Student1")
+/*studentSchema.read("Student1")
     .then(msg => {
         console.log("=====================\nSingle user");
         if (msg){
@@ -85,9 +110,9 @@ userSchema.read("Student1")
             console.log("User not found");
         }
     });
+*/
 
-
-userSchema.areValidCredentials("Student1", "Password")
+/*userSchema.areValidCredentials("Student1", "Password")
     .then(msg => {
         console.log("==================\nCredentials")
         if (msg){

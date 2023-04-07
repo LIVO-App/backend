@@ -6,7 +6,7 @@ module.exports = {
     async read(username){
         try {
             conn = await pool.getConnection();
-            sql = "SELECT cf, username, name, surname, gender, birth_date, address FROM student WHERE username = ?";
+            sql = "SELECT id, cf, username, name, surname, gender, birth_date, address FROM student WHERE username = ?";
             const rows = await conn.query(sql, username);
             conn.end();
             if (rows.length == 1){

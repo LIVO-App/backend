@@ -10,6 +10,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-//app.use('/v1', apiV1);
+app.use('/api/v1', apiV1);
 
 module.exports = app;

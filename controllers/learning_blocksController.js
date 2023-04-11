@@ -11,7 +11,7 @@ module.exports.get_blocks = async (req, res) => {
     let blocks = await learningBlockSchema.list();
     let response = blocks.map( (block) => {
         return {
-            self: "/api/v1/blocks/learning_blocks/"+ block.id,
+            self: "/api/v1/learning_blocks/"+ block.id,
             number: block.number,
             school_year: block.school_year,
             start: block.start,

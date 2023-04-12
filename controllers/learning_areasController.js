@@ -8,7 +8,14 @@ let MSG = {
 }
 
 module.exports.get_areas = async (req, res) => {
-    let areas = await learningAreaSchema.list();
+    let block_id = req.query.block_id;
+    let all_data = req.query.all_data;
+    let areas;
+    if (block_id != undefined) {
+        areas = await learningAreaSchema.read_from_blocks(block_id,all_data);
+    } else {
+        areas = await learningAreaSchema.list();
+    }
     let response = areas.map((area) => {
         return {
             self: "/api/v1/learning_area/"+area.id,

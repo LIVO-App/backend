@@ -27,10 +27,19 @@ module.exports = {
             console.log(err);
         }
     },
-    async read_from_blocks(block_id) {
+    /**
+     * 
+     * @param {String} block_id If not provided it will return all the learning areas
+     * @param {Boolean} all_data If true, all data of learning_areas are provided, otherwise only the id will be
+     */
+    async read_from_blocks(block_id,all_data = false) {
         try {
             conn = await pool.getConnection();
-            sql = "SELECT learning_area_id FROM limited INNER JOIN learning_area WHERE learning_block_id= ? GROUP BY learning_area_id";
+            sql = "SELECT la.id";
+            if (all_data) {
+                sql += ", la.italian_title, la.english_title, la.italian_description, la.english_description";
+            }
+            sql += " FROM limited AS l INNER JOIN learning_area AS la ON l.learning_area_id = la.id WHERE learning_block_id= ? GROUP BY la.id";
             const rows = await conn.query(sql, block_id);
             conn.end();
             return rows;

@@ -4,6 +4,9 @@ const mariadb = require('mariadb');
 const jwt = require('jsonwebtoken');
 const crypto = require('../utils/cipher');
 const userSchema = require('../models/userModel');
+const studentSchema = require('../models/studentModel');
+const teacherSchema = require('../models/teacherModel');
+const adminSchema = require('../models/adminModel');
 
 let MSG = {
     errorDuplicateUser: "The username inserted already exists.",
@@ -107,6 +110,42 @@ module.exports.admin_login = async (req, res) => {
         return;
     }
 }
+
+module.exports.googleFailed = (req, res) => {
+    res.status(400).json({error: MSG.errorGoogle});
+}
+
+module.exports.google = async (req, res) => {
+    let userGoogle = req.user._json;
+    req.logout();
+    let filterEmail = {
+        email: userGoogle.email
+    };
+    var msg = await studentSchema.read_email(filterEmail.email);
+    if (!msg) {
+        if (msg.google){
+            let token = generateToken(msg);
+            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        }
+    }
+    msg = await teacherSchema.read_email(filterEmail.email);
+    if (!msg) {
+        if (msg.google){
+            let token = generateToken(msg);
+            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        }
+    }
+    msg = await adminSchema.read_email(filterEmail.email);
+    if (!msg) {
+        if (msg.google) {
+            let token = generateToken(msg);
+            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        }
+    }
+    return false;
+}
+
+
 /*userSchema.list()
     .then(msg => {
         //console.log(msg.length);

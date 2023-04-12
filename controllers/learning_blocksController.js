@@ -8,7 +8,8 @@ let MSG = {
 }
 
 module.exports.get_blocks = async (req, res) => {
-    let blocks = await learningBlockSchema.list();
+    let school_year = req.query.school_year;
+    let blocks = await learningBlockSchema.list(school_year);
     let response = blocks.map( (block) => {
         return {
             self: "/api/v1/learning_blocks/"+ block.id,
@@ -22,7 +23,9 @@ module.exports.get_blocks = async (req, res) => {
 }
 
 module.exports.get_block = async (req, res) => {
-    let block = await learningBlockSchema.read(req.params.id);
+    let id = req.params.id;
+    let school_year = req.query.school_year;
+    let block = await learningBlockSchema.read(id,school_year);
     let response = {
         self: "/api/v1/blocks/learning_blocks/"+ block.id,
         number: block.number,

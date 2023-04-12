@@ -2,21 +2,28 @@ const ptstr = require('../utils/toString.js');
 const pool = require('../utils/db.js');
 const crypto = require('../utils/cipher.js');
 
-module.exports = {
-    async read(username){
-        try {
-            conn = await pool.getConnection();
-            sql = "SELECT id, cf, username, name, surname, gender, birth_date, address FROM teacher WHERE username = ?";
-            const rows = await conn.query(sql, username);
-            conn.end();
-            if (rows.length == 1){
-                return rows[0];
-            } else {
-                return false;
-            }
-        } catch (err) {
-            console.log(err);
+async function read(condition,param){
+    try {
+        conn = await pool.getConnection();
+        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email FROM teacher WHERE " + condition;
+        const rows = await conn.query(sql,param);
+        conn.end();
+        if (rows.length == 1){
+            return rows[0];
+        } else {
+            return false;
         }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+module.exports = {
+    read_username(username) {
+        return read("username = ?",username);
+    },
+    read_email(email) {
+        return read("email = ?",email);
     },
     async list() {
         try{

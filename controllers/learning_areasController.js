@@ -1,6 +1,6 @@
 'use strict';
 
-const learningAreaSchema = require('../models/leaning_areaModel');
+const learningAreaSchema = require('../models/learning_areaModel');
 
 let MSG = {
     notFound: "The learning area requested does not exist.",

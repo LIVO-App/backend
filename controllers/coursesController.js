@@ -30,6 +30,45 @@ module.exports.get_courses = async (req, res) => {
     res.status(200).json(response);
 }
 
+module.exports.get_course = async (req, res) => {
+    let course_id = req.params.id;
+    let course = await courseSchema.read(course_id);
+    let data_course = {
+        id: course.id,
+        italian_title: course.italian_title,
+        english_title: course.english_title,
+        creation_date: course.creation_date,
+        italian_description: course.italian_description,
+        english_description: course.english_description,
+        up_hours: course.up_hours,
+        credits: course.credits,
+        italian_expected_learning_results: course.italian_expected_learning_results,
+        english_expected_learning_results: course.english_expected_learning_results,
+        italian_criterions: course.italian_criterions,
+        english_criterions: course.english_criterions,
+        italian_activities: course.italian_activities,
+        english_activities: course.english_activities,
+        learning_area_ita: course.learning_area_ita,
+        learning_area_eng: course.learning_area_eng,
+        growth_area_ita: course.growth_area_ita,
+        growth_area_eng: course.growth_area_eng,
+        min_students: course.min_students,
+        max_students: course.max_students,
+        proposer_teacher_ref: {origin: "/api/v1/teacher", id: course.proposer_teacher_id},
+        teacher_name: course.teacher_name,
+        teacher_surname: course.teacher_surname,
+        certifying_admin_ref: {origin: "/api/v1/admin", id: course.certifying_admin_id},
+        admin_name: course.admin_name,
+        admin_surname: course.admin_surname,
+        admin_confirmation: course.admin_confirmation
+    };
+    let response = {
+        origin: "/api/v1/course",
+        data: data_course
+    };
+    res.status(200).json(response);
+}
+
 /*courseSchema.list(1, undefined, 7)
     .then(msg => {
         //console.log(msg);
@@ -42,7 +81,7 @@ module.exports.get_courses = async (req, res) => {
         }
     });
 */
-courseSchema.read(4)
+/*courseSchema.read(4)
     .then(msg => {
         //console.log(msg);
         if(msg){
@@ -50,4 +89,4 @@ courseSchema.read(4)
                 console.log(element+": "+msg[element]);
             });
         }
-    });
+    });*/

@@ -10,15 +10,19 @@ let MSG = {
 module.exports.get_blocks = async (req, res) => {
     let school_year = req.query.school_year;
     let blocks = await learningBlockSchema.list(school_year);
-    let response = blocks.map( (block) => {
+    let data_blocks = blocks.map( (block) => {
         return {
-            self: "/api/v1/learning_blocks/"+ block.id,
+            id: block.id,
             number: block.number,
             school_year: block.school_year,
             start: block.start,
             end: block.end
         };
     });
+    let response = {
+        origin: "/api/v1/learning_blocks/",
+        data: data_blocks
+    };
     res.status(200).json(response);
 }
 
@@ -26,12 +30,16 @@ module.exports.get_block = async (req, res) => {
     let id = req.params.id;
     let school_year = req.query.school_year;
     let block = await learningBlockSchema.read(id,school_year);
-    let response = {
-        self: "/api/v1/blocks/learning_blocks/"+ block.id,
+    let data_block = {
+        self: block.id,
         number: block.number,
         school_year: block.school_year,
         start: block.start,
         end: block.end
+    };
+    let response = {
+        origin: "/api/v1/blocks/learning_blocks/",
+        data: data_block
     };
     res.status(200).json(response);
 }

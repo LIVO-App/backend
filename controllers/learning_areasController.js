@@ -16,26 +16,34 @@ module.exports.get_areas = async (req, res) => {
     } else {
         areas = await learningAreaSchema.list();
     }
-    let response = areas.map((area) => {
+    let data_areas = areas.map((area) => {
         return {
-            self: "/api/v1/learning_area/"+area.id,
+            id: area.id,
             italian_title: area.italian_title,
             english_title: area.english_title,
             italian_description: area.italian_description,
             english_description: area.english_description
         };
     });
+    let response = {
+        origin: "/api/v1/learning_areas/",
+        data: data_areas
+    }
     res.status(200).json(response);
 }
 
 module.exports.get_area = async (req, res) => {
     let area = await learningAreaSchema.read(req.params.id);
-    let response = {
-        self: "/api/v1/learning_areas/"+area.id,
+    let data_area = {
+        id: area.id,
         italian_title: area.italian_title,
         english_title: area.english_title,
         italian_description: area.italian_description,
         english_description: area.english_description
+    };
+    let response = {
+        origin: "/api/v1/learning_areas/",
+        data: data_area
     };
     res.status(200).json(response);
 }

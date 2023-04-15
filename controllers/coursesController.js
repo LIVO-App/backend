@@ -12,7 +12,7 @@ module.exports.get_courses = async (req, res) => {
     let student_id = req.query.student_id;
     let area_id = req.query.area_id;
     let courses = await courseSchema.list(student_id, area_id, block_id);
-    let data_course = courses.map((course) => {
+    let data_courses = courses.map((course) => {
         return {
             id: course.id,
             italian_title: course.italian_title,
@@ -24,8 +24,8 @@ module.exports.get_courses = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/course",
-        data: data_course
+        origin: "/api/v1/courses",
+        data: data_courses
     };
     res.status(200).json(response);
 }
@@ -63,7 +63,7 @@ module.exports.get_course = async (req, res) => {
         admin_confirmation: course.admin_confirmation
     };
     let response = {
-        origin: "/api/v1/course",
+        origin: "/api/v1/courses",
         data: data_course
     };
     res.status(200).json(response);

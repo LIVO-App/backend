@@ -1,6 +1,5 @@
 'use strict';
 
-const opentoModel = require('../models/opentoModel');
 const opentoSchema = require('../models/opentoModel');
 
 module.exports.get_institute_classes = async (req, res) => {

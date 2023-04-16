@@ -7,13 +7,14 @@ module.exports.get_teachings = async (req, res) => {
     let tcs = await courseteachingSchema.read_from_course(course_id);
     let data_tcs = tcs.map((tc) => {
         return {
-            teaching_ref: {origin: "/api/v1/teachings", data: [tc.teaching_id]},
+            teaching_ref: {origin: "/api/v1/teachings", single: true, data: [tc.teaching_id]},
             italian_title: tc.italian_title,
             english_title: tc.english_title
         };
     });
     let response = {
         origin: "/api/v1/courses/:id/teachings",
+        single: false,
         data: data_tcs
     }
     res.status(200).json(response);

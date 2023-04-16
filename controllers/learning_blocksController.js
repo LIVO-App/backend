@@ -21,6 +21,7 @@ module.exports.get_blocks = async (req, res) => {
     });
     let response = {
         origin: "/api/v1/learning_blocks/",
+        single: true,
         data: data_blocks
     };
     res.status(200).json(response);
@@ -38,7 +39,8 @@ module.exports.get_block = async (req, res) => {
         end: block.end
     };
     let response = {
-        origin: "/api/v1/blocks/learning_blocks/",
+        origin: "/api/v1/learning_blocks/",
+        single: true,
         data: data_block
     };
     res.status(200).json(response);

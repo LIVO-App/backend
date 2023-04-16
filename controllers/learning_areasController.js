@@ -27,6 +27,7 @@ module.exports.get_areas = async (req, res) => {
     });
     let response = {
         origin: "/api/v1/learning_areas/",
+        single: true,
         data: data_areas
     }
     res.status(200).json(response);
@@ -43,6 +44,7 @@ module.exports.get_area = async (req, res) => {
     };
     let response = {
         origin: "/api/v1/learning_areas/",
+        single: true,
         data: data_area
     };
     res.status(200).json(response);

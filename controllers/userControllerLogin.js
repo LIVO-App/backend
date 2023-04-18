@@ -34,7 +34,7 @@ module.exports.student_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"student");
     //console.log(user);
     if(user === null){
-        res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
@@ -49,7 +49,7 @@ module.exports.student_login = async (req, res) => {
             id: user.id
         });
     } else {
-        res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }

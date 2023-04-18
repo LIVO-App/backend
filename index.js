@@ -1,6 +1,6 @@
 'use strict';
 
-//const config = require('./config');
+const config = require('./utils/config');
 const app = require('./app');
 var pool = require('./utils/db.js');
 //require('dotenv').config();
@@ -12,22 +12,14 @@ app.get("/", (req, res) => {
     res.send('Hello World!')
 })
 
+config.initApp(port)
 /*app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })*/
 
-pool.getConnection()
-    .then((msg) => {
-        console.log(msg);
 
-        app.listen(port, function() {
-            console.log('Server listening on port ', port);
-        });
-    })
-    .catch((err) => {
-        console.error("ERROR: db connection error");
-        console.error(err)
-    });
+
+
 //config.initDB()
     /*.then(msg => {
         console.log(msg);

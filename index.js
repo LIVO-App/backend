@@ -1,16 +1,11 @@
 'use strict';
 
 const config = require('./utils/config');
-const app = require('./app');
+//const app = require('./app');
 var pool = require('./utils/db.js');
 //require('dotenv').config();
 
 const port = process.env.PORT || 5000;
-
-
-app.get("/", (req, res) => {
-    res.send('Hello World!')
-})
 
 config.initApp(port)
 /*app.listen(port, () => {

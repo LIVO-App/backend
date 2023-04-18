@@ -63,7 +63,7 @@ module.exports.teacher_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"teacher");
     //console.log(user);
     if(user === null){
-        res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
@@ -78,7 +78,7 @@ module.exports.teacher_login = async (req, res) => {
             id: user.id
         });
     } else {
-        res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }
@@ -92,7 +92,7 @@ module.exports.admin_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"admin");
     //console.log(user);
     if(user === null){
-        res.status(404).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
@@ -106,7 +106,7 @@ module.exports.admin_login = async (req, res) => {
             id: user.id
         });
     } else {
-        res.status(404).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }

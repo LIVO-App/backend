@@ -35,6 +35,11 @@ module.exports.get_areas = async (req, res) => {
 
 module.exports.get_area = async (req, res) => {
     let area = await learningAreaSchema.read(req.params.id);
+    if(!area){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_area = {
         id: area.id,
         italian_title: area.italian_title,

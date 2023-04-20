@@ -31,6 +31,11 @@ module.exports.get_block = async (req, res) => {
     let id = req.params.id;
     let school_year = req.query.school_year;
     let block = await learningBlockSchema.read(id,school_year);
+    if(!block){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_block = {
         self: block.id,
         number: block.number,

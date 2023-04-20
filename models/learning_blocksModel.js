@@ -1,6 +1,10 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
+    /**
+     * @param {String} id Is the real id of a block. If school_year is provided, it refers to the identification number of a block in that school year.
+     * @param {String} school_year If not defined the method will search for a specific block with the id specified. If it is defined, the search will be done over the school year and consider id as the number of a block in that specific year
+     */
     async read(id,school_year){
         try {
             conn = await pool.getConnection();
@@ -9,11 +13,9 @@ module.exports = {
             if (school_year != undefined) {
                 sql += "school_year = ? AND number = ?";
                 rows = await conn.query(sql, [school_year, id]);
-            } else if (id != undefined) {
+            } else {
                 sql += "id = ?";
                 rows = await conn.query(sql, id);
-            } else {
-                throw Error("Missing Parameters");
             }
             conn.end();
             if(rows.length == 1){

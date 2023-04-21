@@ -7,11 +7,15 @@ module.exports = {
             if(course_id===undefined){
                 conn.end();
                 return null;
-           }
-           sql = "SELECT ass.teaching_id, tc.italian_title, tc.english_title FROM teaching AS tc JOIN associated AS ass ON ass.teaching_id = tc.id WHERE ass.course_id = ?;";
-           const rows = await conn.query(sql, course_id);
-           conn.end();
-           return rows;
+            }
+            sql = "SELECT ass.teaching_id, tc.italian_title, tc.english_title FROM teaching AS tc JOIN associated AS ass ON ass.teaching_id = tc.id WHERE ass.course_id = ?;";
+            const rows = await conn.query(sql, course_id);
+            conn.end();
+            if(rows.length!=0){
+                return rows;
+            } else {
+                return false;
+            } 
         } catch (err) {
             console.log(err);
         }

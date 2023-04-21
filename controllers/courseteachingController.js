@@ -5,6 +5,11 @@ const courseteachingSchema = require('../models/courseteachingModel');
 module.exports.get_teachings = async (req, res) => {
     let course_id = req.params.id;
     let tcs = await courseteachingSchema.read_from_course(course_id);
+    if(!tcs){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_tcs = tcs.map((tc) => {
         return {
             teaching_ref: {origin: "/api/v1/teachings", single: true, data: [tc.teaching_id]},

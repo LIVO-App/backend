@@ -111,5 +111,56 @@ describe('/api/v1/courses', () => {
                     expect(receivedDate.toISOString).toBe(date.toISOString);
                 });
         });
+
+        // GET resources with non valid course ID (opento)
+        test('GET /api/v1/courses/:id/opento with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/nonValidID/opento')
+                .expect(404)
+        });
+
+        // GET resources with valid course ID (opento)
+        test('GET /api/v1/courses/:id/opento with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/2/opento')
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
+        });
+        
+        // GET resources with non valid course ID (teachings)
+        test('GET /api/v1/courses/:id/teachings with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/nonValidID/teachings')
+                .expect(404)
+        });
+
+        // GET resources with valid course ID (teachings)
+        test('GET /api/v1/courses/:id/teachings with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/2/teachings')
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
+        });
+
+        // GET resources with non valid course ID (learning contexts)
+        test('GET /api/v1/courses/:id/learning_contexts with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/nonValidID/learning_contexts')
+                .expect(404)
+        });
+
+        // GET resources with valid course ID (learning contexts)
+        test('GET /api/v1/courses/:id/learning_contexts with non valid ID', async () => {
+            return request(app)
+                .get('/api/v1/courses/3/learning_contexts')
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
+        });
     })
 })

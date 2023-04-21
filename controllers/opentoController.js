@@ -5,6 +5,11 @@ const opentoSchema = require('../models/opentoModel');
 module.exports.get_institute_classes = async (req, res) => {
     let course_id = req.params.id;
     let cls = await opentoSchema.read_from_course(course_id);
+    if(!cls){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_cls = cls.map((cl) => {
         return {
             study_year_ref: {origin: "/api/v1/study_year", single: true, data:[cl.study_year_id]},

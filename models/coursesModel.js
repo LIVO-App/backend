@@ -1,10 +1,14 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async read(id){
+    async read(id, admin=false){
         try {
             conn = await pool.getConnection();
-            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_date, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",pga.italian_title AS "growth_area_ita",pga.english_title AS "growth_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id JOIN have AS h ON h.course_id = c.id JOIN teacher AS t ON t.id = c.proposer_teacher_id JOIN admin as ad ON ad.id = c.certifying_admin_id WHERE c.id = ?;';
+            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_date, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",pga.italian_title AS "growth_area_ita",pga.english_title AS "growth_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id JOIN have AS h ON h.course_id = c.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
+            if(admin){
+                sql += 'LEFT ';
+            }
+            sql += 'JOIN admin as ad ON ad.id = c.certifying_admin_id WHERE c.id = ?';
             const rows = await conn.query(sql, id);
             conn.end();
             if(rows.length == 1){
@@ -18,6 +22,7 @@ module.exports = {
     },
     async list(student_id, learn_area_id, block_id){
         try {
+            //console.log(learn_area_id);
             conn = await pool.getConnection();
             let sql = `SELECT c.id, c.italian_title, c.english_title, c.credits, pc.italian_displayed_name, pc.english_displayed_name`;
             if(student_id != undefined){
@@ -48,11 +53,15 @@ module.exports = {
                 sql += `WHERE pc.learning_block_id = ${block_id}`;
             }
             if(student_id != undefined) {
-                sql += `AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year))`;
+                sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
             }
             const rows = await conn.query(sql);
             conn.end();
-            return rows;
+            if(rows.length!=0){
+                return rows;
+            } else {
+                return false;
+            } 
         } catch (err) {
             console.log(err);
         }

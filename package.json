@@ -9,7 +9,8 @@
   },
   "jest": {
     "verbose": true,
-    "collectCoverage": true
+    "collectCoverage": true,
+    "globalSetup": "./global-setup.js"
   },
   "repository": {
     "type": "git",

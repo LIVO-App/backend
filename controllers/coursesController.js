@@ -7,11 +7,18 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_courses = async (req, res) => {
     let block_id = req.query.block_id;
     let student_id = req.query.student_id;
     let area_id = req.query.area_id;
     let courses = await courseSchema.list(student_id, area_id, block_id);
+    if(!courses){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_courses = courses.map((course) => {
         return {
             id: course.id,
@@ -33,7 +40,13 @@ module.exports.get_courses = async (req, res) => {
 
 module.exports.get_course = async (req, res) => {
     let course_id = req.params.id;
-    let course = await courseSchema.read(course_id);
+    let admin_info = req.query.admin_info;
+    let course = await courseSchema.read(course_id, admin_info);
+    if(!course){
+        res.status(404).json({status: "error", description: "Resource not found"});
+        console.log('resource not found');
+        return;
+    }
     let data_course = {
         id: course.id,
         italian_title: course.italian_title,

@@ -3,7 +3,7 @@
 const learningAreaSchema = require('../models/learning_areaModel');
 
 let MSG = {
-    notFound: "The learning area requested does not exist.",
+    notFound: "Resource not found",
     updateFailed: "Failed to save"
 }
 
@@ -36,7 +36,7 @@ module.exports.get_areas = async (req, res) => {
 module.exports.get_area = async (req, res) => {
     let area = await learningAreaSchema.read(req.params.id);
     if(!area){
-        res.status(404).json({status: "error", description: "Resource not found"});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
         return;
     }

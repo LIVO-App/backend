@@ -2,11 +2,16 @@
 
 const courseteachingSchema = require('../models/courseteachingModel');
 
+let MSG = {
+    notFound: "Resource not found",
+    updateFailed: "Failed to save"
+}
+
 module.exports.get_teachings = async (req, res) => {
     let course_id = req.params.id;
     let tcs = await courseteachingSchema.read_from_course(course_id);
     if(!tcs){
-        res.status(404).json({status: "error", description: "Resource not found"});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
         return;
     }

@@ -3,7 +3,7 @@
 const courseSchema = require('../models/coursesModel');
 
 let MSG = {
-    notFound: "The course you tried to find does not exist.",
+    notFound: "Resource not found",
     updateFailed: "Failed to save"
 }
 
@@ -15,7 +15,7 @@ module.exports.get_courses = async (req, res) => {
     let area_id = req.query.area_id;
     let courses = await courseSchema.list(student_id, area_id, block_id);
     if(!courses){
-        res.status(404).json({status: "error", description: "Resource not found"});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
         return;
     }
@@ -43,7 +43,7 @@ module.exports.get_course = async (req, res) => {
     let admin_info = req.query.admin_info;
     let course = await courseSchema.read(course_id, admin_info);
     if(!course){
-        res.status(404).json({status: "error", description: "Resource not found"});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
         return;
     }

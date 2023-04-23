@@ -3,7 +3,7 @@
 const learningBlockSchema = require('../models/learning_blocksModel');
 
 let MSG = {
-    notFound: "The learning block you tried to find does not exist.",
+    notFound: "Resource not found",
     updateFailed: "Failed to save"
 }
 
@@ -32,7 +32,7 @@ module.exports.get_block = async (req, res) => {
     let school_year = req.query.school_year;
     let block = await learningBlockSchema.read(id,school_year);
     if(!block){
-        res.status(404).json({status: "error", description: "Resource not found"});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
         return;
     }

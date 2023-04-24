@@ -119,8 +119,21 @@ paths:
                   $ref: '#/components/schemas/institute_classes'
         '404':
           $ref: '#/components/responses/NotFound'
-  #/courses/{id}/teachings:
-
+  /courses/{id}/teachings:
+    get:
+      description: Get all the teachings that are teach in the course
+      summary: Collection of teaching of the course
+      responses:
+        '200':
+          description: "Collection of teachings"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/teachings'
+        '404':
+          $ref: '#/components/responses/NotFound'
   #/courses/{id}/learning_contexts:
 
   #/ordinary_classes:
@@ -430,6 +443,43 @@ components:
             main_study_year:
               type: boolean
               description: "Specifies if the study year of the class is the one for which the course was created for"
+    teachings:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: object
+          properties:
+            teaching_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the teaching"
+              description: "References to the teaching of the course"
+            italian_title:
+              type: string
+              description: "Italian title of the teaching"
+            english_title:
+              type: string
+              description: "English title of the teaching"
   parameters:
     School_year:
       name: school_year

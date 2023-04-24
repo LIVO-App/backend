@@ -87,10 +87,38 @@ paths:
                   $ref: '#/components/schemas/courses'
         '404':
           $ref: '#/components/responses/NotFound'
-  #/courses/{id}:
-
-  #/courses/{id}/opento:
-
+  /courses/{id}:
+    get:
+      description: Get a specific course from its id.
+      parameters:
+        - $ref: '#/components/parameters/Admin_info'
+      summary: View of a single course
+      responses:
+        '200':
+          description: "View of a single course"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/course'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /courses/{id}/opento:
+    get:
+      description: Get all the classes that can see the course
+      summary: Collection of classes for which the course can be seen
+      responses:
+        '200':
+          description: "Collection of institute classes"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/institute_classes'
+        '404':
+          $ref: '#/components/responses/NotFound'
   #/courses/{id}/teachings:
 
   #/courses/{id}/learning_contexts:
@@ -310,6 +338,7 @@ components:
                     id:
                       type: integer
                       description: "Id of the teacher that proposed the course"
+              description: "Reference to the teacher that proposed the course"
             teacher_name:
               type: string
               description: "Name of the teacher that proposed the course"
@@ -331,6 +360,7 @@ components:
                     id:
                       type: integer
                       description: "Id of the admin that certified the course"
+              description: "References to the admin that certifies the course"
             admin_name:
               type: string
               description: "Name of the admin that approved the course"
@@ -341,6 +371,65 @@ components:
               type: string
               format: date
               description: "Date of the approval of the admin for that course"
+    institute_classes:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: object
+          properties:
+            study_year_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the study year"
+              description: "References to the study year of the ordinary class"
+            study_address_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the study address"
+              description: "References to the study address of the ordinary class"
+            italian_title:
+              type: string
+              description: "Italian title of the ordinary class"
+            english_title:
+              type: string
+              description: "English title of the ordinary class"
+            presidium:
+              type: boolean
+              description: "Specifies if the address of the class is the one for which the course was created for"
+            main_study_year:
+              type: boolean
+              description: "Specifies if the study year of the class is the one for which the course was created for"
   parameters:
     School_year:
       name: school_year
@@ -372,12 +461,6 @@ components:
       description: Specifies whether the user wants to have all the data or only part of them
       schema:
         type: boolean
-    Course_id:
-      name: course_id
-      in: query
-      description: Specifies the id of the course for the resources we want to extract
-      schema:
-        type: integer
     Admin_info:
       name: admin_info
       in: query

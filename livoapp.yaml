@@ -68,8 +68,25 @@ paths:
                 $ref: '#/components/schemas/learning_areas'
         '404':
           $ref: '#/components/responses/NotFound'
-  #/courses:
-
+  /courses:
+    get:
+      description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
+      parameters:
+        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/Student_id'
+        - $ref: '#/components/parameters/Area_id'
+      summary: View of all the courses
+      responses:
+        '200':
+          description: "Collection of courses"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/courses'
+        '404':
+          $ref: '#/components/responses/NotFound'
   #/courses/{id}:
 
   #/courses/{id}/opento:
@@ -106,8 +123,10 @@ components:
       properties:
         origin:
           type: string
+          description: "Link of the API that returns this data"
         single:
           type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
         data:
           type: array
           items:
@@ -115,16 +134,21 @@ components:
             properties:
               id:
                 type: integer
+                description: "Id of the learning block"
               number:
                 type: integer
+                description: "Number of the learning block inside a certain school year"
               school_year:
                 type: integer
+                description: "School year in which the learning block takes place"
               start:
                 type: string
                 format: date
+                description: "Starting date of the learning block"
               end:
                 type: string
                 format: date
+                description: "Ending date of the learning block"
     learning_areas:
       type: object
       required:
@@ -133,23 +157,190 @@ components:
       properties:
         origin:
           type: string
+          description: "Link of the API that returns this data"
         single:
           type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
         data:
           type: array
           items:
             type: object
             properties:
               id:
-                type: integer
+                type: string
+                description: "Id of the learning area"
               italian_title:
                 type: string
+                description: "Italian title of the learning area"
               english_title:
                 type: string
+                description: "English title of the learning area"
               italian_description:
                 type: string
+                description: "Italian description of the learning area"
               english_description:
                 type: string
+                description: "English description of the learning area"
+    courses:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: "Id of the course"
+              italian_title:
+                type: string
+                description: "Italian title of the course"
+              english_title:
+                type: string
+                description: "English title of the course"
+              credits:
+                type: integer
+                description: "Credits that the course provides"
+              italian_displayed_name:
+                type: string
+                description: "Italian displayed name of the project class associated"
+              english_displayed_name:
+                type: string
+                description: "English displayed name of the project class associated"
+              pending:
+                type: boolean
+                description: "Is the student already inscribed to this course? Or is he waiting for a response?"
+    course:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              description: "Id of the course"
+            italian_title:
+              type: string
+              description: "Italian title of the course"
+            english_title:
+              type: string
+              description: "English title of the course"
+            creation_date:
+              type: string
+              format: date
+              description: "Creation date of the course"
+            italian_description:
+              type: string
+              description: "Italian description of the course"
+            english_description:
+              type: string
+              description: "English description of the course"
+            up_hours:
+              type: integer
+              description: "Number of hours of the course the students will follow from home"
+            credits:
+              type: integer
+              description: "Credits that the course provides"
+            italian_expected_learning_results:
+              type: string
+              description: "Italian expected learning results for the students that attend the course"
+            english_expected_learning_results:
+              type: string
+              description: "English expected learning results for the students that attend the course"
+            italian_criterions:
+              type: string
+              description: "Italian criterions for evaluate the knowledge of the students"
+            english_criterions:
+              type: string
+              description: "English criterions for evaluate the knowledge of the students"
+            italian_activities:
+              type: string
+              description: "Italian activities that will be carried out during the course"
+            english_activities:
+              type: string
+              description: "English activities that will be carried out during the course"
+            learning_area_ita:
+              type: string
+              description: "Italian name of the learning area associated with the course"
+            learning_area_eng:
+              type: string
+              description: "English name of the learning area associated with the course"
+            growth_area_ita:
+              type: string
+              description: "Italian name of the growth area associated with the course"
+            growth_area_eng:
+              type: string
+              description: "English name of the growth area associated with the course"
+            min_students:
+              type: integer
+              description: "Minimum number of students required in order to start the course"
+            max_students:
+              type: integer
+              description: "Maximum number of students expected to partake in a course to have an ideal class"
+            proposer_teacher_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the teacher that proposed the course"
+            teacher_name:
+              type: string
+              description: "Name of the teacher that proposed the course"
+            teacher_surname:
+              type: string
+              description: "Surname of the teacher that proposed the course"
+            certifying_admin_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the admin that certified the course"
+            admin_name:
+              type: string
+              description: "Name of the admin that approved the course"
+            admin_surname:
+              type: string
+              description: "Surname of the admin that approved the course"
+            admin_confirmation:
+              type: string
+              format: date
+              description: "Date of the approval of the admin for that course"
   parameters:
     School_year:
       name: school_year
@@ -163,9 +354,33 @@ components:
       description: Specifies the learning block id for the resources you want to extract
       schema:
         type: integer
+    Student_id:
+      name: student_id
+      in: query
+      description: Specifies the id of the student (in the future it will be done thanks to the token)
+      schema:
+        type: integer
+    Area_id:
+      name: area_id
+      in: query
+      description: Specifies the id of the learning area for the resources we want to extract
+      schema:
+        type: string
     All_data:
       name: all_data
       in: query
-      description: Specifies whenever the user want to have all the data or only part of them
+      description: Specifies whether the user wants to have all the data or only part of them
+      schema:
+        type: boolean
+    Course_id:
+      name: course_id
+      in: query
+      description: Specifies the id of the course for the resources we want to extract
+      schema:
+        type: integer
+    Admin_info:
+      name: admin_info
+      in: query
+      description: Specifies whether the user wants to have all the data regarding the admin confirmation
       schema:
         type: boolean

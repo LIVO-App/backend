@@ -17,8 +17,8 @@ module.exports.get_institute_classes = async (req, res) => {
     }
     let data_cls = cls.map((cl) => {
         return {
-            study_year_ref: {origin: "/api/v1/study_year", single: true, data:[cl.study_year_id]},
-            study_address_ref: {origin: "/api/v1/study_addresses", single: true, data: [cl.study_address_id]},
+            study_year_ref: {origin: "/api/v1/study_year", single: true, data:{id: cl.study_year_id}},
+            study_address_ref: {origin: "/api/v1/study_addresses", single: true, data: {id: cl.study_address_id}},
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             presidium: cl.presidium,

@@ -68,10 +68,10 @@ module.exports.get_course = async (req, res) => {
         growth_area_eng: course.growth_area_eng,
         min_students: course.min_students,
         max_students: course.max_students,
-        proposer_teacher_ref: {origin: "/api/v1/teacher", single: true, id: course.proposer_teacher_id},
+        proposer_teacher_ref: {origin: "/api/v1/teacher", single: true, data: {id: course.proposer_teacher_id}},
         teacher_name: course.teacher_name,
         teacher_surname: course.teacher_surname,
-        certifying_admin_ref: {origin: "/api/v1/admin", single: true, id: course.certifying_admin_id},
+        certifying_admin_ref: {origin: "/api/v1/admin", single: true, data: {id: course.certifying_admin_id}},
         admin_name: course.admin_name,
         admin_surname: course.admin_surname,
         admin_confirmation: course.admin_confirmation

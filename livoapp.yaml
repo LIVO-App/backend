@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  version: '2.0.0'
+  title: "LivoAPP API"
+  description: API for managing school curriculum
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Server to use the web service locally
+paths:
+  /learning_blocks:
+    get:
+      description: Get all the learning blocks in the system.
+      parameters:
+        - $ref: '#/components/parameters/School_year'
+      summary: View of all the learning blocks.
+      responses:
+        '200':
+          description: "Collection of learning blocks."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/learning_blocks'
+  /learning_blocks/{id}:
+    get:
+      description: Get specific learning block from its ID.
+      parameters:
+        - $ref: '#/components/parameter/School_year'
+      summary: View a specific learning block.
+      reponses:
+        '200':
+          description: "View of a single learning block."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/learning_blocks'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+          example:
+            status: "error"
+            description: "Resource not found"
+  schemas:
+    learning_blocks:
+      type: object
+      required:
+        - number
+        - school_year
+      properties:
+        origin:
+          type: string
+        single:
+          type: boolean
+        data:
+          type: array
+          items:
+            id:
+              type: integer
+            number:
+              type: integer
+            school_year:
+              type: integer
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+  parameters:
+    School_year:
+      name: school_year
+      in: query
+      description: Specifies the school year of the learning blocks you want to extract
+      schema:
+        type: integer

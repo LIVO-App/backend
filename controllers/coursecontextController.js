@@ -17,7 +17,7 @@ module.exports.get_contexts = async (req, res) => {
     }
     let data_cxs = cxs.map((cx) => {
         return {
-            learning_context_ref: {origin: "/api/v1/learning_contexts", single: true, data: [cx.learning_context_id]},
+            learning_context_ref: {origin: "/api/v1/learning_contexts", single: true, data: {id: cx.learning_context_id}},
             italian_title: cx.italian_title,
             english_title: cx.english_title
         };

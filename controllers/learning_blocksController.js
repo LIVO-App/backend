@@ -37,7 +37,7 @@ module.exports.get_block = async (req, res) => {
         return;
     }
     let data_block = {
-        self: block.id,
+        id: block.id,
         number: block.number,
         school_year: block.school_year,
         start: block.start,

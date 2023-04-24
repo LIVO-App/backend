@@ -17,7 +17,7 @@ module.exports.get_teachings = async (req, res) => {
     }
     let data_tcs = tcs.map((tc) => {
         return {
-            teaching_ref: {origin: "/api/v1/teachings", single: true, data: [tc.teaching_id]},
+            teaching_ref: {origin: "/api/v1/teachings", single: true, data: {id: tc.teaching_id}},
             italian_title: tc.italian_title,
             english_title: tc.english_title
         };

@@ -26,17 +26,61 @@ paths:
     get:
       description: Get specific learning block from its ID.
       parameters:
-        - $ref: '#/components/parameter/School_year'
+        - $ref: '#/components/parameters/School_year'
       summary: View a specific learning block.
-      reponses:
+      responses:
         '200':
           description: "View of a single learning block."
           content:
             application/json:
               schema:
+                type: object
                 $ref: '#/components/schemas/learning_blocks'
         '404':
           $ref: '#/components/responses/NotFound'
+  /learning_areas:
+    get:
+      description: Get all learning areas in the system.
+      parameters:
+        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/All_data'
+      summary: View of all the learning areas.
+      responses:
+        '200':
+          description: "Collection of learning areas"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/learning_areas'
+  /learning_areas/{id}:
+    get:
+      description: Get specific learning area from its id.
+      summary: View a specific learning area
+      responses:
+        '200':
+          description: "View of a single learning area"
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/learning_areas'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  #/courses:
+
+  #/courses/{id}:
+
+  #/courses/{id}/opento:
+
+  #/courses/{id}/teachings:
+
+  #/courses/{id}/learning_contexts:
+
+  #/ordinary_classes:
+
+  #/auth:
 components:
   responses:
     NotFound:
@@ -67,22 +111,61 @@ components:
         data:
           type: array
           items:
-            id:
-              type: integer
-            number:
-              type: integer
-            school_year:
-              type: integer
-            start:
-              type: string
-              format: date
-            end:
-              type: string
-              format: date
+            type: object
+            properties:
+              id:
+                type: integer
+              number:
+                type: integer
+              school_year:
+                type: integer
+              start:
+                type: string
+                format: date
+              end:
+                type: string
+                format: date
+    learning_areas:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+        single:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              italian_title:
+                type: string
+              english_title:
+                type: string
+              italian_description:
+                type: string
+              english_description:
+                type: string
   parameters:
     School_year:
       name: school_year
       in: query
-      description: Specifies the school year of the learning blocks you want to extract
+      description: Specifies the school year of the resource you want to extract
       schema:
         type: integer
+    Block_id:
+      name: block_id
+      in: query
+      description: Specifies the learning block id for the resources you want to extract
+      schema:
+        type: integer
+    All_data:
+      name: all_data
+      in: query
+      description: Specifies whenever the user want to have all the data or only part of them
+      schema:
+        type: boolean

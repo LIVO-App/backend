@@ -110,13 +110,13 @@ paths:
       summary: Collection of classes for which the course can be seen
       responses:
         '200':
-          description: "Collection of institute classes"
+          description: "Collection of ordinary classes"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/institute_classes'
+                  $ref: '#/components/schemas/ordinary_classes_course'
         '404':
           $ref: '#/components/responses/NotFound'
   /courses/{id}/teachings:
@@ -134,10 +134,36 @@ paths:
                   $ref: '#/components/schemas/teachings'
         '404':
           $ref: '#/components/responses/NotFound'
-  #/courses/{id}/learning_contexts:
-
-  #/ordinary_classes:
-
+  /courses/{id}/learning_contexts:
+    get:
+      description: Get all the learning contexts that are associated to the course
+      summary: Collection of learning contexts related to the course
+      responses:
+        '200':
+          description: "Collection of contexts"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/learning_contexts'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /ordinary_classes:
+    get:
+      description: Get all the ordinary classes in the system.
+      summary: Collection of ordinary classes
+      responses:
+        '200':
+          description: "Collection of ordinary classes "
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ordinary_classes'
+        '404':
+          $ref: '#/components/responses/NotFound'
   #/auth:
 components:
   responses:
@@ -384,7 +410,85 @@ components:
               type: string
               format: date
               description: "Date of the approval of the admin for that course"
-    institute_classes:
+    ordinary_classes:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: object
+          properties:
+            study_year_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the study year"
+              description: "References to the study year of the ordinary class"
+            study_address_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the study address"
+              description: "References to the study address of the ordinary class"
+            school_year:
+              type: integer
+              description: "School year in which the class what defined"
+            italian_displayed_name:
+              type: string
+              description: "Italian name of the class displayed"
+            english_displayed_name:
+              type: string
+              description: "English name of the class displayed"
+            annual_credits_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    study_year:
+                      type: integer
+                      description: "Study year which the credit model refers"
+                    study_address:
+                      type: string
+                      description: "Study address which the credit model refers"
+                    definition_year:
+                      type: integer
+                      description: "Year of the definition of the credit model"
+              description: "References to the credit model used for that class"
+    ordinary_classes_course:
       type: object
       required:
         - italian_title
@@ -480,6 +584,43 @@ components:
             english_title:
               type: string
               description: "English title of the teaching"
+    learning_contexts:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        origin:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        data:
+          type: object
+          properties:
+            learning_context_ref:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the learning context"
+              description: "References to the learning context associated to the course"
+            italian_title:
+              type: string
+              description: "Italian title of the learning context associated to the course"
+            english_title:
+              type: string
+              description: "English title of the learning context associated to the course"
   parameters:
     School_year:
       name: school_year

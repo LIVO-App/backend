@@ -20,7 +20,7 @@ module.exports = {
             console.log(err);
         }
     },
-    async list(student_id, learn_area_id, block_id){
+    async list(student_id, learn_area_id, block_id, alone=false){
         try {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
@@ -44,7 +44,15 @@ module.exports = {
                 } 
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM   inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) ELSE \"false\" end AS inscribed`;
             }
-            sql += ` FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id JOIN learning_block AS lb ON lb.id = pc.learning_block_id `;
+            sql += ` FROM course AS c `
+            if(alone){
+                sql += `LEFT `
+            }
+            sql += `JOIN project_class AS pc ON c.id = pc.course_id JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id `;
+            if(alone){
+                sql += `LEFT `
+            }
+            sql += `JOIN learning_block AS lb ON lb.id = pc.learning_block_id `;
             if(learn_area_id != undefined && block_id != undefined){
                 sql += `WHERE pc.learning_block_id = ${block_id} AND c.learning_area_id = ${learn_area_id}`;
             } else if (learn_area_id != undefined) {
@@ -55,6 +63,7 @@ module.exports = {
             if(student_id != undefined) {
                 sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
             }
+            console.log(sql);
             const rows = await conn.query(sql);
             conn.end();
             if(rows.length!=0){

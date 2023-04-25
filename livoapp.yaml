@@ -75,6 +75,7 @@ paths:
         - $ref: '#/components/parameters/Block_id'
         - $ref: '#/components/parameters/Student_id'
         - $ref: '#/components/parameters/Area_id'
+        - $ref: '#/components/parameters/Alone'
       summary: View of all the courses
       responses:
         '200':
@@ -767,6 +768,12 @@ components:
       description: Specifies the learning block id for the resources you want to extract
       schema:
         type: integer
+    Alone:
+      name: alone
+      in: query
+      description: Specifies if the courses displayed should be also the ones without a project class
+      schema:
+        type: boolean
     Student_id:
       name: student_id
       in: query

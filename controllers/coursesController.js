@@ -13,7 +13,8 @@ module.exports.get_courses = async (req, res) => {
     let block_id = req.query.block_id;
     let student_id = req.query.student_id;
     let area_id = req.query.area_id;
-    let courses = await courseSchema.list(student_id, area_id, block_id);
+    let alone = req.query.alone;
+    let courses = await courseSchema.list(student_id, area_id, block_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');

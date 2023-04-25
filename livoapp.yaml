@@ -164,7 +164,60 @@ paths:
                   $ref: '#/components/schemas/ordinary_classes'
         '404':
           $ref: '#/components/responses/NotFound'
-  #/auth:
+  /auth/student_login:
+    post:
+      description: Authentication for student
+      summary: Student login
+      requestBody:
+         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/student'
+      responses:
+        '200':
+          description: "Authentication completed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication_res'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/teacher_login:
+    post:
+      description: Authentication for teacher
+      summary: Teacher login
+      requestBody:
+         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teacher'
+      responses:
+        '200':
+          description: "Authentication completed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication_res'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/admin_login:
+    post:
+      description: Authentication for admin
+      summary: Admin login
+      requestBody:
+         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/admin'
+      responses:
+        '200':
+          description: "Authentication completed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication_res'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 components:
   responses:
     NotFound:
@@ -181,6 +234,26 @@ components:
           example:
             status: "error"
             description: "Resource not found"
+    Unauthorized:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              username:
+                type: boolean
+              password:
+                type: boolean
+              message:
+                type: string
+          example:
+            success: false
+            username: true
+            password: false
+            description: "Authentication failed. Wrong password."
   schemas:
     learning_blocks:
       type: object
@@ -621,6 +694,66 @@ components:
             english_title:
               type: string
               description: "English title of the learning context associated to the course"
+    student: 
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: string
+          description: "Username of the user that wants to login"
+        password:
+          type: string
+          description: "Password of the user that wants to login"
+    teacher: 
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: string
+          description: "Username of the user that wants to login"
+        password:
+          type: string
+          description: "Password of the user that wants to login"
+    admin: 
+      type: object
+      required:
+        - "username"
+        - "password"
+      properties:
+        username:
+          type: string
+          description: "Username of the user that wants to login"
+        password:
+          type: string
+          description: "Password of the user that wants to login"
+    authentication_res:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: "Success of the authentication"
+          example: true
+        message:
+          type: string
+          description: "Message about the result of the authentication"
+          example: "Authentication OK"
+        user:
+          type: string
+          description: "Type of user who logged in"
+          example: "student"
+        token:
+          type: string
+          description: "Authentication token"
+        username:
+          type: string
+          description: "User's username"
+        id:
+          type: string
+          description: "ID of the user who has logged in"
   parameters:
     School_year:
       name: school_year

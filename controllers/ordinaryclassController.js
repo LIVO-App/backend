@@ -38,21 +38,16 @@ module.exports.get_classes = async (req, res) => {
                 id: cls.study_address_id
             }
         };
-        let annual_credits_ref;
-        if(credits){
-            annual_credits_ref = {
-                origin: "/api/v1/annual_credits",
-                    single: true,
-                    query: {},
-                    data:{
-                        study_year: cls.annual_credits_study_year, 
-                        study_address: cls.annual_credits_address,
-                        definition_year: cls.annual_credits_definition_year
-                    }
-            };
-        } else {
-            annual_credits_ref = undefined;
-        }
+        let annual_credits_ref = !credits ? undefined : {
+            origin: "/api/v1/annual_credits",
+                single: true,
+                query: {},
+                data:{
+                    study_year: cls.annual_credits_study_year, 
+                    study_address: cls.annual_credits_address,
+                    definition_year: cls.annual_credits_definition_year
+                }
+        };
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,

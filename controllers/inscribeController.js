@@ -31,12 +31,29 @@ module.exports.inscribe_project_class = async (req, res) => {
         return;
     }
     res_des = "Inserted " + subscribe.affectedRows + " rows";
-    let response = {status: "accepted", description: res_des};
+    let response = {
+        status: "accepted", 
+        description: res_des
+    };
     res.status(201).json(response);
 }
 
 module.exports.unsubscribe_project_class = async (req, res) => {
-
+    let student_id = req.body.student_id;
+    let course_id = req.body.course_id;
+    let block_id = req.body.block_id;
+    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);
+    if (!unsubscribe){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing required information');
+        return;
+    };
+    res_des = "Deleted " + unsubscribe.affectedRows + " rows";
+    let response = {
+        status: "deleted", 
+        description: res_des
+    };
+    res.status(200).json(response);
 }
 
 /*inscribe_schema.isClassFull(3,7)

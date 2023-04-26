@@ -34,7 +34,6 @@ module.exports = {
             if(descending){
                 sql += ` ORDER BY oc.school_year DESC`
             }
-            console.log(sql);
             const rows = await conn.query(sql);
             conn.end();
             if(rows.length!=0){

@@ -19,7 +19,7 @@ module.exports.get_contexts = async (req, res) => {
     }
     let data_cxs = cxs.map((cx) => {
         let learning_context_ref = {
-            origin: "/api/v1/learning_contexts", 
+            path: "/api/v1/learning_contexts", 
             single: true, 
             query: {},
             data: {
@@ -33,7 +33,7 @@ module.exports.get_contexts = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/courses/:id/learning_contexts",
+        path: "/api/v1/courses/:id/learning_contexts",
         single: false,
         query: {},
         date: new Date(),

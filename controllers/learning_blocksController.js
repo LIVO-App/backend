@@ -22,7 +22,7 @@ module.exports.get_blocks = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/learning_blocks/",
+        path: "/api/v1/learning_blocks/",
         single: true,
         query: {
             school_year: school_year
@@ -50,7 +50,7 @@ module.exports.get_block = async (req, res) => {
         end: block.end
     };
     let response = {
-        origin: "/api/v1/learning_blocks/",
+        path: "/api/v1/learning_blocks/",
         single: true,
         query: {
             school_year: school_year

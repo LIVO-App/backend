@@ -19,7 +19,7 @@ module.exports.get_institute_classes = async (req, res) => {
     }
     let data_cls = cls.map((cl) => {
         let study_year_ref = {
-            origin: "/api/v1/study_year", 
+            path: "/api/v1/study_year", 
             single: true, 
             query: {},
             data:{
@@ -27,7 +27,7 @@ module.exports.get_institute_classes = async (req, res) => {
             }
         }
         let study_address_ref = {
-            origin: "/api/v1/study_addresses", 
+            path: "/api/v1/study_addresses", 
             single: true, 
             query: {},
             data: {
@@ -44,7 +44,7 @@ module.exports.get_institute_classes = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/courses/:id/opento",
+        path: "/api/v1/courses/:id/opento",
         single: false,
         query: {},
         date: new Date(),

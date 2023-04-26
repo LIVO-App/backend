@@ -19,7 +19,7 @@ module.exports.get_teachings = async (req, res) => {
     }
     let data_tcs = tcs.map((tc) => {
         let teaching_ref = {
-            origin: "/api/v1/teachings", 
+            path: "/api/v1/teachings", 
             single: true, 
             query: {},
             data: {
@@ -33,7 +33,7 @@ module.exports.get_teachings = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/courses/:id/teachings",
+        path: "/api/v1/courses/:id/teachings",
         single: false,
         query: {},
         date: new Date(),

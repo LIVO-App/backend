@@ -23,7 +23,7 @@ module.exports.get_classes = async (req, res) => {
     }
     let data_classes = classes.map((cls) => {
         let study_year_ref = {
-            origin: "/api/v1/study_year", 
+            path: "/api/v1/study_year", 
             single: true, 
             query: {},
             data: {
@@ -31,7 +31,7 @@ module.exports.get_classes = async (req, res) => {
             }
         };
         let study_address_ref = {
-            origin: "/api/v1/study_addresses", 
+            path: "/api/v1/study_addresses", 
             single: true, 
             query: {},
             data: {
@@ -39,7 +39,7 @@ module.exports.get_classes = async (req, res) => {
             }
         };
         let annual_credits_ref = !credits ? undefined : {
-            origin: "/api/v1/annual_credits",
+            path: "/api/v1/annual_credits",
                 single: true,
                 query: {},
                 data:{
@@ -72,7 +72,7 @@ module.exports.get_classes = async (req, res) => {
     res.status(200).json(response);
 }
 /*{
-    origin: ".../student"
+    path: ".../student"
     single: true,
     query: {
         grade: POSITIVE
@@ -81,7 +81,7 @@ module.exports.get_classes = async (req, res) => {
         id: 4,
         ...,
         grade: {
-            origin: ".../grades",
+            path: ".../grades",
             single: true,
             query: {greaterThan: 5},
             data: [7,9,10] //[4,7,9,5,10]

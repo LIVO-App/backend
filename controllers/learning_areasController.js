@@ -28,7 +28,7 @@ module.exports.get_areas = async (req, res) => {
         };
     });
     let response = {
-        origin: "/api/v1/learning_areas/",
+        path: "/api/v1/learning_areas/",
         single: true,
         query: {
             block_id: block_id,
@@ -55,7 +55,7 @@ module.exports.get_area = async (req, res) => {
         english_description: area.english_description
     };
     let response = {
-        origin: "/api/v1/learning_areas/",
+        path: "/api/v1/learning_areas/",
         single: true,
         query: {},
         date: new Date(),

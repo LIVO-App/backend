@@ -224,6 +224,35 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /student/:id/inscribe:
+    post:
+      description: Subscription to a project class by a student
+      summary: Subscription to a course
+      parameters:
+        - $ref: '#/components/parameters/Course_id'
+        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/Section'
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /student/:id/unscribe:
+    post:
+      description: Delete of a subscription to a project class by a student
+      summary: Delete a subscription to a course
+      parameters:
+        - $ref: '#/components/parameters/Course_id'
+        - $ref: '#/components/parameters/Block_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
 components:
   responses:
     NotFound:
@@ -260,6 +289,62 @@ components:
             username: true
             password: false
             description: "Authentication failed. Wrong password."
+    BadInputs:
+      description: Bad Input
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+          example:
+            status: "error"
+            description: "Bad input. Missing required information"
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+          example:
+            status: "error"
+            description: "The student is already inscribe to this project class"
+    AcceptInsert:
+      description: Insert record into the database
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+          example:
+            status: "accepted"
+            description: "Inserted 1 rows"
+    AcceptDelete:
+      description: Delete record into the database
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+          example:
+            status: "deleted"
+            description: "Deleted 1 rows"
   schemas:
     learning_blocks:
       type: object
@@ -856,6 +941,18 @@ components:
       description: Specifies the learning block id for the resources you want to extract
       schema:
         type: integer
+    Course_id:
+      name: course_id
+      in: query
+      description: Specifies the course id for the resources you want to extract
+      schema:
+        type: integer
+    Section:
+      name: section
+      in: query
+      description: Specifies the section of a project class for the resources you want to extract
+      schema:
+        type: string
     Alone:
       name: alone
       in: query

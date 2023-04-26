@@ -7,6 +7,8 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_contexts = async (req, res) => {
     let course_id = req.params.id;
     let cxs = await coursecontexController.read_from_course(course_id);

@@ -7,6 +7,8 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_areas = async (req, res) => {
     let block_id = req.query.block_id;
     let all_data = req.query.all_data;

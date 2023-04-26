@@ -7,6 +7,8 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_blocks = async (req, res) => {
     let school_year = req.query.school_year;
     let blocks = await learningBlockSchema.list(school_year);

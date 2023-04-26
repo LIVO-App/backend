@@ -7,6 +7,8 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_teachings = async (req, res) => {
     let course_id = req.params.id;
     let tcs = await courseteachingSchema.read_from_course(course_id);

@@ -8,6 +8,8 @@ let MSG = {
     updateFailed: "Failed to save"
 }
 
+process.env.TZ = 'Etc/Universal';
+
 module.exports.get_classes = async (req, res) => {
     let student_id = req.query.student_id;
     let school_year = req.query.school_year;
@@ -26,7 +28,7 @@ module.exports.get_classes = async (req, res) => {
             data: {
                 id: cls.study_year_id
             }
-        }
+        };
         let study_address_ref = {
             origin: "/api/v1/study_addresses", 
             single: true, 
@@ -34,16 +36,21 @@ module.exports.get_classes = async (req, res) => {
             data: {
                 id: cls.study_address_id
             }
-        }
-        let annual_credits_ref = {
-            origin: "/api/v1/annual_credits",
-                single: true,
-                query: {},
-                data:{
-                    study_year: cls.annual_credits_study_year, 
-                    study_address: cls.annual_credits_address,
-                    definition_year: cls.annual_credits_definition_year
-                }
+        };
+        let annual_credits_ref;
+        if(credits){
+            annual_credits_ref = {
+                origin: "/api/v1/annual_credits",
+                    single: true,
+                    query: {},
+                    data:{
+                        study_year: cls.annual_credits_study_year, 
+                        study_address: cls.annual_credits_address,
+                        definition_year: cls.annual_credits_definition_year
+                    }
+            };
+        } else {
+            annual_credits_ref = undefined;
         }
         return {
             study_year_ref: study_year_ref,

@@ -16,8 +16,16 @@ module.exports.get_teachings = async (req, res) => {
         return;
     }
     let data_tcs = tcs.map((tc) => {
+        let teaching_ref = {
+            origin: "/api/v1/teachings", 
+            single: true, 
+            query: {},
+            data: {
+                id: tc.teaching_id
+            }
+        }
         return {
-            teaching_ref: {origin: "/api/v1/teachings", single: true, data: {id: tc.teaching_id}},
+            teaching_ref: teaching_ref,
             italian_title: tc.italian_title,
             english_title: tc.english_title
         };
@@ -25,6 +33,8 @@ module.exports.get_teachings = async (req, res) => {
     let response = {
         origin: "/api/v1/courses/:id/teachings",
         single: false,
+        query: {},
+        date: new Date(),
         data: data_tcs
     }
     res.status(200).json(response);

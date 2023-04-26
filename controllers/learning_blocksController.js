@@ -22,6 +22,10 @@ module.exports.get_blocks = async (req, res) => {
     let response = {
         origin: "/api/v1/learning_blocks/",
         single: true,
+        query: {
+            school_year: school_year
+        },
+        date: new Date(),
         data: data_blocks
     };
     res.status(200).json(response);
@@ -46,6 +50,10 @@ module.exports.get_block = async (req, res) => {
     let response = {
         origin: "/api/v1/learning_blocks/",
         single: true,
+        query: {
+            school_year: school_year
+        },
+        date: new Date(),
         data: data_block
     };
     res.status(200).json(response);

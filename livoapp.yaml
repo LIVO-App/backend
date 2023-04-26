@@ -262,12 +262,19 @@ components:
         - number
         - school_year
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: array
           items:
@@ -296,12 +303,19 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: array
           items:
@@ -328,12 +342,19 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: array
           items:
@@ -366,12 +387,19 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: object
           properties:
@@ -439,12 +467,15 @@ components:
             proposer_teacher_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -461,12 +492,15 @@ components:
             certifying_admin_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -490,24 +524,34 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: object
           properties:
             study_year_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -518,12 +562,15 @@ components:
             study_address_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -543,12 +590,15 @@ components:
             annual_credits_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -568,24 +618,34 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: object
           properties:
             study_year_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -596,12 +656,15 @@ components:
             study_address_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -627,24 +690,34 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: object
           properties:
             teaching_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:
@@ -664,24 +737,34 @@ components:
         - italian_title
         - english_title
       properties:
-        origin:
+        path:
           type: string
           description: "Link of the API that returns this data"
         single:
           type: boolean
           description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
         data:
           type: object
           properties:
             learning_context_ref:
               type: object
               properties:
-                origin:
+                path:
                   type: string
                   description: "Link of the API that returns this data"
                 single:
                   type: boolean
                   description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
                 data:
                   type: object
                   properties:

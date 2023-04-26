@@ -28,6 +28,11 @@ module.exports.get_areas = async (req, res) => {
     let response = {
         origin: "/api/v1/learning_areas/",
         single: true,
+        query: {
+            block_id: block_id,
+            all_data: all_data
+        },
+        date: new Date(),
         data: data_areas
     }
     res.status(200).json(response);
@@ -50,6 +55,8 @@ module.exports.get_area = async (req, res) => {
     let response = {
         origin: "/api/v1/learning_areas/",
         single: true,
+        query: {},
+        date: new Date(),
         data: data_area
     };
     res.status(200).json(response);

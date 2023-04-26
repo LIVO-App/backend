@@ -34,6 +34,13 @@ module.exports.get_courses = async (req, res) => {
     let response = {
         origin: "/api/v1/courses",
         single: true,
+        query: {
+            student_id: student_id,
+            area_id: area_id,
+            block_id: block_id,
+            alone: alone
+        },
+        date: new Date(),
         data: data_courses
     };
     res.status(200).json(response);
@@ -48,6 +55,22 @@ module.exports.get_course = async (req, res) => {
         console.log('resource not found');
         return;
     }
+    let proposer_teacher_ref = {
+        origin: "/api/v1/teacher", 
+        single: true, 
+        query: {},
+        data: {
+            id: course.proposer_teacher_id
+        }
+    };
+    let certifying_admin_ref = {
+        origin: "/api/v1/admin", 
+        single: true, 
+        query: {},
+        data: {
+            id: course.certifying_admin_id
+        }
+    };
     let data_course = {
         id: course.id,
         italian_title: course.italian_title,
@@ -69,10 +92,10 @@ module.exports.get_course = async (req, res) => {
         growth_area_eng: course.growth_area_eng,
         min_students: course.min_students,
         max_students: course.max_students,
-        proposer_teacher_ref: {origin: "/api/v1/teacher", single: true, data: {id: course.proposer_teacher_id}},
+        proposer_teacher_ref: proposer_teacher_ref,
         teacher_name: course.teacher_name,
         teacher_surname: course.teacher_surname,
-        certifying_admin_ref: {origin: "/api/v1/admin", single: true, data: {id: course.certifying_admin_id}},
+        certifying_admin_ref: certifying_admin_ref,
         admin_name: course.admin_name,
         admin_surname: course.admin_surname,
         admin_confirmation: course.admin_confirmation
@@ -80,6 +103,10 @@ module.exports.get_course = async (req, res) => {
     let response = {
         origin: "/api/v1/courses",
         single: true,
+        query: {
+            admin_info: admin_info
+        },
+        date: new Date(),
         data: data_course
     };
     res.status(200).json(response);

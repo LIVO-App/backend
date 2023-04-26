@@ -16,8 +16,16 @@ module.exports.get_contexts = async (req, res) => {
         return;
     }
     let data_cxs = cxs.map((cx) => {
+        let learning_context_ref = {
+            origin: "/api/v1/learning_contexts", 
+            single: true, 
+            query: {},
+            data: {
+                id: cx.learning_context_id
+            }
+        }
         return {
-            learning_context_ref: {origin: "/api/v1/learning_contexts", single: true, data: {id: cx.learning_context_id}},
+            learning_context_ref: learning_context_ref,
             italian_title: cx.italian_title,
             english_title: cx.english_title
         };
@@ -25,6 +33,8 @@ module.exports.get_contexts = async (req, res) => {
     let response = {
         origin: "/api/v1/courses/:id/learning_contexts",
         single: false,
+        query: {},
+        date: new Date(),
         data: data_cxs
     }
     res.status(200).json(response);

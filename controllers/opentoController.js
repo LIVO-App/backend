@@ -16,9 +16,25 @@ module.exports.get_institute_classes = async (req, res) => {
         return;
     }
     let data_cls = cls.map((cl) => {
+        let study_year_ref = {
+            origin: "/api/v1/study_year", 
+            single: true, 
+            query: {},
+            data:{
+                id: cl.study_year_id
+            }
+        }
+        let study_address_ref = {
+            origin: "/api/v1/study_addresses", 
+            single: true, 
+            query: {},
+            data: {
+                id: cl.study_address_id
+            }
+        }
         return {
-            study_year_ref: {origin: "/api/v1/study_year", single: true, data:{id: cl.study_year_id}},
-            study_address_ref: {origin: "/api/v1/study_addresses", single: true, data: {id: cl.study_address_id}},
+            study_year_ref: study_year_ref,
+            study_address_ref: study_address_ref,
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             presidium: cl.presidium,
@@ -28,6 +44,8 @@ module.exports.get_institute_classes = async (req, res) => {
     let response = {
         origin: "/api/v1/courses/:id/opento",
         single: false,
+        query: {},
+        date: new Date(),
         data: data_cls
     }
     res.status(200).json(response);

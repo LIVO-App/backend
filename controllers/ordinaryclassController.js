@@ -1,5 +1,6 @@
 'use strict';
 
+const { query } = require('express');
 const courseSchema = require('../models/ordinaryclassModel');
 
 let MSG = {
@@ -18,19 +19,68 @@ module.exports.get_classes = async (req, res) => {
         return;
     }
     let data_classes = classes.map((cls) => {
+        let study_year_ref = {
+            origin: "/api/v1/study_year", 
+            single: true, 
+            query: {},
+            data: {
+                id: cls.study_year_id
+            }
+        }
+        let study_address_ref = {
+            origin: "/api/v1/study_addresses", 
+            single: true, 
+            query: {},
+            data: {
+                id: cls.study_address_id
+            }
+        }
+        let annual_credits_ref = {
+            origin: "/api/v1/annual_credits",
+                single: true,
+                query: {},
+                data:{
+                    study_year: cls.annual_credits_study_year, 
+                    study_address: cls.annual_credits_address,
+                    definition_year: cls.annual_credits_definition_year
+                }
+        }
         return {
-            study_year_ref: {origin: "/api/v1/study_year", single: true, data: {id: cls.study_year_id}},
-            study_address_ref: {origin: "/api/v1/study_addresses", single: true, data: {id: cls.study_address_id}},
+            study_year_ref: study_year_ref,
+            study_address_ref: study_address_ref,
             school_year: cls.school_year,
             italian_displayed_name: cls.italian_displayed_name,
             english_displayed_name: cls.english_displayed_name,
-            annual_credits_ref: {origin: "/api/v1/annual_credits", single: true, data:{study_year: cls.annual_credits_study_year, study_address: cls.annual_credits_address,definition_year: cls.annual_credits_definition_year}}
+            annual_credits_ref: annual_credits_ref
         };
     });
     let response = {
-        origin: "/api/v1/ordinary_classes",
+        path: "/api/v1/ordinary_classes",
         single: true,
-        data: data_classes
+        query: {
+            student_id: student_id,
+            school_year: school_year,
+            credits: credits
+        },
+        date: new Date(),
+        data: data_classes,
     }
     res.status(200).json(response);
 }
+/*{
+    origin: ".../student"
+    single: true,
+    query: {
+        grade: POSITIVE
+    },
+    data {
+        id: 4,
+        ...,
+        grade: {
+            origin: ".../grades",
+            single: true,
+            query: {greaterThan: 5},
+            data: [7,9,10] //[4,7,9,5,10]
+        }
+    }
+}*/

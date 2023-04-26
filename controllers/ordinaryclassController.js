@@ -14,7 +14,8 @@ module.exports.get_classes = async (req, res) => {
     let student_id = req.query.student_id;
     let school_year = req.query.school_year;
     let credits = req.query.credits;
-    let classes = await courseSchema.list(student_id, school_year, credits);
+    let descending = req.query.descending;
+    let classes = await courseSchema.list(student_id, school_year, credits, descending);
     if(!classes){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');
@@ -67,7 +68,8 @@ module.exports.get_classes = async (req, res) => {
         query: {
             student_id: student_id,
             school_year: school_year,
-            credits: credits
+            credits: credits,
+            descending: descending
         },
         date: new Date(),
         data: data_classes,

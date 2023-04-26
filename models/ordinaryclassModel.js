@@ -16,7 +16,7 @@ module.exports = {
             console.log(err);
         }
     },*/
-    async list(student_id,school_year,credits=false){
+    async list(student_id,school_year,credits=false, descending=false){
         try {
             conn = await pool.getConnection();
             let sql = `SELECT oc.study_year_id, oc.study_address_id, oc.school_year, oc.italian_displayed_name, oc.english_displayed_name`;
@@ -31,6 +31,10 @@ module.exports = {
             } else if(school_year != undefined) {
                 sql += `WHERE oc.school_year = ${school_year}`;
             }
+            if(descending){
+                sql += ` ORDER BY oc.school_year DESC`
+            }
+            console.log(sql);
             const rows = await conn.query(sql);
             conn.end();
             if(rows.length!=0){

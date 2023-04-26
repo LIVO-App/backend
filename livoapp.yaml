@@ -153,6 +153,11 @@ paths:
   /ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
+      parameters:
+        - $ref: '#/components/parameters/Student_id'
+        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/Credits'
+        - $ref: '#/components/parameters/Descending'
       summary: Collection of ordinary classes
       responses:
         '200':
@@ -879,5 +884,17 @@ components:
       name: admin_info
       in: query
       description: Specifies whether the user wants to have all the data regarding the admin confirmation
+      schema:
+        type: boolean
+    Credits:  
+      name: credits
+      in: query
+      description: Specifies whether the user wants the information about the credits model
+      schema:
+        type: boolean
+    Descending:
+      name: descending
+      in: query
+      description: Specifies whether data should be ordered in descending order
       schema:
         type: boolean

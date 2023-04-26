@@ -64,5 +64,26 @@ module.exports = {
         } catch (err) {
             console.log()
         }
+    },
+    async read(student_id, course_id, block_id, section){
+        try{
+            conn = await pool.getConnection();
+            if(!student_id || !course_id || !block_id || !section){
+                console.log("MISSING PARAMETERS");
+                conn.end();
+                return null;
+            }
+            sql = 'SELECT student_id, project_class_course_id, project_class_block, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND section = ?';
+            let values = [student_id, course_id, block_id, section];    
+            const rows = await conn.query(sql, values);
+            conn.end();
+            if(rows.length == 1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
 }

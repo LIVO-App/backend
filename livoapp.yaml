@@ -468,6 +468,25 @@ components:
               english_displayed_name:
                 type: string
                 description: "English displayed name of the project class associated"
+              learning_area_ref:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: "Id of the learning area associated to the course"
+                description: "Reference to the learning area associated to the course"
               pending:
                 type: boolean
                 description: "Is the student already inscribed to this course? Or is he waiting for a response?"

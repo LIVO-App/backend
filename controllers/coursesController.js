@@ -21,6 +21,14 @@ module.exports.get_courses = async (req, res) => {
         return;
     }
     let data_courses = courses.map((course) => {
+        let learning_area_ref = {
+            path: "/api/v1/learning_areas",
+            single: true,
+            query: {},
+            data: {
+                id: course.learning_area_id
+            }
+        }
         return {
             id: course.id,
             italian_title: course.italian_title,
@@ -28,11 +36,12 @@ module.exports.get_courses = async (req, res) => {
             credits: course.credits,
             italian_displayed_name: course.italian_displayed_name,
             english_displayed_name: course.english_displayed_name,
+            learning_area_ref: learning_area_ref,
             pending: course.inscribed
         };
     });
     let response = {
-        origin: "/api/v1/courses",
+        path: "/api/v1/courses",
         single: true,
         query: {
             student_id: student_id,
@@ -56,7 +65,7 @@ module.exports.get_course = async (req, res) => {
         return;
     }
     let proposer_teacher_ref = {
-        origin: "/api/v1/teacher", 
+        path: "/api/v1/teacher", 
         single: true, 
         query: {},
         data: {
@@ -64,7 +73,7 @@ module.exports.get_course = async (req, res) => {
         }
     };
     let certifying_admin_ref = {
-        origin: "/api/v1/admin", 
+        path: "/api/v1/admin", 
         single: true, 
         query: {},
         data: {
@@ -101,7 +110,7 @@ module.exports.get_course = async (req, res) => {
         admin_confirmation: course.admin_confirmation
     };
     let response = {
-        origin: "/api/v1/courses",
+        path: "/api/v1/courses",
         single: true,
         query: {
             admin_info: admin_info

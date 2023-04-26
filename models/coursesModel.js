@@ -24,7 +24,7 @@ module.exports = {
         try {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
-            let sql = `SELECT c.id, c.italian_title, c.english_title, c.credits, pc.italian_displayed_name, pc.english_displayed_name`;
+            let sql = `SELECT c.id, c.italian_title, c.english_title, c.credits, pc.italian_displayed_name, pc.english_displayed_name, c.learning_area_id`;
             if(student_id != undefined){
                 sql += `, CASE WHEN c.id IN (SELECT c.id FROM   course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
                 if(learn_area_id!=undefined && block_id!=undefined){
@@ -63,7 +63,6 @@ module.exports = {
             if(student_id != undefined) {
                 sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
             }
-            console.log(sql);
             const rows = await conn.query(sql);
             conn.end();
             if(rows.length!=0){

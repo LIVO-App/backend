@@ -559,16 +559,16 @@ components:
             english_activities:
               type: string
               description: "English activities that will be carried out during the course"
-            learning_area_ita:
+            italian_learning_area:
               type: string
               description: "Italian name of the learning area associated with the course"
-            learning_area_eng:
+            english_learning_area:
               type: string
               description: "English name of the learning area associated with the course"
-            growth_area_ita:
+            italian_growth_area:
               type: string
               description: "Italian name of the growth area associated with the course"
-            growth_area_eng:
+            english_growth_area:
               type: string
               description: "English name of the growth area associated with the course"
             min_students:

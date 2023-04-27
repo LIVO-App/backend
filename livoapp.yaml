@@ -44,6 +44,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Block_id'
         - $ref: '#/components/parameters/All_data'
+        - $ref: '#/components/parameters/Credits'
       summary: View of all the learning areas.
       responses:
         '200':
@@ -426,6 +427,9 @@ components:
               english_description:
                 type: string
                 description: "English description of the learning area"
+              credits:
+                type: boolean
+                description: "Number of credits for that specific learning area in that specific block"
     courses:
       type: object
       required:

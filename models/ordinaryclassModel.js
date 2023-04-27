@@ -35,7 +35,7 @@ module.exports = {
                 sql += ` ORDER BY oc.school_year DESC`
             }
             const rows = await conn.query(sql);
-            conn.end();
+            conn.release();
             if(rows.length!=0){
                 return rows;
             } else {

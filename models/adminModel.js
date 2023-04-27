@@ -7,7 +7,7 @@ async function read(condition,param){
         conn = await pool.getConnection();
         sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email FROM admin WHERE " + condition;
         const rows = await conn.query(sql,param);
-        conn.end();
+        conn.release();
         if (rows.length == 1){
             return rows[0];
         } else {
@@ -29,10 +29,10 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = `SELECT cf, username, name, surname, gender, birth_date, address FROM admin`;
-            console.log(sql);
+            //console.log(sql);
             const rows = await conn.query(sql);
             //console.log("rows");
-            conn.end();
+            conn.release();
             //console.log("end");
             return rows;
         } catch (err) {

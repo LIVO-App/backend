@@ -17,7 +17,7 @@ module.exports = {
                 sql += "id = ?";
                 rows = await conn.query(sql, id);
             }
-            conn.end();
+            conn.release();
             if(rows.length == 1){
                 return rows[0];
             } else {

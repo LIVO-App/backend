@@ -6,7 +6,7 @@ module.exports = {
             conn = await pool.getConnection();
             if(!student_id || !course_id || !block_id || !section){
                 console.log("MISSING PARAMETERS");
-                conn.end();
+                conn.release();
                 return false;
             }
             let pen_val;
@@ -19,7 +19,7 @@ module.exports = {
             
             values = [student_id, course_id, block_id, section, pen_val]
             const rows = await conn.query(sql, values);
-            conn.end();
+            conn.release();
             //console.log("Inserted "+rows.insertedId+" rows.");
             return rows;
         } catch (err){

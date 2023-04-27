@@ -10,7 +10,7 @@ module.exports = {
             }
             sql += 'JOIN admin as ad ON ad.id = c.certifying_admin_id WHERE c.id = ?';
             const rows = await conn.query(sql, id);
-            conn.end();
+            conn.release();
             if(rows.length == 1){
                 return rows[0];
             } else {
@@ -64,7 +64,7 @@ module.exports = {
                 sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
             }
             const rows = await conn.query(sql);
-            conn.end();
+            conn.release();
             if(rows.length!=0){
                 return rows;
             } else {

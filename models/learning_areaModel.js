@@ -6,7 +6,7 @@ module.exports = {
             conn = await pool.getConnection();
             sql = "SELECT id, italian_title, english_title, italian_description, english_description FROM learning_area WHERE id = ?";
             const rows = await conn.query(sql, id);
-            conn.end();
+            conn.release();
             if(rows.length == 1){
                 return rows[0];
             } else {
@@ -21,7 +21,7 @@ module.exports = {
             conn = await pool.getConnection();
             sql = "SELECT id, italian_title, english_title, italian_description, english_description FROM learning_area";
             const rows = await conn.query(sql);
-            conn.end();
+            conn.release();
             return rows;
         } catch (err) {
             console.log(err);

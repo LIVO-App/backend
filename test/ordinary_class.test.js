@@ -74,7 +74,7 @@ describe('/api/v1/ordinary_classes', () => {
         test('GET /api/v1/ordinary_classes?student_id with non valid id should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({student_id: 'nonValidID'})
+                .query({student_id: 0})
                 .expect(404);
         });
 
@@ -82,7 +82,7 @@ describe('/api/v1/ordinary_classes', () => {
         test('GET /api/v1/ordinary_classes?student_id with non valid id and with credits information should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({student_id: 'nonValidID', credits: true})
+                .query({student_id: 0, credits: true})
                 .expect(404)
         });
 
@@ -90,7 +90,7 @@ describe('/api/v1/ordinary_classes', () => {
         test('GET /api/v1/ordinary_classes?school_year with non valid id should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({school_year: 'nonValidID'})
+                .query({school_year: 0})
                 .expect(404);
         });
 
@@ -98,14 +98,14 @@ describe('/api/v1/ordinary_classes', () => {
         test('GET /api/v1/ordinary_classes?school_year with non valid id and with credits information should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({school_year: 'nonValidID', credits: true})
+                .query({school_year: 0, credits: true})
                 .expect(404)
         });
         // GET all resources with non valid param (no credits)
         test('GET /api/v1/ordinary_classes with non valid id should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({student_id: 'nonValidID', school_year: 'nonValidID'})
+                .query({student_id: 0, school_year: 0})
                 .expect(404);
         });
 
@@ -113,7 +113,7 @@ describe('/api/v1/ordinary_classes', () => {
         test('GET /api/v1/ordinary_classes with non valid id and with credits information should respond 404', async () => {
             return request(app)
                 .get('/api/v1/ordinary_classes')
-                .query({student_id: 'nonValidID', school_year: 'nonValidID', credits: true})
+                .query({student_id: 0, school_year: 0, credits: true})
                 .expect(404)
         });
 

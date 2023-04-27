@@ -22,7 +22,7 @@ module.exports = {
             //console.log(sql, username);
             if(sql){
                 const rows = await conn.query(sql, username);
-                conn.end();
+                conn.release();
                 if(rows.length == 0) {
                     return null;
                 }
@@ -32,7 +32,7 @@ module.exports = {
                     return false;
                 }
             } else {
-                conn.end();
+                conn.release();
                 return null;
             }
             

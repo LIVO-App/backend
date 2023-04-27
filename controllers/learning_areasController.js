@@ -12,9 +12,10 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_areas = async (req, res) => {
     let block_id = req.query.block_id;
     let all_data = req.query.all_data;
+    let credits = req.query.credits;
     let areas;
     if (block_id != undefined) {
-        areas = await learningAreaSchema.read_from_blocks(block_id,all_data);
+        areas = await learningAreaSchema.read_from_blocks(block_id,all_data,credits);
     } else {
         areas = await learningAreaSchema.list();
     }
@@ -24,7 +25,8 @@ module.exports.get_areas = async (req, res) => {
             italian_title: area.italian_title,
             english_title: area.english_title,
             italian_description: area.italian_description,
-            english_description: area.english_description
+            english_description: area.english_description,
+            credits: area.credits
         };
     });
     let response = {

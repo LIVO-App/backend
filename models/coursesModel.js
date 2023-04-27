@@ -28,17 +28,17 @@ module.exports = {
             if(student_id != undefined){
                 sql += `, CASE WHEN c.id IN (SELECT c.id FROM   course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
                 if(learn_area_id!=undefined && block_id!=undefined){
-                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = ${learn_area_id} AND `;
+                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND `;
                 } else if (learn_area_id!=undefined) {
-                    sql += `c.learning_area_id = ${learn_area_id} AND `;
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND `;
                 } else if (block_id != undefined) {
                     sql += `learning_block_id = ${block_id} AND `;
                 }
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM   inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
                 if(learn_area_id!= undefined && block_id != undefined){
-                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = ${learn_area_id} AND `;
+                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND `;
                 } else if (learn_area_id!=undefined) {
-                    sql += `c.learning_area_id = ${learn_area_id} AND `;
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND `;
                 } else if (block_id != undefined) {
                     sql += `learning_block_id = ${block_id} AND `;
                 } 
@@ -54,9 +54,9 @@ module.exports = {
             }
             sql += `JOIN learning_block AS lb ON lb.id = pc.learning_block_id `;
             if(learn_area_id != undefined && block_id != undefined){
-                sql += `WHERE pc.learning_block_id = ${block_id} AND c.learning_area_id = ${learn_area_id}`;
+                sql += `WHERE pc.learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\'`;
             } else if (learn_area_id != undefined) {
-                sql += `WHERE c.learning_area_id = ${learn_area_id}`;
+                sql += `WHERE c.learning_area_id = \'${learn_area_id}\'`;
             } else if (block_id != undefined) {
                 sql += `WHERE pc.learning_block_id = ${block_id}`;
             }

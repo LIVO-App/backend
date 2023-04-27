@@ -21,7 +21,7 @@ describe('/api/v1/courses', () => {
                 .query({
                     student_id: '\"nonValidID\"',
                     block_id: 7,
-                    area_id: '\"SM\"'
+                    area_id: 'SM'
                 })
                 .expect(404);
         }, 20000);
@@ -44,7 +44,7 @@ describe('/api/v1/courses', () => {
             return request(app)
                 .get('/api/v1/courses')
                 .query({
-                    area_id: '\"SM\"'
+                    area_id: 'SM'
                 })
                 .expect(200)
                 .then((response) => {
@@ -72,7 +72,7 @@ describe('/api/v1/courses', () => {
                 .query({
                     student_id: 1,
                     block_id: 7,
-                    area_id: '\"SM\"'
+                    area_id: 'SM'
                 })
                 .expect(200)
                 .then((response) => {

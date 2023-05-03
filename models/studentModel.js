@@ -25,6 +25,9 @@ module.exports = {
     read_email(email) {
         return read("email = ?",email);
     },
+    read_id(student_id){
+        return read("id = ?",student_id);
+    },
     async list() {
         try{
             conn = await pool.getConnection();

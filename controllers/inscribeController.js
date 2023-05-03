@@ -1,11 +1,14 @@
 'use strict';
 
 const inscribe_schema = require('../models/inscribeModel');
+const studentModel = require('../models/studentModel');
+const pcModel = require('../models/projectClassModel');
 
 let MSG = {
     notFound: "Resource not found",
     missing_params: "Bad input. Missing required information",
-    itemAlreadyExists: "The student is already inscribe to this project class"
+    itemAlreadyExists: "The student is already inscribe to this project class",
+    studentNotExist: "The student does not exist"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -25,7 +28,12 @@ module.exports.inscribe_project_class = async (req, res) => {
     if (pending.full === "true"){
         pen_val = true
     }
-    
+    let existStudent = await studentModel.read_id(student_id);
+    if(!existStudent){
+        res.status(400).json({status: "error", description: MSG.studentNotExist})
+        console.log('student does not exist');
+        return;
+    }
     const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, section);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
@@ -58,12 +66,18 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     let student_id = req.params.id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
-    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);
-    if (!unsubscribe){
+    let classExist = await pcModel.read(course_id, block_id);
+    if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information');
         return;
-    };
+    }
+    if(!classExist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found');
+        return;
+    }
+    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);
     let res_des = "Deleted " + unsubscribe.affectedRows + " rows";
     let response = {
         status: "deleted", 

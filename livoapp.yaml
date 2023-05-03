@@ -254,6 +254,8 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:

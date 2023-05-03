@@ -38,5 +38,16 @@ module.exports = {
         } catch (err) {
             console.log(err);
         }
+    },
+    async google(admin_id) {
+        try{
+            conn = await pool.getConnection();
+            sql = 'UPDATE admin SET google = 1 WHERE id = ?'
+            const rows = await conn.query(sql, admin_id);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        }
     }
 };

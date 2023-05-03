@@ -123,28 +123,34 @@ module.exports.google = async (req, res) => {
     };
     var msg = await studentSchema.read_email(filterEmail.email);
     if (!msg) {
-        if (msg.google){
-            let token = generateToken(msg);
-            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        if (!msg.google){
+            await studentSchema.google(msg.id);
         }
+        let token = generateToken(msg);
+        return res.redirect("http://localhost:5000/google-redirect?token="+token);
     }
     msg = await teacherSchema.read_email(filterEmail.email);
     if (!msg) {
-        if (msg.google){
-            let token = generateToken(msg);
-            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        if (!msg.google){
+            await teacherSchema.google(msg.id);
         }
+        let token = generateToken(msg);
+        return res.redirect("http://localhost:5000/google-redirect?token="+token);
     }
     msg = await adminSchema.read_email(filterEmail.email);
     if (!msg) {
-        if (msg.google) {
-            let token = generateToken(msg);
-            return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        if (!msg.google) {
+            await adminSchema.google(msg.id);
         }
+        let token = generateToken(msg);
+        return res.redirect("http://localhost:5000/google-redirect?token="+token);
     }
-    return false;
+    return res.status(403).json({error: MSG.errorUserNotFound});
 }
 
+studentSchema.google(1).then((msg) => {
+    console.log(msg);
+});
 
 /*userSchema.list()
     .then(msg => {

@@ -148,9 +148,9 @@ module.exports.google = async (req, res) => {
     return res.status(403).json({error: MSG.errorUserNotFound});
 }
 
-studentSchema.google(1).then((msg) => {
+/*studentSchema.google(1).then((msg) => {
     console.log(msg);
-});
+});*/
 
 /*userSchema.list()
     .then(msg => {

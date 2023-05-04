@@ -38,7 +38,7 @@ module.exports = {
             } else {
                 rows = await conn.query(sql);
             }
-            conn.end();
+            conn.release();
             return rows;
         } catch (err) {
             console.log(err);

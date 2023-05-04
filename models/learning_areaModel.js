@@ -44,7 +44,7 @@ module.exports = {
             }
             sql += " FROM limited AS l INNER JOIN learning_area AS la ON l.learning_area_id = la.id WHERE learning_block_id= ? GROUP BY la.id";
             const rows = await conn.query(sql, block_id);
-            conn.end();
+            conn.release();
             return rows;
         } catch (err) {
             console.log(err);

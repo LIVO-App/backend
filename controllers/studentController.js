@@ -1,6 +1,7 @@
 'use strict';
 
 const courseSchema = require('../models/coursesModel');
+const ordinaryclassSchema = require('../models/ordinaryclassModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -12,6 +13,12 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_curriculum = async (req, res) => {
     let student_id = req.params.id;
     let school_year = req.query.school_year;
+    let check = await ordinaryclassSchema.list(student_id, school_year);
+    if(!check){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found');
+        return
+    }
     let curriculum = await courseSchema.curriculum(student_id, school_year);
     if(!curriculum){
         res.status(404).json({status: "error", description: MSG.notFound});

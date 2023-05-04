@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 
+const studentHandler = require('../../controllers/studentController');
 const inscribeHandler = require('../../controllers/inscribeController');
 
 router.post('/:id/inscribe', inscribeHandler.inscribe_project_class);

@@ -11,7 +11,8 @@ const adminSchema = require('../models/adminModel');
 let MSG = {
     errorDuplicateUser: "The username inserted already exists.",
     errorUserNotFound: "Wrong username or password. Please, try again.",
-    errorGoogle: "Cannot access with Google"
+    errorGoogle: "Cannot access with Google",
+    errorAuth: "Authentication failed"
 }
 
 let generateToken = (user) => {
@@ -145,7 +146,7 @@ module.exports.google = async (req, res) => {
         let token = generateToken(msg);
         return res.redirect("http://localhost:5000/google-redirect?token="+token);
     }
-    return res.status(403).json({error: MSG.errorUserNotFound});
+    return res.status(401).json({status: 'error', message: MSG.errorAuth});
 }
 
 /*studentSchema.google(1).then((msg) => {

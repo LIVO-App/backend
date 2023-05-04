@@ -225,6 +225,15 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /auth/google:
+    get:
+      description: Google authentication. It will redirect to the google authentication page.
+      summary: Google authentication
+      responses:
+        '200':
+          description: Redirect to Google authentication page.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /student/:id/inscribe:
     post:
       description: Subscription to a project class by a student
@@ -348,6 +357,17 @@ components:
           example:
             status: "deleted"
             description: "Deleted 1 rows"
+    Forbidden:
+      description: Denied access to resource. Need to be logged in.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
   schemas:
     learning_blocks:
       type: object

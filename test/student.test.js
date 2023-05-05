@@ -61,6 +61,22 @@ describe('/api/v1/students', () => {
         })
     })
 
+    describe('GET methods', () => {
+        // Get curriculum with non valid ID
+        test('GET /api/v1/students/:id/curriculum with non valid ID should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v1/students/NonValidID/curriculum')
+                .query({school_year: 2022})
+                .expect(404);
+        })
+
+        // Get curriculum without school_year param
+
+        // Get curriculum with school_year non valid (one in which the student does not exist)
+
+        // Get curriculum with valid parameters
+    })
+
     describe('DELETE methods', () => {
         // api/v1/students/:id/inscribe
         // Delete subscription with non valid student ID

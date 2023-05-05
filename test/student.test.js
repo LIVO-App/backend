@@ -65,14 +65,25 @@ describe('/api/v1/students', () => {
         // Get curriculum with non valid ID
         test('GET /api/v1/students/:id/curriculum with non valid ID should respond with status 404', async () => {
             return request(app)
-                .get('/api/v1/students/NonValidID/curriculum')
+                .get('/api/v1/students/0/curriculum')
                 .query({school_year: 2022})
                 .expect(404);
         })
 
         // Get curriculum without school_year param
+        test('GET /api/v1/students/:id/curriculum without school_year parameter should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .expect(404);
+        })
 
         // Get curriculum with school_year non valid (one in which the student does not exist)
+        test('GET /api/v1/students/:id/curriculum?school_year with non valid school_year parameter (the student wasn\'t enrolled in the school at that time) should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({school_year: 2021})
+                .expect(404);
+        })
 
         // Get curriculum with valid parameters
     })

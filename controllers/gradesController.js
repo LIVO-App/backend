@@ -10,17 +10,12 @@ let MSG = {
 
 process.env.TZ = 'Etc/Universal';
 
-module.exports.get_institute_classes = async (req, res) => {
+module.exports.get_grades = async (req, res) => {
     let student_id = req.params.id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     // TODO: Check if student project class relation exists before searching for the grades
     let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
-    if(classControl === null) {
-        res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information');
-        return;
-    }
     if(!classControl){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found');

@@ -95,6 +95,46 @@ describe('/api/v1/students', () => {
                     expect(response.body.data.length).toBeGreaterThanOrEqual(0); //If the pair student-school_year is valid (the student was enrolled in the system) there can be the chance that he doesn't have anything in the curriculum (for example we are at the start of the year before the start of the first learning block)
                 });
         })
+
+        // Get grades with non valid ID
+        test('GET /api/v1/students/:id/grades with non valid ID should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/0/curriculum')
+                .query({course_id: 5, block_id: 6})
+                .expect(404);
+        })
+
+        // Get grades with missing params (course_id)
+        test('GET /api/v1/students/:id/grades with missing parameter course_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({block_id: 6})
+                .expect(404);
+        })
+
+        // Get grades with missing params (block_id)
+        test('GET /api/v1/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({course_id: 5})
+                .expect(404);
+        })
+
+        // Get grades with wrong params (class doesn't exist or user is not enrolled in that project class)
+        test('GET /api/v1/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({course_id: 5, block_id:7})
+                .expect(404);
+        })
+
+        // Get grades with valid parameters
+        test('GET /api/v1/students/:id/grades with non valid ID should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({course_id: 5, block_id: 6})
+                .expect(404);
+        })
     })
 
     describe('DELETE methods', () => {

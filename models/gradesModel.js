@@ -15,6 +15,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

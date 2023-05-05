@@ -24,6 +24,8 @@ module.exports = {
             return rows;
         } catch (err){
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async remove(student_id, course_id, block_id){
@@ -42,6 +44,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async isClassFull(course_id, block_id){
@@ -63,6 +67,8 @@ module.exports = {
             }
         } catch (err) {
             console.log()
+        } finally {
+            conn.release();
         }
     },
     async read(student_id, course_id, block_id, section){
@@ -84,6 +90,8 @@ module.exports = {
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 }

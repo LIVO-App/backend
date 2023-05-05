@@ -15,6 +15,8 @@ async function read(condition,param){
         }
     } catch (err) {
         console.log(err);
+    } finally {
+        conn.release();
     }
 }
 
@@ -40,6 +42,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async google(student_id) {
@@ -51,6 +55,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

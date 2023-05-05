@@ -18,6 +18,8 @@ module.exports = {
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async list(student_id, learn_area_id, block_id, alone=false){
@@ -72,6 +74,8 @@ module.exports = {
             } 
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async curriculum(student_id, school_year){
@@ -87,6 +91,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

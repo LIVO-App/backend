@@ -371,6 +371,8 @@ CREATE TABLE `grade` (
   `teacher_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
+  `italian_description` varchar(1000) NOT NULL,
+  `english_description` varchar(1000) NOT NULL,
   `publication` datetime NOT NULL,
   `grade` float NOT NULL,
   `final` tinyint(1) NOT NULL
@@ -380,14 +382,14 @@ CREATE TABLE `grade` (
 -- Dump dei dati per la tabella `grade`
 --
 
-INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `publication`, `grade`, `final`) VALUES
-(1, 3, 4, 6, '2023-04-01 09:10:15', 9, 0),
-(1, 3, 4, 6, '2023-04-02 10:10:15', 8, 0),
-(1, 3, 4, 6, '2023-04-03 15:10:15', 9, 0),
-(2, 3, 5, 6, '2023-04-01 09:10:15', 7, 0),
-(2, 3, 5, 6, '2023-04-04 09:10:15', 9, 0),
-(3, 1, 6, 6, '2023-04-01 09:10:15', 9, 0),
-(4, 3, 5, 6, '2023-04-01 09:10:15', 6, 0);
+INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `italian_description`, `english_description`, `publication`, `grade`, `final`) VALUES
+(1, 3, 4, 6, 'Compito di Chimica', 'Chemisrty test', '2023-04-01 09:10:15', 9, 0),
+(1, 3, 4, 6, 'Interrogazione su organismi acquatici', 'Oral exam on aquatic organisms', '2023-04-02 10:10:15', 8, 0),
+(1, 3, 4, 6, 'Compito finale', 'Final test', '2023-04-03 15:10:15', 9, 0),
+(2, 3, 5, 6, 'Introduzione alla temperatura', 'Introduction to temperature', '2023-04-01 09:10:15', 7, 0),
+(2, 3, 5, 6, 'Interrogazione su caratteristiche delle specie che vivono in luoghi caldi', 'Oral test on species that lives in hot environment', '2023-04-04 09:10:15', 9, 0),
+(3, 1, 6, 6, 'Introduzione ai metodi di scrittura: italiano', 'Introduction to writing methods: italian', '2023-04-01 09:10:15', 9, 0),
+(4, 3, 5, 6, 'Compito finale', 'Final test', '2023-04-01 09:10:15', 6, 0);
 
 -- --------------------------------------------------------
 

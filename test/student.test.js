@@ -86,6 +86,15 @@ describe('/api/v1/students', () => {
         })
 
         // Get curriculum with valid parameters
+        test('GET /api/v1/students/:id/curriculum with valid parameters should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/students/2/curriculum')
+                .query({school_year: 2022})
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(0); //If the pair student-school_year is valid (the student was enrolled in the system) there can be the chance that he doesn't have anything in the curriculum (for example we are at the start of the year before the start of the first learning block)
+                });
+        })
     })
 
     describe('DELETE methods', () => {

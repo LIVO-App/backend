@@ -234,7 +234,7 @@ paths:
           description: Redirect to Google authentication page.
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /student/:id/curriculum:
+  /students/:id/curriculum:
     get:
       description: Get all the courses in the curriculum of a student for a certain school year.
       summary: Get student curriculum
@@ -251,7 +251,25 @@ paths:
                   $ref: '#/components/schemas/curriculum'
         '404':
           $ref: '#/components/responses/NotFound'
-  /student/:id/inscribe:
+  /students/:id/grades:
+    get:
+      description: Get all the grades of a student in a certain project class
+      parameters:
+        - $ref: '#/components/parameters/Course_id'
+        - $ref: '#/components/parameters/Block_id'
+      summary: Get grades of a student for a course
+      responses:
+        '200':
+          description: "Student grades"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/grades'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /students/:id/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -268,7 +286,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /student/:id/unscribe:
+  /students/:id/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -1055,6 +1073,44 @@ components:
             final_grade:
               type: integer
               description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+    grades:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            italian_description:
+              type: string
+              description: "Italian description of a grade"
+            english_description:
+              type: string
+              description: "English description of a grade"
+            publication:
+              type: string
+              format: date
+              description: "Date of the publication of the grade"
+            grade:
+              type: integer
+              description: "Grade of the student"
+            final:
+              type: boolean
+              description: "Tells the user if the grade is the final one or not"
   parameters:
     School_year:
       name: school_year

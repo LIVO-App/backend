@@ -18,7 +18,7 @@ module.exports.get_grades = async (req, res) => {
     let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
     if(!classControl){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('class grades: resource not found');
         return;
     }
     let grades = await gradesSchema.list(student_id, course_id, block_id);

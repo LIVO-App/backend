@@ -24,7 +24,7 @@ module.exports.inscribe_project_class = async (req, res) => {
     let pending = await inscribe_schema.isClassFull(course_id, block_id);
     if(!pending){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('resource not found: full class');
         return;
     }
     if (pending.full === "true"){
@@ -39,7 +39,7 @@ module.exports.inscribe_project_class = async (req, res) => {
     const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, section);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information');
+        console.log('missing required information: existing subscription');
         return;
     }
     if (subscriptionExists) {
@@ -59,10 +59,10 @@ module.exports.inscribe_project_class = async (req, res) => {
     let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
-        console.log('missing required information');
+        console.log('missing required information: is max');
         return;
     }
-    if(isMax.credits+cour.credits > isMax.max_credits){
+    if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached');
         return;
@@ -70,7 +70,7 @@ module.exports.inscribe_project_class = async (req, res) => {
     let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information');
+        console.log('missing required information: subscribe');
         return;
     }
     let res_des = "Inserted " + subscribe.rows.affectedRows + " rows";
@@ -89,12 +89,12 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     let classExist = await pcModel.read(course_id, block_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information');
+        console.log('missing required information on class');
         return;
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('resource not found: unscribe');
         return;
     }
     let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);

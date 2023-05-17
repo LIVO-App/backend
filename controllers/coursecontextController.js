@@ -14,7 +14,7 @@ module.exports.get_contexts = async (req, res) => {
     let cxs = await coursecontexController.read_from_course(course_id);
     if(!cxs){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('contexts: resource not found');
         return;
     }
     let data_cxs = cxs.map((cx) => {

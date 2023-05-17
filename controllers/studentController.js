@@ -16,13 +16,13 @@ module.exports.get_curriculum = async (req, res) => {
     let check = await ordinaryclassSchema.list(student_id, school_year);
     if(!check){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('ord_class: resource not found');
         return
     }
     let curriculum = await courseSchema.curriculum(student_id, school_year);
     if(!curriculum){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('curriculum: resource not found');
         return;
     }
     let data_curr = curriculum.map((curr) => {

@@ -14,7 +14,7 @@ module.exports.get_teachings = async (req, res) => {
     let tcs = await courseteachingSchema.read_from_course(course_id);
     if(!tcs){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('teachings: resource not found');
         return;
     }
     let data_tcs = tcs.map((tc) => {

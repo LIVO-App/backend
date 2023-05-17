@@ -5,6 +5,7 @@ const app = require('../app');
 describe('/api/v1/students', () => {
     let projectClass;
     let wrongProjectClass;
+    let projectClassForMaxCredits;
 
     beforeAll(async () => {
         projectClass = {
@@ -15,6 +16,11 @@ describe('/api/v1/students', () => {
         wrongProjectClass = {
             course: 0,
             block: 0,
+            section: 'A'
+        }
+        projectClassForMaxCredits = {
+            course: 6,
+            block: 7,
             section: 'A'
         }
     })
@@ -42,6 +48,14 @@ describe('/api/v1/students', () => {
                 .post('/api/v1/students/3/inscribe')
                 .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section})
                 .expect(404);
+        })
+
+        // Add a student to a class where he has all the credits for that area
+        test('POST /api/v1/students/:id/inscribe with valid ID but have max number of credits for that area should respond 200', async () => {
+            return request(app)
+                .post('/api/v1/students/3/inscribe')
+                .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section})
+                .expect(400);
         })
 
         // Add student to a class

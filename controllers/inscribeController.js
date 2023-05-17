@@ -17,7 +17,7 @@ module.exports.inscribe_project_class = async (req, res) => {
     let student_id = req.params.id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
-    let section = req.query.section;
+    let section = req.query.section ?? "A";
     let pen_val = undefined;
     let pending = await inscribe_schema.isClassFull(course_id, block_id);
     if(!pending){
@@ -54,10 +54,11 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('missing required information');
         return;
     }
-    let res_des = "Inserted " + subscribe.affectedRows + " rows";
+    let res_des = "Inserted " + subscribe.rows.affectedRows + " rows";
     let response = {
         status: "accepted", 
-        description: res_des
+        description: res_des,
+        data: subscribe.pending
     };
     res.status(201).json(response);
 }

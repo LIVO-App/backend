@@ -21,7 +21,10 @@ module.exports = {
             const rows = await conn.query(sql, values);
             conn.release();
             //console.log("Inserted "+rows.insertedId+" rows.");
-            return rows;
+            return {
+                rows: rows,
+                pending: pen_val
+            };
         } catch (err){
             console.log(err);
         } finally {

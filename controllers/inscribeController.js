@@ -10,7 +10,7 @@ let MSG = {
     missing_params: "Bad input. Missing required information",
     itemAlreadyExists: "The student is already inscribe to this project class",
     studentNotExist: "The student does not exist",
-    maxCreditsLimit: "The student has reached the maximum number of credits for this learning area"
+    maxCreditsLimit: "The student has passed the maximum number of credits for this learning area"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -50,20 +50,20 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log("record already exists");
         return;
     }
-    let learning_area = await courseSchema.read_learning_area(course_id);
-    if(!learning_area){
+    let cour = await courseSchema.read_learning_area(course_id);
+    if(!cour){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: learning area');
         return;
     }
-    let isMax = await studentModel.retrieve_credits(student_id, block_id, learning_area.learning_area_id);
+    let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
         console.log('missing required information');
         return;
     }
-    if(isMax.credits == isMax.max_credits){
-        res.status(400).json({status: "error", description: MSG.maxCreditsLimit});
+    if(isMax.credits+cour.credits >= isMax.max_credits){
+        res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached');
         return;
     }

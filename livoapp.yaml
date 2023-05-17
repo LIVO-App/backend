@@ -282,6 +282,8 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
@@ -393,7 +395,7 @@ components:
             status: "deleted"
             description: "Deleted 1 rows"
     Forbidden:
-      description: Denied access to resource. Need to be logged in.
+      description: Operation forbided
       content:
         application/json:
           schema:

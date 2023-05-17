@@ -98,7 +98,7 @@ module.exports = {
     async read_learning_area(course_id){
         try{
             conn = await pool.getConnection();
-            sql = `SELECT c.learning_area_id FROM course as c WHERE c.id = ?`;
+            sql = `SELECT c.learning_area_id, c.credits FROM course as c WHERE c.id = ?`;
             const rows = await conn.query(sql, course_id);
             conn.release();
             if(rows.length == 1){

@@ -14,7 +14,7 @@ module.exports.get_institute_classes = async (req, res) => {
     let cls = await opentoSchema.read_from_course(course_id);
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('open_to: resource not found');
         return;
     }
     let data_cls = cls.map((cl) => {

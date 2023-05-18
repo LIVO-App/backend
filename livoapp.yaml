@@ -225,7 +225,51 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /student/:id/inscribe:
+  /auth/google:
+    get:
+      description: Google authentication. It will redirect to the google authentication page.
+      summary: Google authentication
+      responses:
+        '200':
+          description: Redirect to Google authentication page.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /students/:id/curriculum:
+    get:
+      description: Get all the courses in the curriculum of a student for a certain school year.
+      summary: Get student curriculum
+      parameters:
+        - $ref: '#/components/parameters/School_year'
+      responses:
+        '200':
+          description: "Student curriculum"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/curriculum'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /students/:id/grades:
+    get:
+      description: Get all the grades of a student in a certain project class
+      parameters:
+        - $ref: '#/components/parameters/Course_id'
+        - $ref: '#/components/parameters/Block_id'
+      summary: Get grades of a student for a course
+      responses:
+        '200':
+          description: "Student grades"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/grades'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /students/:id/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -238,11 +282,13 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /student/:id/unscribe:
+  /students/:id/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -254,6 +300,8 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -346,6 +394,17 @@ components:
           example:
             status: "deleted"
             description: "Deleted 1 rows"
+    Forbidden:
+      description: Operation forbided
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
   schemas:
     learning_blocks:
       type: object
@@ -951,6 +1010,109 @@ components:
         id:
           type: string
           description: "ID of the user who has logged in"
+    curriculum:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Identifier of the course"
+            italian_title:
+              type: string
+              description: "Italian title of the course"
+            english_title:
+              type: string
+              description: "English title of the course"
+            italian_displayed_name:
+              type: string
+              description: "Italian name displayed for a course"
+            english_displayed_name:
+              type: string
+              description: "English name displayed for a course"
+            section:
+              type: string 
+              description: "Section of the project class the student is currently enrolled in"
+            credits:
+              type: integer
+              description: "Number of credits that a course give to a student"
+            learning_area_ref:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: "Id of the learning area associated to the course"
+                description: "Reference to the learning area associated to the course"
+            final_grade:
+              type: integer
+              description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+    grades:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            italian_description:
+              type: string
+              description: "Italian description of a grade"
+            english_description:
+              type: string
+              description: "English description of a grade"
+            publication:
+              type: string
+              format: date
+              description: "Date of the publication of the grade"
+            grade:
+              type: integer
+              description: "Grade of the student"
+            final:
+              type: boolean
+              description: "Tells the user if the grade is the final one or not"
   parameters:
     School_year:
       name: school_year

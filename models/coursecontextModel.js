@@ -18,6 +18,8 @@ module.exports = {
             } 
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

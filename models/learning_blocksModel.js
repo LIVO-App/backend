@@ -25,6 +25,8 @@ module.exports = {
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     },
     async list(school_year){
@@ -38,10 +40,12 @@ module.exports = {
             } else {
                 rows = await conn.query(sql);
             }
-            conn.end();
+            conn.release();
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

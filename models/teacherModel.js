@@ -5,7 +5,7 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email FROM teacher WHERE " + condition;
+        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google FROM teacher WHERE " + condition;
         const rows = await conn.query(sql,param);
         conn.release();
         if (rows.length == 1){
@@ -15,6 +15,8 @@ async function read(condition,param){
         }
     } catch (err) {
         console.log(err);
+    } finally {
+        conn.release();
     }
 }
 
@@ -37,6 +39,21 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async google(teacher_id) {
+        try{
+            conn = await pool.getConnection();
+            sql = 'UPDATE teacher SET google = 1 WHERE id = ?'
+            const rows = await conn.query(sql, teacher_id);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
         }
     }
 };

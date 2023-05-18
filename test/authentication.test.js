@@ -125,7 +125,7 @@ describe("POST /v1/auth", () => {
         });
     })
 
-    describe('POST /v1/login/teacher_login', () => {
+    describe('POST /v1/login/admin_login', () => {
         let registeredAdmin;
         let nonexistingAdmin;
         let wrongpswAdmin;

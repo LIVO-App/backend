@@ -6,7 +6,7 @@ var pool = require('./db.js');
 module.exports.initApp = async (port) =>  {
     try {
         let conn = await pool.getConnection();
-        conn.end();
+        conn.release();
         app.listen(port, function() {
             console.log('Server listening on port ', port);
         });

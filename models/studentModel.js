@@ -5,7 +5,7 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email FROM student WHERE " + condition;
+        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google FROM student WHERE " + condition;
         const rows = await conn.query(sql,param);
         conn.release();
         if (rows.length == 1){
@@ -15,6 +15,8 @@ async function read(condition,param){
         }
     } catch (err) {
         console.log(err);
+    } finally {
+        conn.release();
     }
 }
 
@@ -24,6 +26,9 @@ module.exports = {
     },
     read_email(email) {
         return read("email = ?",email);
+    },
+    read_id(student_id){
+        return read("id = ?",student_id);
     },
     async list() {
         try{
@@ -37,6 +42,39 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
         }
+    },
+    async google(student_id) {
+        try{
+            conn = await pool.getConnection();
+            sql = 'UPDATE student SET google = 1 WHERE id = ?'
+            const rows = await conn.query(sql, student_id);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async retrieve_credits(student_id, block_id, area_id){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !block_id || !area_id){
+                conn.release();
+                return false;
+            }
+            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id} AND c.learning_area_id=\'${area_id}\' AND pc.learning_block_id = ${block_id}) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_block_id = ${block_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year AND lm.learning_area_id = \'${area_id}\'),0) AS max_credits FROM attend AS att WHERE att.student_id = ${student_id};`
+            const rows = await conn.query(sql);
+            conn.release();
+            return rows[0];
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+
     }
 };

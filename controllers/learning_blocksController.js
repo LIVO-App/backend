@@ -39,7 +39,7 @@ module.exports.get_block = async (req, res) => {
     let block = await learningBlockSchema.read(id,school_year);
     if(!block){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('single block: resource not found');
         return;
     }
     let data_block = {

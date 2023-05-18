@@ -35,7 +35,7 @@ module.exports.get_curriculum = async (req, res) => {
             }
         }
         return {
-            course_id: curr.id,
+            id: curr.course_id,
             italian_title: curr.italian_title,
             english_title: curr.english_title,
             italian_displayed_name: curr.italian_displayed_name,

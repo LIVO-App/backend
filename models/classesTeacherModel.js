@@ -9,6 +9,10 @@ module.exports = {
         //SELECT c.id, c.italian_title, c.english_title, pt.section, ass.teaching_id, CASE WHEN ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id=2) THEN 1 ELSE 0 END AS my_teaching FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = 2 AND pt.project_class_block = 7;
         try {
             conn = await pool.getConnection();
+            if(!teacher_id || !block_id){
+                conn.release();
+                return false;
+            }
             let sql = "SELECT c.id, c.italian_title, c.english_title, pt.section, ass.teaching_id, CASE WHEN ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id=?) THEN 1 ELSE 0 END AS my_teaching FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ? AND pt.project_class_block = ?;";
             let values = [teacher_id, teacher_id, block_id];
             const rows = await conn.query(sql, values);

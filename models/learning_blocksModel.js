@@ -29,7 +29,7 @@ module.exports = {
             conn.release();
         }
     },
-    async list(school_year){
+    async list(school_year, year_of){
         try {
             conn = await pool.getConnection();
             let sql = "SELECT id, number, school_year, start, end FROM learning_block";
@@ -37,7 +37,10 @@ module.exports = {
             if (school_year != undefined) {
                 sql += " WHERE school_year = ?";
                 rows = await conn.query(sql,school_year);
-            } else {
+            } else if (year_of != undefined) {
+                sql += " WHERE school_year IN (SELECT school_year FROM learning_block WHERE id = ?)";
+                rows = await conn.query(sql,year_of);
+            } else{
                 rows = await conn.query(sql);
             }
             conn.release();

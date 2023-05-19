@@ -11,7 +11,8 @@ process.env.TZ = 'Etc/Universal';
 
 module.exports.get_blocks = async (req, res) => {
     let school_year = req.query.school_year;
-    let blocks = await learningBlockSchema.list(school_year);
+    let year_of = req.query.year_of;
+    let blocks = await learningBlockSchema.list(school_year, year_of);
     let data_blocks = blocks.map( (block) => {
         return {
             id: block.id,

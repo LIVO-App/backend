@@ -55,7 +55,7 @@ describe('/api/v1/students', () => {
             return request(app)
                 .post('/api/v1/students/3/inscribe')
                 .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section})
-                .expect(400);
+                .expect(403);
         })
 
         // Add student to a class

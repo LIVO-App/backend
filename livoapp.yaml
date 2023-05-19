@@ -12,6 +12,7 @@ paths:
       description: Get all the learning blocks in the system.
       parameters:
         - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/Year_of'
       summary: View of all the learning blocks.
       responses:
         '200':
@@ -1180,3 +1181,9 @@ components:
       description: Specifies whether data should be ordered in descending order
       schema:
         type: boolean
+    Year_of:
+      name: year_of
+      in: query
+      description: Specifies the id of the learning block which we want to know the year
+      schema:
+        type: integer

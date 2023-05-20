@@ -14,7 +14,7 @@ module.exports.get_my_project_classes = async (req, res) => {
     let teacher_id = req.params.id;
     let block_id = req.query.block_id;
     let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id);
-    if (!classes){
+    if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
         return;
@@ -25,7 +25,7 @@ module.exports.get_my_project_classes = async (req, res) => {
             single: true, 
             query: {},
             data: {
-                id: tc.teaching_id
+                id: cl.teaching_id
             }
         }
         return {
@@ -51,7 +51,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
     let teacher_id = req.params.id;
     let block_id = req.query.block_id;
     let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id);
-    if (!classes){
+    if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
         return;
@@ -62,7 +62,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
             single: true, 
             query: {},
             data: {
-                id: tc.teaching_id
+                id: cl.teaching_id
             }
         }
         return {

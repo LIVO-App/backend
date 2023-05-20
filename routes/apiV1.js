@@ -9,6 +9,7 @@ const areasRouter = require('./apiV1/learning_area');
 const courseRouter = require('./apiV1/course');
 const ordclassRouter = require('./apiV1/ordinary_class');
 const studentRouter = require('./apiV1/student');
+const teacherRouter = require('./apiV1/teacher');
 
 apiV1.use('/auth', authRouter);
 apiV1.use('/learning_blocks', blocksRouter);
@@ -16,5 +17,6 @@ apiV1.use('/learning_areas', areasRouter);
 apiV1.use('/courses', courseRouter);
 apiV1.use('/ordinary_classes', ordclassRouter);
 apiV1.use('/students',studentRouter);
+apiV1.use('/teachers', teacherRouter);
 
 module.exports = apiV1;

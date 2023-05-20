@@ -5,7 +5,7 @@ const classesSchema = require('../models/classesTeacherModel');
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
-    missingParameter: "Missing required parameters"
+    missingParameter: "Missing required information"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -38,7 +38,7 @@ module.exports.get_my_project_classes = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v1/teacher/:id/my_project_classes",
+        path: "/api/v1/teachers/:id/my_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -73,7 +73,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v1/teacher/:id/associated_project_classes",
+        path: "/api/v1/teachers/:id/associated_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),

@@ -303,6 +303,40 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
+  /teachers/:id/my_project_classes:
+    get:
+      description: Get all the project classes in which the teacher teaches in a certain learning block
+      parameters:
+        - $ref: '#/components/parameters/Block_id'
+      summary: Get all teacher project classes
+      responses:
+        '200':
+          description: "Teacher project classes"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/my_project_classes'
+        '400':
+          $ref: "#/components/responses/BadInputs"
+  /teachers/:id/associated_project_classes:
+    get:
+      description: Get all the project classes in which the teacher is associated through its teachings
+      parameters:
+        - $ref: '#/components/parameters/Block_id'
+      summary: Get all teacher associated project classes
+      responses:
+        '200':
+          description: "Teacher associated project classes"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/associated_project_classes'
+        '400':
+          $ref: "#/components/responses/BadInputs"
 components:
   responses:
     NotFound:
@@ -1114,6 +1148,112 @@ components:
             final:
               type: boolean
               description: "Tells the user if the grade is the final one or not"
+    my_project_classes:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Course id"
+            italian_description:
+              type: string
+              description: "Italian description of a course"
+            english_description:
+              type: string
+              description: "English description of a course"
+            section:
+              type: string 
+              description: "Section of project class"
+            teaching_ref:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the teaching"
+              description: "References to the teaching of the course"
+            my_teaching:
+              type: boolean
+              description: "Tells if the teaching in teaching_ref is the personal teaching of the teacher"
+    associated_project_classes:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Course id"
+            italian_description:
+              type: string
+              description: "Italian description of a course"
+            english_description:
+              type: string
+              description: "English description of a course"
+            teaching_ref:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: "Link of the API that returns this data"
+                single:
+                  type: boolean
+                  description: "Tells if the data are referring to the API in origin or not"
+                query:
+                  type: object
+                  description: "List of eventual parameters for the API"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "Id of the teaching"
+              description: "References to the teaching of the course"
   parameters:
     School_year:
       name: school_year

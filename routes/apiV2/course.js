@@ -7,6 +7,6 @@ const coursesHandler = require('../../controllers/coursesController');
 const tokenChecker = require('../tokenChecker');
 
 router.get('/', tokenChecker);
-router.get('/', coursesHandler.get_courses);
+router.get('/', coursesHandler.get_courses_v2);
 
 module.exports = router;

@@ -46,16 +46,20 @@ module.exports = {
             conn.release();
         }
     },
-    async classComponents(course_id, block_id, teacher_id, associated_class = false){
+    async classComponents(course_id, block_id, section, teacher_id, associated_class = false){
         try {
             conn = await pool.getConnection();
-            if(!course_id || !block_id){
+            if(!course_id || !block_id || !section){
                 conn.release();
                 return false;
             }
-            sql = 'SELECT s.id, s.name, s.surname FROM student as s JOIN inscribed AS ins on ins.student_id = s.id WHERE ins.project_class_course_id = ? AND ins.project_class_block=?';
-            let values = [course_id, block_id];
+            sql = 'SELECT s.id, s.name, s.surname FROM student as s JOIN inscribed AS ins on ins.student_id = s.id WHERE ins.project_class_course_id = ? AND ins.project_class_block=? AND ins.section = ?';
+            let values = [course_id, block_id, section];
             if(associated_class){
+                if(!teacher_id){
+                    conn.release();
+                    return false;
+                }
                 sql += ' AND s.id IN (SELECT att.student_id FROM attend AS att WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_school_year = (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))'
                 values.push(teacher_id, teacher_id, block_id);
             }

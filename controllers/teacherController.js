@@ -69,6 +69,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
             id: cl.id,
             italian_title: cl.italian_title,
             english_title: cl.english_title,
+            section: cl.section,
             teaching_ref: teaching_ref,
         }
     });

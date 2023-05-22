@@ -15,10 +15,11 @@ let MSG = {
     errorAuth: "Authentication failed"
 }
 
-let generateToken = (user) => {
+let generateToken = (user, role) => {
     let payload = {
         _id: user.id,
-        username: user.username
+        username: user.username,
+        role: role
     }
     let option = {
         expiresIn: 86400 //expires in 24 hours
@@ -40,7 +41,7 @@ module.exports.student_login = async (req, res) => {
     }
     if(user){
         //console.log(user);
-        var token = generateToken(user);
+        var token = generateToken(user, "student");
         res.status(200).json({
             success: true,
             message: 'Authentication OK',
@@ -69,7 +70,7 @@ module.exports.teacher_login = async (req, res) => {
     }
     if(user){
         //console.log(user);
-        var token = generateToken(user);
+        var token = generateToken(user, "teacher");
         res.status(200).json({
             success: true,
             message: 'Authentication OK',
@@ -97,7 +98,7 @@ module.exports.admin_login = async (req, res) => {
         return;
     }
     if(user){
-        var token = generateToken(user);
+        var token = generateToken(user, "admin");
         res.status(200).json({
             success: true,
             message: 'Authentication OK',

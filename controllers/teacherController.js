@@ -82,17 +82,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
     res.status(200).json(response);
 }
 
-/*classesSchema.read_project_classes_teach(3, 7).then(msg => {
-    for(var i=0;i<msg.length;i++){
-        console.log("classes "+i);
-        Object.keys(msg[i]).forEach(element => {
-            console.log(element+": "+msg[i][element]);
-        });
-        console.log("=============");
-    }
-});
-
-classesSchema.read_project_classes_associated(3,7).then(msg => {
+/*classesSchema.read_project_classes_associated(3,7).then(msg => {
     for(var i=0;i<msg.length;i++){
         console.log("classes "+i);
         Object.keys(msg[i]).forEach(element => {

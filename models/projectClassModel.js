@@ -26,7 +26,7 @@ module.exports = {
     },
     async isStudentEnrolled(student_id, course_id, block_id) {
         try {
-            let conn = await pool.getConnection();
+            conn = await pool.getConnection();
             if(!student_id || !course_id || !block_id){
                 conn.release();
                 return null;
@@ -42,6 +42,30 @@ module.exports = {
             }
         } catch (err) {
             console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async classComponents(course_id, block_id, teacher_id, associated_class = false){
+        try {
+            conn = await pool.getConnection();
+            if(!course_id || !block_id){
+                conn.release();
+                return false;
+            }
+            sql = 'SELECT s.id, s.name, s.surname FROM student as s JOIN inscribed AS ins on ins.student_id = s.id WHERE ins.project_class_course_id = ? AND ins.project_class_block=?';
+            let values = [course_id, block_id];
+            if(associated_class){
+                sql += ' AND s.id IN (SELECT att.student_id FROM attend AS att WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_school_year = (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))'
+                values.push(teacher_id, teacher_id, block_id);
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
         }
     }
 }

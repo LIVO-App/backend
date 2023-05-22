@@ -14,7 +14,7 @@ router.get('/:id/grades', tokenChecker);
 router.get('/:id/grades', gradeHandler.get_grades);
 router.post('/:id/inscribe', tokenChecker);
 router.post('/:id/inscribe', inscribeHandler.inscribe_project_class);
-router.post('/:id/unscribe', tokenChecker);
+router.delete('/:id/unscribe', tokenChecker);
 router.delete('/:id/unscribe', inscribeHandler.unsubscribe_project_class);
 
 module.exports = router;

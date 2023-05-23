@@ -188,3 +188,315 @@ describe('/api/v1/students', () => {
         })
     })
 })
+
+describe('/api/v2/students', () => {
+    let projectClass;
+    let wrongProjectClass;
+    let projectClassForMaxCredits;
+    let tokenStudent3 = jwt.sign({_id: 3, username: "Student3", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+    let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+    let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
+    let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+
+    beforeAll(async () => {
+        projectClass = {
+            course: 3,
+            block: 7,
+            section: 'A'
+        }
+        wrongProjectClass = {
+            course: 0,
+            block: 0,
+            section: 'A'
+        }
+        projectClassForMaxCredits = {
+            course: 6,
+            block: 7,
+            section: 'A'
+        }
+    })
+
+    describe('POST methods', () => {
+        // api/v1/students/:id/inscribe
+        // Add student to a class with non valid ID with valid token
+        test('POST /api/v2/students/:id/inscribe with non valid ID should respond 404', async () => {
+            return request(app)
+                .post('/api/v2/students/NonValidID/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(401);
+        })
+
+        // Add student to a class with missing params with valid token
+        test('POST /api/v2/students/:id/inscribe with missing params should respond 404', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .expect(404);
+        })
+
+        // Add student to a class with non existing class with valid token
+        test('POST /api/v2/students/:id/inscribe with non existing class should respond 404', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section})
+                .expect(404);
+        })
+
+        // Add a student to a class where he has all the credits for that area with valid token
+        test('POST /api/v2/students/:id/inscribe with valid ID but have max number of credits for that area should respond 200', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section})
+                .expect(403);
+        })
+
+        // Add student to a class without token
+        test('POST /api/v2/students/:id/inscribe with valid ID without token should respond with status 401', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(401);
+        })
+
+        // Add student to a class with invalid token
+        test('POST /api/v2/students/:id/inscribe with valid ID with invalid token should respond 403', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', invalidToken)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(403);
+        })
+
+        // Add student to a class with wrong user token
+        test('POST /api/v2/students/:id/inscribe with valid ID with wrong user token should respond 401', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', wrongUserToken)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(401);
+        })
+
+        // Add student to a class with valid token but information of another student
+        test('POST /api/v2/students/:id/inscribe with valid ID with valid token but of another user should respond 401', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(401);
+        })
+
+        // Add student to a class with valid token
+        test('POST /api/v2/students/:id/inscribe with valid ID should respond 200', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(201);
+        })
+
+        // Add student to a class where he is currently enrolled in with valid token
+        test('POST /api/v2/students/:id/inscribe with already enrolled student should respond 409', async () => {
+            return request(app)
+                .post('/api/v2/students/3/inscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section})
+                .expect(409);
+        })
+    })
+
+    describe('GET methods', () => {
+        // Get curriculum with non valid ID with valid token
+        test('GET /api/v2/students/:id/curriculum with non valid ID should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v2/students/0/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({school_year: 2022})
+                .expect(401);
+        })
+
+        // Get curriculum without school_year param with valid token
+        test('GET /api/v2/students/:id/curriculum without school_year parameter should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .expect(404);
+        })
+
+        // Get curriculum with school_year non valid (one in which the student does not exist) with valid token
+        test('GET /api/v2/students/:id/curriculum?school_year with non valid school_year parameter (the student wasn\'t enrolled in the school at that time) should respond with status 404', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({school_year: 2021})
+                .expect(404);
+        })
+
+        // Get curriculum with valid parameters without token
+        test('GET /api/v2/students/:id/curriculum with valid parameters but no token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .query({school_year: 2022})
+                .expect(401);
+        })
+
+        // Get curriculum with valid parameters with invalid token
+        test('GET /api/v2/students/:id/curriculum with valid parameters with invalid token should respond with status 403', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', invalidToken)
+                .query({school_year: 2022})
+                .expect(403);
+        })
+
+        // Get curriculum with valid parameters with wrong user token
+        test('GET /api/v2/students/:id/curriculum with valid parameters with wrong user token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', wrongUserToken)
+                .query({school_year: 2022})
+                .expect(401);
+        })
+
+        // Get curriculum with valid parameters and token but info of another user
+        test('GET /api/v2/students/:id/curriculum with valid parameters with valid user token but the information of another student should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent3)
+                .query({school_year: 2022})
+                .expect(401);
+        })
+
+        // Get curriculum with valid parameters with valid token
+        test('GET /api/v2/students/:id/curriculum with valid parameters should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({school_year: 2022})
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(0); //If the pair student-school_year is valid (the student was enrolled in the system) there can be the chance that he doesn't have anything in the curriculum (for example we are at the start of the year before the start of the first learning block)
+                });
+        })
+
+        // Get grades with non valid ID with valid token
+        test('GET /api/v1/students/:id/grades with non valid ID should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v1/students/0/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: 5, block_id: 6})
+                .expect(404);
+        })
+
+        // Get grades with missing params (course_id) with valid token
+        test('GET /api/v2/students/:id/grades with missing parameter course_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({block_id: 6})
+                .expect(404);
+        })
+
+        // Get grades with missing params (block_id) with valid token
+        test('GET /api/v2/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: 5})
+                .expect(404);
+        })
+
+        // Get grades with wrong params (class doesn't exist or user is not enrolled in that project class) with valid token
+        test('GET /api/v2/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: 5, block_id:7})
+                .expect(404);
+        })
+
+        // Get grades with valid parameters with valid token
+        test('GET /api/v2/students/:id/grades with non valid ID should respond with status 404', async () =>{
+            return request(app)
+                .get('/api/v2/students/2/curriculum')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: 5, block_id: 6})
+                .expect(404);
+        })
+    })
+
+    describe('DELETE methods', () => {
+        // api/v1/students/:id/inscribe
+        // Delete subscription with non valid student ID with valid token
+        test('DELETE /api/v2/students/:id/unscribe with non valid ID should respond with status 200', async () => {
+            return request(app)
+                .delete('/api/v2/students/NonValidID/unscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(401);
+        })
+
+        // Delete subscription with missing parameters with valid token
+        test('DELETE /api/v2/students/:id/unscribe with missing parameters should respond with status 400', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', tokenStudent3)
+                .expect(400);
+        })
+
+        // Delete subscription with non existing class parameters with valid token
+        test('DELETE /api/v2/students/:id/unscribe should respond with status 200', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block})
+                .expect(404);
+        })
+        
+        // Delete student from a class (the one added at the start of the test) without token
+        test('DELETE /api/v2/students/:id/unscribe without token should respond with status 401', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(401);
+        })
+
+        // Delete student from a class (the one added at the start of the test) with invalid token
+        test('DELETE /api/v2/students/:id/unscribe with invalid token should respond with status 403', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', invalidToken)
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(403);
+        })
+
+        // Delete student from a class (the one added at the start of the test) with wrong user token
+        test('DELETE /api/v2/students/:id/unscribe should respond with status 401', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', wrongUserToken)
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(401);
+        })
+
+        // Delete student from a class (the one added at the start of the test) with valid token but information of another user
+        test('DELETE /api/v2/students/:id/unscribe should respond with status 401', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', tokenStudent2)
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(401);
+        })
+
+        // Delete student from a class (the one added at the start of the test) with valid token
+        test('DELETE /api/v2/students/:id/unscribe should respond with status 200', async () => {
+            return request(app)
+                .delete('/api/v2/students/3/unscribe')
+                .set('x-access-token', tokenStudent3)
+                .query({course_id: projectClass.course, block_id: projectClass.block})
+                .expect(200);
+        })
+    })
+})

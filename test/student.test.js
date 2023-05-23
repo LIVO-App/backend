@@ -219,7 +219,7 @@ describe('/api/v2/students', () => {
     describe('POST methods', () => {
         // api/v1/students/:id/inscribe
         // Add student to a class with non valid ID with valid token
-        test('POST /api/v2/students/:id/inscribe with non valid ID should respond 404', async () => {
+        test('POST /api/v2/students/:id/inscribe with non valid ID and valid token should respond 404', async () => {
             return request(app)
                 .post('/api/v2/students/NonValidID/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -228,7 +228,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add student to a class with missing params with valid token
-        test('POST /api/v2/students/:id/inscribe with missing params should respond 404', async () => {
+        test('POST /api/v2/students/:id/inscribe with missing params and valid token should respond 404', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -236,7 +236,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add student to a class with non existing class with valid token
-        test('POST /api/v2/students/:id/inscribe with non existing class should respond 404', async () => {
+        test('POST /api/v2/students/:id/inscribe with non existing class and valid token should respond 404', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -245,7 +245,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add a student to a class where he has all the credits for that area with valid token
-        test('POST /api/v2/students/:id/inscribe with valid ID but have max number of credits for that area should respond 200', async () => {
+        test('POST /api/v2/students/:id/inscribe with valid ID but have max number of credits for that area and valid token should respond 200', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -280,7 +280,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add student to a class with valid token but information of another student
-        test('POST /api/v2/students/:id/inscribe with valid ID with valid token but of another user should respond 401', async () => {
+        test('POST /api/v2/students/:id/inscribe with valid ID and valid token but of another user should respond 401', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent2)
@@ -289,7 +289,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add student to a class with valid token
-        test('POST /api/v2/students/:id/inscribe with valid ID should respond 200', async () => {
+        test('POST /api/v2/students/:id/inscribe with valid ID and valid token should respond 200', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -298,7 +298,7 @@ describe('/api/v2/students', () => {
         })
 
         // Add student to a class where he is currently enrolled in with valid token
-        test('POST /api/v2/students/:id/inscribe with already enrolled student should respond 409', async () => {
+        test('POST /api/v2/students/:id/inscribe with already enrolled student and valid token should respond 409', async () => {
             return request(app)
                 .post('/api/v2/students/3/inscribe')
                 .set('x-access-token', tokenStudent3)
@@ -309,7 +309,7 @@ describe('/api/v2/students', () => {
 
     describe('GET methods', () => {
         // Get curriculum with non valid ID with valid token
-        test('GET /api/v2/students/:id/curriculum with non valid ID should respond with status 404', async () => {
+        test('GET /api/v2/students/:id/curriculum with non valid ID and valid token should respond with status 404', async () => {
             return request(app)
                 .get('/api/v2/students/0/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -318,7 +318,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get curriculum without school_year param with valid token
-        test('GET /api/v2/students/:id/curriculum without school_year parameter should respond with status 404', async () => {
+        test('GET /api/v2/students/:id/curriculum without school_year parameter and valid token should respond with status 404', async () => {
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -326,7 +326,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get curriculum with school_year non valid (one in which the student does not exist) with valid token
-        test('GET /api/v2/students/:id/curriculum?school_year with non valid school_year parameter (the student wasn\'t enrolled in the school at that time) should respond with status 404', async () => {
+        test('GET /api/v2/students/:id/curriculum?school_year with non valid school_year parameter (the student wasn\'t enrolled in the school at that time) and valid token should respond with status 404', async () => {
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -370,7 +370,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get curriculum with valid parameters with valid token
-        test('GET /api/v2/students/:id/curriculum with valid parameters should respond with status 200', async () => {
+        test('GET /api/v2/students/:id/curriculum with valid parameters and valid token should respond with status 200', async () => {
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -382,7 +382,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get grades with non valid ID with valid token
-        test('GET /api/v1/students/:id/grades with non valid ID should respond with status 404', async () =>{
+        test('GET /api/v1/students/:id/grades with non valid ID and valid token should respond with status 404', async () =>{
             return request(app)
                 .get('/api/v1/students/0/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -391,7 +391,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get grades with missing params (course_id) with valid token
-        test('GET /api/v2/students/:id/grades with missing parameter course_id should respond with status 404', async () =>{
+        test('GET /api/v2/students/:id/grades with missing parameter course_id and valid token should respond with status 404', async () =>{
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -400,7 +400,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get grades with missing params (block_id) with valid token
-        test('GET /api/v2/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+        test('GET /api/v2/students/:id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -409,7 +409,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get grades with wrong params (class doesn't exist or user is not enrolled in that project class) with valid token
-        test('GET /api/v2/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+        test('GET /api/v2/students/:id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -418,7 +418,7 @@ describe('/api/v2/students', () => {
         })
 
         // Get grades with valid parameters with valid token
-        test('GET /api/v2/students/:id/grades with non valid ID should respond with status 404', async () =>{
+        test('GET /api/v2/students/:id/grades with non valid ID and valid token should respond with status 404', async () =>{
             return request(app)
                 .get('/api/v2/students/2/curriculum')
                 .set('x-access-token', tokenStudent2)
@@ -430,7 +430,7 @@ describe('/api/v2/students', () => {
     describe('DELETE methods', () => {
         // api/v1/students/:id/inscribe
         // Delete subscription with non valid student ID with valid token
-        test('DELETE /api/v2/students/:id/unscribe with non valid ID should respond with status 200', async () => {
+        test('DELETE /api/v2/students/:id/unscribe with non valid ID and valid token should respond with status 200', async () => {
             return request(app)
                 .delete('/api/v2/students/NonValidID/unscribe')
                 .set('x-access-token', tokenStudent3)
@@ -439,7 +439,7 @@ describe('/api/v2/students', () => {
         })
 
         // Delete subscription with missing parameters with valid token
-        test('DELETE /api/v2/students/:id/unscribe with missing parameters should respond with status 400', async () => {
+        test('DELETE /api/v2/students/:id/unscribe with missing parameters and valid token should respond with status 400', async () => {
             return request(app)
                 .delete('/api/v2/students/3/unscribe')
                 .set('x-access-token', tokenStudent3)
@@ -447,7 +447,7 @@ describe('/api/v2/students', () => {
         })
 
         // Delete subscription with non existing class parameters with valid token
-        test('DELETE /api/v2/students/:id/unscribe should respond with status 200', async () => {
+        test('DELETE /api/v2/students/:id/unscribe and valid token should respond with status 200', async () => {
             return request(app)
                 .delete('/api/v2/students/3/unscribe')
                 .set('x-access-token', tokenStudent3)
@@ -482,7 +482,7 @@ describe('/api/v2/students', () => {
         })
 
         // Delete student from a class (the one added at the start of the test) with valid token but information of another user
-        test('DELETE /api/v2/students/:id/unscribe should respond with status 401', async () => {
+        test('DELETE /api/v2/students/:id/unscribe and valid token but different user id should respond with status 401', async () => {
             return request(app)
                 .delete('/api/v2/students/3/unscribe')
                 .set('x-access-token', tokenStudent2)
@@ -491,7 +491,7 @@ describe('/api/v2/students', () => {
         })
 
         // Delete student from a class (the one added at the start of the test) with valid token
-        test('DELETE /api/v2/students/:id/unscribe should respond with status 200', async () => {
+        test('DELETE /api/v2/students/:id/unscribe and valid token should respond with status 200', async () => {
             return request(app)
                 .delete('/api/v2/students/3/unscribe')
                 .set('x-access-token', tokenStudent3)

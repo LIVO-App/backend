@@ -165,7 +165,7 @@ describe('/api/v1/courses', () => {
     })
 })
 
-describe('/api/v1/courses', () => {
+describe('/api/v2/courses', () => {
     describe('GET methods tests V2',() => {
         let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});

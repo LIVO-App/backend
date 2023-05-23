@@ -112,12 +112,12 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('inscribe: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_curriculum: unauthorized access');
+        console.log('inscribe: unauthorized access');
         return;
     }
     let course_id = req.query.course_id;
@@ -190,12 +190,12 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('unscribe: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_curriculum: unauthorized access');
+        console.log('unscribe: unauthorized access');
         return;
     }
     let course_id = req.query.course_id;

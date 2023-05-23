@@ -88,12 +88,12 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('my_project_classes: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_curriculum: unauthorized access');
+        console.log('my_project_classes: unauthorized access');
         return;
     }
     let block_id = req.query.block_id;
@@ -136,12 +136,12 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('associated_project_classes: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_curriculum: unauthorized access');
+        console.log('associated_project_classes: unauthorized access');
         return;
     }
     let block_id = req.query.block_id;

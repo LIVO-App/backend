@@ -71,5 +71,27 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async isTeacherClass(teacher_id, course_id, block_id){
+        try {
+            conn = await pool.getConnection();
+            if(!teacher_id || !course_id || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT * FROM project_teach AS pt WHERE pt.teacher_id = ? AND pt.project_class_course_id = ? AND pt.project_class_block = ?';
+            let values = [teacher_id, course_id, block_id];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length > 0){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 }

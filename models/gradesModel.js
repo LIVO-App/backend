@@ -18,5 +18,47 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add(student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, grade, final = false){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !teacher_id || !course_id || !block_id || !ita_descr || !eng_descr || !grade){
+                conn.release();
+                return false;
+            }
+            let publication = new Date();
+            let final_val = final ? 1 : 0;
+            let sql = 'INSERT INTO grade(student_id, teacher_id, project_class_course_id, project_class_block, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
+            let values = [student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, publication, grade, final_val];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async final_grade(student_id, course_id, block_id){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !course_id || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT * FROM grade AS g WHERE g.student_id = ? AND g.project_class_course_id = ? AND g.project_class_block = ? AND g.final = 1';
+            let values = [student_id, course_id, block_id];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length == 1){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };

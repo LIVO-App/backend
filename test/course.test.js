@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const app = require('../app');
 
 describe('/api/v1/courses', () => {
-    describe('GET methods tests V1', () => {
+    describe('GET methods tests', () => {
         // GET all resources with no parameters
         test('GET /api/v1/courses should respond with status 200', async () => {
             return request(app)
@@ -166,7 +166,7 @@ describe('/api/v1/courses', () => {
 })
 
 describe('/api/v2/courses', () => {
-    describe('GET methods tests V2',() => {
+    describe('GET methods tests',() => {
         let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
         let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});

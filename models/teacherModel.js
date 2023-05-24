@@ -56,13 +56,13 @@ module.exports = {
             conn.release();
         }
     },
-    async isTeacherEmployed(teacher_id){
+    async isTeacherEmployed(teacher_id, school_year){
         try{
             conn = await pool.getConnection();
-            sql = 'SELECT * FROM ordinary_teach AS ot WHERE ot.teacher_id = ?';
+            sql = 'SELECT ot.ordinary_class_school_year AS year FROM ordinary_teach AS ot WHERE ot.teacher_id = 3 ORDER BY ot.ordinary_class_school_year ASC';
             const rows = await conn.query(sql, teacher_id);
             conn.release();
-            if (rows.length > 0) {
+            if (rows[0].year <= school_year) {
                 return true;
             } else {
                 return false;

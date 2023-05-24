@@ -4,7 +4,8 @@ const courseSchema = require('../models/coursesModel');
 
 let MSG = {
     notFound: "Resource not found",
-    updateFailed: "Failed to save"
+    updateFailed: "Failed to save",
+    notAuthorized: "Not authorized request"
 }
 
 process.env.TZ = 'Etc/Universal';

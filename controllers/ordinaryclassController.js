@@ -2,10 +2,15 @@
 
 const { query } = require('express');
 const courseSchema = require('../models/ordinaryclassModel');
+const ordinaryclassModel = require('../models/ordinaryclassModel');
+const teacherModel = require('../models/teacherModel');
+const { add } = require('../models/inscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
-    updateFailed: "Failed to save"
+    updateFailed: "Failed to save",
+    missingParameter: "Missing required information",
+    notAuthorized: "Not authorized request"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -69,6 +74,46 @@ module.exports.get_classes = async (req, res) => {
         date: new Date(),
         data: data_classes,
     }
+    res.status(200).json(response);
+}
+
+module.exports.get_components = async (req, res) => {
+    let study_year = req.params.study_year;
+    let address = req.params.address;
+    let school_year = req.query.school_year;
+    let section = req.query.section;
+    if(req.loggedUser.role == "teacher"){
+        let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
+        if(!teach){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('my_ordinary_class: unauthorized access. Not my class');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('my_ordinary_class: unauthorized access');
+        return;
+    }
+    let cmps = await ordinaryclassModel.components(study_year, address, school_year, section);
+    if (!cmps) {
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class components: missing parameters");
+        return;
+    }
+    let data_cmps = cmps.map((cmp) => {
+        return {
+            id: cmp.id,
+            name: cmp.name,
+            surname: cmp.surname
+        }
+    });
+    let response = {
+        path: "/api/v1/ordinary_classes/:study_year/:address/components",
+        single: false,
+        query: {school_year: school_year, section: section},
+        date: new Date(),
+        data: data_cmps
+    };
     res.status(200).json(response);
 }
 /*{

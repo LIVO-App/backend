@@ -68,6 +68,24 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async components(study_year, address, school_year, section){
+        try {
+            conn = await pool.getConnection();
+            if(!study_year || !address || !school_year || !section){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT s.id, s.name, s.surname FROM attend AS att JOIN student AS s ON att.student_id = s.id WHERE att.ordinary_class_study_year = ? AND att.ordinary_class_address = ? AND att.ordinary_class_school_year = ? AND att.section = ?';
+            let values = [study_year, address, school_year, section];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };
 

@@ -5,6 +5,8 @@ const app = require('../app');
 describe('/api/v1/project_classes', () => {
     describe('GET methods tests', () => {
         describe('GET /api/v1/project_classes/:course/:block/components', () => {
+            //TODO -> ADD tests for token
+
             // GET all resources with no parameters
             test('GET /api/v1/project_classes/:course/:block/components without parameters should respond with status 400', async () => {
                 return request(app)

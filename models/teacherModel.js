@@ -1,6 +1,7 @@
 const ptstr = require('../utils/toString.js');
 const pool = require('../utils/db.js');
 const crypto = require('../utils/cipher.js');
+const { add } = require('./inscribeModel.js');
 
 async function read(condition,param){
     try {
@@ -63,6 +64,25 @@ module.exports = {
             const rows = await conn.query(sql, teacher_id);
             conn.release();
             if (rows[0].year <= school_year) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async isTeacherTeaching(teacher_id, study_year, address, school_year, section){
+        try {
+            conn = await pool.getConnection();
+            sql = 'SELECT * FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_study_year = ? AND ot.ordinary_class_address = ? AND ot.ordinary_class_school_year = ? AND ot.section = ?';
+            values = [teacher_id, study_year, address, school_year, section];
+            console.log(sql);
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length == 1){
                 return true;
             } else {
                 return false;

@@ -5,13 +5,25 @@ const projectClassesSchema = require('../models/projectClassModel');
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
-    missingParameter: "Missing required information"
+    missingParameter: "Missing required information",
+    notAuthorized: "Not authorized request"
 }
 
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_project_class_components = async (req, res) => {
     let teacher_id = req.query.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class components: unauthorized access');
+        return;
+    }
     let course_id = req.params.course;
     let block_id = req.params.block;
     let section = req.query.section;

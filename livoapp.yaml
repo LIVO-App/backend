@@ -564,6 +564,7 @@ paths:
     get:
       description: Get all components of a specific project class
       parameters:
+        - $ref: '#/components/parameters/Token'
         - $ref: '#/components/parameters/Course_id_path'
         - $ref: '#/components/parameters/Learning_block_id'
         - $ref: '#/components/parameters/Teacher_id'
@@ -581,6 +582,10 @@ paths:
                   $ref: '#/components/schemas/project_class_components'
         '400':
           $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:

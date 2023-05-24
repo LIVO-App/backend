@@ -305,6 +305,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/curriculum'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/students/:id/grades:
@@ -365,6 +369,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/grades'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/students/:id/inscribe:
@@ -402,6 +410,8 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -437,6 +447,10 @@ paths:
           $ref: '#/components/responses/AcceptInsert'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/teachers/:id/my_project_classes:
@@ -476,6 +490,10 @@ paths:
                   $ref: '#/components/schemas/my_project_classes'
         '400':
           $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /v1/teachers/:id/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
@@ -513,6 +531,35 @@ paths:
                   $ref: '#/components/schemas/associated_project_classes'
         '400':
           $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/teachers/:id/my_ordinary_classes:
+    get:
+      description: Get all the ordinary classes in which the teacher is teaching in a specific school year
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/Teacher_id_path'
+        - $ref: '#/components/parameters/School_year'
+      summary: Get all teacher ordinary classes
+      responses:
+        '200':
+          description: "Teacher ordinary classes"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/my_ordinary_classes'
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/project_classes/:course/:block/components:
     get:
       description: Get all components of a specific project class
@@ -1462,6 +1509,41 @@ components:
                       type: integer
                       description: "Id of the teaching"
               description: "References to the teaching of the course"
+    my_ordinary_classes:
+      type: object
+      required:
+        - study_year
+        - address
+        - school_year
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            study_year:
+              type: integer
+              description: "Class study year"
+            address:
+              type: string
+              description: "Class address"
+            school_year:
+              type: string
+              description: "Class school year"
+            section:
+              type: string 
+              description: "Section of ordinary class"
     project_class_components:
       type: object
       required:

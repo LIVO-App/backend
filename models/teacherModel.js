@@ -55,5 +55,22 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async isTeacherEmployed(teacher_id){
+        try{
+            conn = await pool.getConnection();
+            sql = 'SELECT * FROM ordinary_teach AS ot WHERE ot.teacher_id = ?';
+            const rows = await conn.query(sql, teacher_id);
+            conn.release();
+            if (rows.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };

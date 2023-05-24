@@ -326,6 +326,27 @@ paths:
                   $ref: '#/components/schemas/grades'
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      description: Insert a grade for a specific user given a specific project class
+      parameters:
+        - $ref: '#/components/parameters/Student_id_path'
+        - $ref: '#/components/parameters/Teacher_id'
+        - $ref: '#/components/parameters/Course_id'
+        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/Ita_descr'
+        - $ref: '#/components/parameters/Eng_descr'
+        - $ref: '#/components/parameters/Grade'
+        - $ref: '#/components/parameters/Final'
+      summary: Insertion of a student grade
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /v2/students/:id/grades:
     get:
       description: Get all the grades of a student in a certain project class
@@ -1600,3 +1621,27 @@ components:
       schema:
         type: string
       required: true
+    Ita_descr:
+      name: ita_description
+      in: query
+      description: Italian description of the resource we want to search/add
+      schema:
+        type: string
+    Eng_descr:
+      name: eng_description
+      in: query
+      description: English description of the resource we want to search/add
+      schema:
+        type: string
+    Grade:
+      name: grade
+      in: query
+      description: Grade the user want to add
+      schema:
+        type: integer
+    Final:
+      name: final
+      in: query
+      description: Specifies if the grade the user want to add is a final grade
+      schema:
+        type: boolean

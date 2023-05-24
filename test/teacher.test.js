@@ -92,6 +92,7 @@ describe('/api/v1/teachers', () => {
                     });
             })
         })
+        
         describe('GET /api/v1/teachers/:id/my_ordinary_classes', () => {
             // GET ordinary classes without token
             test('GET /api/v1/teachers/:id/my_ordinary_classes with no token should respond with status 401', async () => {

@@ -142,5 +142,9 @@ describe('/api/v1/ordinary_classes', () => {
                     });
             });
         })
+
+        describe('GET /api/v1/ordinary_classes/:study_year/:address/components', () => {
+            
+        })
     })
 })

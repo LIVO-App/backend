@@ -60,5 +60,19 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async remove(student_id, course_id, block_id, ita_descr){
+        try {
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM grade AS g WHERE g.student_id = ? AND g.project_class_course_id = ? AND g.project_class_block = ? AND g.italian_description = ?';
+            let values = [student_id, course_id, block_id, ita_descr];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };

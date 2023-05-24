@@ -46,6 +46,28 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async teachers_classes(teacher_id, school_year){
+        try {
+            conn = await pool.getConnection();
+            if(!teacher_id){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT ot.ordinary_class_study_year, ot.ordinary_class_address, ot.ordinary_class_school_year, ot.section FROM ordinary_teach AS ot WHERE ot.teacher_id = ?';
+            let values = [teacher_id];
+            if (school_year != undefined){
+                sql += ' AND ot.ordinary_class_school_year = ?';
+                values.push(school_year);
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };
 

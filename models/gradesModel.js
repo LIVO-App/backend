@@ -27,8 +27,9 @@ module.exports = {
                 return false;
             }
             let publication = new Date();
+            console.log(publication);
             let final_val = final ? 1 : 0;
-            let sql = 'INSERT INTO grade(student_id, teacher_id, project_class_course_id, project_class_block, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
+            let sql = 'INSERT INTO grade (student_id, teacher_id, project_class_course_id, project_class_block, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
             let values = [student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, publication, grade, final_val];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -64,8 +65,9 @@ module.exports = {
     async remove(student_id, course_id, block_id, ita_descr){
         try {
             conn = await pool.getConnection();
-            let sql = 'DELETE FROM grade AS g WHERE g.student_id = ? AND g.project_class_course_id = ? AND g.project_class_block = ? AND g.italian_description = ?';
+            let sql = 'DELETE FROM grade WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND italian_description = ?';
             let values = [student_id, course_id, block_id, ita_descr];
+            //console.log(sql);
             const rows = await conn.query(sql, values);
             conn.release();
             return rows;

@@ -1,14 +1,18 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
+const gradesModel = require('../models/gradesModel');
+
+let tokenStudent3 = jwt.sign({_id: 3, username: "Student3", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
+
 
 describe('/api/v1/students', () => {
     let projectClass;
     let wrongProjectClass;
     let projectClassForMaxCredits;
-    let validGrades;
-    let validFinalGrades;
-    let wrongGrades;
+
 
     beforeAll(async () => {
         projectClass = {
@@ -26,77 +30,6 @@ describe('/api/v1/students', () => {
             block: 7,
             section: 'A'
         }
-        validGrades = {
-            student_id: 1,
-            teacher_id: 3,
-            course_id: 4,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7
-        }
-        validFinalGrades = {
-            student_id: 1,
-            teacher_id: 3,
-            course_id: 4,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7,
-            final: true
-        }
-        wrongGrades = [{
-            student_id: 2,
-            teacher_id: 3,
-            course_id: 4,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7
-        },
-        {
-            student_id: 1,
-            teacher_id: 1,
-            course_id: 4,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7
-        },
-        {
-            student_id: 1,
-            teacher_id: 3,
-            course_id: 1,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7
-        },
-        {
-            student_id: 1,
-            teacher_id: 3,
-            course_id: 5,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7
-        },
-        {
-            student_id: 0,
-            teacher_id: 3,
-            course_id: 4,
-            block_id: 6,
-            ita_descr: 'Last test',
-            eng_descr: 'Last test',
-            grade: 7,
-        },{
-            student_id: 1,
-            teacher_id: 3,
-            course_id: 4,
-            block_id: 6,
-            eng_descr: 'Last test',
-            grade: 7,
-        }]
     })
 
     describe('POST methods', () => {
@@ -150,7 +83,139 @@ describe('/api/v1/students', () => {
             })
         })
         describe('POST /api/v1/students/:id/grades', () => {
+            let validToken = jwt.sign({_id: 3, username: "Teacher3", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+            let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+            let validGrades;
+            let validFinalGrades;
+            let wrongGrades;
+            beforeAll(async () => {
+                validGrades = {
+                    student: 1,
+                    teacher: 3,
+                    course: 4,
+                    block: 6,
+                    ita_descr: 'Last test',
+                    eng_descr: 'Last test',
+                    grade: 9
+                };
+                validFinalGrades = {
+                    student: 1,
+                    teacher: 3,
+                    course: 4,
+                    block: 6,
+                    ita_descr: 'Last test',
+                    eng_descr: 'Last test',
+                    grade: 9,
+                    final: true
+                };
+                
+            })
+            
+            test('POST /api/v1/students/:id/grades with missing token should respond with status 401', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(401);
+            })
 
+            test('POST /api/v1/students/:id/grades with invalid token should respond with status 403', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', invalidToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(403);
+            })
+
+            // Post resources with valid token but from wrong type of user
+            test('POST /api/v1/students/:id/grades with valid token but wrong type of user should respond with status 401', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', tokenStudent2)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(401);
+            })
+
+            // Post resources with valid token and right type of user but teacher of different class
+            test('POST /api/v1/students/:id/grades with valid token but rigth type of user but teacher of different class should respond with status 401', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', wrongUserToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(401);
+            })
+
+            // Post resources with valid token and non valid project class
+            test('POST /api/v1/students/:id/grades with valid token and non valid project class', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: 1, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(401);
+            })
+
+            // Post resources with non valid id student and valid token
+            test('POST /api/v1/students/:id/grades with valid token and non valid student id', () => {
+                return request(app)
+                    .post('/api/v1/students/0/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(400);
+            })
+
+            // Post resources with student not enrolled in the class and valid token
+            // Post resources with non valid id student and valid token
+            test('POST /api/v1/students/:id/grades with valid token and non valid student id', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: 7, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(400);
+            })
+
+            // Post resources with missing required parameters
+            test('POST /api/v1/students/:id/grades with valid token and missing required parameters', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block})
+                    .expect(400);
+            })
+
+            // Post resources with right parameters (no final vote)
+            test('POST /api/v1/students/:id/grades with valid token and valid parameters', () => {
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(201);
+            })
+
+            // Post resources with right parameters (final vote)
+            test('POST /api/v1/students/:id/grades with valid token and valid parameters with final grade', async () => {
+                let req = request(app)
+                .post('/api/v1/students/1/grades')
+                .set('x-access-token', validToken)
+                .query({teacher_id: validFinalGrades.teacher, course_id: validFinalGrades.course, block_id: validFinalGrades.block, ita_description: validFinalGrades.ita_descr, eng_description: validFinalGrades.eng_descr, grade: validFinalGrades.grade, final: validFinalGrades.final})
+                await new Promise((req) => setTimeout(req, 2000));
+                return req.expect(201);
+            })        
+
+            // Post resources in a course already concluded
+            test('POST /api/v1/students/:id/grades with valid token and valid parameters but final grade inserted', () => {  
+                return request(app)
+                    .post('/api/v1/students/1/grades')
+                    .set('x-access-token', validToken)
+                    .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
+                    .expect(403);
+            })
+
+            afterAll(async () => {
+                //Delete all the grades posted
+                await gradesModel.remove(validGrades.student, validGrades.course, validGrades.block, validGrades.ita_descr).then(msg => {
+                    console.log(msg);
+                });
+
+            })
         })
     })
 
@@ -278,9 +343,6 @@ describe('/api/v2/students', () => {
     let projectClass;
     let wrongProjectClass;
     let projectClassForMaxCredits;
-    let tokenStudent3 = jwt.sign({_id: 3, username: "Student3", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-    let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-    let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
     let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
     beforeAll(async () => {

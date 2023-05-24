@@ -111,14 +111,14 @@ describe('/api/v1/students', () => {
                 
             })
             
-            test('POST /api/v1/students/:id/grades with missing token should respond with status 401', () => {
+            test('POST /api/v1/students/:id/grades with missing token should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
                     .expect(401);
             })
 
-            test('POST /api/v1/students/:id/grades with invalid token should respond with status 403', () => {
+            test('POST /api/v1/students/:id/grades with invalid token should respond with status 403', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', invalidToken)
@@ -127,7 +127,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token but from wrong type of user
-            test('POST /api/v1/students/:id/grades with valid token but wrong type of user should respond with status 401', () => {
+            test('POST /api/v1/students/:id/grades with valid token but wrong type of user should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', tokenStudent2)
@@ -136,7 +136,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token and right type of user but teacher of different class
-            test('POST /api/v1/students/:id/grades with valid token but rigth type of user but teacher of different class should respond with status 401', () => {
+            test('POST /api/v1/students/:id/grades with valid token but rigth type of user but teacher of different class should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', wrongUserToken)
@@ -145,7 +145,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token and non valid project class
-            test('POST /api/v1/students/:id/grades with valid token and non valid project class', () => {
+            test('POST /api/v1/students/:id/grades with valid token and non valid project class', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -154,7 +154,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with non valid id student and valid token
-            test('POST /api/v1/students/:id/grades with valid token and non valid student id', () => {
+            test('POST /api/v1/students/:id/grades with valid token and non valid student id', async () => {
                 return request(app)
                     .post('/api/v1/students/0/grades')
                     .set('x-access-token', validToken)
@@ -164,7 +164,7 @@ describe('/api/v1/students', () => {
 
             // Post resources with student not enrolled in the class and valid token
             // Post resources with non valid id student and valid token
-            test('POST /api/v1/students/:id/grades with valid token and non valid student id', () => {
+            test('POST /api/v1/students/:id/grades with valid token and non valid student id', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -173,7 +173,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with missing required parameters
-            test('POST /api/v1/students/:id/grades with valid token and missing required parameters', () => {
+            test('POST /api/v1/students/:id/grades with valid token and missing required parameters', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -182,7 +182,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with right parameters (no final vote)
-            test('POST /api/v1/students/:id/grades with valid token and valid parameters', () => {
+            test('POST /api/v1/students/:id/grades with valid token and valid parameters', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -201,7 +201,7 @@ describe('/api/v1/students', () => {
             })        
 
             // Post resources in a course already concluded
-            test('POST /api/v1/students/:id/grades with valid token and valid parameters but final grade inserted', () => {  
+            test('POST /api/v1/students/:id/grades with valid token and valid parameters but final grade inserted', async () => {  
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)

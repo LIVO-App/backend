@@ -290,7 +290,12 @@ paths:
           $ref: '#/components/responses/NotFound'
   /v2/students/:id/curriculum:
     get:
-      description: Get all the courses in the curriculum of a student for a certain school year.
+      description: |
+        Get all the courses in the curriculum of a student for a certain school year. 
+        If the user is a student, it will show all the courses he is inscribed in that school year. 
+        If the user logged in is a teacher, the api will return only the courses related to the teacher:
+          - the ones that he teaches in (his project classes)
+          - the ones associated to him through his teachings
       summary: Get student curriculum
       parameters:
         - $ref: '#/components/parameters/Token'

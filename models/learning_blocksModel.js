@@ -50,5 +50,34 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async list_from_list_of_courses(student_id, courses){
+        try {
+            conn = await pool.getConnection();
+            if(courses==undefined || courses.length<1){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT ins.project_class_course_id AS course, lb.id AS block FROM learning_block AS lb JOIN inscribed AS ins ON ins.project_class_block = lb.id WHERE ins.student_id = ?';
+            let values = [student_id];
+            for(let i=0; i<courses.length; i++){
+                if(i==0){
+                    sql += ' AND (';
+                }
+                sql += 'ins.project_class_course_id = ?';
+                values.push(courses[i]);
+                if(i<courses.length-1){
+                    sql += ' OR ';
+                }
+            }
+            sql += ')';
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release();
+        }
     }
 };

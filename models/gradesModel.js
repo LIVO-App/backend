@@ -4,7 +4,7 @@ module.exports = {
     async list(student_id, course_id, block_id){
         try {
             conn = await pool.getConnection();
-            if(!course_id || !student_id || !block_id){
+            if(!course_id || !student_id){
                 conn.release();
                 return false;
             }

@@ -77,9 +77,12 @@ module.exports = {
     async isTeacherTeaching(teacher_id, study_year, address, school_year, section){
         try {
             conn = await pool.getConnection();
+            if(!teacher_id || !study_year || !address || !school_year || !section) {
+                conn.release();
+                return null;
+            }
             sql = 'SELECT * FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_study_year = ? AND ot.ordinary_class_address = ? AND ot.ordinary_class_school_year = ? AND ot.section = ?';
             values = [teacher_id, study_year, address, school_year, section];
-            console.log(sql);
             const rows = await conn.query(sql, values);
             conn.release();
             if(rows.length == 1){

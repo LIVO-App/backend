@@ -118,8 +118,6 @@ describe('/api/v1/ordinary_classes', () => {
                     .expect(404)
             });
 
-            /*TODO: add test for wrong combination of params giving a POST method */
-
             // GET all resources with valid param (no credits)
             test('GET /api/v1/ordinary_classes?school_year with credits info should respond with status 200', async () => {
                 return request(app)
@@ -144,7 +142,92 @@ describe('/api/v1/ordinary_classes', () => {
         })
 
         describe('GET /api/v1/ordinary_classes/:study_year/:address/components', () => {
-            
+            let validToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+            let validTokenWrongClass = jwt.sign({_id: 3, username: "Teacher3", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+            let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+            let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
+            //missing token
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with missing token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .query({school_year: 2022, section: "A"})
+                    .expect(401);
+            })
+
+            //invalid token
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', invalidToken)
+                    .query({school_year: 2022, section: "A"})
+                    .expect(403);
+            })
+
+            //wrong user token
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with wrong user type token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', wrongUserToken)
+                    .query({school_year: 2022, section: "A"})
+                    .expect(401);
+            })
+
+            //valid token but teacher doesn't teach in that class
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token of a teacher that doesn\'t teach in that class should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validTokenWrongClass)
+                    .query({school_year: 2022, section: "A"})
+                    .expect(401);
+            })
+
+            //valid token but missing parameters (no query)
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token but no parameters should respond with status 400', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validToken)
+                    .expect(400);
+            })
+
+            //valid token but only school year
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token but only school_year parameter should respond with status 400', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validToken)
+                    .query({school_year: 2022})
+                    .expect(400);
+            })
+
+            // valid token but only section
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token but only section parameter should respond with status 400', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validToken)
+                    .query({section: "A"})
+                    .expect(400);
+            })
+
+            // valid token but wrong school year
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token but wrong parameters should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validToken)
+                    .query({school_year: 2000, section: "A"})
+                    .expect(401);
+            })
+
+            //valid token and valid parameters
+            test('GET /api/v1/ordinary_classes/:study_year/:address/components with valid token but wrong parameters should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/ordinary_classes/5/BIO/components')
+                    .set('x-access-token', validToken)
+                    .query({school_year: 2022, section: "A"})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                    });
+            })
+
         })
     })
 })

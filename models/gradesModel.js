@@ -27,7 +27,6 @@ module.exports = {
                 return false;
             }
             let publication = new Date();
-            console.log(publication);
             let final_val = final ? 1 : 0;
             let sql = 'INSERT INTO grade (student_id, teacher_id, project_class_course_id, project_class_block, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
             let values = [student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, publication, grade, final_val];

@@ -84,6 +84,12 @@ module.exports.get_components = async (req, res) => {
     let section = req.query.section;
     if(req.loggedUser.role == "teacher"){
         let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
+        console.log(teach);
+        if(teach==null){
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log("ordinary_class components: missing parameters");
+            return;
+        }
         if(!teach){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('my_ordinary_class: unauthorized access. Not my class');
@@ -97,7 +103,7 @@ module.exports.get_components = async (req, res) => {
     let cmps = await ordinaryclassModel.components(study_year, address, school_year, section);
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class components: missing parameters");
+        console.log("ordinary class components: missing parameters");
         return;
     }
     let data_cmps = cmps.map((cmp) => {

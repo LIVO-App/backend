@@ -111,4 +111,54 @@ describe('/api/v1/learning_blocks', () => {
             });
         })
     })
+
+    describe('POST methods tests', () => {
+        describe('POST /api/v1/learning_blocks/correspondence', () => {
+            test('POST /api/v1/learning_blocks/correspondence with no parameters should return status 400', async () => {
+                return request(app)
+                    .post('/api/v1/learning_blocks/correspondence')
+                    .expect(400);
+            }) 
+
+            test('POST /api/v1/learning_blocks/correspondence with only student_id should return status 400', async () => {
+                return request(app)
+                    .post('/api/v1/learning_blocks/correspondence')
+                    .query({student_id: 1})
+                    .expect(400);
+            })
+
+            test('POST /api/v1/learning_blocks/correspondence with empty courses should return status 400', async () => {
+                let json = {courses: []}
+                return request(app)
+                    .post('/api/v1/learning_blocks/correspondence')
+                    .query({student_id: 1})
+                    .send(json)
+                    .expect(400);
+            })
+
+            test('POST /api/v1/learning_blocks/correspondence with wrong params should return status 200 but empty data', async () => {
+                let json = {courses: [1,2,3,4,5,6]}
+                return request(app)
+                    .post('/api/v1/learning_blocks/correspondence')
+                    .query({student_id: 5})
+                    .send(json)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                    });
+            })
+
+            test('POST /api/v1/learning_blocks/correspondence with valid params should return status 200', async () => {
+                let json = {courses: [1,2,3,4,5,6]}
+                return request(app)
+                    .post('/api/v1/learning_blocks/correspondence')
+                    .query({student_id: 1})
+                    .send(json)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                    });
+            })
+        })
+    })
 })

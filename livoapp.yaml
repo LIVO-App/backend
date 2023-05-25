@@ -616,6 +616,31 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/learning_blocks/correspondence:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/Student_id'
+      summary: Search for learning blocks of a list of courses
+      requestBody:
+        description: Array of courses to search
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+      responses:
+        '200':
+          description: "Learning blocks with courses"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/learning_blocks_courses'
+        '400':
+          $ref: '#/components/responses/BadInputs'
 components:
   responses:
     NotFound:
@@ -1642,6 +1667,35 @@ components:
             surname:
               type: string
               description: Surname of the student
+          description: Data returned by the api
+    learning_blocks_courses:
+      type: object
+      required:
+        - course_id
+        - block_id
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            course_id:
+              type: integer
+              description: Course Id
+            block_id:
+              type: integer
+              description: Block Id where a student has taken that course
           description: Data returned by the api
   parameters:
     School_year:

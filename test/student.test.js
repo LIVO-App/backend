@@ -343,7 +343,8 @@ describe('/api/v2/students', () => {
     let projectClass;
     let wrongProjectClass;
     let projectClassForMaxCredits;
-    let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+    let teacherToken = jwt.sign({_id: 3, username: "Teacher3", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+    let wrongUserToken = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
     beforeAll(async () => {
         projectClass = {
@@ -524,6 +525,27 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .get('/api/v2/students/2/curriculum')
                     .set('x-access-token', tokenStudent2)
+                    .query({school_year: 2022})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0); //If the pair student-school_year is valid (the student was enrolled in the system) there can be the chance that he doesn't have anything in the curriculum (for example we are at the start of the year before the start of the first learning block)
+                    });
+            })
+
+            // Get curriculum with wrong school year (the teacher was not employed at that time) with valid token for the teacher
+            test('GET /api/v2/students/:id/curriculum with valid parameters and valid token for teacher should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/students/2/curriculum')
+                    .set('x-access-token', teacherToken)
+                    .query({school_year: 2000})
+                    .expect(401);
+            })
+
+            // Get curriculum with valid parameters with valid token for teacher
+            test('GET /api/v2/students/:id/curriculum with valid parameters and valid token for teacher should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/students/2/curriculum')
+                    .set('x-access-token', teacherToken)
                     .query({school_year: 2022})
                     .expect(200)
                     .then((response) => {

@@ -87,14 +87,17 @@ module.exports = {
             conn.release();
         }
     },
-    async curriculum(student_id, school_year){
+    async curriculum(student_id, school_year, teacher_id){
         try {
             conn = await pool.getConnection();
             if(!student_id || !school_year){
                 conn.release();
                 return false;
             }
-            sql = `SELECT DISTINCT c.id AS course_id, c.italian_title, c.english_title, pc.italian_displayed_name, pc.english_displayed_name, i.section, c.credits, c.learning_area_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ${student_id} AND g.project_class_course_id = pc.course_id AND g.project_class_block = pc.learning_block_id AND g.final = 1) AS final_grade FROM student AS s JOIN inscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id JOIN learning_block AS lb ON pc.learning_block_id = lb.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_block_id = g.project_class_block WHERE s.id = ${student_id} AND lb.school_year=${school_year} AND i.pending IS NULL;`
+            sql = `SELECT DISTINCT c.id AS course_id, c.italian_title, c.english_title, pc.italian_displayed_name, pc.english_displayed_name, i.section, c.credits, c.learning_area_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ${student_id} AND g.project_class_course_id = pc.course_id AND g.project_class_block = pc.learning_block_id AND g.final = 1) AS final_grade FROM student AS s JOIN inscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id JOIN learning_block AS lb ON pc.learning_block_id = lb.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_block_id = g.project_class_block WHERE s.id = ${student_id} AND lb.school_year=${school_year} AND i.pending IS NULL`
+            if(teacher_id!=undefined){
+                sql += ` AND c.id IN (SELECT DISTINCT c.id FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block JOIN associated AS ass ON c.id = ass.course_id WHERE ins.student_id IN (SELECT s.id FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id})) AND pc.learning_block_id IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year = ${school_year}) AND ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) UNION SELECT c.id FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ${teacher_id} AND pt.project_class_block IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year = ${school_year}))`;
+            }
             const rows = await conn.query(sql);
             conn.release();
             return rows;

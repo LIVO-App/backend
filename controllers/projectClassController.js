@@ -14,10 +14,12 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_project_class_components = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     if(req.loggedUser.role == "teacher"){
-        if(req.loggedUser._id != teacher_id){
-            res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
-            return;
+        if(teacher_id!=undefined){
+            if(req.loggedUser._id != teacher_id){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('project_class components: unauthorized access');
+                return;
+            }
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});

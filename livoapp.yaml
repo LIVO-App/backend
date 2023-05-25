@@ -586,6 +586,31 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/ordinary_classes/:study_year/:address/components:
+    get:
+      description: Get all components of a specific ordinary class
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/Study_year_path'
+        - $ref: '#/components/parameters/Address_path'
+        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/Section'
+      summary: Get ordinary classes components
+      responses:
+        '200':
+          description: "Ordinary classes components"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ordinary_class_components'
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:
@@ -1581,6 +1606,38 @@ components:
               type: string
               description: Surname of the student
           description: Data returned by the api
+    ordinary_class_components:
+      type: object
+      required:
+        - name
+        - surname
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Student Id
+            name:
+              type: string
+              description: Name of the student
+            surname:
+              type: string
+              description: Surname of the student
+          description: Data returned by the api
   parameters:
     School_year:
       name: school_year
@@ -1732,3 +1789,17 @@ components:
       description: Specifies if the grade the user want to add is a final grade
       schema:
         type: boolean
+    Study_year_path:
+      name: study_year
+      in: path
+      description: Study year of an ordinary class
+      schema:
+        type: integer
+      required: true
+    Address_path:
+      name: address
+      in: path
+      description: Address of an ordinary class
+      schema:
+        type: string
+      required: true

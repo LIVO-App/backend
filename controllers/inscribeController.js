@@ -122,24 +122,13 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
-    let section = req.query.section ?? "A";
-    let pen_val = undefined;
-    let pending = await inscribe_schema.isClassFull(course_id, block_id);
-    if(!pending){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: full class');
-        return;
-    }
-    if (pending.full === "true"){
-        pen_val = true
-    }
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
         res.status(400).json({status: "error", description: MSG.studentNotExist})
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, section);
+    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -169,6 +158,16 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached');
         return;
+    }
+    let pen_val = undefined;
+    let section = await inscribe_schema.getAvailableSection(course_id, block_id);
+    if(section == null){
+        res.status(400).json({status: "error", description: MSG.missing_params});
+        console.log('mising required information: section');
+        return;
+    }
+    if (section === ""){
+        pen_val = true
     }
     let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, pen_val);
     if (!subscribe){

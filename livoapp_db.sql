@@ -428,7 +428,7 @@ CREATE TABLE `inscribed` (
   `student_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
-  `section` varchar(3) NOT NULL DEFAULT 'A',
+  `section` varchar(3) NOT NULL DEFAULT '',
   `pending` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

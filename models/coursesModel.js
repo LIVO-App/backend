@@ -45,6 +45,9 @@ module.exports = {
                     sql += `learning_block_id = ${block_id} AND `;
                 } 
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM   inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) ELSE \"false\" end AS inscribed`;
+                if (block_id!=undefined) {
+                    sql += `, (SELECT section FROM inscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_block = ${block_id}) AS section`;
+                }
             }
             sql += ` FROM course AS c `
             if(alone){
@@ -128,111 +131,112 @@ module.exports = {
 };
 
 
-/*SELECT c.id,
-       c.italian_title,
-       c.english_title,
-       c.creation_date,
-       c.italian_description,
-       c.english_description,
-       c.up_hours,
-       c.credits,
-       c.italian_expected_learning_results,
-       c.english_expected_learning_results,
-       c.italian_criterions,
-       c.english_criterions,
-       c.italian_activities,
-       c.english_activities,
-       la.italian_title  AS "learning_area_ita",
-       la.english_title  AS "learning_area_eng",
-       pga.italian_title AS "growth_area_ita",
-       pga.english_title AS "growth_area_eng",
-       c.min_students,
-       c.max_students,
-       c.proposer_teacher_id,
-       c.certifying_admin_id,
-       c.admin_confirmation,
-       pc.italian_displayed_name,
-       pc.english_displayed_name,
-       CASE
-         WHEN c.id IN (SELECT c.id
-                       FROM   course AS c
-                              LEFT JOIN project_class AS pc
-                                     ON c.id = pc.course_id
-                              LEFT JOIN inscribed AS ins
-                                     ON pc.course_id =
-                                        ins.project_class_course_id
-                                        AND pc.learning_block_id =
-                                            ins.project_class_block
-                       WHERE  learning_block_id = 7
-                              AND c.learning_area_id = "sm"
-                              AND ins.student_id = 1)
-              AND (SELECT ins.pending
-                   FROM   inscribed AS ins
-                   WHERE  ins.project_class_course_id = c.id
-                          AND ins.student_id = 1
-                          AND ins.project_class_block = pc.learning_block_id) IS
-                  NULL
-       THEN "true"
-         WHEN c.id IN (SELECT c.id
-                       FROM   course AS c
-                              LEFT JOIN project_class AS pc
-                                     ON c.id = pc.course_id
-                              LEFT JOIN inscribed AS ins
-                                     ON pc.course_id =
-                                        ins.project_class_course_id
-                                        AND pc.learning_block_id =
-                                            ins.project_class_block
-                       WHERE  learning_block_id = 7
-                              AND c.learning_area_id = "sm"
-                              AND ins.student_id = 1)
-              AND (SELECT ins.pending
-                   FROM   inscribed AS ins
-                   WHERE  ins.project_class_course_id = c.id
-                          AND ins.student_id = 1
-                          AND ins.project_class_block = pc.learning_block_id) IS
-                  NOT
-                  NULL THEN (SELECT ins.pending
-                             FROM   inscribed AS ins
-                             WHERE  ins.project_class_course_id = c.id
-                                    AND ins.student_id = 1
+    /*SELECT c.id,
+        c.italian_title,
+        c.english_title,
+        c.creation_date,
+        c.italian_description,
+        c.english_description,
+        c.up_hours,
+        c.credits,
+        c.italian_expected_learning_results,
+        c.english_expected_learning_results,
+        c.italian_criterions,
+        c.english_criterions,
+        c.italian_activities,
+        c.english_activities,
+        la.italian_title  AS "learning_area_ita",
+        la.english_title  AS "learning_area_eng",
+        pga.italian_title AS "growth_area_ita",
+        pga.english_title AS "growth_area_eng",
+        c.min_students,
+        c.max_students,
+        c.proposer_teacher_id,
+        c.certifying_admin_id,
+        c.admin_confirmation,
+        pc.italian_displayed_name,
+        pc.english_displayed_name,
+        ins.section,
+        CASE
+            WHEN c.id IN (SELECT c.id
+                        FROM   course AS c
+                                LEFT JOIN project_class AS pc
+                                        ON c.id = pc.course_id
+                                LEFT JOIN inscribed AS ins
+                                        ON pc.course_id =
+                                            ins.project_class_course_id
+                                            AND pc.learning_block_id =
+                                                ins.project_class_block
+                        WHERE  learning_block_id = 7
+                                AND c.learning_area_id = "sm"
+                                AND ins.student_id = 1)
+                AND (SELECT ins.pending
+                    FROM   inscribed AS ins
+                    WHERE  ins.project_class_course_id = c.id
+                            AND ins.student_id = 1
+                            AND ins.project_class_block = pc.learning_block_id) IS
+                    NULL
+        THEN "true"
+            WHEN c.id IN (SELECT c.id
+                        FROM   course AS c
+                                LEFT JOIN project_class AS pc
+                                        ON c.id = pc.course_id
+                                LEFT JOIN inscribed AS ins
+                                        ON pc.course_id =
+                                            ins.project_class_course_id
+                                            AND pc.learning_block_id =
+                                                ins.project_class_block
+                        WHERE  learning_block_id = 7
+                                AND c.learning_area_id = "sm"
+                                AND ins.student_id = 1)
+                AND (SELECT ins.pending
+                    FROM   inscribed AS ins
+                    WHERE  ins.project_class_course_id = c.id
+                            AND ins.student_id = 1
+                            AND ins.project_class_block = pc.learning_block_id) IS
+                    NOT
+                    NULL THEN (SELECT ins.pending
+                                FROM   inscribed AS ins
+                                WHERE  ins.project_class_course_id = c.id
+                                        AND ins.student_id = 1
+                                        AND
+                                ins.project_class_block = pc.learning_block_id)
+            ELSE "false"
+        end               AS inscribed
+    FROM   course AS c
+        JOIN project_class AS pc
+            ON c.id = pc.course_id
+        JOIN learning_area AS la
+            ON c.learning_area_id = la.id
+        INNER JOIN personal_growth_area AS pga
+                ON c.growth_area_id = pga.id
+    WHERE  pc.learning_block_id = 7
+        AND c.learning_area_id = "sm"
+        AND c.id IN (SELECT ac.course_id
+                    FROM   `accessible` AS ac
+                    WHERE  ac.study_year_id IN (SELECT att.ordinary_class_study_year
+                                                FROM   attend AS att
+                                                WHERE  att.student_id = 1
+                                                    AND
+                                            ( att.ordinary_class_school_year
+                                                = Year(
+                                                CURRENT_DATE)
+                                                OR att.ordinary_class_school_year
+                                                    =
+                                                    Year(
+                                                    CURRENT_DATE) - 1 ))
+                        AND ac.study_address_id IN
+                            (SELECT att.ordinary_class_address
+                                FROM   attend AS att
+                                WHERE  att.student_id = 1
                                     AND
-                            ins.project_class_block = pc.learning_block_id)
-         ELSE "false"
-       end               AS inscribed
-FROM   course AS c
-       JOIN project_class AS pc
-         ON c.id = pc.course_id
-       JOIN learning_area AS la
-         ON c.learning_area_id = la.id
-       INNER JOIN personal_growth_area AS pga
-               ON c.growth_area_id = pga.id
-WHERE  pc.learning_block_id = 7
-       AND c.learning_area_id = "sm"
-       AND c.id IN (SELECT ac.course_id
-                FROM   `accessible` AS ac
-                WHERE  ac.study_year_id IN (SELECT att.ordinary_class_study_year
-                                            FROM   attend AS att
-                                            WHERE  att.student_id = 1
-                                                   AND
-                                           ( att.ordinary_class_school_year
-                                             = Year(
-                                             CURRENT_DATE)
-                                              OR att.ordinary_class_school_year
-                                                 =
-                                                 Year(
-                                                 CURRENT_DATE) - 1 ))
-                       AND ac.study_address_id IN
-                           (SELECT att.ordinary_class_address
-                            FROM   attend AS att
-                            WHERE  att.student_id = 1
-                                   AND
-                           ( att.ordinary_class_school_year
-                             = Year(
-                             CURRENT_DATE)
-                              OR att.ordinary_class_school_year
-                                 =
-                                 Year(
-                                 CURRENT_DATE) - 1 )));  */
+                            ( att.ordinary_class_school_year
+                                = Year(
+                                CURRENT_DATE)
+                                OR att.ordinary_class_school_year
+                                    =
+                                    Year(
+                                    CURRENT_DATE) - 1 )));  */
 
 /* Single course information QUERY
 SELECT DISTINCT c.id,

@@ -38,6 +38,7 @@ module.exports.get_courses = async (req, res) => {
             italian_displayed_name: course.italian_displayed_name,
             english_displayed_name: course.english_displayed_name,
             learning_area_ref: learning_area_ref,
+            section: course.section,
             pending: course.inscribed
         };
     });

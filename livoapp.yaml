@@ -309,7 +309,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/curriculum'
+                  $ref: '#/components/schemas/curriculum_v2'
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -1361,6 +1361,71 @@ components:
           type: string
           description: "ID of the user who has logged in"
     curriculum:
+      type: object
+      required:
+        - italian_title
+        - english_title
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Identifier of the course"
+            italian_title:
+              type: string
+              description: "Italian title of the course"
+            english_title:
+              type: string
+              description: "English title of the course"
+            italian_displayed_name:
+              type: string
+              description: "Italian name displayed for a course"
+            english_displayed_name:
+              type: string
+              description: "English name displayed for a course"
+            section:
+              type: string 
+              description: "Section of the project class the student is currently enrolled in"
+            credits:
+              type: integer
+              description: "Number of credits that a course give to a student"
+            learning_area_ref:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: "Id of the learning area associated to the course"
+                description: "Reference to the learning area associated to the course"
+            final_grade:
+              type: integer
+              description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+    curriculum_v2:
       type: object
       required:
         - italian_title

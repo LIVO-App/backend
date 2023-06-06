@@ -1425,6 +1425,9 @@ components:
             final_grade:
               type: integer
               description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+            future_course:
+              type: boolean
+              description: "Tells if the course that is displaying in the curriculum is a course that will be hold in the imminent or a future learning block"
     grades:
       type: object
       required:

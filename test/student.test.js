@@ -106,7 +106,7 @@ describe('/api/v1/students', () => {
                     ita_descr: 'Last test',
                     eng_descr: 'Last test',
                     grade: 9,
-                    final: true
+                    final: "true"
                 };
                 
             })

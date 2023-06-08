@@ -1915,7 +1915,7 @@ components:
       in: query
       description: Specifies if the grade the user want to add is a final grade
       schema:
-        type: boolean
+        type: string
     Study_year_path:
       name: study_year
       in: path

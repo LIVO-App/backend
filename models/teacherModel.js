@@ -95,5 +95,22 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async getActiveYears(teacher_id){
+        try{
+            conn = await pool.getConnection();
+            if(!teacher_id){
+                conn.release();
+                return null;
+            }
+            sql = 'SELECT DISTINCT ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id=?'
+            const rows = await conn.query(sql, teacher_id);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };

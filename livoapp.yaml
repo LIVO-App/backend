@@ -658,6 +658,8 @@ paths:
                   $ref: '#/components/schemas/teacher_active_year'
         '400':
           $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:

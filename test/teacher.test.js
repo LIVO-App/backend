@@ -172,11 +172,28 @@ describe('/api/v1/teachers', () => {
                     });
             })
         })
+
+        describe('GET /api/v1/teachers/:id/active_years', () => {
+            // GET active years with non existing teacher id
+            test('GET /api/v1/teachers/:id/active_years with non existing teacher id should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/teachers/0/active_years')
+                    .expect(404);
+            })
+
+            test('GET /api/v1/teachers/:id/active_years with valid teacher id should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/teachers/1/active_years')
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    })
+            })
+        })
     })
 })
 
 describe('/api/v2/teachers', () => {
-    
 
     describe('GET methods', () => {
         describe('GET /api/v2/teachers/:id/my_project_classes', () => {

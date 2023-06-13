@@ -231,6 +231,12 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
 
 module.exports.get_active_years = async (req, res) => {
     let teacher_id = req.params.id;
+    let existingTeacher = await teacherSchema.read_id(teacher_id);
+    if(!existingTeacher){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("teacher active year: resource not found");
+        return; 
+    }
     let yrs = await teacherSchema.getActiveYears(teacher_id);
     if(!yrs){
         res.status(400).json({status: "error", description: MSG.missingParameter});

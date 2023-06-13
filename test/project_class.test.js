@@ -1,6 +1,7 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
+const { response } = require('express');
 
 describe('/api/v1/project_classes', () => {
     describe('GET methods tests', () => {
@@ -8,7 +9,6 @@ describe('/api/v1/project_classes', () => {
         let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
         describe('GET /api/v1/project_classes/:course/:block/components', () => {
-            //TODO -> ADD tests for token
             // missing token
             test('GET /api/v1/project_classes/:course/:block/components with all parameters and missing token should respond with status 200', async () => {
                 return request(app)
@@ -112,6 +112,35 @@ describe('/api/v1/project_classes', () => {
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 1, assoc_class: true})
                     .set('x-access-token', validToken)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                    });
+            })
+        })
+        
+        describe('GET /api/v1/project_classes/:course/:block/sections', () => {
+            test('GET /api/v1/project_classes/:course/:block/sections with wrong course id should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/0/7/sections')
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with wrong block id should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/0/sections')
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters but the class does not exist in that learning block should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/1/sections')
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7/sections')
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(1);

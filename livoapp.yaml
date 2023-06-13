@@ -660,6 +660,26 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/project_classes/:course/:block/sections:
+    get:
+      description: Get all sections of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/Course_id_path'
+        - $ref: '#/components/parameters/Learning_block_id'
+      summary: Get project classes sections in a certain learning block
+      responses:
+        '200':
+          description: "Project classes sections"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/project_class_sections'
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '404':
+          $ref: '#/components/responses/NotFound'      
 components:
   responses:
     NotFound:
@@ -1806,6 +1826,29 @@ components:
             year:
               type: integer
               description: "Year in with the teacher was active teaching in the school"
+          description: Data returned by the api
+    project_class_sections:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            section:
+              type: string
+              description: "Section of the project class in a given learning block"
           description: Data returned by the api
   parameters:
     School_year:

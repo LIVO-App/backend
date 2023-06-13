@@ -93,5 +93,28 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async read_section_from_course_and_block(course_id, block_id){
+        try{
+            conn = await pool.getConnection();
+            if(!course_id || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT DISTINCT ins.section FROM inscribed AS ins WHERE ins.project_class_course_id = ? AND ins.project_class_block = ?';
+            let values = [course_id, block_id];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length > 0){ 
+                // >0 in case we have multiple sections in one single block of the same course
+                return rows;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 }

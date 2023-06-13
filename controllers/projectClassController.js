@@ -60,3 +60,31 @@ module.exports.get_project_class_components = async (req, res) => {
     };
     res.status(200).json(response);
 }
+
+module.exports.get_project_class_sections = async (req,res) => {
+    let course_id = req.params.course;
+    let block_id = req.params.block;
+    let sections = await projectClassesSchema.read_section_from_course_and_block(course_id, block_id);
+    if(sections == null) {
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class sections: missing parameters");
+        return;
+    } else if(!sections){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("project class sections: resource not found");
+        return;
+    }
+    let data_sections = sections.map((section) => {
+        return {
+            section: section.section
+        }
+    })
+    let response = {
+        path: "/api/v1/project_classes/:course/:block/sections",
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_sections
+    };
+    res.status(200).json(response);
+}

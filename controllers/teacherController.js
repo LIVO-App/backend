@@ -1,5 +1,6 @@
 'use strict';
 
+const { response } = require('express');
 const classesSchema = require('../models/classesTeacherModel');
 const ord_classSchema = require('../models/ordinaryclassModel');
 const teacherSchema = require('../models/teacherModel');
@@ -224,6 +225,24 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
         query: {school_year: school_year},
         date: new Date(),
         data: data_classes
+    }
+    res.status(200).json(response);
+}
+
+module.exports.get_active_years = async (req, res) => {
+    let teacher_id = req.params.id;
+    let yrs = await teacherSchema.getActiveYears(teacher_id);
+    let data_years = yrs.map((yr) => {
+        return {
+            year: yr.ordinary_class_school_year
+        }
+    })
+    let response = {
+        path: "/api/v1/teachers/:id/active_years",
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_years
     }
     res.status(200).json(response);
 }

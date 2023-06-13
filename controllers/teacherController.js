@@ -232,6 +232,11 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
 module.exports.get_active_years = async (req, res) => {
     let teacher_id = req.params.id;
     let yrs = await teacherSchema.getActiveYears(teacher_id);
+    if(!yrs){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("teacher active year: missing parameters");
+        return;
+    }
     let data_years = yrs.map((yr) => {
         return {
             year: yr.ordinary_class_school_year

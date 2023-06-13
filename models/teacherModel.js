@@ -101,7 +101,7 @@ module.exports = {
             conn = await pool.getConnection();
             if(!teacher_id){
                 conn.release();
-                return null;
+                return false;
             }
             sql = 'SELECT DISTINCT ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id=?'
             const rows = await conn.query(sql, teacher_id);

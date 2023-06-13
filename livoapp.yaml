@@ -641,6 +641,23 @@ paths:
                   $ref: '#/components/schemas/learning_blocks_courses'
         '400':
           $ref: '#/components/responses/BadInputs'
+  /v1/teachers/:id/active_years:
+    get:
+      description: Get the years which the teacher was actively teaching in the school
+      parameters:
+        - $ref: '#/components/parameters/Teacher_id_path'
+      summary: Get teacher active teaching years
+      responses:
+        '200':
+          description: "Teacher's active years"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/teacher_active_year'
+        '400':
+          $ref: '#/components/responses/BadInputs'
 components:
   responses:
     NotFound:
@@ -1764,6 +1781,29 @@ components:
             block_id:
               type: integer
               description: Block Id where a student has taken that course
+          description: Data returned by the api
+    teacher_active_year:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        date:
+          type: string
+          format: date
+          description: "Date of the current call to the API"
+        data:
+          type: object
+          properties:
+            year:
+              type: integer
+              description: "Year in with the teacher was active teaching in the school"
           description: Data returned by the api
   parameters:
     School_year:

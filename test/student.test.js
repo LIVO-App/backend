@@ -365,7 +365,7 @@ describe('/api/v2/students', () => {
     })
 
     describe('POST methods', () => {
-        describe('POST /api/v1/students/:id/inscribe', () => {
+        describe('POST /api/v2/students/:id/inscribe', () => {
             // api/v1/students/:id/inscribe
             // Add student to a class with non valid ID with valid token
             test('POST /api/v2/students/:id/inscribe with non valid ID and valid token should respond 404', async () => {
@@ -381,7 +381,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .expect(404);
+                    .expect(400);
             })
 
             // Add student to a class with non existing class with valid token

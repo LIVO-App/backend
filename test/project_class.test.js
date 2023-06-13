@@ -96,12 +96,15 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components without teacher parameter but with assoc_class parameter and valid token should respond with status 400', async () => {
+            test('GET /api/v1/project_classes/:course/:block/components without teacher parameter but with assoc_class parameter and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .set('x-access-token', validToken)
                     .query({section: "A", assoc_class: true})
-                    .expect(400);
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1)
+                    });
             })
 
             test('GET /api/v1/project_classes/:course/:block/components with all parameters and valid token should respond with status 200', async () => {

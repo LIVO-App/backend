@@ -69,7 +69,8 @@ module.exports.get_project_class_sections = async (req,res) => {
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class sections: missing parameters");
         return;
-    } else if(!sections){
+    }
+    if(!sections){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("project class sections: resource not found");
         return;

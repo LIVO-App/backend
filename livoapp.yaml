@@ -270,7 +270,7 @@ paths:
           description: Redirect to Google authentication page.
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /v1/students/:id/curriculum:
+  /v1/students/{id}/curriculum:
     get:
       description: Get all the courses in the curriculum of a student for a certain school year.
       summary: Get student curriculum
@@ -288,7 +288,7 @@ paths:
                   $ref: '#/components/schemas/curriculum'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v2/students/:id/curriculum:
+  /v2/students/{id}/curriculum:
     get:
       description: |
         Get all the courses in the curriculum of a student for a certain school year. 
@@ -316,7 +316,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/:id/grades:
+  /v1/students/{id}/grades:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
@@ -356,7 +356,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v2/students/:id/grades:
+  /v2/students/{id}/grades:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
@@ -380,7 +380,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/:id/inscribe:
+  /v1/students/{id}/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -400,7 +400,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v2/students/:id/inscribe:
+  /v2/students/{id}/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -423,7 +423,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v1/students/:id/unscribe:
+  /v1/students/{id}/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -438,7 +438,7 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v2/students/:id/unscribe:
+  /v2/students/{id}/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -458,7 +458,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/teachers/:id/my_project_classes:
+  /v1/teachers/{id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
@@ -476,7 +476,7 @@ paths:
                   $ref: '#/components/schemas/my_project_classes'
         '400':
           $ref: "#/components/responses/BadInputs"
-  /v2/teachers/:id/my_project_classes:
+  /v2/teachers/{id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
@@ -499,7 +499,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/teachers/:id/associated_project_classes:
+  /v1/teachers/{id}/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
@@ -517,7 +517,7 @@ paths:
                   $ref: '#/components/schemas/associated_project_classes'
         '400':
           $ref: "#/components/responses/BadInputs"
-  /v2/teachers/:id/associated_project_classes:
+  /v2/teachers/{id}/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
@@ -540,7 +540,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/teachers/:id/my_ordinary_classes:
+  /v1/teachers/{id}/my_ordinary_classes:
     get:
       description: Get all the ordinary classes in which the teacher is teaching in a specific school year
       parameters:
@@ -565,7 +565,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/project_classes/:course/:block/components:
+  /v1/project_classes/{course}/{block}/components:
     get:
       description: Get all components of a specific project class
       parameters:
@@ -591,7 +591,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/ordinary_classes/:study_year/:address/components:
+  /v1/ordinary_classes/{study_year}/{address}/components:
     get:
       description: Get all components of a specific ordinary class
       parameters:
@@ -641,7 +641,7 @@ paths:
                   $ref: '#/components/schemas/learning_blocks_courses'
         '400':
           $ref: '#/components/responses/BadInputs'
-  /v1/teachers/:id/active_years:
+  /v1/teachers/{id}/active_years:
     get:
       description: Get the years which the teacher was actively teaching in the school
       parameters:
@@ -660,7 +660,7 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/project_classes/:course/:block/sections:
+  /v1/project_classes/{course}/{block}/sections:
     get:
       description: Get all sections of a specific project class
       parameters:
@@ -679,7 +679,42 @@ paths:
         '400':
           $ref: "#/components/responses/BadInputs"
         '404':
-          $ref: '#/components/responses/NotFound'      
+          $ref: '#/components/responses/NotFound'  
+  /v1/ordinary_classes/{student}/{block}:
+    get:
+      description: Get ordinary class of a student in a specific learning block
+      parameters:
+        - $ref: '#/components/parameters/Student_id_param'
+        - $ref: '#/components/parameters/Learning_block_id_param'
+      summary: Get ordinary class of a student in a learning block
+      responses:
+        '200':
+          description: "Student ordinary class"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    $ref: '#/components/schemas/student_ordinary_class'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -1830,26 +1865,21 @@ components:
     project_class_sections:
       type: object
       properties:
-        path:
+        section:
           type: string
-          description: "Link of the API that returns this data"
-        single:
-          type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
+          description: "Section of the project class in a given learning block"
+    student_ordinary_class:
+      type: object
+      properties:
+        study_year:
+          type: integer
+          description: "Ordinary class study year"
+        address:
           type: string
-          format: date
-          description: "Date of the current call to the API"
-        data:
-          type: object
-          properties:
-            section:
-              type: string
-              description: "Section of the project class in a given learning block"
-          description: Data returned by the api
+          description: "Ordinary class address"
+        section:
+          type: string
+          description: "Ordinary class section"
   parameters:
     School_year:
       name: school_year
@@ -1942,8 +1972,22 @@ components:
       schema:
         type: integer
       required: true
+    Learning_block_id_param:
+      name: block
+      in: path
+      description: Id of the learning block specified
+      schema:
+        type: integer
+      required: true
     Learning_area_id:
       name: id
+      in: path
+      description: Id of the learning area specified
+      schema:
+        type: string
+      required: true
+    Learning_area_id_param:
+      name: area
       in: path
       description: Id of the learning area specified
       schema:
@@ -1963,8 +2007,22 @@ components:
       schema:
         type: integer
       required: true
+    Student_id_param:
+      name: student
+      in: path
+      description: Id of the student specified
+      schema:
+        type: integer
+      required: true
     Teacher_id_path:
       name: id
+      in: path
+      description: Id of the teacher specified
+      schema:
+        type: integer
+      required: true
+    Teacher_id_path_param:
+      name: teacher
       in: path
       description: Id of the teacher specified
       schema:

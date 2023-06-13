@@ -86,6 +86,28 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async read_from_student_and_block(student_id, block_id) {
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)';
+            let values = [student_id, block_id];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length == 1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };
 

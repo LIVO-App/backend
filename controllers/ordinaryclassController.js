@@ -1,10 +1,8 @@
 'use strict';
 
-const { query } = require('express');
 const courseSchema = require('../models/ordinaryclassModel');
 const ordinaryclassModel = require('../models/ordinaryclassModel');
 const teacherModel = require('../models/teacherModel');
-const { add } = require('../models/inscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -120,6 +118,35 @@ module.exports.get_components = async (req, res) => {
         date: new Date(),
         data: data_cmps
     };
+    res.status(200).json(response);
+}
+
+module.exports.get_student_class = async (req, res) => {
+    let student_id = req.params.student;
+    let block_id = req.params.block;
+    let cl = await ordinaryclassModel.read_from_student_and_block(student_id, block_id);
+    if(cl == null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("student ordinary clas: missing parameters");
+        return;
+    }
+    if(!cl){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("ordinary class components: resource not found");
+        return;
+    }
+    let data_cl = {
+        study_year: cl.ordinary_class_study_year,
+        address: cl.ordinary_class_address,
+        section: cl.section
+    }
+    let response = {
+        path: "/api/v1/ordinary_classes/:student/:block/",
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_cl
+    }
     res.status(200).json(response);
 }
 /*{

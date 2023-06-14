@@ -82,7 +82,7 @@ describe('/api/v1/students', () => {
                     .expect(409);
             })
         })
-        describe('POST /api/v1/students/:id/grades', () => {
+        describe('POST /api/v1/students/:student_id/grades', () => {
             let validToken = jwt.sign({_id: 3, username: "Teacher3", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
             let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
             let validGrades;
@@ -111,14 +111,14 @@ describe('/api/v1/students', () => {
                 
             })
             
-            test('POST /api/v1/students/:id/grades with missing token should respond with status 401', async () => {
+            test('POST /api/v1/students/:student_id/grades with missing token should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .query({teacher_id: validGrades.teacher, course_id: validGrades.course, block_id: validGrades.block, ita_description: validGrades.ita_descr, eng_description: validGrades.eng_descr, grade: validGrades.grade})
                     .expect(401);
             })
 
-            test('POST /api/v1/students/:id/grades with invalid token should respond with status 403', async () => {
+            test('POST /api/v1/students/:student_id/grades with invalid token should respond with status 403', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', invalidToken)
@@ -127,7 +127,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token but from wrong type of user
-            test('POST /api/v1/students/:id/grades with valid token but wrong type of user should respond with status 401', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token but wrong type of user should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', tokenStudent2)
@@ -136,7 +136,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token and right type of user but teacher of different class
-            test('POST /api/v1/students/:id/grades with valid token but rigth type of user but teacher of different class should respond with status 401', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token but rigth type of user but teacher of different class should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', wrongUserToken)
@@ -145,7 +145,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with valid token and non valid project class
-            test('POST /api/v1/students/:id/grades with valid token and non valid project class', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and non valid project class', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -154,7 +154,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with non valid id student and valid token
-            test('POST /api/v1/students/:id/grades with valid token and non valid student id', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and non valid student id', async () => {
                 return request(app)
                     .post('/api/v1/students/0/grades')
                     .set('x-access-token', validToken)
@@ -164,7 +164,7 @@ describe('/api/v1/students', () => {
 
             // Post resources with student not enrolled in the class and valid token
             // Post resources with non valid id student and valid token
-            test('POST /api/v1/students/:id/grades with valid token and non valid student id', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and non valid student id', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -173,7 +173,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with missing required parameters
-            test('POST /api/v1/students/:id/grades with valid token and missing required parameters', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and missing required parameters', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -182,7 +182,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with right parameters (no final vote)
-            test('POST /api/v1/students/:id/grades with valid token and valid parameters', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and valid parameters', async () => {
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -191,7 +191,7 @@ describe('/api/v1/students', () => {
             })
 
             // Post resources with right parameters (final vote)
-            test('POST /api/v1/students/:id/grades with valid token and valid parameters with final grade', async () => {
+            test('POST /api/v1/students/:student_id/grades with valid token and valid parameters with final grade', async () => {
                 let req = request(app)
                 .post('/api/v1/students/1/grades')
                 .set('x-access-token', validToken)
@@ -201,7 +201,7 @@ describe('/api/v1/students', () => {
             })        
 
             // Post resources in a course already concluded
-            test('POST /api/v1/students/:id/grades with valid token and valid parameters but final grade inserted', async () => {  
+            test('POST /api/v1/students/:student_id/grades with valid token and valid parameters but final grade inserted', async () => {  
                 return request(app)
                     .post('/api/v1/students/1/grades')
                     .set('x-access-token', validToken)
@@ -256,9 +256,9 @@ describe('/api/v1/students', () => {
             })
         })
 
-        describe('GET /api/v1/students/:id/grades', () => {
+        describe('GET /api/v1/students/:student_id/grades', () => {
             // Get grades with non valid ID
-            test('GET /api/v1/students/:id/grades with non valid ID should respond with status 404', async () =>{
+            test('GET /api/v1/students/:student_id/grades with non valid ID should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v1/students/0/grades')
                     .query({course_id: 5, block_id: 6})
@@ -266,7 +266,7 @@ describe('/api/v1/students', () => {
             })
 
             // Get grades with missing params (course_id)
-            test('GET /api/v1/students/:id/grades with missing parameter course_id should respond with status 404', async () =>{
+            test('GET /api/v1/students/:student_id/grades with missing parameter course_id should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v1/students/2/grades')
                     .query({block_id: 6})
@@ -274,7 +274,7 @@ describe('/api/v1/students', () => {
             })
 
             // Get grades with missing params (block_id)
-            test('GET /api/v1/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            test('GET /api/v1/students/:student_id/grades with missing parameter block_id should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v1/students/2/grades')
                     .query({course_id: 5})
@@ -282,7 +282,7 @@ describe('/api/v1/students', () => {
             })
 
             // Get grades with wrong params (class doesn't exist or user is not enrolled in that project class)
-            test('GET /api/v1/students/:id/grades with missing parameter block_id should respond with status 404', async () =>{
+            test('GET /api/v1/students/:student_id/grades with missing parameter block_id should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v1/students/2/grades')
                     .query({course_id: 5, block_id:7})
@@ -290,7 +290,7 @@ describe('/api/v1/students', () => {
             })
 
             // Get grades with valid parameters
-            test('GET /api/v1/students/:id/grades with valid ID should respond with status 404', async () =>{
+            test('GET /api/v1/students/:student_id/grades with valid ID should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v1/students/2/grades')
                     .query({course_id: 5, block_id: 6})
@@ -554,9 +554,9 @@ describe('/api/v2/students', () => {
             })
         })
 
-        describe('GET /api/v2/students/:id/grades', () => {
+        describe('GET /api/v2/students/:student_id/grades', () => {
         // Get grades with non valid ID with valid token
-            test('GET /api/v2/students/:id/grades with non valid ID and valid token should respond with status 401', async () =>{
+            test('GET /api/v2/students/:student_id/grades with non valid ID and valid token should respond with status 401', async () =>{
                 return request(app)
                     .get('/api/v2/students/0/grades')
                     .set('x-access-token', tokenStudent2)
@@ -565,7 +565,7 @@ describe('/api/v2/students', () => {
             })
 
             // Get grades with missing params (course_id) with valid token
-            test('GET /api/v2/students/:id/grades with missing parameter course_id and valid token should respond with status 404', async () =>{
+            test('GET /api/v2/students/:student_id/grades with missing parameter course_id and valid token should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v2/students/2/grades')
                     .set('x-access-token', tokenStudent2)
@@ -574,7 +574,7 @@ describe('/api/v2/students', () => {
             })
 
             // Get grades with missing params (block_id) with valid token
-            test('GET /api/v2/students/:id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
+            test('GET /api/v2/students/:student_id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v2/students/2/grades')
                     .set('x-access-token', tokenStudent2)
@@ -583,7 +583,7 @@ describe('/api/v2/students', () => {
             })
 
             // Get grades with wrong params (class doesn't exist or user is not enrolled in that project class) with valid token
-            test('GET /api/v2/students/:id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
+            test('GET /api/v2/students/:student_id/grades with missing parameter block_id and valid token should respond with status 404', async () =>{
                 return request(app)
                     .get('/api/v2/students/2/grades')
                     .set('x-access-token', tokenStudent2)
@@ -592,7 +592,7 @@ describe('/api/v2/students', () => {
             })
 
             // Get grades with valid parameters with valid token
-            test('GET /api/v2/students/:id/grades with valid ID and valid token should respond with status 200', async () =>{
+            test('GET /api/v2/students/:student_id/grades with valid ID and valid token should respond with status 200', async () =>{
                 return request(app)
                     .get('/api/v2/students/2/grades')
                     .set('x-access-token', tokenStudent2)

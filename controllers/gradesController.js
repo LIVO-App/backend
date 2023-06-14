@@ -17,7 +17,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_grades = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
@@ -37,7 +37,7 @@ module.exports.get_grades = async (req, res) => {
         }
     })
     let response = {
-        path: "/api/v1/student/:id/grades",
+        path: "/api/v1/student/:student_id/grades",
         single: true,
         query: {course_id: course_id, block_id: block_id},
         date: new Date(),
@@ -47,7 +47,7 @@ module.exports.get_grades = async (req, res) => {
 }
 
 module.exports.get_grades_v2 = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -79,7 +79,7 @@ module.exports.get_grades_v2 = async (req, res) => {
         }
     })
     let response = {
-        path: "/api/v1/student/:id/grades",
+        path: "/api/v1/student/:student_id/grades",
         single: true,
         query: {course_id: course_id, block_id: block_id},
         date: new Date(),
@@ -111,7 +111,7 @@ module.exports.insert_grade = async (req, res) => {
         console.log('insert_grade: unauthorized access');
         return;
     }
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let ita_descr = req.query.ita_description;
     let eng_descr = req.query.eng_description;
     let grade = req.query.grade;

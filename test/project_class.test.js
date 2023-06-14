@@ -1,7 +1,6 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
-const { response } = require('express');
 
 describe('/api/v1/project_classes', () => {
     describe('GET methods tests', () => {

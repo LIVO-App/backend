@@ -611,7 +611,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/{id}/grades:
+  /v1/students/{student_id}/grades:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
@@ -674,7 +674,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v2/students/{id}/grades:
+  /v2/students/{student_id}/grades:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
@@ -2140,7 +2140,7 @@ components:
         type: integer
       required: true
     path_student_id:
-      name: id
+      name: student_id
       in: path
       description: Id of the student specified
       schema:

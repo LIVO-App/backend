@@ -16,7 +16,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_my_project_classes = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     let block_id = req.query.block_id;
     let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id);
     if (!cls){
@@ -43,7 +43,7 @@ module.exports.get_my_project_classes = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v1/teachers/:id/my_project_classes",
+        path: "/api/v1/teachers/:teacher_id/my_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -53,7 +53,7 @@ module.exports.get_my_project_classes = async (req, res) => {
 }
 
 module.exports.get_associated_project_classes = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     let block_id = req.query.block_id;
     let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id);
     if (!cls){
@@ -79,7 +79,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v1/teachers/:id/associated_project_classes",
+        path: "/api/v1/teachers/:teacher_id/associated_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -89,7 +89,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
 }
 
 module.exports.get_my_project_classes_v2 = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -127,7 +127,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v2/teachers/:id/my_project_classes",
+        path: "/api/v2/teachers/:teacher_id/my_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -137,7 +137,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
 }
 
 module.exports.get_associated_project_classes_v2 = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -174,7 +174,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v2/teachers/:id/associated_project_classes",
+        path: "/api/v2/teachers/:teacher_id/associated_project_classes",
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -184,7 +184,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
 }
 
 module.exports.get_my_ordinary_classes = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -220,7 +220,7 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v2/teachers/:id/my_ordinary_classes",
+        path: "/api/v2/teachers/:teacher_id/my_ordinary_classes",
         single: false,
         query: {school_year: school_year},
         date: new Date(),
@@ -230,7 +230,7 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
 }
 
 module.exports.get_active_years = async (req, res) => {
-    let teacher_id = req.params.id;
+    let teacher_id = req.params.teacher_id;
     let existingTeacher = await teacherSchema.read_id(teacher_id);
     if(!existingTeacher){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -249,7 +249,7 @@ module.exports.get_active_years = async (req, res) => {
         }
     })
     let response = {
-        path: "/api/v1/teachers/:id/active_years",
+        path: "/api/v1/teachers/:teacher_id/active_years",
         single: false,
         query: {},
         date: new Date(),

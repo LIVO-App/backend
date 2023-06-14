@@ -808,7 +808,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/teachers/{id}/my_project_classes:
+  /v1/teachers/{teacher_id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
@@ -846,7 +846,7 @@ paths:
                     description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
-  /v2/teachers/{id}/my_project_classes:
+  /v2/teachers/{teacher_id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
@@ -889,7 +889,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/teachers/{id}/associated_project_classes:
+  /v1/teachers/{teacher_id}/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
@@ -927,7 +927,7 @@ paths:
                     description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
-  /v2/teachers/{id}/associated_project_classes:
+  /v2/teachers/{teacher_id}/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
@@ -970,7 +970,7 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/teachers/{id}/my_ordinary_classes:
+  /v1/teachers/{teacher_id}/my_ordinary_classes:
     get:
       description: Get all the ordinary classes in which the teacher is teaching in a specific school year
       parameters:
@@ -1151,7 +1151,7 @@ paths:
                     description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
-  /v1/teachers/{id}/active_years:
+  /v1/teachers/{teacher_id}/active_years:
     get:
       description: Get the years which the teacher was actively teaching in the school
       parameters:
@@ -2154,7 +2154,7 @@ components:
         type: integer
       required: true
     path_teacher_id:
-      name: id
+      name: teacher_id
       in: path
       description: Id of the teacher specified
       schema:

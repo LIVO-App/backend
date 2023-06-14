@@ -34,8 +34,8 @@ paths:
     get:
       description: Get all the learning blocks in the system.
       parameters:
-        - $ref: '#/components/parameters/School_year'
-        - $ref: '#/components/parameters/Year_of'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_year_of'
       summary: View of all the learning blocks.
       tags:
         - learning blocks
@@ -65,12 +65,13 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/learning_block_data'
+                    description: "Data return from the api"
   /v1/learning_blocks/{id}:
     get:
       description: Get specific learning block from its ID.
       parameters:
-        - $ref: '#/components/parameters/Learning_block_id'
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/path_block_id'
+        - $ref: '#/components/parameters/query_school_year'
       summary: View a specific learning block.
       tags:
         - learning blocks
@@ -99,15 +100,16 @@ paths:
                   data:
                     type: object
                     $ref: '#/components/schemas/learning_block_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/learning_areas:
     get:
       description: Get all learning areas in the system.
       parameters:
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/All_data'
-        - $ref: '#/components/parameters/Credits'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_all_data'
+        - $ref: '#/components/parameters/query_credits'
       summary: View of all the learning areas.
       tags:
         - learning areas
@@ -137,11 +139,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/learning_area_data'
+                    description: "Data return from the api"
   /v1/learning_areas/{id}:
     get:
       description: Get specific learning area from its id.
       parameters:
-        - $ref: '#/components/parameters/Learning_area_id'
+        - $ref: '#/components/parameters/path_area_id'
       summary: View a specific learning area
       tags:
         - learning areas
@@ -170,16 +173,17 @@ paths:
                   data:
                     type: object
                     $ref: '#/components/schemas/learning_area_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/courses:
     get:
       description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
       parameters:
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Student_id'
-        - $ref: '#/components/parameters/Area_id'
-        - $ref: '#/components/parameters/Alone'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:
         - courses
@@ -209,17 +213,18 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/course_data_short'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v2/courses:
     get:
       description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Student_id'
-        - $ref: '#/components/parameters/Area_id'
-        - $ref: '#/components/parameters/Alone'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:
         - courses
@@ -249,6 +254,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/course_data_short'
+                    description: "Data return from the api"
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -259,8 +265,8 @@ paths:
     get:
       description: Get a specific course from its id.
       parameters:
-        - $ref: '#/components/parameters/Course_id_path'
-        - $ref: '#/components/parameters/Admin_info'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_admin_info'
       summary: View of a single course
       tags:
         - courses
@@ -290,13 +296,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/course_data_complete'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/courses/{id}/opento:
     get:
       description: Get all the classes that can see the course
       parameters:
-        - $ref: '#/components/parameters/Course_id_path'
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of classes for which the course can be seen
       tags:
         - courses
@@ -326,13 +333,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/ordinary_classes_course_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/courses/{id}/teachings:
     get:
       description: Get all the teachings that are teach in the course
       parameters:
-        - $ref: '#/components/parameters/Course_id_path'
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of teaching of the course
       tags:
         - courses
@@ -362,13 +370,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/teaching_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/courses/{id}/learning_contexts:
     get:
       description: Get all the learning contexts that are associated to the course
       parameters:
-        - $ref: '#/components/parameters/Course_id_path'
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of learning contexts related to the course
       tags:
         - courses
@@ -398,16 +407,17 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/learning_context_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
       parameters:
-        - $ref: '#/components/parameters/Student_id'
-        - $ref: '#/components/parameters/School_year'
-        - $ref: '#/components/parameters/Credits'
-        - $ref: '#/components/parameters/Descending'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_credits'
+        - $ref: '#/components/parameters/query_descending'
       summary: Collection of ordinary classes
       tags:
         - ordinary classes
@@ -437,6 +447,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/ordinary_class_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/auth/student_login:
@@ -522,8 +533,8 @@ paths:
         - students
         - v1
       parameters:
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_school_year'
       responses:
         '200':
           description: "Student curriculum"
@@ -549,6 +560,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/curriculum_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
   /v2/students/{id}/curriculum:
@@ -564,9 +576,9 @@ paths:
         - students
         - v2
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_school_year'
       responses:
         '200':
           description: "Student curriculum"
@@ -592,6 +604,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/curriculum_data_v2'
+                    description: "Data return from the api"
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -602,9 +615,9 @@ paths:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get grades of a student for a course
       tags:
         - students
@@ -634,19 +647,20 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/grade_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
     post:
       description: Insert a grade for a specific user given a specific project class
       parameters:
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Teacher_id'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Ita_descr'
-        - $ref: '#/components/parameters/Eng_descr'
-        - $ref: '#/components/parameters/Grade'
-        - $ref: '#/components/parameters/Final'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_ita_descr'
+        - $ref: '#/components/parameters/query_eng_descr'
+        - $ref: '#/components/parameters/query_grade'
+        - $ref: '#/components/parameters/query_final'
       summary: Insertion of a student grade
       tags:
         - students
@@ -664,10 +678,10 @@ paths:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get grades of a student for a course
       tags:
         - students
@@ -697,6 +711,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/grade_data'
+                    description: "Data return from the api"
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -711,10 +726,10 @@ paths:
         - students
         - v1
       parameters:
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Section'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_section'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -734,11 +749,11 @@ paths:
         - students
         - v2
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Section'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_section'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -760,9 +775,9 @@ paths:
         - students
         - v1
       parameters:
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -778,10 +793,10 @@ paths:
         - students
         - v2
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Student_id_path'
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -797,8 +812,8 @@ paths:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
-        - $ref: '#/components/parameters/Teacher_id_path'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get all teacher project classes
       tags:
         - teachers
@@ -828,15 +843,16 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/my_project_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
   /v2/teachers/{id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning block
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Teacher_id_path'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get all teacher project classes
       tags:
         - teachers
@@ -866,6 +882,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/my_project_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '401':
@@ -876,8 +893,8 @@ paths:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
-        - $ref: '#/components/parameters/Teacher_id_path'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get all teacher associated project classes
       tags:
         - teachers
@@ -907,15 +924,16 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/associated_project_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
   /v2/teachers/{id}/associated_project_classes:
     get:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Teacher_id_path'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get all teacher associated project classes
       tags:
         - teachers
@@ -945,6 +963,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/associated_project_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '401':
@@ -955,9 +974,9 @@ paths:
     get:
       description: Get all the ordinary classes in which the teacher is teaching in a specific school year
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Teacher_id_path'
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_school_year'
       summary: Get all teacher ordinary classes
       tags:
         - teachers
@@ -987,6 +1006,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/my_ordinary_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '401':
@@ -999,12 +1019,12 @@ paths:
     get:
       description: Get all components of a specific project class
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Course_id_path'
-        - $ref: '#/components/parameters/Learning_block_id'
-        - $ref: '#/components/parameters/Teacher_id'
-        - $ref: '#/components/parameters/Section'
-        - $ref: '#/components/parameters/Associated_class'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_associated_class'
       summary: Get project classes components
       tags:
         - project classes
@@ -1034,6 +1054,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/project_class_component_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '401':
@@ -1044,11 +1065,11 @@ paths:
     get:
       description: Get all components of a specific ordinary class
       parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/Study_year_path'
-        - $ref: '#/components/parameters/Address_path'
-        - $ref: '#/components/parameters/School_year'
-        - $ref: '#/components/parameters/Section'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_study_year'
+        - $ref: '#/components/parameters/path_address'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_section'
       summary: Get ordinary classes components
       tags:
         - ordinary classes
@@ -1078,6 +1099,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/ordinary_class_component_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '401':
@@ -1087,7 +1109,7 @@ paths:
   /v1/learning_blocks/correspondence:
     post:
       parameters:
-        - $ref: '#/components/parameters/Student_id'
+        - $ref: '#/components/parameters/query_student_id'
       summary: Search for learning blocks of a list of courses
       tags:
         - learning blocks
@@ -1126,13 +1148,14 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/learning_blocks_courses_data'
+                    description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
   /v1/teachers/{id}/active_years:
     get:
       description: Get the years which the teacher was actively teaching in the school
       parameters:
-        - $ref: '#/components/parameters/Teacher_id_path'
+        - $ref: '#/components/parameters/path_teacher_id'
       summary: Get teacher active teaching years
       tags:
         - teachers
@@ -1162,6 +1185,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/teacher_active_year_data'
+                    description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
         '404':
@@ -1170,8 +1194,8 @@ paths:
     get:
       description: Get all sections of a specific project class
       parameters:
-        - $ref: '#/components/parameters/Course_id_path'
-        - $ref: '#/components/parameters/Learning_block_id'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
       summary: Get project classes sections in a certain learning block
       tags:
         - project classes
@@ -1201,6 +1225,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/project_class_section_data'
+                    description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
         '404':
@@ -1209,8 +1234,8 @@ paths:
     get:
       description: Get ordinary class of a student in a specific learning block
       parameters:
-        - $ref: '#/components/parameters/Student_id_param'
-        - $ref: '#/components/parameters/Learning_block_id_param'
+        - $ref: '#/components/parameters/path_student_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
       summary: Get ordinary class of a student in a learning block
       tags:
         - ordinary classes
@@ -1988,192 +2013,199 @@ components:
           type: string
           description: "Ordinary class section"
   parameters:
-    School_year:
+    query_school_year:
       name: school_year
       in: query
       description: Specifies the school year of the resource you want to extract
       schema:
         type: integer
-    Block_id:
+    query_block_id:
       name: block_id
       in: query
       description: Specifies the learning block id for the resources you want to extract
       schema:
         type: integer
-    Course_id:
+    query_course_id:
       name: course_id
       in: query
       description: Specifies the course id for the resources you want to extract
       schema:
         type: integer
-    Section:
+    query_section:
       name: section
       in: query
       description: Specifies the section of a project class for the resources you want to extract
       schema:
         type: string
-    Alone:
+    query_alone:
       name: alone
       in: query
       description: Specifies if the courses displayed should be also the ones without a project class
       schema:
         type: boolean
-    Student_id:
+    query_student_id:
       name: student_id
       in: query
       description: Specifies the id of the student (in the future it will be done thanks to the token)
       schema:
         type: integer
-    Area_id:
+    query_area_id:
       name: area_id
       in: query
       description: Specifies the id of the learning area for the resources we want to extract
       schema:
         type: string
-    All_data:
+    query_all_data:
       name: all_data
       in: query
       description: Specifies whether the user wants to have all the data or only part of them
       schema:
         type: boolean
-    Admin_info:
+    query_admin_info:
       name: admin_info
       in: query
       description: Specifies whether the user wants to have all the data regarding the admin confirmation
       schema:
         type: boolean
-    Credits:  
+    query_credits:  
       name: credits
       in: query
       description: Specifies whether the user wants the information about the credits model
       schema:
         type: boolean
-    Descending:
+    query_descending:
       name: descending
       in: query
       description: Specifies whether data should be ordered in descending order
       schema:
         type: boolean
-    Year_of:
+    query_year_of:
       name: year_of
       in: query
       description: Specifies the id of the learning block which we want to know the year
       schema:
         type: integer
-    Teacher_id:
+    query_teacher_id:
       name: teacher_id
       in: query
       description: Specifies the id of the teacher
       schema:
         type: integer
-    Associated_class:
+    query_associated_class:
       name: assoc_class
       in: query
       description: Specifies if the project class is associated to the teacher through its teaching
       schema:
         type: boolean
-    Learning_block_id:
+    path_block_id:
       name: id
       in: path
       description: Id of the learning block specified
       schema:
         type: integer
       required: true
-    Learning_block_id_param:
+    path_learning_block_id:
       name: block
       in: path
       description: Id of the learning block specified
       schema:
         type: integer
       required: true
-    Learning_area_id:
+    path_area_id:
       name: id
       in: path
       description: Id of the learning area specified
       schema:
         type: string
       required: true
-    Learning_area_id_param:
+    path_learning_area_id:
       name: area
       in: path
       description: Id of the learning area specified
       schema:
         type: string
       required: true
-    Course_id_path:
+    path_course_id:
       name: id
       in: path
       description: Id of the course specified
       schema:
         type: integer
       required: true
-    Student_id_path:
+    path_course_id_param:
+      name: course
+      in: path
+      description: Id of the course specified
+      schema:
+        type: integer
+      required: true
+    path_student_id:
       name: id
       in: path
       description: Id of the student specified
       schema:
         type: integer
       required: true
-    Student_id_param:
+    path_student_id_param:
       name: student
       in: path
       description: Id of the student specified
       schema:
         type: integer
       required: true
-    Teacher_id_path:
+    path_teacher_id:
       name: id
       in: path
       description: Id of the teacher specified
       schema:
         type: integer
       required: true
-    Teacher_id_path_param:
+    path_teacher_id_param:
       name: teacher
       in: path
       description: Id of the teacher specified
       schema:
         type: integer
       required: true
-    Token:
+    header_token:
       name: x-access-token
       in: header
       description: Token of authenticated user
       schema:
         type: string
       required: true
-    Ita_descr:
+    query_ita_descr:
       name: ita_description
       in: query
       description: Italian description of the resource we want to search/add
       schema:
         type: string
-    Eng_descr:
+    query_eng_descr:
       name: eng_description
       in: query
       description: English description of the resource we want to search/add
       schema:
         type: string
-    Grade:
+    query_grade:
       name: grade
       in: query
       description: Grade the user want to add
       schema:
         type: integer
-    Final:
+    query_final:
       name: final
       in: query
       description: Specifies if the grade the user want to add is a final grade
       schema:
         type: string
-    Study_year_path:
+    path_study_year:
       name: study_year
       in: path
       description: Study year of an ordinary class
       schema:
         type: integer
       required: true
-    Address_path:
+    path_address:
       name: address
       in: path
       description: Address of an ordinary class

@@ -19,16 +19,16 @@ describe('/api/v1/learning_areas', () => {
             });
         })
 
-        describe('GET /api/v1/learning_areas/:id', () => {
+        describe('GET /api/v1/learning_areas/:area_id', () => {
             // GET specific resource with non valid ID
-            test('GET /api/v1/learning_areas/:id with non valid ID', async () => {
+            test('GET /api/v1/learning_areas/:area_id with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/learning_areas/nonValidID')
                     .expect(404);
             })
             
             // GET specific resource with valid ID
-            test('GET /api/v1/learning_areas/:id with valid ID', async () => {
+            test('GET /api/v1/learning_areas/:area_id with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/learning_areas/SM')
                     .expect(200)

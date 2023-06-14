@@ -17,7 +17,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.inscribe_project_class = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let section = req.query.section ?? "A";
@@ -84,7 +84,7 @@ module.exports.inscribe_project_class = async (req, res) => {
 }
 
 module.exports.unsubscribe_project_class = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let classExist = await pcModel.read(course_id, block_id);
@@ -108,7 +108,7 @@ module.exports.unsubscribe_project_class = async (req, res) => {
 }
 
 module.exports.inscribe_project_class_v2 = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -185,7 +185,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
 }
 
 module.exports.unsubscribe_project_class_v2 = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});

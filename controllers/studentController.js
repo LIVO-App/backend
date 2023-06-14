@@ -13,7 +13,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_curriculum = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let school_year = req.query.school_year;
     let check = await ordinaryclassSchema.list(student_id, school_year);
     if(!check){
@@ -49,7 +49,7 @@ module.exports.get_curriculum = async (req, res) => {
         }
     });
     let response = {
-        path: "/api/v1/student/:id/curriculum",
+        path: "/api/v1/students/:student_id/curriculum",
         single: false,
         query: {
             school_year: school_year
@@ -61,7 +61,7 @@ module.exports.get_curriculum = async (req, res) => {
 }
 
 module.exports.get_curriculum_v2 = async (req, res) => {
-    let student_id = req.params.id;
+    let student_id = req.params.student_id;
     let school_year = req.query.school_year;
     //console.log(req.loggedUser);
     if(req.loggedUser.role == "student"){
@@ -105,7 +105,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
             }
         });
         let response = {
-            path: "/api/v2/student/:id/curriculum",
+            path: "/api/v2/students/:student_id/curriculum",
             single: false,
             query: {
                 school_year: school_year
@@ -151,7 +151,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
             }
         });
         let response = {
-            path: "/api/v2/student/:id/curriculum",
+            path: "/api/v2/students/:student_id/curriculum",
             single: false,
             query: {
                 school_year: school_year,

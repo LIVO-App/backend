@@ -82,16 +82,16 @@ describe('/api/v1/courses', () => {
             }, 20000);
         })
 
-        describe('GET /api/v1/courses/:id', () => {
+        describe('GET /api/v1/courses/:course_id', () => {
             // GET specific resource with non valid ID
-            test('GET /api/v1/courses/:id with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/nonValidID')
                     .expect(404)
             });
 
             // GET specific resource without admin information
-            test('GET /api/v1/courses/:id with valid ID', async () => {
+            test('GET /api/v1/courses/:course_id with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/4')
                     .expect(200)
@@ -103,7 +103,7 @@ describe('/api/v1/courses', () => {
             });
 
             // GET specific resource with admin information
-            test('GET /api/v1/courses/:id with valid ID', async () => {
+            test('GET /api/v1/courses/:course_id with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/4')
                     .query({admin_info: true})
@@ -116,16 +116,16 @@ describe('/api/v1/courses', () => {
             });
         })
         
-        describe('GET /api/v1/courses/:id/opento', () => {
+        describe('GET /api/v1/courses/:course_id/opento', () => {
             // GET resources with non valid course ID (opento)
-            test('GET /api/v1/courses/:id/opento with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/opento with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/nonValidID/opento')
                     .expect(404)
             });
 
             // GET resources with valid course ID (opento)
-            test('GET /api/v1/courses/:id/opento with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/opento with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/2/opento')
                     .expect(200)
@@ -135,7 +135,7 @@ describe('/api/v1/courses', () => {
             });
         })
 
-        describe('GET /api/v1/courses/:id/teachings', () => {
+        describe('GET /api/v1/courses/:course_id/teachings', () => {
             // GET resources with non valid course ID (teachings)
             test('GET /api/v1/courses/:id/teachings with non valid ID', async () => {
                 return request(app)
@@ -144,7 +144,7 @@ describe('/api/v1/courses', () => {
             });
 
             // GET resources with valid course ID (teachings)
-            test('GET /api/v1/courses/:id/teachings with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/teachings with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/2/teachings')
                     .expect(200)
@@ -154,16 +154,16 @@ describe('/api/v1/courses', () => {
             });
         })
 
-        describe('GET /api/v1/courses/:id/learning_contexts', () => {
+        describe('GET /api/v1/courses/:course_id/learning_contexts', () => {
             // GET resources with non valid course ID (learning contexts)
-            test('GET /api/v1/courses/:id/learning_contexts with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/learning_contexts with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/nonValidID/learning_contexts')
                     .expect(404)
             });
 
             // GET resources with valid course ID (learning contexts)
-            test('GET /api/v1/courses/:id/learning_contexts with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/learning_contexts with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/3/learning_contexts')
                     .expect(200)

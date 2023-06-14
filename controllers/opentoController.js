@@ -10,7 +10,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_institute_classes = async (req, res) => {
-    let course_id = req.params.id;
+    let course_id = req.params.course_id;
     let cls = await opentoSchema.read_from_course(course_id);
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});

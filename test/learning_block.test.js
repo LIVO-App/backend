@@ -71,16 +71,16 @@ describe('/api/v1/learning_blocks', () => {
             });
         })
 
-        describe('GET /api/v1/learning_blocks/:id', () => {
+        describe('GET /api/v1/learning_blocks/:block_id', () => {
             // GET specific resource with non valid ID
-            test('GET /api/v1/learning_blocks/:id with non valid ID', async () => {
+            test('GET /api/v1/learning_blocks/:block_id with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/learning_blocks/nonValidID')
                     .expect(404);
             });
             
             // GET specific resource with non valid parameters
-            test('GET /api/v1/learning_blocks/:id?school_year with non valid params', async () => {
+            test('GET /api/v1/learning_blocks/:block_id?school_year with non valid params', async () => {
                 return request(app)
                     .get('/api/v1/learning_blocks/7')
                     .query({ school_year: 2022})
@@ -88,7 +88,7 @@ describe('/api/v1/learning_blocks', () => {
             })
 
             // GET specific resourse
-            test('GET /api/v1/learning_blocks/:id with valid ID', async () => {
+            test('GET /api/v1/learning_blocks/:block_id with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/learning_blocks/6')
                     .expect(200)
@@ -99,7 +99,7 @@ describe('/api/v1/learning_blocks', () => {
             });
 
             // GET specific resource with valid parameters
-            test('GET /api/v1/learning_blocks/:id?school_year with valid params', async () => {
+            test('GET /api/v1/learning_blocks/:block_id?school_year with valid params', async () => {
                 return request(app)
                     .get('/api/v1/learning_blocks/6')
                     .query({ school_year: 2022 })

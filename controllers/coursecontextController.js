@@ -10,7 +10,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_contexts = async (req, res) => {
-    let course_id = req.params.id;
+    let course_id = req.params.course_id;
     let cxs = await coursecontexController.read_from_course(course_id);
     if(!cxs){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -33,7 +33,7 @@ module.exports.get_contexts = async (req, res) => {
         };
     });
     let response = {
-        path: "/api/v1/courses/:id/learning_contexts",
+        path: "/api/v1/courses/:course_id/learning_contexts",
         single: false,
         query: {},
         date: new Date(),

@@ -7,6 +7,6 @@ const learningBlocksHandler = require('../../controllers/learning_blocksControll
 
 router.get('/', learningBlocksHandler.get_blocks);
 router.post('/correspondence', learningBlocksHandler.get_blocks_from_courses);
-router.get('/:id', learningBlocksHandler.get_block);
+router.get('/:block_id', learningBlocksHandler.get_block);
 
 module.exports = router;

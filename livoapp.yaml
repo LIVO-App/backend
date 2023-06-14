@@ -66,7 +66,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/learning_block_data'
                     description: "Data return from the api"
-  /v1/learning_blocks/{id}:
+  /v1/learning_blocks/{block_id}:
     get:
       description: Get specific learning block from its ID.
       parameters:
@@ -140,7 +140,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/learning_area_data'
                     description: "Data return from the api"
-  /v1/learning_areas/{id}:
+  /v1/learning_areas/{area_id}:
     get:
       description: Get specific learning area from its id.
       parameters:
@@ -261,7 +261,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{id}:
+  /v1/courses/{course_id}:
     get:
       description: Get a specific course from its id.
       parameters:
@@ -299,7 +299,7 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{id}/opento:
+  /v1/courses/{course_id}/opento:
     get:
       description: Get all the classes that can see the course
       parameters:
@@ -336,7 +336,7 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{id}/teachings:
+  /v1/courses/{course_id}/teachings:
     get:
       description: Get all the teachings that are teach in the course
       parameters:
@@ -373,7 +373,7 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{id}/learning_contexts:
+  /v1/courses/{course_id}/learning_contexts:
     get:
       description: Get all the learning contexts that are associated to the course
       parameters:
@@ -525,7 +525,7 @@ paths:
           description: Redirect to Google authentication page.
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /v1/students/{id}/curriculum:
+  /v1/students/{student_id}/curriculum:
     get:
       description: Get all the courses in the curriculum of a student for a certain school year.
       summary: Get student curriculum
@@ -563,7 +563,7 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v2/students/{id}/curriculum:
+  /v2/students/{student_id}/curriculum:
     get:
       description: |
         Get all the courses in the curriculum of a student for a certain school year. 
@@ -718,7 +718,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/{id}/inscribe:
+  /v1/students/{student_id}/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -741,7 +741,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v2/students/{id}/inscribe:
+  /v2/students/{student_id}/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -767,7 +767,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v1/students/{id}/unscribe:
+  /v1/students/{student_id}/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -785,7 +785,7 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v2/students/{id}/unscribe:
+  /v2/students/{student_id}/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -2098,7 +2098,7 @@ components:
       schema:
         type: boolean
     path_block_id:
-      name: id
+      name: block_id
       in: path
       description: Id of the learning block specified
       schema:
@@ -2112,7 +2112,7 @@ components:
         type: integer
       required: true
     path_area_id:
-      name: id
+      name: area_id
       in: path
       description: Id of the learning area specified
       schema:
@@ -2126,7 +2126,7 @@ components:
         type: string
       required: true
     path_course_id:
-      name: id
+      name: course_id
       in: path
       description: Id of the course specified
       schema:

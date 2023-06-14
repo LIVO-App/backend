@@ -117,7 +117,7 @@ module.exports.get_courses_v2 = async (req, res) => {
 }
 
 module.exports.get_course = async (req, res) => {
-    let course_id = req.params.id;
+    let course_id = req.params.course_id;
     let admin_info = req.query.admin_info;
     let course = await courseSchema.read(course_id, admin_info);
     if(!course){

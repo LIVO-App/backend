@@ -36,7 +36,7 @@ module.exports.get_blocks = async (req, res) => {
 }
 
 module.exports.get_block = async (req, res) => {
-    let id = req.params.id;
+    let id = req.params.block_id;
     let school_year = req.query.school_year;
     let block = await learningBlockSchema.read(id,school_year);
     if(!block){

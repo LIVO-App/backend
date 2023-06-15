@@ -51,8 +51,9 @@ module.exports.get_project_class_components = async (req, res) => {
             ord_class_section: cmp.section
         }
     });
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/components"
     let response = {
-        path: "/api/v1/project_classes/:course/:block/components",
+        path: path,
         single: false,
         query: query,
         date: new Date(),
@@ -80,8 +81,9 @@ module.exports.get_project_class_sections = async (req,res) => {
             section: section.section
         }
     })
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/sections";
     let response = {
-        path: "/api/v1/project_classes/:course/:block/sections",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

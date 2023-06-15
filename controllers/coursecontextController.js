@@ -32,8 +32,9 @@ module.exports.get_contexts = async (req, res) => {
             english_title: cx.english_title
         };
     });
+    let path = "/api/v1/courses/"+course_id+"/learning_contexts";
     let response = {
-        path: "/api/v1/courses/:course_id/learning_contexts",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

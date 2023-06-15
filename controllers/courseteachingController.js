@@ -32,8 +32,9 @@ module.exports.get_teachings = async (req, res) => {
             english_title: tc.english_title
         };
     });
+    let path = "/api/v1/courses/"+course_id+"/teachings";
     let response = {
-        path: "/api/v1/courses/:course_id/teachings",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

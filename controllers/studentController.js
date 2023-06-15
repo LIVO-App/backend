@@ -48,8 +48,9 @@ module.exports.get_curriculum = async (req, res) => {
             final_grade: curr.final_grade
         }
     });
+    let path = "/api/v1/students/"+student_id+"/curriculum"
     let response = {
-        path: "/api/v1/students/:student_id/curriculum",
+        path: path,
         single: false,
         query: {
             school_year: school_year
@@ -104,8 +105,9 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 future_course: curr.future_course
             }
         });
+        let path = "/api/v2/students/"+student_id+"/curriculum"
         let response = {
-            path: "/api/v2/students/:student_id/curriculum",
+            path: path,
             single: false,
             query: {
                 school_year: school_year
@@ -150,8 +152,9 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 future_course: curr.future_course
             }
         });
+        let path = "/api/v2/students/"+student_id+"/curriculum"
         let response = {
-            path: "/api/v2/students/:student_id/curriculum",
+            path: path,
             single: false,
             query: {
                 school_year: school_year,

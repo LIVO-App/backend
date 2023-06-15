@@ -111,8 +111,9 @@ module.exports.get_components = async (req, res) => {
             surname: cmp.surname
         }
     });
+    let path = "/api/v1/ordinary_classes/"+study_year+"/"+address+"/components"
     let response = {
-        path: "/api/v1/ordinary_classes/:study_year/:address/components",
+        path: path,
         single: false,
         query: {school_year: school_year, section: section},
         date: new Date(),
@@ -140,8 +141,9 @@ module.exports.get_student_class = async (req, res) => {
         address: cl.ordinary_class_address,
         section: cl.section
     }
+    let path = "/api/v1/ordinary_classes/"+student_id+"/"+block_id+"/"
     let response = {
-        path: "/api/v1/ordinary_classes/:student/:block/",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

@@ -42,8 +42,9 @@ module.exports.get_my_project_classes = async (req, res) => {
             my_teaching: cl.my_teaching
         }
     });
+    let path = "/api/v1/teachers/"+teacher_id+"/my_project_classes"
     let response = {
-        path: "/api/v1/teachers/:teacher_id/my_project_classes",
+        path: path,
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -78,8 +79,9 @@ module.exports.get_associated_project_classes = async (req, res) => {
             teaching_ref: teaching_ref,
         }
     });
+    let path = "/api/v1/teachers/"+teacher_id+"/associated_project_classes"
     let response = {
-        path: "/api/v1/teachers/:teacher_id/associated_project_classes",
+        path: path,
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -126,8 +128,9 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
             my_teaching: cl.my_teaching
         }
     });
+    let path = "/api/v2/teachers/"+teacher_id+"/my_project_classes"
     let response = {
-        path: "/api/v2/teachers/:teacher_id/my_project_classes",
+        path: path,
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -173,8 +176,9 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
             teaching_ref: teaching_ref,
         }
     });
+    let path = "/api/v2/teachers/"+teacher_id+"/associated_project_classes"
     let response = {
-        path: "/api/v2/teachers/:teacher_id/associated_project_classes",
+        path: path,
         single: false,
         query: {block_id: block_id},
         date: new Date(),
@@ -219,8 +223,9 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
             section: cl.section
         }
     });
+    let path = "/api/v1/teachers/"+teacher_id+"/my_ordinary_classes";
     let response = {
-        path: "/api/v2/teachers/:teacher_id/my_ordinary_classes",
+        path: path,
         single: false,
         query: {school_year: school_year},
         date: new Date(),

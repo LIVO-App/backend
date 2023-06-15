@@ -36,8 +36,9 @@ module.exports.get_grades = async (req, res) => {
             final: grade.final
         }
     })
+    let path = "/api/v1/student/"+student_id+"/grades"
     let response = {
-        path: "/api/v1/student/:student_id/grades",
+        path: path,
         single: true,
         query: {course_id: course_id, block_id: block_id},
         date: new Date(),
@@ -78,8 +79,9 @@ module.exports.get_grades_v2 = async (req, res) => {
             final: grade.final
         }
     })
+    let path = "/api/v2/student/"+student_id+"/grades"
     let response = {
-        path: "/api/v1/student/:student_id/grades",
+        path: path,
         single: true,
         query: {course_id: course_id, block_id: block_id},
         date: new Date(),

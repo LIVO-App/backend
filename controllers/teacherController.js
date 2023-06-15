@@ -237,7 +237,8 @@ module.exports.get_active_years = async (req, res) => {
         console.log("teacher active year: resource not found");
         return; 
     }
-    let yrs = await teacherSchema.getActiveYears(teacher_id);
+    let full_class = req.query.full_class;
+    let yrs = await teacherSchema.getActiveYears(teacher_id, full_class);
     if(!yrs){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher active year: missing parameters");
@@ -245,13 +246,16 @@ module.exports.get_active_years = async (req, res) => {
     }
     let data_years = yrs.map((yr) => {
         return {
+            study_year: yr.ordinary_class_study_year,
+            address: yr.ordinary_class_address,
             year: yr.ordinary_class_school_year
         }
     })
+    let path = "/api/v1/teachers/"+teacher_id+"/active_years";
     let response = {
-        path: "/api/v1/teachers/:teacher_id/active_years",
+        path: path,
         single: false,
-        query: {},
+        query: {full_class: full_class},
         date: new Date(),
         data: data_years
     }

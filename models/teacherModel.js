@@ -99,14 +99,20 @@ module.exports = {
             conn.release();
         }
     },
-    async getActiveYears(teacher_id){
+    async getActiveYears(teacher_id, full_class = false){
         try{
             conn = await pool.getConnection();
             if(!teacher_id){
                 conn.release();
                 return false;
             }
-            sql = 'SELECT DISTINCT ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id=?'
+            sql = 'SELECT '
+            if (!full_class){
+                sql+='DISTINCT'
+            } else {
+                sql += ' ot.ordinary_class_study_year, ot.ordinary_class_address,'
+            }
+            sql += ' ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id=?'
             const rows = await conn.query(sql, teacher_id);
             conn.release();
             return rows;

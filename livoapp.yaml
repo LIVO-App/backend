@@ -1156,6 +1156,7 @@ paths:
       description: Get the years which the teacher was actively teaching in the school
       parameters:
         - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_full_class'
       summary: Get teacher active teaching years
       tags:
         - teachers
@@ -1990,7 +1991,15 @@ components:
           description: Block Id where a student has taken that course
     teacher_active_year_data:
       type: object
+      required:
+        - "year"
       properties:
+        study_year:
+          type: integer
+          description: "Study year of the ordinary class the teacher was active teaching"
+        address:
+          type: string
+          description: "Address of the ordinary class the teacher was active teaching"
         year:
           type: integer
           description: "Year in with the teacher was active teaching in the school"
@@ -2212,3 +2221,9 @@ components:
       schema:
         type: string
       required: true
+    query_full_class:
+      name: full_class
+      in: query
+      description: Specifies if we want information about the classes
+      schema:
+        type: boolean

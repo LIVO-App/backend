@@ -189,6 +189,16 @@ describe('/api/v1/teachers', () => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0);
                     })
             })
+
+            test('GET /api/v1/teachers/:teacher_id/active_years with full_class param should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/teachers/1/active_years')
+                    .query({full_class: true})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    })
+            })
         })
     })
 })

@@ -1,11 +1,14 @@
 'use strict';
 
-const { query } = require('express');
 const courseSchema = require('../models/ordinaryclassModel');
+const ordinaryclassModel = require('../models/ordinaryclassModel');
+const teacherModel = require('../models/teacherModel');
 
 let MSG = {
     notFound: "Resource not found",
-    updateFailed: "Failed to save"
+    updateFailed: "Failed to save",
+    missingParameter: "Missing required information",
+    notAuthorized: "Not authorized request"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -68,6 +71,83 @@ module.exports.get_classes = async (req, res) => {
         },
         date: new Date(),
         data: data_classes,
+    }
+    res.status(200).json(response);
+}
+
+module.exports.get_components = async (req, res) => {
+    let study_year = req.params.study_year;
+    let address = req.params.address;
+    let school_year = req.query.school_year;
+    let section = req.query.section;
+    if(req.loggedUser.role == "teacher"){
+        let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
+        //console.log(teach);
+        if(teach==null){
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log("ordinary_class components: missing parameters");
+            return;
+        }
+        if(!teach){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('my_ordinary_class: unauthorized access. Not my class');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('my_ordinary_class: unauthorized access');
+        return;
+    }
+    let cmps = await ordinaryclassModel.components(study_year, address, school_year, section);
+    if (!cmps) {
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("ordinary class components: missing parameters");
+        return;
+    }
+    let data_cmps = cmps.map((cmp) => {
+        return {
+            id: cmp.id,
+            name: cmp.name,
+            surname: cmp.surname
+        }
+    });
+    let path = "/api/v1/ordinary_classes/"+study_year+"/"+address+"/components"
+    let response = {
+        path: path,
+        single: false,
+        query: {school_year: school_year, section: section},
+        date: new Date(),
+        data: data_cmps
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_student_class = async (req, res) => {
+    let student_id = req.params.student;
+    let block_id = req.params.block;
+    let cl = await ordinaryclassModel.read_from_student_and_block(student_id, block_id);
+    if(cl == null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("student ordinary clas: missing parameters");
+        return;
+    }
+    if(!cl){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("ordinary class components: resource not found");
+        return;
+    }
+    let data_cl = {
+        study_year: cl.ordinary_class_study_year,
+        address: cl.ordinary_class_address,
+        section: cl.section
+    }
+    let path = "/api/v1/ordinary_classes/"+student_id+"/"+block_id+"/"
+    let response = {
+        path: path,
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_cl
     }
     res.status(200).json(response);
 }

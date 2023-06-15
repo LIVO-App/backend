@@ -43,7 +43,7 @@ module.exports.get_areas = async (req, res) => {
 }
 
 module.exports.get_area = async (req, res) => {
-    let area = await learningAreaSchema.read(req.params.id);
+    let area = await learningAreaSchema.read(req.params.area_id);
     if(!area){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('single learning area: resource not found');

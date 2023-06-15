@@ -428,7 +428,7 @@ CREATE TABLE `inscribed` (
   `student_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
-  `section` varchar(3) NOT NULL DEFAULT 'A',
+  `section` varchar(3) NOT NULL DEFAULT '',
   `pending` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -471,7 +471,7 @@ INSERT INTO `learning_area` (`id`, `italian_title`, `english_title`, `italian_de
 ('COM', 'Area della comunicazione', 'Communication area', NULL, NULL),
 ('SGET', 'Area storico-giuridico-economica e del territorio', 'Historical-legal-economic and territorial area', NULL, NULL),
 ('SM', 'Area scientifico-matematica', 'Scientific-mathematical area', NULL, NULL),
-('TEC', 'Area tecnologica', 'Technology area', 'In quest\'area, uno studente ha la possibilità di avere a che fare con le tecnologie all\'avanguardia nel settore', 'In this area, a student has the opportunity to deal with cutting-edge technologies in the field'),
+('TEC', 'Area tecnologica, artistico, motoria', 'Technology area', 'In quest\'area, uno studente ha la possibilità di avere a che fare con le tecnologie all\'avanguardia nel settore', 'In this area, a student has the opportunity to deal with cutting-edge technologies in the field'),
 ('TRA', 'Area trasversale', 'Trasversal area', 'Scienze motorie e sportive; religione cattolica; attività alternative', 'Exercise science and sports; Catholic religion; alternative activities');
 
 -- --------------------------------------------------------

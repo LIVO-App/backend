@@ -10,7 +10,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_teachings = async (req, res) => {
-    let course_id = req.params.id;
+    let course_id = req.params.course_id;
     let tcs = await courseteachingSchema.read_from_course(course_id);
     if(!tcs){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -32,8 +32,9 @@ module.exports.get_teachings = async (req, res) => {
             english_title: tc.english_title
         };
     });
+    let path = "/api/v1/courses/"+course_id+"/teachings";
     let response = {
-        path: "/api/v1/courses/:id/teachings",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

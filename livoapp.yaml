@@ -4,30 +4,78 @@ info:
   title: "LivoAPP API"
   description: API for managing school curriculum
 servers:
-  - url: http://localhost:5000/api/v1
+  - url: http://localhost:5000/api
     description: Server to use the web service locally
+tags:
+  - name: v1
+    description: Refers to the version 1 of that api
+  - name: v2
+    description: Refers to the version 2 of that api
+  - name: learning blocks
+    description: Everything about learning blocks
+  - name: learning area
+    description: Everything about learning areas
+  - name: courses
+    description: Everything about courses
+  - name: student
+    description: Everything about students
+  - name: teachers
+    description: Everything about teachers
+  - name: admin
+    description: Everything about admin
+  - name: project classes
+    description: Everything about project classes
+  - name: ordinary classes
+    description: Everything about ordinary classes
+  - name: authentication
+    description: Authentication methods
 paths:
-  /learning_blocks:
+  /v1/learning_blocks:
     get:
       description: Get all the learning blocks in the system.
       parameters:
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_year_of'
       summary: View of all the learning blocks.
+      tags:
+        - learning blocks
+        - v1
       responses:
         '200':
           description: "Collection of learning blocks."
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/learning_blocks'
-  /learning_blocks/{id}:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_block_data'
+                    description: "Data return from the api"
+  /v1/learning_blocks/{block_id}:
     get:
       description: Get specific learning block from its ID.
       parameters:
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/path_block_id'
+        - $ref: '#/components/parameters/query_school_year'
       summary: View a specific learning block.
+      tags:
+        - learning blocks
+        - v1
       responses:
         '200':
           description: "View of a single learning block."
@@ -35,30 +83,72 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: '#/components/schemas/learning_blocks'
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/learning_block_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /learning_areas:
+  /v1/learning_areas:
     get:
       description: Get all learning areas in the system.
       parameters:
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/All_data'
-        - $ref: '#/components/parameters/Credits'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_all_data'
+        - $ref: '#/components/parameters/query_credits'
       summary: View of all the learning areas.
+      tags:
+        - learning areas
+        - v1
       responses:
         '200':
           description: "Collection of learning areas"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/learning_areas'
-  /learning_areas/{id}:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_area_data'
+                    description: "Data return from the api"
+  /v1/learning_areas/{area_id}:
     get:
       description: Get specific learning area from its id.
+      parameters:
+        - $ref: '#/components/parameters/path_area_id'
       summary: View a specific learning area
+      tags:
+        - learning areas
+        - v1
       responses:
         '200':
           description: "View of a single learning area"
@@ -66,120 +156,312 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: '#/components/schemas/learning_areas'
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/learning_area_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /courses:
+  /v1/courses:
     get:
       description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
       parameters:
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Student_id'
-        - $ref: '#/components/parameters/Area_id'
-        - $ref: '#/components/parameters/Alone'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
+      tags:
+        - courses
+        - v1
       responses:
         '200':
           description: "Collection of courses"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/courses'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/course_data_short'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /courses/{id}:
+  /v2/courses:
+    get:
+      description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_alone'
+      summary: View of all the courses
+      tags:
+        - courses
+        - v2
+      responses:
+        '200':
+          description: "Collection of courses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/course_data_short'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/courses/{course_id}:
     get:
       description: Get a specific course from its id.
       parameters:
-        - $ref: '#/components/parameters/Admin_info'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_admin_info'
       summary: View of a single course
+      tags:
+        - courses
+        - v1
       responses:
         '200':
           description: "View of a single course"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/course'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/course_data_complete'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /courses/{id}/opento:
+  /v1/courses/{course_id}/opento:
     get:
       description: Get all the classes that can see the course
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of classes for which the course can be seen
+      tags:
+        - courses
+        - v1
       responses:
         '200':
           description: "Collection of ordinary classes"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ordinary_classes_course'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ordinary_classes_course_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /courses/{id}/teachings:
+  /v1/courses/{course_id}/teachings:
     get:
       description: Get all the teachings that are teach in the course
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of teaching of the course
+      tags:
+        - courses
+        - v1
       responses:
         '200':
           description: "Collection of teachings"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/teachings'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/teaching_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /courses/{id}/learning_contexts:
+  /v1/courses/{course_id}/learning_contexts:
     get:
       description: Get all the learning contexts that are associated to the course
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
       summary: Collection of learning contexts related to the course
+      tags:
+        - courses
+        - v1
       responses:
         '200':
           description: "Collection of contexts"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/learning_contexts'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_context_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /ordinary_classes:
+  /v1/ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
       parameters:
-        - $ref: '#/components/parameters/Student_id'
-        - $ref: '#/components/parameters/School_year'
-        - $ref: '#/components/parameters/Credits'
-        - $ref: '#/components/parameters/Descending'
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_credits'
+        - $ref: '#/components/parameters/query_descending'
       summary: Collection of ordinary classes
+      tags:
+        - ordinary classes
+        - v1
       responses:
         '200':
           description: "Collection of ordinary classes "
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ordinary_classes'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ordinary_class_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /auth/student_login:
+  /v1/auth/student_login:
     post:
       description: Authentication for student
       summary: Student login
+      tags:
+        - authentication
+        - v1
       requestBody:
          content:
           application/json:
             schema:
-              $ref: '#/components/schemas/student'
+              $ref: '#/components/schemas/student_auth'
       responses:
         '200':
           description: "Authentication completed"
@@ -189,15 +471,18 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /auth/teacher_login:
+  /v1/auth/teacher_login:
     post:
       description: Authentication for teacher
       summary: Teacher login
+      tags:
+        - authentication
+        - v1
       requestBody:
          content:
           application/json:
             schema:
-              $ref: '#/components/schemas/teacher'
+              $ref: '#/components/schemas/teacher_auth'
       responses:
         '200':
           description: "Authentication completed"
@@ -207,15 +492,18 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /auth/admin_login:
+  /v1/auth/admin_login:
     post:
       description: Authentication for admin
       summary: Admin login
+      tags:
+        - authentication
+        - v1
       requestBody:
          content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/admin_auth'
       responses:
         '200':
           description: "Authentication completed"
@@ -225,58 +513,223 @@ paths:
                 $ref: '#/components/schemas/authentication_res'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /auth/google:
+  /v1/auth/google:
     get:
       description: Google authentication. It will redirect to the google authentication page.
       summary: Google authentication
+      tags:
+        - authentication
+        - v1
       responses:
         '200':
           description: Redirect to Google authentication page.
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /students/:id/curriculum:
+  /v1/students/{student_id}/curriculum:
     get:
       description: Get all the courses in the curriculum of a student for a certain school year.
       summary: Get student curriculum
+      tags:
+        - students
+        - v1
       parameters:
-        - $ref: '#/components/parameters/School_year'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_school_year'
       responses:
         '200':
           description: "Student curriculum"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/curriculum'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/curriculum_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /students/:id/grades:
+  /v2/students/{student_id}/curriculum:
+    get:
+      description: |
+        Get all the courses in the curriculum of a student for a certain school year. 
+        If the user is a student, it will show all the courses he is inscribed in that school year. 
+        If the user logged in is a teacher, the api will return only the courses related to the teacher:
+          - the ones that he teaches in (his project classes)
+          - the ones associated to him through his teachings
+      summary: Get student curriculum
+      tags:
+        - students
+        - v2
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_school_year'
+      responses:
+        '200':
+          description: "Student curriculum"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/curriculum_data_v2'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/grades:
     get:
       description: Get all the grades of a student in a certain project class
       parameters:
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Get grades of a student for a course
+      tags:
+        - students
+        - v1
       responses:
         '200':
           description: "Student grades"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/grades'
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/grade_data'
+                    description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /students/:id/inscribe:
+    post:
+      description: Insert a grade for a specific user given a specific project class
+      parameters:
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_ita_descr'
+        - $ref: '#/components/parameters/query_eng_descr'
+        - $ref: '#/components/parameters/query_grade'
+        - $ref: '#/components/parameters/query_final'
+      summary: Insertion of a student grade
+      tags:
+        - students
+        - v1
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v2/students/{student_id}/grades:
+    get:
+      description: Get all the grades of a student in a certain project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Get grades of a student for a course
+      tags:
+        - students
+        - v2
+      responses:
+        '200':
+          description: "Student grades"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/grade_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/inscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
+      tags:
+        - students
+        - v1
       parameters:
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
-        - $ref: '#/components/parameters/Section'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_section'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -288,16 +741,533 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /students/:id/unscribe:
+  /v2/students/{student_id}/inscribe:
+    post:
+      description: Subscription to a project class by a student
+      summary: Subscription to a course
+      tags:
+        - students
+        - v2
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_section'
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /v1/students/{student_id}/unscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
+      tags:
+        - students
+        - v1
       parameters:
-        - $ref: '#/components/parameters/Course_id'
-        - $ref: '#/components/parameters/Block_id'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v2/students/{student_id}/unscribe:
+    post:
+      description: Delete of a subscription to a project class by a student
+      summary: Delete a subscription to a course
+      tags:
+        - students
+        - v2
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/my_project_classes:
+    get:
+      description: Get all the project classes in which the teacher teaches in a certain learning block
+      parameters:
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Get all teacher project classes
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/my_project_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+  /v2/teachers/{teacher_id}/my_project_classes:
+    get:
+      description: Get all the project classes in which the teacher teaches in a certain learning block
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_course_id'
+      summary: Get all teacher project classes
+      tags:
+        - teachers
+        - v2
+      responses:
+        '200':
+          description: "Teacher project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/my_project_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/teachers/{teacher_id}/associated_project_classes:
+    get:
+      description: Get all the project classes in which the teacher is associated through its teachings
+      parameters:
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Get all teacher associated project classes
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher associated project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/associated_project_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+  /v2/teachers/{teacher_id}/associated_project_classes:
+    get:
+      description: Get all the project classes in which the teacher is associated through its teachings
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_course_id'
+      summary: Get all teacher associated project classes
+      tags:
+        - teachers
+        - v2
+      responses:
+        '200':
+          description: "Teacher associated project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/associated_project_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/teachers/{teacher_id}/my_ordinary_classes:
+    get:
+      description: Get all the ordinary classes in which the teacher is teaching in a specific school year
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_school_year'
+      summary: Get all teacher ordinary classes
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher ordinary classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/my_ordinary_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/project_classes/{course}/{block}/components:
+    get:
+      description: Get all components of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_associated_class'
+      summary: Get project classes components
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project classes components"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_class_component_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/ordinary_classes/{study_year}/{address}/components:
+    get:
+      description: Get all components of a specific ordinary class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_study_year'
+        - $ref: '#/components/parameters/path_address'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_section'
+      summary: Get ordinary classes components
+      tags:
+        - ordinary classes
+        - v1
+      responses:
+        '200':
+          description: "Ordinary classes components"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ordinary_class_component_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/learning_blocks/correspondence:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/query_student_id'
+      summary: Search for learning blocks of a list of courses
+      tags:
+        - learning blocks
+        - v1
+      requestBody:
+        description: Array of courses to search
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+      responses:
+        '200':
+          description: "Learning blocks with courses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_blocks_courses_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+  /v1/teachers/{teacher_id}/active_years:
+    get:
+      description: Get the years which the teacher was actively teaching in the school
+      parameters:
+        - $ref: '#/components/parameters/path_teacher_id'
+        - $ref: '#/components/parameters/query_full_class'
+      summary: Get teacher active teaching years
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher's active years"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/teacher_active_year_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/project_classes/{course}/{block}/sections:
+    get:
+      description: Get all sections of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+      summary: Get project classes sections in a certain learning block
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project classes sections"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_class_section_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '404':
+          $ref: '#/components/responses/NotFound'  
+  /v1/ordinary_classes/{student}/{block}:
+    get:
+      description: Get ordinary class of a student in a specific learning block
+      parameters:
+        - $ref: '#/components/parameters/path_student_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+      summary: Get ordinary class of a student in a learning block
+      tags:
+        - ordinary classes
+        - v1
+      responses:
+        '200':
+          description: "Student ordinary class"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    $ref: '#/components/schemas/student_ordinary_class_data'
+                    description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
         '404':
@@ -405,12 +1375,61 @@ components:
                 type: string
               description:
                 type: string
+    MissingToken:
+      description: Missing authentication token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
   schemas:
-    learning_blocks:
+    learning_block_data:
       type: object
-      required:
-        - number
-        - school_year
+      properties:
+        id:
+          type: integer
+          description: "Id of the learning block"
+        number:
+          type: integer
+          description: "Number of the learning block inside a certain school year"
+        school_year:
+          type: integer
+          description: "School year in which the learning block takes place"
+        start:
+          type: string
+          format: date
+          description: "Starting date of the learning block"
+        end:
+          type: string
+          format: date
+          description: "Ending date of the learning block"
+    learning_area_data:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the learning area"
+        italian_title:
+          type: string
+          description: "Italian title of the learning area"
+        english_title:
+          type: string
+          description: "English title of the learning area"
+        italian_description:
+          type: string
+          description: "Italian description of the learning area"
+        english_description:
+          type: string
+          description: "English description of the learning area"
+        credits:
+          type: boolean
+          description: "Number of credits for that specific learning area in that specific block"
+    learning_area_ref:
+      type: object
       properties:
         path:
           type: string
@@ -421,280 +1440,41 @@ components:
         query:
           type: object
           description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: "Id of the learning block"
-              number:
-                type: integer
-                description: "Number of the learning block inside a certain school year"
-              school_year:
-                type: integer
-                description: "School year in which the learning block takes place"
-              start:
-                type: string
-                format: date
-                description: "Starting date of the learning block"
-              end:
-                type: string
-                format: date
-                description: "Ending date of the learning block"
-    learning_areas:
-      type: object
-      required:
-        - italian_title
-        - english_title
-      properties:
-        path:
-          type: string
-          description: "Link of the API that returns this data"
-        single:
-          type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: "Id of the learning area"
-              italian_title:
-                type: string
-                description: "Italian title of the learning area"
-              english_title:
-                type: string
-                description: "English title of the learning area"
-              italian_description:
-                type: string
-                description: "Italian description of the learning area"
-              english_description:
-                type: string
-                description: "English description of the learning area"
-              credits:
-                type: boolean
-                description: "Number of credits for that specific learning area in that specific block"
-    courses:
-      type: object
-      required:
-        - italian_title
-        - english_title
-      properties:
-        path:
-          type: string
-          description: "Link of the API that returns this data"
-        single:
-          type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
-        data:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: "Id of the course"
-              italian_title:
-                type: string
-                description: "Italian title of the course"
-              english_title:
-                type: string
-                description: "English title of the course"
-              credits:
-                type: integer
-                description: "Credits that the course provides"
-              italian_displayed_name:
-                type: string
-                description: "Italian displayed name of the project class associated"
-              english_displayed_name:
-                type: string
-                description: "English displayed name of the project class associated"
-              learning_area_ref:
-                type: object
-                properties:
-                  path:
-                    type: string
-                    description: "Link of the API that returns this data"
-                  single:
-                    type: boolean
-                    description: "Tells if the data are referring to the API in origin or not"
-                  query:
-                    type: object
-                    description: "List of eventual parameters for the API"
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        description: "Id of the learning area associated to the course"
-                description: "Reference to the learning area associated to the course"
-              pending:
-                type: boolean
-                description: "Is the student already inscribed to this course? Or is he waiting for a response?"
-    course:
-      type: object
-      required:
-        - italian_title
-        - english_title
-      properties:
-        path:
-          type: string
-          description: "Link of the API that returns this data"
-        single:
-          type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
         data:
           type: object
           properties:
             id:
-              type: string
-              description: "Id of the course"
-            italian_title:
-              type: string
-              description: "Italian title of the course"
-            english_title:
-              type: string
-              description: "English title of the course"
-            creation_date:
-              type: string
-              format: date
-              description: "Creation date of the course"
-            italian_description:
-              type: string
-              description: "Italian description of the course"
-            english_description:
-              type: string
-              description: "English description of the course"
-            up_hours:
               type: integer
-              description: "Number of hours of the course the students will follow from home"
-            credits:
-              type: integer
-              description: "Credits that the course provides"
-            italian_expected_learning_results:
-              type: string
-              description: "Italian expected learning results for the students that attend the course"
-            english_expected_learning_results:
-              type: string
-              description: "English expected learning results for the students that attend the course"
-            italian_criterions:
-              type: string
-              description: "Italian criterions for evaluate the knowledge of the students"
-            english_criterions:
-              type: string
-              description: "English criterions for evaluate the knowledge of the students"
-            italian_activities:
-              type: string
-              description: "Italian activities that will be carried out during the course"
-            english_activities:
-              type: string
-              description: "English activities that will be carried out during the course"
-            italian_learning_area:
-              type: string
-              description: "Italian name of the learning area associated with the course"
-            english_learning_area:
-              type: string
-              description: "English name of the learning area associated with the course"
-            italian_growth_area:
-              type: string
-              description: "Italian name of the growth area associated with the course"
-            english_growth_area:
-              type: string
-              description: "English name of the growth area associated with the course"
-            min_students:
-              type: integer
-              description: "Minimum number of students required in order to start the course"
-            max_students:
-              type: integer
-              description: "Maximum number of students expected to partake in a course to have an ideal class"
-            proposer_teacher_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the teacher that proposed the course"
-              description: "Reference to the teacher that proposed the course"
-            teacher_name:
-              type: string
-              description: "Name of the teacher that proposed the course"
-            teacher_surname:
-              type: string
-              description: "Surname of the teacher that proposed the course"
-            certifying_admin_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the admin that certified the course"
-              description: "References to the admin that certifies the course"
-            admin_name:
-              type: string
-              description: "Name of the admin that approved the course"
-            admin_surname:
-              type: string
-              description: "Surname of the admin that approved the course"
-            admin_confirmation:
-              type: string
-              format: date
-              description: "Date of the approval of the admin for that course"
-    ordinary_classes:
+              description: "Id of the learning area associated to the course"
+    course_data_short:
       type: object
-      required:
-        - italian_title
-        - english_title
+      properties:
+        id:
+          type: string
+          description: "Id of the course"
+        italian_title:
+          type: string
+          description: "Italian title of the course"
+        english_title:
+          type: string
+          description: "English title of the course"
+        credits:
+          type: integer
+          description: "Credits that the course provides"
+        italian_displayed_name:
+          type: string
+          description: "Italian displayed name of the project class associated"
+        english_displayed_name:
+          type: string
+          description: "English displayed name of the project class associated"
+        learning_area_ref:
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        pending:
+          type: boolean
+          description: "Is the student already inscribed to this course? Or is he waiting for a response?"
+    proposer_teacher_ref:
+      type: object
       properties:
         path:
           type: string
@@ -705,50 +1485,148 @@ components:
         query:
           type: object
           description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
         data:
           type: object
           properties:
+            id:
+              type: integer
+              description: "Id of the teacher that proposed the course"
+    certifying_admin_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Id of the admin that certified the course"
+    course_data_complete:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the course"
+        italian_title:
+          type: string
+          description: "Italian title of the course"
+        english_title:
+          type: string
+          description: "English title of the course"
+        creation_date:
+          type: string
+          format: date
+          description: "Creation date of the course"
+        italian_description:
+          type: string
+          description: "Italian description of the course"
+        english_description:
+          type: string
+          description: "English description of the course"
+        up_hours:
+          type: integer
+          description: "Number of hours of the course the students will follow from home"
+        credits:
+          type: integer
+          description: "Credits that the course provides"
+        italian_expected_learning_results:
+          type: string
+          description: "Italian expected learning results for the students that attend the course"
+        english_expected_learning_results:
+          type: string
+          description: "English expected learning results for the students that attend the course"
+        italian_criterions:
+          type: string
+          description: "Italian criterions for evaluate the knowledge of the students"
+        english_criterions:
+          type: string
+          description: "English criterions for evaluate the knowledge of the students"
+        italian_activities:
+          type: string
+          description: "Italian activities that will be carried out during the course"
+        english_activities:
+          type: string
+          description: "English activities that will be carried out during the course"
+        italian_learning_area:
+          type: string
+          description: "Italian name of the learning area associated with the course"
+        english_learning_area:
+          type: string
+          description: "English name of the learning area associated with the course"
+        italian_growth_area:
+          type: string
+          description: "Italian name of the growth area associated with the course"
+        english_growth_area:
+          type: string
+          description: "English name of the growth area associated with the course"
+        min_students:
+          type: integer
+          description: "Minimum number of students required in order to start the course"
+        max_students:
+          type: integer
+          description: "Maximum number of students expected to partake in a course to have an ideal class"
+        proposer_teacher_ref:
+          $ref: '#/components/schemas/proposer_teacher_ref'
+          description: "Reference to the teacher that proposed the course"
+        teacher_name:
+          type: string
+          description: "Name of the teacher that proposed the course"
+        teacher_surname:
+          type: string
+          description: "Surname of the teacher that proposed the course"
+        certifying_admin_ref:
+          $ref: '#/components/schemas/proposer_teacher_ref'
+          description: "References to the admin that certifies the course"
+        admin_name:
+          type: string
+          description: "Name of the admin that approved the course"
+        admin_surname:
+          type: string
+          description: "Surname of the admin that approved the course"
+        admin_confirmation:
+          type: string
+          format: date
+          description: "Date of the approval of the admin for that course"
+    annual_credits_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            study_year:
+              type: integer
+              description: "Study year which the credit model refers"
+            study_address:
+              type: string
+              description: "Study address which the credit model refers"
+            definition_year:
+              type: integer
+              description: "Year of the definition of the credit model"
+    ordinary_class_data:
+      type: object
+      properties:
             study_year_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the study year"
+              $ref: '#/components/schemas/study_year_ref'
               description: "References to the study year of the ordinary class"
             study_address_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the study address"
+              $ref: '#/components/schemas/study_address_ref'
               description: "References to the study address of the ordinary class"
             school_year:
               type: integer
@@ -760,35 +1638,10 @@ components:
               type: string
               description: "English name of the class displayed"
             annual_credits_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    study_year:
-                      type: integer
-                      description: "Study year which the credit model refers"
-                    study_address:
-                      type: string
-                      description: "Study address which the credit model refers"
-                    definition_year:
-                      type: integer
-                      description: "Year of the definition of the credit model"
+              $ref: '#/components/schemas/annual_credits_ref'
               description: "References to the credit model used for that class"
-    ordinary_classes_course:
+    study_year_ref:
       type: object
-      required:
-        - italian_title
-        - english_title
       properties:
         path:
           type: string
@@ -799,68 +1652,14 @@ components:
         query:
           type: object
           description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
         data:
           type: object
           properties:
-            study_year_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the study year"
-              description: "References to the study year of the ordinary class"
-            study_address_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the study address"
-              description: "References to the study address of the ordinary class"
-            italian_title:
-              type: string
-              description: "Italian title of the ordinary class"
-            english_title:
-              type: string
-              description: "English title of the ordinary class"
-            presidium:
-              type: boolean
-              description: "Specifies if the address of the class is the one for which the course was created for"
-            main_study_year:
-              type: boolean
-              description: "Specifies if the study year of the class is the one for which the course was created for"
-    teachings:
+            id:
+              type: integer
+              description: "Id of the study year"
+    study_address_ref:
       type: object
-      required:
-        - italian_title
-        - english_title
       properties:
         path:
           type: string
@@ -871,43 +1670,35 @@ components:
         query:
           type: object
           description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
         data:
           type: object
           properties:
-            teaching_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the teaching"
-              description: "References to the teaching of the course"
-            italian_title:
-              type: string
-              description: "Italian title of the teaching"
-            english_title:
-              type: string
-              description: "English title of the teaching"
-    learning_contexts:
+            id:
+              type: integer
+              description: "Id of the study address"
+    ordinary_classes_course_data:
       type: object
-      required:
-        - italian_title
-        - english_title
+      properties:
+        study_year_ref:
+          $ref: '#/components/schemas/study_year_ref'
+          description: "References to the study year of the ordinary class"
+        study_address_ref:
+          $ref: '#/components/schemas/study_address_ref'
+          description: "References to the study address of the ordinary class"
+        italian_title:
+          type: string
+          description: "Italian title of the ordinary class"
+        english_title:
+          type: string
+          description: "English title of the ordinary class"
+        presidium:
+          type: boolean
+          description: "Specifies if the address of the class is the one for which the course was created for"
+        main_study_year:
+          type: boolean
+          description: "Specifies if the study year of the class is the one for which the course was created for"
+    teaching_ref:
+      type: object
       properties:
         path:
           type: string
@@ -918,39 +1709,55 @@ components:
         query:
           type: object
           description: "List of eventual parameters for the API"
-        date:
-          type: string
-          format: date
-          description: "Date of the current call to the API"
         data:
           type: object
           properties:
-            learning_context_ref:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: "Link of the API that returns this data"
-                single:
-                  type: boolean
-                  description: "Tells if the data are referring to the API in origin or not"
-                query:
-                  type: object
-                  description: "List of eventual parameters for the API"
-                data:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: "Id of the learning context"
-              description: "References to the learning context associated to the course"
-            italian_title:
-              type: string
-              description: "Italian title of the learning context associated to the course"
-            english_title:
-              type: string
-              description: "English title of the learning context associated to the course"
-    student: 
+            id:
+              type: integer
+              description: "Id of the teaching"
+    teaching_data:
+      type: object
+      properties:
+        teaching_ref:
+          $ref: '#/components/schemas/teaching_ref'
+          description: "References to the teaching of the course"
+        italian_title:
+          type: string
+          description: "Italian title of the teaching"
+        english_title:
+          type: string
+          description: "English title of the teaching"
+    learning_context_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Id of the learning context"
+    learning_context_data:
+      type: object
+      properties:
+        learning_context_ref:
+          $ref: '#/components/schemas/learning_context_ref'
+          description: "References to the learning context associated to the course"
+        italian_title:
+          type: string
+          description: "Italian title of the learning context associated to the course"
+        english_title:
+          type: string
+          description: "English title of the learning context associated to the course"
+    student_auth: 
       type: object
       required:
         - "username"
@@ -962,7 +1769,7 @@ components:
         password:
           type: string
           description: "Password of the user that wants to login"
-    teacher: 
+    teacher_auth: 
       type: object
       required:
         - "username"
@@ -974,7 +1781,7 @@ components:
         password:
           type: string
           description: "Password of the user that wants to login"
-    admin: 
+    admin_auth: 
       type: object
       required:
         - "username"
@@ -1010,173 +1817,416 @@ components:
         id:
           type: string
           description: "ID of the user who has logged in"
-    curriculum:
+    curriculum_data:
       type: object
-      required:
-        - italian_title
-        - english_title
       properties:
-        path:
+        id:
+          type: integer
+          description: "Identifier of the course"
+        italian_title:
           type: string
-          description: "Link of the API that returns this data"
-        single:
+          description: "Italian title of the course"
+        english_title:
+          type: string
+          description: "English title of the course"
+        italian_displayed_name:
+          type: string
+          description: "Italian name displayed for a course"
+        english_displayed_name:
+          type: string
+          description: "English name displayed for a course"
+        section:
+          type: string 
+          description: "Section of the project class the student is currently enrolled in"
+        credits:
+          type: integer
+          description: "Number of credits that a course give to a student"
+        learning_area_ref:
+            $ref: '#/components/schemas/learning_area_ref'
+            description: "Reference to the learning area associated to the course"
+        final_grade:
+          type: integer
+          description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+    curriculum_data_v2:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "Identifier of the course"
+        italian_title:
+          type: string
+          description: "Italian title of the course"
+        english_title:
+          type: string
+          description: "English title of the course"
+        italian_displayed_name:
+          type: string
+          description: "Italian name displayed for a course"
+        english_displayed_name:
+          type: string
+          description: "English name displayed for a course"
+        section:
+          type: string 
+          description: "Section of the project class the student is currently enrolled in"
+        credits:
+          type: integer
+          description: "Number of credits that a course give to a student"
+        learning_area_ref:
+            $ref: '#/components/schemas/learning_area_ref'
+            description: "Reference to the learning area associated to the course"
+        final_grade:
+          type: integer
+          description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
+        future_course:
           type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
+          description: "Tells if the course that is displaying in the curriculum is a course that will be hold in the imminent or a future learning block"
+    grade_data:
+      type: object
+      properties:
+        italian_description:
+          type: string
+          description: "Italian description of a grade"
+        english_description:
+          type: string
+          description: "English description of a grade"
+        publication:
           type: string
           format: date
-          description: "Date of the current call to the API"
-        data:
-          type: object
-          properties:
-            id:
-              type: integer
-              description: "Identifier of the course"
-            italian_title:
-              type: string
-              description: "Italian title of the course"
-            english_title:
-              type: string
-              description: "English title of the course"
-            italian_displayed_name:
-              type: string
-              description: "Italian name displayed for a course"
-            english_displayed_name:
-              type: string
-              description: "English name displayed for a course"
-            section:
-              type: string 
-              description: "Section of the project class the student is currently enrolled in"
-            credits:
-              type: integer
-              description: "Number of credits that a course give to a student"
-            learning_area_ref:
-                type: object
-                properties:
-                  path:
-                    type: string
-                    description: "Link of the API that returns this data"
-                  single:
-                    type: boolean
-                    description: "Tells if the data are referring to the API in origin or not"
-                  query:
-                    type: object
-                    description: "List of eventual parameters for the API"
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        description: "Id of the learning area associated to the course"
-                description: "Reference to the learning area associated to the course"
-            final_grade:
-              type: integer
-              description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
-    grades:
+          description: "Date of the publication of the grade"
+        grade:
+          type: integer
+          description: "Grade of the student"
+        final:
+          type: boolean
+          description: "Tells the user if the grade is the final one or not"
+    my_project_class_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "Course id"
+        italian_description:
+          type: string
+          description: "Italian description of a course"
+        english_description:
+          type: string
+          description: "English description of a course"
+        section:
+          type: string 
+          description: "Section of project class"
+        teaching_ref:
+          $ref: '#/components/schemas/teaching_ref'
+          description: "References to the teaching of the course"
+        my_teaching:
+          type: boolean
+          description: "Tells if the teaching in teaching_ref is the personal teaching of the teacher"
+    associated_project_class_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "Course id"
+        italian_description:
+          type: string
+          description: "Italian description of a course"
+        english_description:
+          type: string
+          description: "English description of a course"
+        teaching_ref:
+          $ref: '#/components/schemas/teaching_ref'
+          description: "References to the teaching of the course"
+    my_ordinary_class_data:
+      type: object
+      properties:
+        study_year:
+          type: integer
+          description: "Class study year"
+        address:
+          type: string
+          description: "Class address"
+        school_year:
+          type: string
+          description: "Class school year"
+        section:
+          type: string 
+          description: "Section of ordinary class"
+    project_class_component_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Student Id
+        name:
+          type: string
+          description: Name of the student
+        surname:
+          type: string
+          description: Surname of the student
+        ord_class_study_year:
+          type: integer
+          description: Study year of the ordinary class of the student
+        ord_class_address:
+          type: string
+          description: Address of the ordinary class the student attend during the project class period
+        ord_class_section:
+          type: string
+          description: Section of the ordinary class the student attend during the project class period
+    ordinary_class_component_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Student Id
+        name:
+          type: string
+          description: Name of the student
+        surname:
+          type: string
+          description: Surname of the student
+    learning_blocks_courses_data:
+      type: object
+      properties:
+        course_id:
+          type: integer
+          description: Course Id
+        block_id:
+          type: integer
+          description: Block Id where a student has taken that course
+    teacher_active_year_data:
       type: object
       required:
-        - italian_title
-        - english_title
+        - "year"
       properties:
-        path:
+        study_year:
+          type: integer
+          description: "Study year of the ordinary class the teacher was active teaching"
+        address:
           type: string
-          description: "Link of the API that returns this data"
-        single:
-          type: boolean
-          description: "Tells if the data are referring to the API in origin or not"
-        query:
-          type: object
-          description: "List of eventual parameters for the API"
-        date:
+          description: "Address of the ordinary class the teacher was active teaching"
+        year:
+          type: integer
+          description: "Year in with the teacher was active teaching in the school"
+    project_class_section_data:
+      type: object
+      properties:
+        section:
           type: string
-          format: date
-          description: "Date of the current call to the API"
-        data:
-          type: object
-          properties:
-            italian_description:
-              type: string
-              description: "Italian description of a grade"
-            english_description:
-              type: string
-              description: "English description of a grade"
-            publication:
-              type: string
-              format: date
-              description: "Date of the publication of the grade"
-            grade:
-              type: integer
-              description: "Grade of the student"
-            final:
-              type: boolean
-              description: "Tells the user if the grade is the final one or not"
+          description: "Section of the project class in a given learning block"
+    student_ordinary_class_data:
+      type: object
+      properties:
+        study_year:
+          type: integer
+          description: "Ordinary class study year"
+        address:
+          type: string
+          description: "Ordinary class address"
+        section:
+          type: string
+          description: "Ordinary class section"
   parameters:
-    School_year:
+    query_school_year:
       name: school_year
       in: query
       description: Specifies the school year of the resource you want to extract
       schema:
         type: integer
-    Block_id:
+    query_block_id:
       name: block_id
       in: query
       description: Specifies the learning block id for the resources you want to extract
       schema:
         type: integer
-    Course_id:
+    query_course_id:
       name: course_id
       in: query
       description: Specifies the course id for the resources you want to extract
       schema:
         type: integer
-    Section:
+    query_section:
       name: section
       in: query
       description: Specifies the section of a project class for the resources you want to extract
       schema:
         type: string
-    Alone:
+    query_alone:
       name: alone
       in: query
       description: Specifies if the courses displayed should be also the ones without a project class
       schema:
         type: boolean
-    Student_id:
+    query_student_id:
       name: student_id
       in: query
       description: Specifies the id of the student (in the future it will be done thanks to the token)
       schema:
         type: integer
-    Area_id:
+    query_area_id:
       name: area_id
       in: query
       description: Specifies the id of the learning area for the resources we want to extract
       schema:
         type: string
-    All_data:
+    query_all_data:
       name: all_data
       in: query
       description: Specifies whether the user wants to have all the data or only part of them
       schema:
         type: boolean
-    Admin_info:
+    query_admin_info:
       name: admin_info
       in: query
       description: Specifies whether the user wants to have all the data regarding the admin confirmation
       schema:
         type: boolean
-    Credits:  
+    query_credits:  
       name: credits
       in: query
       description: Specifies whether the user wants the information about the credits model
       schema:
         type: boolean
-    Descending:
+    query_descending:
       name: descending
       in: query
       description: Specifies whether data should be ordered in descending order
+      schema:
+        type: boolean
+    query_year_of:
+      name: year_of
+      in: query
+      description: Specifies the id of the learning block which we want to know the year
+      schema:
+        type: integer
+    query_teacher_id:
+      name: teacher_id
+      in: query
+      description: Specifies the id of the teacher
+      schema:
+        type: integer
+    query_associated_class:
+      name: assoc_class
+      in: query
+      description: Specifies if the project class is associated to the teacher through its teaching
+      schema:
+        type: boolean
+    path_block_id:
+      name: block_id
+      in: path
+      description: Id of the learning block specified
+      schema:
+        type: integer
+      required: true
+    path_learning_block_id:
+      name: block
+      in: path
+      description: Id of the learning block specified
+      schema:
+        type: integer
+      required: true
+    path_area_id:
+      name: area_id
+      in: path
+      description: Id of the learning area specified
+      schema:
+        type: string
+      required: true
+    path_learning_area_id:
+      name: area
+      in: path
+      description: Id of the learning area specified
+      schema:
+        type: string
+      required: true
+    path_course_id:
+      name: course_id
+      in: path
+      description: Id of the course specified
+      schema:
+        type: integer
+      required: true
+    path_course_id_param:
+      name: course
+      in: path
+      description: Id of the course specified
+      schema:
+        type: integer
+      required: true
+    path_student_id:
+      name: student_id
+      in: path
+      description: Id of the student specified
+      schema:
+        type: integer
+      required: true
+    path_student_id_param:
+      name: student
+      in: path
+      description: Id of the student specified
+      schema:
+        type: integer
+      required: true
+    path_teacher_id:
+      name: teacher_id
+      in: path
+      description: Id of the teacher specified
+      schema:
+        type: integer
+      required: true
+    path_teacher_id_param:
+      name: teacher
+      in: path
+      description: Id of the teacher specified
+      schema:
+        type: integer
+      required: true
+    header_token:
+      name: x-access-token
+      in: header
+      description: Token of authenticated user
+      schema:
+        type: string
+      required: true
+    query_ita_descr:
+      name: ita_description
+      in: query
+      description: Italian description of the resource we want to search/add
+      schema:
+        type: string
+    query_eng_descr:
+      name: eng_description
+      in: query
+      description: English description of the resource we want to search/add
+      schema:
+        type: string
+    query_grade:
+      name: grade
+      in: query
+      description: Grade the user want to add
+      schema:
+        type: integer
+    query_final:
+      name: final
+      in: query
+      description: Specifies if the grade the user want to add is a final grade
+      schema:
+        type: string
+    path_study_year:
+      name: study_year
+      in: path
+      description: Study year of an ordinary class
+      schema:
+        type: integer
+      required: true
+    path_address:
+      name: address
+      in: path
+      description: Address of an ordinary class
+      schema:
+        type: string
+      required: true
+    query_full_class:
+      name: full_class
+      in: query
+      description: Specifies if we want information about the classes
       schema:
         type: boolean

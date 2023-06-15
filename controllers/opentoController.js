@@ -10,7 +10,7 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_institute_classes = async (req, res) => {
-    let course_id = req.params.id;
+    let course_id = req.params.course_id;
     let cls = await opentoSchema.read_from_course(course_id);
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -43,8 +43,9 @@ module.exports.get_institute_classes = async (req, res) => {
             main_study_year: cl.main_study_year
         };
     });
+    let path = "/api/v1/courses/"+course_id+"/opento"
     let response = {
-        path: "/api/v1/courses/:id/opento",
+        path: path,
         single: false,
         query: {},
         date: new Date(),

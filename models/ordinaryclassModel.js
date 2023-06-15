@@ -46,6 +46,68 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async teachers_classes(teacher_id, school_year){
+        try {
+            conn = await pool.getConnection();
+            if(!teacher_id){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT ot.ordinary_class_study_year, ot.ordinary_class_address, ot.ordinary_class_school_year, ot.section FROM ordinary_teach AS ot WHERE ot.teacher_id = ?';
+            let values = [teacher_id];
+            if (school_year != undefined){
+                sql += ' AND ot.ordinary_class_school_year = ?';
+                values.push(school_year);
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async components(study_year, address, school_year, section){
+        try {
+            conn = await pool.getConnection();
+            if(!study_year || !address || !school_year || !section){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT s.id, s.name, s.surname FROM attend AS att JOIN student AS s ON att.student_id = s.id WHERE att.ordinary_class_study_year = ? AND att.ordinary_class_address = ? AND att.ordinary_class_school_year = ? AND att.section = ?';
+            let values = [study_year, address, school_year, section];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
+    async read_from_student_and_block(student_id, block_id) {
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)';
+            let values = [student_id, block_id];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length == 1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 };
 

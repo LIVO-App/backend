@@ -853,6 +853,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_teacher_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_course_id'
       summary: Get all teacher project classes
       tags:
         - teachers
@@ -934,6 +935,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_teacher_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_course_id'
       summary: Get all teacher associated project classes
       tags:
         - teachers

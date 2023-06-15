@@ -282,6 +282,28 @@ describe('/api/v2/teachers', () => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             })
+
+            test('GET /api/v2/teachers/:teacher_id/my_project_classes with valid parameters and valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/teachers/2/my_project_classes')
+                    .set('x-access-token', validToken)
+                    .query({block_id: 7, course_id: 5})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+
+            test('GET /api/v2/teachers/:teacher_id/my_project_classes with valid block but wrong course id and valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/teachers/2/my_project_classes')
+                    .set('x-access-token', validToken)
+                    .query({block_id: 7, course_id: 2})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
         })
 
         describe('GET /api/v2/teachers/:teacher_id/associated_project_classes', () => {
@@ -355,6 +377,28 @@ describe('/api/v2/teachers', () => {
                     .get('/api/v2/teachers/2/associated_project_classes')
                     .set('x-access-token', validToken)
                     .query({block_id: 7})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+
+            test('GET /api/v2/teachers/:teacher_id/associated_project_classes with valid parameters and valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/teachers/2/associated_project_classes')
+                    .set('x-access-token', validToken)
+                    .query({block_id: 7, course_id: 5})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+
+            test('GET /api/v2/teachers/:teacher_id/associated_project_classes with valid block but wrong course id and valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v2/teachers/2/associated_project_classes')
+                    .set('x-access-token', validToken)
+                    .query({block_id: 7, course_id: 2})
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0);

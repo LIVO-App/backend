@@ -104,7 +104,8 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
         return;
     }
     let block_id = req.query.block_id;
-    let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id);
+    let course_id = req.query.course_id;
+    let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -132,7 +133,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id},
+        query: {block_id: block_id, course_id: course_id},
         date: new Date(),
         data: data_classes
     };
@@ -153,7 +154,8 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
         return;
     }
     let block_id = req.query.block_id;
-    let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id);
+    let course_id = req.query.course_id;
+    let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -180,7 +182,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id},
+        query: {block_id: block_id, course_id: course_id},
         date: new Date(),
         data: data_classes
     }

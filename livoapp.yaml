@@ -1195,6 +1195,7 @@ paths:
     get:
       description: Get all sections of a specific project class
       parameters:
+        - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
         - $ref: '#/components/parameters/path_learning_block_id'
       summary: Get project classes sections in a certain learning block

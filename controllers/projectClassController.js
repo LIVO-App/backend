@@ -63,6 +63,11 @@ module.exports.get_project_class_components = async (req, res) => {
 }
 
 module.exports.get_project_class_sections = async (req,res) => {
+    if(req.loggedUser.role!="admin"){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class sections: unauthorized access');
+        return;
+    }
     let course_id = req.params.course;
     let block_id = req.params.block;
     let sections = await projectClassesSchema.read_section_from_course_and_block(course_id, block_id);

@@ -119,32 +119,60 @@ describe('/api/v1/project_classes', () => {
         })
         
         describe('GET /api/v1/project_classes/:course/:block/sections', () => {
-            test('GET /api/v1/project_classes/:course/:block/sections with wrong course id should respond with status 404', async () => {
-                return request(app)
-                    .get('/api/v1/project_classes/0/7/sections')
-                    .expect(404);
-            })
+            let validAdminToken = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
-            test('GET /api/v1/project_classes/:course/:block/sections with wrong block id should respond with status 404', async () => {
-                return request(app)
-                    .get('/api/v1/project_classes/5/0/sections')
-                    .expect(404);
-            })
-
-            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters but the class does not exist in that learning block should respond with status 404', async () => {
-                return request(app)
-                    .get('/api/v1/project_classes/5/1/sections')
-                    .expect(404);
-            })
-
-            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:block/sections without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/sections')
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with invalid token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7/sections')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with wrong user token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7/sections')
+                    .set('x-access-token', wrongUserToken)
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with wrong course id and valid token should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/0/7/sections')
+                    .set('x-access-token', validAdminToken)
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with wrong block id and valid token should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/0/sections')
+                    .set('x-access-token', validAdminToken)
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters but the class does not exist in that learning block and valid token should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/1/sections')
+                    .set('x-access-token', validAdminToken)
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters and token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7/sections')
+                    .set('x-access-token', validAdminToken)
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(1);
                     });
             })
+
+
         })
     })
 })

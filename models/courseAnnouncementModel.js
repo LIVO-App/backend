@@ -22,5 +22,22 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async read(id){
+        try {
+            conn = await pool.getConnection();
+            let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment, ann.italian_message, ann.english_message FROM announcement AS ann WHERE ann.id=?';
+            const rows = await conn.query(sql, id);
+            conn.release();
+            if(rows.length === 1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 }

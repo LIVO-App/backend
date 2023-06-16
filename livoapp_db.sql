@@ -124,6 +124,8 @@ CREATE TABLE `announcement` (
   `project_class_block` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `publishment` date NOT NULL,
+  `italian_title` varchar(200) NOT NULL,
+  `english_title` varchar(200) NOT NULL,
   `italian_message` varchar(1000) NOT NULL,
   `english_message` varchar(1000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -132,8 +134,8 @@ CREATE TABLE `announcement` (
 -- Dump dei dati per la tabella `announcement`
 --
 
-INSERT INTO `announcement` (`id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `section`, `publishment`, `italian_message`, `english_message`) VALUES
-(1, 2, 5, 6, 'A', '2023-03-25', 'Attenzione, il corso sta per finire', 'Attention, the course is about to end');
+INSERT INTO `announcement` (`id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `section`, `publishment`, `italian_title`, `english_title` , `italian_message`, `english_message`) VALUES
+(1, 2, 5, 6, 'A', '2023-03-25', 'Avviso di fine corso', 'End of the course announcement', 'Attenzione, il corso sta per finire', 'Attention, the course is about to end');
 
 -- --------------------------------------------------------
 

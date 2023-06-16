@@ -10,5 +10,7 @@ router.get('/:course/:block/components', tokenChecker);
 router.get('/:course/:block/components', projectclassHandler.get_project_class_components);
 router.get('/:course/:block/sections', tokenChecker);
 router.get('/:course/:block/sections', projectclassHandler.get_project_class_sections);
+router.get('/:course/:block/announcements', tokenChecker);
+router.get('/:course/:block/announcements', projectclassHandler.get_announcments);
 
 module.exports = router;

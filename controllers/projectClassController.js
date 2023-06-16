@@ -1,6 +1,7 @@
 'use strict';
 
 const projectClassesSchema = require('../models/projectClassModel');
+const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -93,6 +94,48 @@ module.exports.get_project_class_sections = async (req,res) => {
         query: {},
         date: new Date(),
         data: data_sections
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_announcments = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    let query = teacher_id ? {teacher_id: teacher_id} : {};
+    if(req.loggedUser.role === "teacher"){
+        if(teacher_id==undefined){
+            teacher_id = req.loggedUser._id;
+        }
+        if(teacher_id != req.loggedUser._id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    }
+    let course_id = req.params.course;
+    let block_id = req.params.block;
+    let section = req.query.section;
+    query["section"] = section;
+    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, teacher_id);
+    if(!announcements){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class announcments: missing parameters");
+        return;
+    }
+    let data_announcements = announcements.map((announcement) => {
+        return {
+            id: announcement.id,
+            italian_title: announcement.italian_title,
+            english_title: announcement.english_title,
+            publishment: announcement.publishment
+        }
+    });
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/announcements";
+    let response = {
+        path: path,
+        single: false,
+        query: query,
+        date: new Date(),
+        data: data_announcements
     };
     res.status(200).json(response);
 }

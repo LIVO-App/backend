@@ -1272,6 +1272,49 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/project_classes:
+    get:
+      description: Get project classes of a student in a specific learning block
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Get project classes of a student in a learning block
+      tags:
+        - student
+        - v1
+      responses:
+        '200':
+          description: "Student project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/student_project_classes'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:
@@ -2024,6 +2067,18 @@ components:
         section:
           type: string
           description: "Ordinary class section"
+    student_project_classes:
+      type: object
+      properties:
+        italian_title:
+          type: string
+          description: "Italian title of the project class"
+        english_title:
+          type: string
+          description: "English title of the project class"
+        section:
+          type: string
+          description: "Section of the project class"
   parameters:
     query_school_year:
       name: school_year

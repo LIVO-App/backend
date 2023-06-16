@@ -551,7 +551,7 @@ INSERT INTO `limited` (`learning_block_id`, `ordinary_class_study_year`, `ordina
 (6, 5, 'BIO', 2022, 'SM', 4),
 (7, 1, 'BIO', 2022, 'COM', 2),
 (7, 1, 'BIO', 2022, 'SM', 8),
-(7, 4, 'ODO', 2022, 'SM', 4),
+(7, 4, 'ODO', 2022, 'SM', 8),
 (7, 5, 'BIO', 2022, 'COM', 2),
 (7, 5, 'BIO', 2022, 'SM', 8);
 

@@ -174,5 +174,69 @@ describe('/api/v1/project_classes', () => {
 
 
         })
+
+        describe('GET /api/v1/project_classes/:course/:block/announcements', () => {
+            test('GET /api/v1/project_classes/:course/:block/announcements without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .query({section: 'A'})
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but wrong user id should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .query({section: 'A', teacher_id: 2})
+                    .set('x-access-token', validToken)
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but missing parameters should respond with status 400', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .set('x-access-token', validToken)
+                    .expect(400);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but missing teacher id should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .query({section: 'A'})
+                    .set('x-access-token', validToken)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with valid student token but missing teacher id should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .query({section: 'A'})
+                    .set('x-access-token', wrongUserToken) //In this case it's a valid one, it's just to not have redundant variables
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/announcements with valid token and parameters should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/announcements')
+                    .query({section: 'A', teacher_id: 2})
+                    .set('x-access-token', wrongUserToken)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+        })
     })
 })

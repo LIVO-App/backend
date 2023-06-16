@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const app = require('../app');
 const gradesModel = require('../models/gradesModel');
 
+let tokenStudent1 = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let tokenStudent3 = jwt.sign({_id: 3, username: "Student3", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
@@ -295,6 +296,60 @@ describe('/api/v1/students', () => {
                     .get('/api/v1/students/2/grades')
                     .query({course_id: 5, block_id: 6})
                     .expect(200);
+            })
+        })
+
+        describe('GET /api/v1/students/:student_id/project_classes', () => {
+            test('GET /api/v1/students/:student_id/project_classes without a token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .query({block_id: 7})
+                    .expect(401)
+            })
+
+            test('GET /api/v1/students/:student_id/project_classes with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .set('x-access-token', invalidToken)
+                    .query({block_id: 7})
+                    .expect(403)
+            })
+
+            test('GET /api/v1/students/:student_id/project_classes with valid token but wrong student id should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .set('x-access-token', tokenStudent2)
+                    .query({block_id: 7})
+                    .expect(401)
+            })
+
+            test('GET /api/v1/students/:student_id/project_classes with valid token but missing parameters should respond with status 400', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .set('x-access-token', tokenStudent1)
+                    .expect(400)
+            })
+
+            test('GET /api/v1/students/:student_id/project_classes with valid token and parameter but student doesn\'t have classes in that period should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .set('x-access-token', tokenStudent1)
+                    .query({block_id: 2})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBe(0);
+                    })
+            })
+
+            test('GET /api/v1/students/:student_id/project_classes with valid token and parameter should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/project_classes')
+                    .set('x-access-token', tokenStudent1)
+                    .query({block_id: 7})
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                    })
             })
         })
     })

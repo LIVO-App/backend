@@ -1307,12 +1307,55 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/student_project_classes'
+                      $ref: '#/components/schemas/student_project_classes_data'
                     description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/project_classes/{course}/{block}/announcements:
+    get:
+      description: Get all the announcements of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+      summary: Get project class announcements
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project class announcements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_classes_announcements_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
@@ -2067,7 +2110,7 @@ components:
         section:
           type: string
           description: "Ordinary class section"
-    student_project_classes:
+    student_project_classes_data:
       type: object
       properties:
         italian_title:
@@ -2079,6 +2122,22 @@ components:
         section:
           type: string
           description: "Section of the project class"
+    project_classes_announcements_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "The id of the announcement"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string
+          description: "English title of the announcement"
+        publishment:
+          type: string
+          format: date
+          description: "Date of publication of the announcement"
   parameters:
     query_school_year:
       name: school_year

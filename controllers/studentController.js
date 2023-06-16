@@ -2,12 +2,14 @@
 
 const courseSchema = require('../models/coursesModel');
 const ordinaryclassSchema = require('../models/ordinaryclassModel');
+const studentModel = require('../models/studentModel');
 const teacherModel = require('../models/teacherModel');
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
-    notAuthorized: "Not authorized request"
+    notAuthorized: "Not authorized request",
+    missingParameters: "Missing required information"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -170,6 +172,42 @@ module.exports.get_curriculum_v2 = async (req, res) => {
         console.log('get_curriculum: unauthorized access');
         return;
     }
-    
-    
+}
+
+module.exports.get_project_classes = async (req,res) => {
+    let student_id = req.params.student_id;
+    if(req.loggedUser.role === "student"){
+        if(req.loggedUser._id != student_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('student project classes: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('student project classes: unauthorized access');
+        return;
+    }
+    let block_id = req.query.block_id;
+    let cls = await studentModel.retrieve_project_classes(student_id, block_id);
+    if(!cls){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('student project classes: missing required information');
+        return;
+    }
+    let data_cls = cls.map((cl) => {
+        return {
+            italian_title: cl.italian_title,
+            english_title: cl.english_title,
+            section: cl.section
+        }
+    });
+    let path = "/api/v1/students/"+student_id+"/project_classes";
+    let response = {
+        path: path,
+        single: false,
+        query: {block_id: block_id},
+        date: new Date(),
+        data: data_cls
+    };
+    res.status(200).json(response);
 }

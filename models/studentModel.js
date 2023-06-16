@@ -80,7 +80,11 @@ module.exports = {
     async retrieve_project_classes(student_id, block_id){
         try {
             conn = await pool.getConnection();
-            let sql = 'SELECT CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_name", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_name", ins.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id WHERE ins.student_id = ? AND ins.project_class_block = ?';
+            if(!student_id || !block_id){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_title", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_title", ins.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id WHERE ins.student_id = ? AND ins.project_class_block = ?';
             let values = [student_id, block_id];
             const rows = await conn.query(sql, values);
             conn.release();

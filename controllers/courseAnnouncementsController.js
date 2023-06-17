@@ -70,10 +70,10 @@ module.exports.publish_announcement = async (req, res) => {
             return;
         }
     }
-    let italian_title = req.query.italian_title;
-    let english_title = req.query.english_title;
-    let italian_message = req.query.italian_message;
-    let english_message = req.query.english_message;
+    let italian_title = req.body.italian_title;
+    let english_title = req.body.english_title;
+    let italian_message = req.body.italian_message;
+    let english_message = req.body.english_message;
     let publish = await announcementSchema.add(teacher_id,course_id,block_id,sections,italian_title,english_title,italian_message,english_message);
     if(publish==null){
         res.status(400).json({status: "error", description: MSG.missing_params})

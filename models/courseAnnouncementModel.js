@@ -69,11 +69,12 @@ module.exports = {
             conn.release();
         }
     },
-    async remove(id){
+    async remove(teacher_id, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
         try{
             conn = await pool.getConnection();
-            let sql = 'DELETE FROM announcement WHERE id = ?';
-            const rows = await pool.getConnection(sql, id);
+            let sql = 'DELETE FROM announcement WHERE teacher_id = ? AND project_class_course_id = ? AND project_class_block = ? AND section = ? AND italian_title = ? AND english_title = ? AND italian_message = ? AND english_message = ?';
+            let values = [teacher_id, course_id, block_id, section, italian_title, english_title, italian_message, english_message]
+            const rows = await pool.getConnection(sql, values);
             conn.release();
             return rows;
         } catch (err) {

@@ -68,5 +68,18 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async remove(id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM announcement WHERE id = ?';
+            const rows = await pool.getConnection(sql, id);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release();
+        }
     }
 }

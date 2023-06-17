@@ -5,7 +5,8 @@ const teacherSchema = require('../models/teacherModel');
 
 let MSG = {
     notFound: "Resource not found",
-    studentNotExist: "The teacher does not teach in the project class specified",
+    teacherNotTeach: "The teacher does not teach in the project class specified",
+    notAuthorized: "Not authorized request",
     missing_params: "Bad input. Missing required information"
 }
 
@@ -56,7 +57,7 @@ module.exports.publish_announcement = async (req, res) => {
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let sections = req.body.sections;
-    for(let i=0;i>sections.length;i++){
+    for(let i=0;i<sections.length;i++){
         let teacherTeach = await teacherSchema.isTeacherTeachingProject(teacher_id, course_id, block_id, sections[i]);
         if(teacherTeach==null){
             res.status(400).json({status: "error", description: MSG.missing_params})
@@ -64,7 +65,7 @@ module.exports.publish_announcement = async (req, res) => {
             return;
         }
         if(!teacherTeach){
-            res.status(400).json({status: "error", description: MSG.missing_params})
+            res.status(400).json({status: "error", description: MSG.teacherNotTeach})
             console.log('teacher doesn\'t teach in that class');
             return;
         }
@@ -74,6 +75,11 @@ module.exports.publish_announcement = async (req, res) => {
     let italian_message = req.query.italian_message;
     let english_message = req.query.english_message;
     let publish = await announcementSchema.add(teacher_id,course_id,block_id,sections,italian_title,english_title,italian_message,english_message);
+    if(publish==null){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('no sections: announcement publishing');
+        return;
+    }
     if(!publish){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: announcement publishing');

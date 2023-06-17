@@ -1,9 +1,11 @@
 'use strict';
 
 const announcementSchema = require('../models/courseAnnouncementModel');
+const teacherSchema = require('../models/teacherModel');
 
 let MSG = {
     notFound: "Resource not found",
+    studentNotExist: "The teacher does not teach in the project class specified",
     missing_params: "Bad input. Missing required information"
 }
 
@@ -33,4 +35,54 @@ module.exports.get_announcement = async (req, res) => {
         data: data_announcement
     }
     res.status(200).json(response);
+}
+
+module.exports.publish_announcement = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(teacher_id == undefined){
+            teacher_id = req.loggedUser._id;
+        }
+        if(teacher_id!=req.loggedUser._id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class sections: unauthorized access');
+        return;
+    }
+    let course_id = req.query.course_id;
+    let block_id = req.query.block_id;
+    let sections = req.body.sections;
+    for(let i=0;i>sections.length;i++){
+        let teacherTeach = await teacherSchema.isTeacherTeachingProject(teacher_id, course_id, block_id, sections[i]);
+        if(teacherTeach==null){
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing required information: teacher teach in project class');
+            return;
+        }
+        if(!teacherTeach){
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('teacher doesn\'t teach in that class');
+            return;
+        }
+    }
+    let italian_title = req.query.italian_title;
+    let english_title = req.query.english_title;
+    let italian_message = req.query.italian_message;
+    let english_message = req.query.english_message;
+    let publish = await announcementSchema.add(teacher_id,course_id,block_id,sections,italian_title,english_title,italian_message,english_message);
+    if(!publish){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing required information: announcement publishing');
+        return;
+    }
+    let res_des = "Inserted " + publish.affectedRows + " rows";
+    let response = {
+        status: "accepted", 
+        description: res_des,
+    };
+    res.status(201).json(response);
 }

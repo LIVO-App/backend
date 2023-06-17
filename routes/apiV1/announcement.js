@@ -8,5 +8,7 @@ const tokenChecker = require('../tokenChecker');
 
 router.get('/:announcement_id', tokenChecker);
 router.get('/:announcement_id', announcementHandler.get_announcement);
+router.post('/', tokenChecker);
+router.post('/', announcementHandler.publish_announcement);
 
 module.exports = router;

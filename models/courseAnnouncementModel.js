@@ -47,9 +47,20 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            let sql = 'INSERT INTO announcement (teacher_id, project_class_course_id, project_class_block, section, publishment, italian_title, english_title, italian_message, english_message) VALUES (?,?,?,?,?,?,?,?,?)';
+            if(section.length==0){
+                conn.release();
+                return null;
+            }
             let publishment = new Date();
-            let values = [teacher_id, course_id, block_id, section, publishment, italian_title, english_title, italian_message, english_message];
+            let sql = 'INSERT INTO announcement (teacher_id, project_class_course_id, project_class_block, section, publishment, italian_title, english_title, italian_message, english_message) VALUES ';
+            let values = [];
+            for(let i=0;i<section.length;i++){
+                sql += ' (?,?,?,?,?,?,?,?,?)';
+                values.push(teacher_id, course_id, block_id, section[i], publishment, italian_title, english_title, italian_message, english_message)
+                if(i<section.length-1){
+                    sql += ',';
+                }
+            }
             const rows = await conn.query(sql, values);
             return rows;
         } catch (err) {

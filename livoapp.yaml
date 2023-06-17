@@ -29,6 +29,8 @@ tags:
     description: Everything about ordinary classes
   - name: authentication
     description: Authentication methods
+  - name: announcements
+    description: Announcement methods
 paths:
   /v1/learning_blocks:
     get:
@@ -1358,6 +1360,47 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/announcements/{announcement_id}:
+    get:
+      description: Get specific announcement from its id
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_announcement_id'
+      tags:
+        - announcements
+        - v1
+      summary: Get specific announcement
+      responses:
+        '200':
+          description: "Project class announcements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/announcement_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -2138,6 +2181,28 @@ components:
           type: string
           format: date
           description: "Date of publication of the announcement"
+    announcement_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "The id of the announcement"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string
+          description: "English title of the announcement"
+        publishment:
+          type: string
+          format: date
+          description: "Date of publication of the announcement"
+        italian_message:
+          type: string
+          description: "Italian message in the announcement"
+        english_message:
+          type: string
+          description: "English message in the announcement"
   parameters:
     query_school_year:
       name: school_year
@@ -2344,3 +2409,10 @@ components:
       description: Specifies if we want information about the classes
       schema:
         type: boolean
+    path_announcement_id:
+      name: announcement_id
+      in: path
+      description: Id of an announcement
+      schema:
+        type: integer
+      required: true

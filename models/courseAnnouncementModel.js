@@ -39,5 +39,23 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add(teacher_id, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
+        try{
+            conn = await pool.getConnection();
+            if(!teacher_id || !course_id || block_id || !section || !italian_title || !english_title || !italian_message || !english_message){
+                conn.release();
+                return false;
+            }
+            let sql = 'INSERT INTO announcement (teacher_id, project_class_course_id, project_class_block, section, publishment, italian_title, english_title, italian_message, english_message) VALUES (?,?,?,?,?,?,?,?,?)';
+            let publishment = new Date();
+            let values = [teacher_id, course_id, block_id, section, publishment, italian_title, english_title, italian_message, english_message];
+            const rows = await conn.query(sql, values);
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 }

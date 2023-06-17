@@ -13,7 +13,7 @@ module.exports.get_announcement = async (req, res) => {
     let announcement_id = req.params.announcement_id;
     let announcement = await announcementSchema.read(announcement_id);
     if(!announcement){
-        res.status(404).json(MSG.notFound);
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log("Announcement: resource not found");
         return;
     }
@@ -28,7 +28,7 @@ module.exports.get_announcement = async (req, res) => {
     let response = {
         path: '/api/v1/announcements/',
         single: true,
-        query: query,
+        query: {},
         date: new Date(),
         data: data_announcement
     }

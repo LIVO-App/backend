@@ -1636,12 +1636,6 @@ components:
         credits:
           type: integer
           description: "Credits that the course provides"
-        italian_displayed_name:
-          type: string
-          description: "Italian displayed name of the project class associated"
-        english_displayed_name:
-          type: string
-          description: "English displayed name of the project class associated"
         learning_area_ref:
           $ref: '#/components/schemas/learning_area_ref'
           description: "Reference to the learning area associated to the course"
@@ -2004,12 +1998,6 @@ components:
         english_title:
           type: string
           description: "English title of the course"
-        italian_displayed_name:
-          type: string
-          description: "Italian name displayed for a course"
-        english_displayed_name:
-          type: string
-          description: "English name displayed for a course"
         section:
           type: string 
           description: "Section of the project class the student is currently enrolled in"
@@ -2034,12 +2022,6 @@ components:
         english_title:
           type: string
           description: "English title of the course"
-        italian_displayed_name:
-          type: string
-          description: "Italian name displayed for a course"
-        english_displayed_name:
-          type: string
-          description: "English name displayed for a course"
         section:
           type: string 
           description: "Section of the project class the student is currently enrolled in"
@@ -2080,10 +2062,10 @@ components:
         id:
           type: integer
           description: "Course id"
-        italian_description:
+        italian_title:
           type: string
           description: "Italian description of a course"
-        english_description:
+        english_title:
           type: string
           description: "English description of a course"
         section:
@@ -2101,10 +2083,10 @@ components:
         id:
           type: integer
           description: "Course id"
-        italian_description:
+        italian_title:
           type: string
           description: "Italian description of a course"
-        english_description:
+        english_title:
           type: string
           description: "English description of a course"
         teaching_ref:

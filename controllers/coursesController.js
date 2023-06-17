@@ -35,8 +35,6 @@ module.exports.get_courses = async (req, res) => {
             italian_title: course.italian_title,
             english_title: course.english_title,
             credits: course.credits,
-            italian_displayed_name: course.italian_displayed_name,
-            english_displayed_name: course.english_displayed_name,
             learning_area_ref: learning_area_ref,
             section: course.section,
             pending: course.inscribed
@@ -95,8 +93,6 @@ module.exports.get_courses_v2 = async (req, res) => {
             italian_title: course.italian_title,
             english_title: course.english_title,
             credits: course.credits,
-            italian_displayed_name: course.italian_displayed_name,
-            english_displayed_name: course.english_displayed_name,
             learning_area_ref: learning_area_ref,
             pending: course.inscribed
         };

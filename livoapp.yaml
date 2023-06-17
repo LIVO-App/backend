@@ -1401,6 +1401,52 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/announcements:
+    post:
+      description: Publication of announcements for a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Publication of announcements
+      tags:
+        - announcements
+        - v1
+      requestBody:
+        description: Data of the announcement
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sections:
+                  type: array
+                  items:
+                    type: string
+                  description: "Sections of the project class the teacher wants to publish"
+                italian_title:
+                  type: string
+                  description: "Italian title of the announcement"
+                english_title:
+                  type: string 
+                  description: "English title of the announcement"
+                italian_message:
+                  type: string
+                  description: "Italian content of the announcement"
+                english_message:
+                  type: string
+                  description: "English content of the announcement"
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:

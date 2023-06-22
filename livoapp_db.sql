@@ -32,56 +32,57 @@ CREATE TABLE `accessible` (
   `study_year_id` int(11) NOT NULL,
   `study_address_id` varchar(5) NOT NULL,
   `presidium` tinyint(1) NOT NULL DEFAULT 0,
-  `main_study_year` tinyint(1) NOT NULL DEFAULT 0
+  `main_study_year` tinyint(1) NOT NULL DEFAULT 0,
+  `learning_context_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `accessible`
 --
 
-INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `presidium`, `main_study_year`) VALUES
-(2, 1, 'ATS', 0, 0),
-(2, 1, 'BIO', 1, 0),
-(2, 1, 'TUR', 0, 0),
-(2, 2, 'ATS', 0, 1),
-(2, 2, 'BIO', 1, 1),
-(2, 2, 'TUR', 0, 1),
-(2, 3, 'ATS', 0, 0),
-(2, 3, 'BIO', 1, 0),
-(2, 3, 'TUR', 0, 0),
-(3, 1, 'ATS', 0, 0),
-(3, 1, 'BIO', 1, 1),
-(3, 1, 'TUR', 0, 0),
-(3, 2, 'ATS', 0, 1),
-(3, 2, 'BIO', 1, 1),
-(3, 2, 'TUR', 0, 1),
-(3, 3, 'ATS', 0, 0),
-(3, 3, 'BIO', 1, 0),
-(3, 3, 'TUR', 0, 0),
-(4, 1, 'ATS', 0, 0),
-(4, 1, 'BIO', 1, 1),
-(4, 1, 'ODO', 0, 0),
-(4, 1, 'TUR', 0, 0),
-(4, 2, 'ATS', 0, 1),
-(4, 2, 'BIO', 1, 0),
-(4, 2, 'ODO', 0, 1),
-(4, 2, 'TUR', 0, 1),
-(5, 1, 'ATS', 0, 1),
-(5, 1, 'BIO', 0, 1),
-(5, 1, 'ODO', 1, 1),
-(5, 1, 'TUR', 0, 1),
-(5, 2, 'ATS', 0, 0),
-(5, 2, 'BIO', 0, 0),
-(5, 2, 'ODO', 1, 0),
-(5, 2, 'TUR', 0, 0),
-(5, 3, 'ATS', 0, 0),
-(5, 3, 'BIO', 0, 0),
-(5, 3, 'ODO', 1, 0),
-(5, 3, 'TUR', 0, 0),
-(5, 4, 'ATS', 0, 0),
-(5, 4, 'BIO', 0, 0),
-(5, 4, 'ODO', 1, 0),
-(5, 4, 'TUR', 0, 0);
+INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `presidium`, `main_study_year`, `learning_context_id`) VALUES
+(2, 1, 'ATS', 0, 0, 2),
+(2, 1, 'BIO', 1, 0, 1),
+(2, 1, 'TUR', 0, 0, 2),
+(2, 2, 'ATS', 0, 1, 2),
+(2, 2, 'BIO', 1, 1, 1),
+(2, 2, 'TUR', 0, 1, 2),
+(2, 3, 'ATS', 0, 0, 2),
+(2, 3, 'BIO', 1, 0, 1),
+(2, 3, 'TUR', 0, 0, 2),
+(3, 1, 'ATS', 0, 0, 2),
+(3, 1, 'BIO', 1, 1, 1),
+(3, 1, 'TUR', 0, 0, 2),
+(3, 2, 'ATS', 0, 1, 2),
+(3, 2, 'BIO', 1, 1, 1),
+(3, 2, 'TUR', 0, 1, 2),
+(3, 3, 'ATS', 0, 0, 2),
+(3, 3, 'BIO', 1, 0, 1),
+(3, 3, 'TUR', 0, 0, 2),
+(4, 1, 'ATS', 0, 0, 1),
+(4, 1, 'BIO', 1, 1, 1),
+(4, 1, 'ODO', 0, 0, 1),
+(4, 1, 'TUR', 0, 0, 1),
+(4, 2, 'ATS', 0, 1, 2),
+(4, 2, 'BIO', 1, 0, 2),
+(4, 2, 'ODO', 0, 1, 2),
+(4, 2, 'TUR', 0, 1, 2),
+(5, 1, 'ATS', 0, 1, 2),
+(5, 1, 'BIO', 0, 1, 2),
+(5, 1, 'ODO', 1, 1, 2),
+(5, 1, 'TUR', 0, 1, 2),
+(5, 2, 'ATS', 0, 0, 2),
+(5, 2, 'BIO', 0, 0, 2),
+(5, 2, 'ODO', 1, 0, 2),
+(5, 2, 'TUR', 0, 0, 2),
+(5, 3, 'ATS', 0, 0, 1),
+(5, 3, 'BIO', 0, 0, 1),
+(5, 3, 'ODO', 1, 0, 1),
+(5, 3, 'TUR', 0, 0, 1),
+(5, 4, 'ATS', 0, 0, 1),
+(5, 4, 'BIO', 0, 0, 1),
+(5, 4, 'ODO', 1, 0, 1),
+(5, 4, 'TUR', 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -267,10 +268,12 @@ INSERT INTO `citizenship_report` (`id`, `student_id`, `delivery`, `certifying_ad
 --
 
 CREATE TABLE `constraints` (
+  `id` int(11) NOT NULL,
   `annual_credits_study_year` int(11) NOT NULL,
   `annual_credits_address` varchar(5) NOT NULL,
   `annual_credits_definition_year` int(11) NOT NULL,
-  `learning_area_id` varchar(5) NOT NULL,
+  `learning_area_id` varchar(5),
+  `learning_context_id` int(11) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -278,47 +281,55 @@ CREATE TABLE `constraints` (
 -- Dump dei dati per la tabella `constraints`
 --
 
-INSERT INTO `constraints` (`annual_credits_study_year`, `annual_credits_address`, `annual_credits_definition_year`, `learning_area_id`, `credits`) VALUES
-(1, 'BIO', 2018, 'COM', 14),
-(1, 'BIO', 2018, 'SGET', 10),
-(1, 'BIO', 2018, 'SM', 20),
-(1, 'BIO', 2018, 'TEC', 9),
-(1, 'BIO', 2018, 'TRA', 4),
-(1, 'BIO', 2022, 'COM', 16),
-(1, 'BIO', 2022, 'SGET', 8),
-(1, 'BIO', 2022, 'SM', 20),
-(1, 'BIO', 2022, 'TEC', 9),
-(1, 'BIO', 2022, 'TRA', 4),
-(1, 'TUR', 2019, 'COM', 24),
-(1, 'TUR', 2019, 'SGET', 16),
-(1, 'TUR', 2019, 'SM', 16),
-(1, 'TUR', 2019, 'TEC', 10),
-(1, 'TUR', 2019, 'TRA', 6),
-(2, 'BIO', 2018, 'COM', 16),
-(2, 'BIO', 2018, 'SGET', 8),
-(2, 'BIO', 2018, 'SM', 20),
-(2, 'BIO', 2018, 'TEC', 9),
-(2, 'BIO', 2018, 'TRA', 4),
-(3, 'BIO', 2018, 'COM', 12),
-(3, 'BIO', 2018, 'SGET', 5),
-(3, 'BIO', 2018, 'SM', 36),
-(3, 'BIO', 2018, 'TEC', 0),
-(3, 'BIO', 2018, 'TRA', 4),
-(4, 'BIO', 2018, 'COM', 12),
-(4, 'BIO', 2018, 'SGET', 5),
-(4, 'BIO', 2018, 'SM', 36),
-(4, 'BIO', 2018, 'TEC', 0),
-(4, 'BIO', 2018, 'TRA', 4),
-(4, 'ODO', 2019, 'COM', 12),
-(4, 'ODO', 2019, 'SGET', 3),
-(4, 'ODO', 2019, 'SM', 18),
-(4, 'ODO', 2019, 'TEC', 20),
-(4, 'ODO', 2019, 'TRA', 4),
-(5, 'BIO', 2018, 'COM', 12),
-(5, 'BIO', 2018, 'SGET', 10),
-(5, 'BIO', 2018, 'SM', 31),
-(5, 'BIO', 2018, 'TEC', 0),
-(5, 'BIO', 2018, 'TRA', 4);
+INSERT INTO `constraints` (`id`, `annual_credits_study_year`, `annual_credits_address`, `annual_credits_definition_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
+(1, 1, 'BIO', 2018, 'COM', 1, 14),
+(2, 1, 'BIO', 2018, 'SGET', 1, 10),
+(3, 1, 'BIO', 2018, 'SM', 1, 20),
+(4, 1, 'BIO', 2018, 'TEC', 1, 9),
+(5, 1, 'BIO', 2018, 'TRA', 1, 4),
+(6, 1, 'BIO', 2018, NULL, 2, 3),
+(7, 1, 'BIO', 2022, 'COM', 1, 16),
+(8, 1, 'BIO', 2022, 'SGET', 1, 8),
+(9, 1, 'BIO', 2022, 'SM', 1, 20),
+(10, 1, 'BIO', 2022, 'TEC', 1, 9),
+(11, 1, 'BIO', 2022, 'TRA', 1, 4),
+(12, 1, 'BIO', 2022, NULL, 2, 3),
+(13, 1, 'TUR', 2019, 'COM', 1, 24),
+(14, 1, 'TUR', 2019, 'SGET', 1, 16),
+(15, 1, 'TUR', 2019, 'SM', 1, 16),
+(16, 1, 'TUR', 2019, 'TEC', 1, 10),
+(17, 1, 'TUR', 2019, 'TRA', 1, 6),
+(18, 1, 'TUR', 2019, NULL, 2, 3),
+(19, 2, 'BIO', 2018, 'COM', 1, 16),
+(20, 2, 'BIO', 2018, 'SGET', 1, 8),
+(21, 2, 'BIO', 2018, 'SM', 1, 20),
+(22, 2, 'BIO', 2018, 'TEC', 1, 9),
+(23, 2, 'BIO', 2018, 'TRA', 1, 4),
+(24, 2, 'BIO', 2018, NULL, 2, 3),
+(25, 3, 'BIO', 2018, 'COM', 1, 12),
+(26, 3, 'BIO', 2018, 'SGET', 1, 5),
+(27, 3, 'BIO', 2018, 'SM', 1, 36),
+(28, 3, 'BIO', 2018, 'TEC', 1, 0),
+(29, 3, 'BIO', 2018, 'TRA', 1, 4),
+(30, 3, 'BIO', 2018, NULL, 2, 3),
+(31, 4, 'BIO', 2018, 'COM', 1, 12),
+(32, 4, 'BIO', 2018, 'SGET', 1, 5),
+(33, 4, 'BIO', 2018, 'SM', 1, 36),
+(34, 4, 'BIO', 2018, 'TEC', 1, 0),
+(35, 4, 'BIO', 2018, 'TRA', 1, 4),
+(36, 4, 'BIO', 2018, NULL, 2, 3),
+(37, 4, 'ODO', 2019, 'COM', 1, 12),
+(38, 4, 'ODO', 2019, 'SGET', 1, 3),
+(39, 4, 'ODO', 2019, 'SM', 1, 18),
+(40, 4, 'ODO', 2019, 'TEC', 1, 20),
+(41, 4, 'ODO', 2019, 'TRA', 1, 4),
+(42, 4, 'ODO', 2019, NULL, 2, 3),
+(43, 5, 'BIO', 2018, 'COM', 1, 12),
+(44, 5, 'BIO', 2018, 'SGET', 1, 10),
+(45, 5, 'BIO', 2018, 'SM', 1, 31),
+(46, 5, 'BIO', 2018, 'TEC', 1, 0),
+(47, 5, 'BIO', 2018, 'TRA', 1, 4),
+(48, 5, 'BIO', 2018, NULL, 2, 3);
 
 -- --------------------------------------------------------
 
@@ -396,33 +407,6 @@ INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `pro
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `have`
---
-
-CREATE TABLE `have` (
-  `course_id` int(11) NOT NULL,
-  `learning_context_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dump dei dati per la tabella `have`
---
-
-INSERT INTO `have` (`course_id`, `learning_context_id`) VALUES
-(1, 2),
-(2, 1),
-(2, 2),
-(3, 1),
-(3, 2),
-(4, 1),
-(4, 3),
-(5, 1),
-(5, 2),
-(6, 1);
-
--- --------------------------------------------------------
-
---
 -- Struttura della tabella `inscribed`
 --
 
@@ -431,6 +415,7 @@ CREATE TABLE `inscribed` (
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT '',
+  `learning_context_id` int(11) NOT NULL,
   `pending` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -438,18 +423,19 @@ CREATE TABLE `inscribed` (
 -- Dump dei dati per la tabella `inscribed`
 --
 
-INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_block`, `section`, `pending`) VALUES
-(1, 3, 7, 'A', NULL),
-(1, 4, 6, 'A', NULL),
-(2, 3, 7, 'A', NULL),
-(2, 4, 7, 'A', NULL),
-(2, 5, 6, 'A', NULL),
-(2, 6, 7, 'A', NULL),
-(3, 5, 7, 'A', NULL),
-(3, 6, 6, 'A', NULL),
-(4, 4, 7, 'A', NULL),
-(4, 5, 6, 'A', NULL),
-(4, 6, 7, 'A', NULL);
+INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_block`, `section`, `learning_context_id`, `pending`) VALUES
+(1, 3, 7, 'A', 1, NULL),
+(1, 4, 6, 'A', 1, NULL),
+(1, 5, 7, 'A', 2, NULL),
+(2, 3, 7, 'A', 1, NULL),
+(2, 4, 7, 'A', 1, NULL),
+(2, 5, 6, 'A', 1, NULL),
+(2, 6, 7, 'A', 1, NULL),
+(3, 5, 7, 'A', 1, NULL),
+(3, 6, 6, 'A', 1, NULL),
+(4, 4, 7, 'A', 1, NULL),
+(4, 5, 6, 'A', 1, NULL),
+(4, 6, 7, 'A', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -473,7 +459,7 @@ INSERT INTO `learning_area` (`id`, `italian_title`, `english_title`, `italian_de
 ('COM', 'Area della comunicazione', 'Communication area', NULL, NULL),
 ('SGET', 'Area storico-giuridico-economica e del territorio', 'Historical-legal-economic and territorial area', NULL, NULL),
 ('SM', 'Area scientifico-matematica', 'Scientific-mathematical area', NULL, NULL),
-('TEC', 'Area tecnologica, artistico, motoria', 'Technology area', 'In quest\'area, uno studente ha la possibilità di avere a che fare con le tecnologie all\'avanguardia nel settore', 'In this area, a student has the opportunity to deal with cutting-edge technologies in the field'),
+('TEC', 'Area tecnologica, artistico, motoria', 'Technological, artistic and motoric area', 'In quest\'area, uno studente ha la possibilità di avere a che fare con le tecnologie all\'avanguardia nel settore', 'In this area, a student has the opportunity to deal with cutting-edge technologies in the field'),
 ('TRA', 'Area trasversale', 'Trasversal area', 'Scienze motorie e sportive; religione cattolica; attività alternative', 'Exercise science and sports; Catholic religion; alternative activities');
 
 -- --------------------------------------------------------
@@ -500,8 +486,8 @@ INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VAL
 (3, 2, 2022, '2022-09-14', '2022-10-26'),
 (4, 3, 2022, '2023-01-07', '2023-02-18'),
 (5, 4, 2022, '2023-02-18', '2023-04-01'),
-(6, 5, 2022, '2023-04-01', '2023-05-13'),
-(7, 6, 2022, '2023-05-13', '2023-06-07');
+(6, 5, 2022, '2023-06-01', '2023-07-15'),
+(7, 6, 2022, '2023-07-15', '2023-07-31');
 
 -- --------------------------------------------------------
 
@@ -533,11 +519,13 @@ INSERT INTO `learning_context` (`id`, `italian_title`, `english_title`, `italian
 --
 
 CREATE TABLE `limited` (
+  `id` int(11) NOT NULL,
   `learning_block_id` int(11) NOT NULL,
   `ordinary_class_study_year` int(11) NOT NULL,
   `ordinary_class_address` varchar(5) NOT NULL,
   `ordinary_class_school_year` int(11) NOT NULL,
-  `learning_area_id` varchar(5) NOT NULL,
+  `learning_area_id` varchar(5),
+  `learning_context_id` int(11) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -545,15 +533,16 @@ CREATE TABLE `limited` (
 -- Dump dei dati per la tabella `limited`
 --
 
-INSERT INTO `limited` (`learning_block_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `credits`) VALUES
-(6, 1, 'BIO', 2022, 'SM', 4),
-(6, 4, 'ODO', 2022, 'COM', 2),
-(6, 5, 'BIO', 2022, 'SM', 4),
-(7, 1, 'BIO', 2022, 'COM', 2),
-(7, 1, 'BIO', 2022, 'SM', 8),
-(7, 4, 'ODO', 2022, 'SM', 8),
-(7, 5, 'BIO', 2022, 'COM', 2),
-(7, 5, 'BIO', 2022, 'SM', 8);
+INSERT INTO `limited` (`id`, `learning_block_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
+(1, 6, 1, 'BIO', 2022, 'SM', 1, 4),
+(2, 6, 4, 'ODO', 2022, 'COM', 1, 2),
+(3, 6, 5, 'BIO', 2022, 'SM', 1, 4),
+(4, 7, 1, 'BIO', 2022, 'COM', 1, 2),
+(5, 7, 1, 'BIO', 2022, 'SM', 1, 8),
+(6, 7, 4, 'ODO', 2022, 'SM', 1, 8),
+(7, 7, 5, 'BIO', 2022, 'COM', 1, 2),
+(8, 7, 5, 'BIO', 2022, 'SM', 1, 8),
+(9, 7, 1, 'BIO', 2022, NULL, 2, 4);
 
 -- --------------------------------------------------------
 
@@ -925,8 +914,9 @@ ALTER TABLE `citizenship_report`
 -- Indici per le tabelle `constraints`
 --
 ALTER TABLE `constraints`
-  ADD PRIMARY KEY (`annual_credits_study_year`,`annual_credits_address`,`annual_credits_definition_year`,`learning_area_id`),
-  ADD KEY `learning_area_id` (`learning_area_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `learning_area_id` (`learning_area_id`),
+  ADD KEY `learning_context_id` (`learning_context_id`);
 
 --
 -- Indici per le tabelle `course`
@@ -946,13 +936,6 @@ ALTER TABLE `grade`
   ADD PRIMARY KEY (`student_id`,`teacher_id`,`project_class_course_id`,`project_class_block`,`publication`),
   ADD KEY `teacher_id` (`teacher_id`),
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
-
---
--- Indici per le tabelle `have`
---
-ALTER TABLE `have`
-  ADD PRIMARY KEY (`course_id`,`learning_context_id`),
-  ADD KEY `learning_context_id` (`learning_context_id`);
 
 --
 -- Indici per le tabelle `inscribed`
@@ -988,9 +971,10 @@ ALTER TABLE `learning_context`
 -- Indici per le tabelle `limited`
 --
 ALTER TABLE `limited`
-  ADD PRIMARY KEY (`learning_block_id`,`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`,`learning_area_id`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `ordinary_class_study_year` (`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`),
-  ADD KEY `learning_area_id` (`learning_area_id`);
+  ADD KEY `learning_area_id` (`learning_area_id`),
+  ADD KEY `learning_context_id` (`learning_context_id`);
 
 --
 -- Indici per le tabelle `ordinary_class`
@@ -1093,6 +1077,12 @@ ALTER TABLE `citizenship_report`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT per la tabella `constraints`
+--
+ALTER TABLE `constraints`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+
+--
 -- AUTO_INCREMENT per la tabella `course`
 --
 ALTER TABLE `course`
@@ -1109,6 +1099,12 @@ ALTER TABLE `learning_block`
 --
 ALTER TABLE `learning_context`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT per la tabella `limited`
+--
+ALTER TABLE `limited`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT per la tabella `personal_growth_area`
@@ -1138,7 +1134,8 @@ ALTER TABLE `teacher`
 ALTER TABLE `accessible`
   ADD CONSTRAINT `accessible_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   ADD CONSTRAINT `accessible_ibfk_2` FOREIGN KEY (`study_year_id`) REFERENCES `study_year` (`id`),
-  ADD CONSTRAINT `accessible_ibfk_3` FOREIGN KEY (`study_address_id`) REFERENCES `study_address` (`id`);
+  ADD CONSTRAINT `accessible_ibfk_3` FOREIGN KEY (`study_address_id`) REFERENCES `study_address` (`id`),
+  ADD CONSTRAINT `accessible_ibfk_4` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
 
 --
 -- Limiti per la tabella `announcement`
@@ -1180,7 +1177,9 @@ ALTER TABLE `citizenship_report`
 --
 ALTER TABLE `constraints`
   ADD CONSTRAINT `constraints_ibfk_1` FOREIGN KEY (`annual_credits_study_year`,`annual_credits_address`,`annual_credits_definition_year`) REFERENCES `annual_credits` (`study_year_id`, `study_address_id`, `definition_year`),
-  ADD CONSTRAINT `constraints_ibfk_2` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`);
+  ADD CONSTRAINT `constraints_ibfk_2` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`),
+  ADD CONSTRAINT `constraints_ibfk_3` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`),
+  ADD CONSTRAINT `constraints_ibunique_1` UNIQUE (`annual_credits_study_year`,`annual_credits_address`,`annual_credits_definition_year`,`learning_area_id`,`learning_context_id`);
 
 --
 -- Limiti per la tabella `course`
@@ -1200,18 +1199,12 @@ ALTER TABLE `grade`
   ADD CONSTRAINT `grade_ibfk_3` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
 
 --
--- Limiti per la tabella `have`
---
-ALTER TABLE `have`
-  ADD CONSTRAINT `have_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
-  ADD CONSTRAINT `have_ibfk_2` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
-
---
 -- Limiti per la tabella `inscribed`
 --
 ALTER TABLE `inscribed`
   ADD CONSTRAINT `inscribed_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
-  ADD CONSTRAINT `inscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
+  ADD CONSTRAINT `inscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`),
+  ADD CONSTRAINT `inscribed_ibfk_3` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
 
 --
 -- Limiti per la tabella `limited`
@@ -1219,7 +1212,9 @@ ALTER TABLE `inscribed`
 ALTER TABLE `limited`
   ADD CONSTRAINT `limited_ibfk_1` FOREIGN KEY (`learning_block_id`) REFERENCES `learning_block` (`id`),
   ADD CONSTRAINT `limited_ibfk_2` FOREIGN KEY (`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`) REFERENCES `ordinary_class` (`study_year_id`, `study_address_id`, `school_year`),
-  ADD CONSTRAINT `limited_ibfk_3` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`);
+  ADD CONSTRAINT `limited_ibfk_3` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`),
+  ADD CONSTRAINT `limited_ibfk_4` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`),
+  ADD CONSTRAINT `limited_ibunique_1` UNIQUE (`learning_block_id`,`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`,`learning_area_id`,`learning_context_id`);
 
 --
 -- Limiti per la tabella `ordinary_class`

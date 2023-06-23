@@ -732,6 +732,7 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -756,6 +757,7 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -780,6 +782,7 @@ paths:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -799,6 +802,7 @@ paths:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -2450,3 +2454,9 @@ components:
       schema:
         type: integer
       required: true
+    query_context_id:
+      name: context_id
+      in: query
+      description: Id of the learning context
+      schema:
+        type: integer

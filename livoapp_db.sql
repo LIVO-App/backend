@@ -497,6 +497,7 @@ INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VAL
 
 CREATE TABLE `learning_context` (
   `id` int(11) NOT NULL,
+  `acronym` varchar(5) NOT NULL,
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
   `italian_description` varchar(1000) DEFAULT NULL,
@@ -507,10 +508,10 @@ CREATE TABLE `learning_context` (
 -- Dump dei dati per la tabella `learning_context`
 --
 
-INSERT INTO `learning_context` (`id`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
-(1, 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
-(2, 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
-(3, '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
+INSERT INTO `learning_context` (`id`, `acronym`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
+(1, 'SPE', 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
+(2, 'PER', 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
+(3, 'ECA', '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
 
 -- --------------------------------------------------------
 

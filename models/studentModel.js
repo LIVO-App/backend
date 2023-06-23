@@ -59,14 +59,26 @@ module.exports = {
             conn.release();
         }
     },
-    async retrieve_credits(student_id, block_id, area_id){
+    async retrieve_credits(student_id, block_id, area_id, context_id){
         try {
             conn = await pool.getConnection();
-            if(!student_id || !block_id || !area_id){
+            if(!student_id || !block_id || !area_id || !context_id){
                 conn.release();
                 return false;
             }
-            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id} AND c.learning_area_id=\'${area_id}\' AND pc.learning_block_id = ${block_id} AND ins.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_block_id = ${block_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year AND lm.learning_area_id = \'${area_id}\'),0) AS max_credits FROM attend AS att WHERE att.student_id = ${student_id};`
+            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id}`
+            if(context_id==2){
+                sql += ` AND ins.learning_context_id=${context_id}`;
+            } else {
+                sql += ` AND c.learning_area_id=\'${area_id}\' AND ins.learning_context_id=${context_id}`;
+            }
+            sql += ` AND pc.learning_block_id = ${block_id} AND ins.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_block_id = ${block_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
+            if(context_id==2){
+                sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=${context_id}`;
+            } else {
+                sql += ` AND lm.learning_area_id = \'${area_id}\' AND lm.learning_context_id=${context_id}`;
+            }
+            sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ${student_id};`
             const rows = await conn.query(sql);
             conn.release();
             return rows[0];

@@ -543,7 +543,7 @@ INSERT INTO `limited` (`id`, `learning_block_id`, `ordinary_class_study_year`, `
 (6, 7, 4, 'ODO', 2022, 'SM', 1, 8),
 (7, 7, 5, 'BIO', 2022, 'COM', 1, 2),
 (8, 7, 5, 'BIO', 2022, 'SM', 1, 8),
-(9, 7, 1, 'BIO', 2022, NULL, 2, 4);
+(9, 7, 1, 'BIO', 2022, NULL, 2, 8);
 
 -- --------------------------------------------------------
 
@@ -658,6 +658,7 @@ CREATE TABLE `project_class` (
 --
 
 INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
+(2, 7, NULL, NULL, 1, 1, '2022-09-09'),
 (3, 7, NULL, NULL, 2, 2, '2022-09-09'),
 (4, 6, NULL, NULL, 2, 2, '2022-09-09'),
 (4, 7, 'Acqua magica', 'Magic water', 2, 2, '2022-09-09'),

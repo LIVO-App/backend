@@ -2005,8 +2005,11 @@ components:
           type: integer
           description: "Number of credits that a course give to a student"
         learning_area_ref:
-            $ref: '#/components/schemas/learning_area_ref'
-            description: "Reference to the learning area associated to the course"
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of a learning context"
         final_grade:
           type: integer
           description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
@@ -2029,8 +2032,11 @@ components:
           type: integer
           description: "Number of credits that a course give to a student"
         learning_area_ref:
-            $ref: '#/components/schemas/learning_area_ref'
-            description: "Reference to the learning area associated to the course"
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of a learning context"
         final_grade:
           type: integer
           description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."

@@ -47,6 +47,7 @@ module.exports.get_curriculum = async (req, res) => {
             section: curr.section,
             credits: curr.credits,
             learning_area_ref: learning_area_ref,
+            learning_context_acronym: curr.acronym,
             final_grade: curr.final_grade
         }
     });
@@ -103,6 +104,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 section: curr.section,
                 credits: curr.credits,
                 learning_area_ref: learning_area_ref,
+                learning_context_acronym: curr.acronym,
                 final_grade: curr.final_grade,
                 future_course: curr.future_course
             }
@@ -150,6 +152,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 section: curr.section,
                 credits: curr.credits,
                 learning_area_ref: learning_area_ref,
+                learning_context_acronym: curr.acronym,
                 final_grade: curr.final_grade,
                 future_course: curr.future_course
             }

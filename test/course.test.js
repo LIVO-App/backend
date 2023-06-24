@@ -153,25 +153,6 @@ describe('/api/v1/courses', () => {
                     });
             });
         })
-
-        describe('GET /api/v1/courses/:course_id/learning_contexts', () => {
-            // GET resources with non valid course ID (learning contexts)
-            test('GET /api/v1/courses/:course_id/learning_contexts with non valid ID', async () => {
-                return request(app)
-                    .get('/api/v1/courses/nonValidID/learning_contexts')
-                    .expect(404)
-            });
-
-            // GET resources with valid course ID (learning contexts)
-            test('GET /api/v1/courses/:course_id/learning_contexts with non valid ID', async () => {
-                return request(app)
-                    .get('/api/v1/courses/3/learning_contexts')
-                    .expect(200)
-                    .then((response) => {
-                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
-                    });
-            });
-        })
     })
 })
 

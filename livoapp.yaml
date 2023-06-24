@@ -375,6 +375,39 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/learning_contexts:
+    get:
+      description: Get all the learning contexts in the system
+      summary: Collection of learning contexts
+      tags:
+        - learning contexts
+        - v1
+      responses:
+        '200':
+          description: "Collection of learning contexts"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_context_data'
+                    description: "Data return from the api"
   /v1/ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
@@ -1887,15 +1920,24 @@ components:
     learning_context_data:
       type: object
       properties:
-        learning_context_ref:
-          $ref: '#/components/schemas/learning_context_ref'
-          description: "References to the learning context associated to the course"
+        id:
+          type: integer
+          description: "Learning context id"
+        acronym:
+          type: string
+          description: "Learning context acronym"
         italian_title:
           type: string
-          description: "Italian title of the learning context associated to the course"
+          description: "Italian title of the learning context"
         english_title:
           type: string
-          description: "English title of the learning context associated to the course"
+          description: "English title of the learning context"
+        italian_description:
+          type: string
+          description: "Italian description of the learning context"
+        english_description:
+          type: string
+          description: "English description of the learning context"
     student_auth: 
       type: object
       required:

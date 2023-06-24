@@ -375,43 +375,6 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{course_id}/learning_contexts:
-    get:
-      description: Get all the learning contexts that are associated to the course
-      parameters:
-        - $ref: '#/components/parameters/path_course_id'
-      summary: Collection of learning contexts related to the course
-      tags:
-        - courses
-        - v1
-      responses:
-        '200':
-          description: "Collection of contexts"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  path:
-                    type: string
-                    description: "Link of the API that returns this data"
-                  single:
-                    type: boolean
-                    description: "Tells if the data are referring to the API in origin or not"
-                  query:
-                    type: object
-                    description: "List of eventual parameters for the API"
-                  date:
-                    type: string
-                    format: date
-                    description: "Date of the current call to the API"
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/learning_context_data'
-                    description: "Data return from the api"
-        '404':
-          $ref: '#/components/responses/NotFound'
   /v1/ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
@@ -1870,6 +1833,9 @@ components:
         main_study_year:
           type: boolean
           description: "Specifies if the study year of the class is the one for which the course was created for"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of the learning contexy which the course is open to the ordinary classes"
     teaching_ref:
       type: object
       properties:

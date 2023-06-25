@@ -22,7 +22,8 @@ describe('/api/v1/courses', () => {
                     .query({
                         student_id: '\"nonValidID\"',
                         block_id: 7,
-                        area_id: 'SM'
+                        area_id: 'SM',
+                        context_id: 1
                     })
                     .expect(404);
             }, 20000);
@@ -66,6 +67,19 @@ describe('/api/v1/courses', () => {
                     });
             }, 20000);
 
+            // GET all resources with only context_id
+            test('GET /api/v1/courses with only context_id as param should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/courses')
+                    .query({
+                        context_id: 1,
+                    })
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                    });
+            }, 20000);
+
             // GET all resources with valid parameters
             test('GET /api/v1/courses with valid parameters should respond with status 200', async () => {
                 return request(app)
@@ -73,7 +87,8 @@ describe('/api/v1/courses', () => {
                     .query({
                         student_id: 1,
                         block_id: 7,
-                        area_id: 'SM'
+                        area_id: 'SM',
+                        context_id: 1
                     })
                     .expect(200)
                     .then((response) => {
@@ -169,7 +184,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: 1,
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(401)
         }, 20000);
@@ -182,7 +198,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: 1,
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(403)
         }, 20000);
@@ -195,7 +212,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: 1,
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(401)
         }, 20000);
@@ -208,7 +226,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: 2,
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(401)
         }, 20000);
@@ -232,7 +251,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: '\"nonValidID\"',
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(401);
         }, 20000);
@@ -279,6 +299,20 @@ describe('/api/v2/courses', () => {
                 });
         }, 20000);
 
+        // GET all resources with only context_id and token
+        test('GET /api/v2/courses with only context_id as param should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v2/courses')
+                .set('x-access-token', validToken)
+                .query({
+                    context_id: 1,
+                })
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
+        }, 20000);
+
         // GET all resources with valid parameters and token
         test('GET /api/v2/courses with valid parameters should respond with status 200', async () => {
             return request(app)
@@ -287,7 +321,8 @@ describe('/api/v2/courses', () => {
                 .query({
                     student_id: 1,
                     block_id: 7,
-                    area_id: 'SM'
+                    area_id: 'SM',
+                    context_id: 1
                 })
                 .expect(200)
                 .then((response) => {

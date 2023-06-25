@@ -40,7 +40,7 @@ module.exports = {
                 }
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
                 if(context_id != undefined){
-                    sql += `AND ins.learning_context_id=${context_id}`;
+                    sql += ` AND ins.learning_context_id=${context_id}`;
                 }
                 sql += `) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
                 if(learn_area_id != undefined && block_id != undefined && context_id != undefined){
@@ -54,11 +54,11 @@ module.exports = {
                 }
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
                 if(context_id != undefined){
-                    sql += `AND ins.learning_context_id=${context_id}`
+                    sql += ` AND ins.learning_context_id=${context_id}`
                 }
                 sql += `) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id`
                 if(context_id != undefined){
-                    sql += `AND ins.learning_context_id=${context_id}`
+                    sql += ` AND ins.learning_context_id=${context_id}`
                 }
                 sql += `) ELSE \"false\" end AS inscribed`;
                 if (block_id!=undefined) {
@@ -112,7 +112,8 @@ module.exports = {
                 }
                 sql += `) AND c.certifying_admin_id IS NOT NULL`;
             }
-            console.log(sql);
+            sql += ` ORDER BY c.id`;
+            //console.log(sql);
             const rows = await conn.query(sql);
             conn.release();
             if(rows.length!=0){

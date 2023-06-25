@@ -22,31 +22,51 @@ module.exports = {
             conn.release();
         }
     },
-    async list(student_id, learn_area_id, block_id, alone=false){
+    async list(student_id, learn_area_id, block_id, context_id, alone=false){
         try {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
             let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id`;
             if(student_id != undefined){
-                sql += `, CASE WHEN c.id IN (SELECT c.id FROM   course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
-                if(learn_area_id!=undefined && block_id!=undefined){
-                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND `;
-                } else if (learn_area_id!=undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND `;
-                } else if (block_id != undefined) {
-                    sql += `learning_block_id = ${block_id} AND `;
+                sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
+                if(learn_area_id != undefined && block_id != undefined && context_id != undefined){
+                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=${context_id} AND `;
+                } else if (learn_area_id != undefined && context_id != undefined) {
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=${context_id} AND `;
+                } else if (block_id != undefined && context_id != undefined) {
+                    sql += `learning_block_id = ${block_id} AND ins.learning_context_id=${context_id} AND `;
+                } else if (context_id != undefined){
+                    sql += `ins.learning_context_id=${context_id} AND `;
                 }
-                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM   inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
-                if(learn_area_id!= undefined && block_id != undefined){
-                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND `;
-                } else if (learn_area_id!=undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND `;
-                } else if (block_id != undefined) {
-                    sql += `learning_block_id = ${block_id} AND `;
-                } 
-                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM   inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id) ELSE \"false\" end AS inscribed`;
+                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
+                if(context_id != undefined){
+                    sql += `AND ins.learning_context_id=${context_id}`;
+                }
+                sql += `) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
+                if(learn_area_id != undefined && block_id != undefined && context_id != undefined){
+                    sql += `learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=${context_id} AND `;
+                } else if (learn_area_id != undefined && context_id != undefined) {
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=${context_id} AND `;
+                } else if (block_id != undefined && context_id != undefined) {
+                    sql += `learning_block_id = ${block_id} AND ins.learning_context_id=${context_id} AND `;
+                } else if (context_id != undefined){
+                    sql += `ins.learning_context_id=${context_id} AND `;
+                }
+                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
+                if(context_id != undefined){
+                    sql += `AND ins.learning_context_id=${context_id}`
+                }
+                sql += `) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id`
+                if(context_id != undefined){
+                    sql += `AND ins.learning_context_id=${context_id}`
+                }
+                sql += `) ELSE \"false\" end AS inscribed`;
                 if (block_id!=undefined) {
-                    sql += `, (SELECT section FROM inscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_block = ${block_id}) AS section`;
+                    sql += `, (SELECT section FROM inscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_block = ${block_id}`
+                    if(context_id!=undefined){
+                        sql += ` AND learning_context_id=${context_id}`;
+                    }
+                    sql +=`) AS section`;
                 }
             }
             sql += ` FROM course AS c `
@@ -61,22 +81,38 @@ module.exports = {
             if(learn_area_id != undefined && block_id != undefined){
                 sql += `WHERE pc.learning_block_id = ${block_id} AND c.learning_area_id = \'${learn_area_id}\'`;
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)`;
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=${context_id}`
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if (learn_area_id != undefined) {
                 sql += `WHERE c.learning_area_id = \'${learn_area_id}\'`;
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)`;
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=${context_id}`
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if (block_id != undefined) {
                 sql += `WHERE pc.learning_block_id = ${block_id}`;
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)`;
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=${context_id}`
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if(student_id != undefined) {
-                sql += ` WHERE c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)) AND c.certifying_admin_id IS NOT NULL`;
+                sql += ` WHERE c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = lb.school_year)`;
+                if(context_id != undefined){
+                    sql += ` AND ac.learning_context_id=${context_id}`
+                }
+                sql += `) AND c.certifying_admin_id IS NOT NULL`;
             }
-            //console.log(sql);
+            console.log(sql);
             const rows = await conn.query(sql);
             conn.release();
             if(rows.length!=0){

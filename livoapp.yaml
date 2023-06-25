@@ -185,6 +185,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
         - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:
@@ -226,6 +227,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
         - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:

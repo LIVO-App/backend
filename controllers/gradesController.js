@@ -145,16 +145,17 @@ module.exports.insert_grade = async (req, res) => {
     }
     // Launch the insertion into the database
     let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, grade, final);
-    if(!ins_grade){
+    if(!ins_grade.rows){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: grade insertion');
         return;
     }
     // Prepare the response
-    let res_des = "Inserted "+ins_grade.affectedRows + " rows";
+    let res_des = "Inserted "+ins_grade.rows.affectedRows + " rows";
     let response = {
         status: "accepted",
-        description: res_des
+        description: res_des,
+        value: ins_grade.grade
     };
     res.status(201).json(response);
 

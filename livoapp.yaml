@@ -1645,6 +1645,9 @@ components:
         pending:
           type: boolean
           description: "Is the student already inscribed to this course? Or is he waiting for a response?"
+        section:
+          type: string
+          description: "Section of the project class in case the student is inscribed to it"
     proposer_teacher_ref:
       type: object
       properties:

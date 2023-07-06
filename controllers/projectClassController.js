@@ -47,6 +47,7 @@ module.exports.get_project_class_components = async (req, res) => {
             id: cmp.id,
             name: cmp.name,
             surname: cmp.surname,
+            learning_context_acronym: cmp.acronym,
             ord_class_study_year: cmp.ordinary_class_study_year,
             ord_class_address: cmp.ordinary_class_address,
             ord_class_section: cmp.section

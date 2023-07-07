@@ -113,7 +113,7 @@ module.exports = {
                 sql += `) AND c.certifying_admin_id IS NOT NULL`;
             }
             sql += ` ORDER BY c.id`;
-            console.log(sql);
+            //console.log(sql);
             const rows = await conn.query(sql);
             conn.release();
             if(rows.length!=0){

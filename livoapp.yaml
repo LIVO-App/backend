@@ -1158,6 +1158,52 @@ paths:
                     description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
+  /v1/learning_contexts/correspondence:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Search for learning contexts of a list of courses
+      tags:
+        - learning contexts
+        - v1
+      requestBody:
+        description: Array of courses to search
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+      responses:
+        '200':
+          description: "Learning contexts with courses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_contexts_courses_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
   /v1/teachers/{teacher_id}/active_years:
     get:
       description: Get the years which the teacher was actively teaching in the school
@@ -2173,6 +2219,15 @@ components:
         block_id:
           type: integer
           description: Block Id where a student has taken that course
+    learning_contexts_courses_data:
+      type: object
+      properties:
+        course_id:
+          type: integer
+          description: Course Id
+        context_id:
+          type: integer
+          description: context Id of the course the student can follow
     teacher_active_year_data:
       type: object
       required:

@@ -21,11 +21,11 @@ module.exports = {
     async list_from_list_of_courses(student_id, block_id, courses){
         try {
             conn = await pool.getConnection();
-            if(courses==undefined || courses.length<1){
+            if(courses==undefined || courses.length<1 || !student_id || !block_id){
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT ac.course_id, ac.learning_context_id FROM `accessible` as ac WHERE ac.study_year_id in (SELECT att.ordinary_class_study_year FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)) AND ac.study_address_id in (SELECT att.ordinary_class_address FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))';
+            let sql = 'SELECT ac.course_id AS course, lc.acronym AS context FROM `accessible` AS ac JOIN learning_context AS lc ON ac.learning_context_id = lc.id WHERE ac.study_year_id in (SELECT att.ordinary_class_study_year FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)) AND ac.study_address_id in (SELECT att.ordinary_class_address FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))';
             let values = [student_id, block_id, student_id, block_id];
             for(let i=0; i<courses.length; i++){
                 if(i==0){

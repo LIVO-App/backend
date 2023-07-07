@@ -54,7 +54,7 @@ module.exports = {
     async list_from_list_of_courses(student_id, courses){
         try {
             conn = await pool.getConnection();
-            if(courses==undefined || courses.length<1){
+            if(courses==undefined || courses.length<1 || !student_id){
                 conn.release();
                 return null;
             }

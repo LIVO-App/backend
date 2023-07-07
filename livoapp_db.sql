@@ -862,7 +862,7 @@ INSERT INTO `teaching` (`id`, `italian_title`, `english_title`, `italian_descrip
 -- Indici per le tabelle `accessible`
 --
 ALTER TABLE `accessible`
-  ADD PRIMARY KEY (`course_id`,`study_year_id`,`study_address_id`),
+  ADD PRIMARY KEY (`course_id`,`study_year_id`,`study_address_id`, `learning_context_id`),
   ADD KEY `study_year_id` (`study_year_id`),
   ADD KEY `study_address_id` (`study_address_id`);
 

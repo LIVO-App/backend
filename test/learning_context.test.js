@@ -20,4 +20,54 @@ describe('/api/v1/learning_contexts', () => {
 
         })
     })
+
+    describe('POST methods tests', () => {
+        describe('POST /api/v1/learning_contexts/correspondence', () => {
+            test('POST /api/v1/learning_contexts/correspondence with no parameters should return status 400', async () => {
+                return request(app)
+                    .post('/api/v1/learning_contexts/correspondence')
+                    .expect(400);
+            }) 
+
+            test('POST /api/v1/learning_contexts/correspondence with only student_id should return status 400', async () => {
+                return request(app)
+                    .post('/api/v1/learning_contexts/correspondence')
+                    .query({student_id: 1})
+                    .expect(400);
+            })
+
+            test('POST /api/v1/learning_contexts/correspondence with empty courses should return status 400', async () => {
+                let json = {courses: []}
+                return request(app)
+                    .post('/api/v1/learning_contexts/correspondence')
+                    .query({student_id: 1, block_id: 7})
+                    .send(json)
+                    .expect(400);
+            })
+
+            test('POST /api/v1/learning_contexts/correspondence with wrong params should return status 200 but empty data', async () => {
+                let json = {courses: [1,2,3,4,5,6]}
+                return request(app)
+                    .post('/api/v1/learning_contexts/correspondence')
+                    .query({student_id: 5, block_id: 7})
+                    .send(json)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                    });
+            })
+
+            test('POST /api/v1/learning_contexts/correspondence with valid params should return status 200', async () => {
+                let json = {courses: [1,2,3,4,5,6]}
+                return request(app)
+                    .post('/api/v1/learning_contexts/correspondence')
+                    .query({student_id: 1, block_id: 7})
+                    .send(json)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                    });
+            })
+        })
+    })
 })

@@ -35,7 +35,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
     let student_id = req.query.student_id;
     let block_id = req.query.block_id;
     let courses = req.body.courses;
-    let contexts = await learningBlockSchema.list_from_list_of_courses(student_id, block_id, courses);
+    let contexts = await learningContextModel.list_from_list_of_courses(student_id, block_id, courses);
     if(contexts==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
         console.log('list of block: missing list of courses');

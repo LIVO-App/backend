@@ -37,7 +37,7 @@ module.exports = {
                     sql += ' OR ';
                 }
             }
-            sql += ')';
+            sql += ') ORDER BY ac.course_id';
             const rows = await conn.query(sql, values);
             conn.release();
             return rows;

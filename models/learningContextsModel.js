@@ -15,11 +15,7 @@ module.exports = {
             }
             const rows = (student_id!=undefined && block_id!=undefined) ? await conn.query(sql, values) : await conn.query(sql);
             conn.release();
-            if(rows.length>0){
-                return rows;
-            } else {
-                return false;
-            } 
+            return rows;
         } catch (err) {
             console.log(err);
         } finally {

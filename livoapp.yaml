@@ -380,6 +380,9 @@ paths:
   /v1/learning_contexts:
     get:
       description: Get all the learning contexts in the system
+      parameters:
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_block_id'
       summary: Collection of learning contexts
       tags:
         - learning contexts
@@ -1990,6 +1993,9 @@ components:
         english_description:
           type: string
           description: "English description of the learning context"
+        credits:
+          type: integer
+          description: "Returns the total amount of credits the student needs to have for that specific learning context in case there is not learning areas constraints. If those constraints exist, its value will be null"
     student_auth: 
       type: object
       required:

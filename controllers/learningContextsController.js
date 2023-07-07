@@ -10,7 +10,9 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_contexts = async (req, res) => {
-    let contexts = await learningContextModel.list();
+    let student_id = req.query.student_id;
+    let block_id = req.query.block_id;
+    let contexts = await learningContextModel.list(student_id, block_id);
     let data_contexts = contexts.map((context) => {
         return {
             id: context.id,
@@ -18,7 +20,8 @@ module.exports.get_contexts = async (req, res) => {
             italian_title: context.italian_title,
             english_title: context.english_title,
             italian_description: context.italian_description,
-            english_description: context.english_description
+            english_description: context.english_description,
+            credits: context.credits
         };
     });
     let response = {

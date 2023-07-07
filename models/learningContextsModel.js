@@ -1,11 +1,19 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async list(){
+    async list(student_id, block_id){
         try {
             conn = await pool.getConnection();
-            sql = "SELECT id, acronym, italian_title, english_title, italian_description, english_description FROM learning_context";
-            const rows = await conn.query(sql);
+            sql = "SELECT DISTINCT lc.id, lc.acronym, lc.italian_title, lc.english_title, lc.italian_description, lc.english_description";
+            if (student_id!=undefined && block_id!=undefined){
+                sql += ", CASE WHEN l.learning_area_id IS NULL THEN l.credits ELSE NULL END AS credits"
+            }
+            sql += " FROM learning_context AS lc"
+            if (student_id!=undefined && block_id!=undefined){
+                sql += ' JOIN limited AS l ON lc.id = l.learning_context_id WHERE l.learning_block_id=? AND l.ordinary_class_study_year IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id=?) AND l.ordinary_class_address IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ?) AND l.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?) ORDER BY lc.id'
+                values = [block_id, student_id, student_id, block_id]
+            }
+            const rows = (student_id!=undefined && block_id!=undefined) ? await conn.query(sql, values) : await conn.query(sql);
             conn.release();
             if(rows.length>0){
                 return rows;

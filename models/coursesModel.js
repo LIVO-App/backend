@@ -37,6 +37,8 @@ module.exports = {
                     sql += `learning_block_id = ${block_id} AND ins.learning_context_id=${context_id} AND `;
                 } else if (context_id != undefined){
                     sql += `ins.learning_context_id=${context_id} AND `;
+                } else if (block_id != undefined){
+                    sql += `learning_block_id = ${block_id} AND `
                 }
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
                 if(context_id != undefined){
@@ -51,6 +53,8 @@ module.exports = {
                     sql += `learning_block_id = ${block_id} AND ins.learning_context_id=${context_id} AND `;
                 } else if (context_id != undefined){
                     sql += `ins.learning_context_id=${context_id} AND `;
+                } else if (block_id != undefined){
+                    sql += `learning_block_id = ${block_id} AND `
                 }
                 sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_block = pc.learning_block_id `;
                 if(context_id != undefined){

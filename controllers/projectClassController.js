@@ -2,7 +2,7 @@
 
 const projectClassesSchema = require('../models/projectClassModel');
 const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
-const studentSchema = require('../models/studentModel');
+const studentModel = require('../models/studentModel');
 
 let MSG = {
     notFound: "Resource not found",

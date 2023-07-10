@@ -2,6 +2,7 @@
 
 const projectClassesSchema = require('../models/projectClassModel');
 const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
+const studentSchema = require('../models/studentModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -115,6 +116,21 @@ module.exports.get_announcments = async (req, res) => {
     let course_id = req.params.course;
     let block_id = req.params.block;
     let section = req.query.section;
+    if(req.loggedUser.role === "student"){
+        let student_id = req.loggedUser._id
+        let student_section = await studentModel.retrieve_section_from_project_class(student_id, course_id, block_id)
+        if(student_section == null){
+            res.status(400).json({status: "error", description: MSG.missingParameter})
+            console.log('project class announcements: missing required information')
+            return
+        }
+        if(!student_section){
+            res.status(404).json({status: "error", description: MSG.notFound})
+            console.log('project class announcements: section not found')
+            return
+        }
+        section = student_section.section
+    }
     query["section"] = section;
     let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, teacher_id);
     if(!announcements){

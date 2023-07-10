@@ -106,5 +106,28 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async retrieve_section_from_project_class(student_id, course_id, block_id){
+        try {
+            conn = await pool.getConnection()
+            if (!course_id || !block_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT ins.section FROM inscribed AS ins WHERE ins.student_id = ? AND ins.project_class_course_id = ? AND ins.project_class_block = ?'
+            let values = [student_id, course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release();
+            if (rows.length == 1){
+                return rows[0]
+            } else {
+                return false
+            }
+
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

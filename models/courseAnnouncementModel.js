@@ -8,7 +8,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment FROM announcement AS ann WHERE ann.project_class_course_id = ? AND ann.project_class_block = ? AND ann.section = ?';
+            let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment FROM announcement AS ann WHERE ann.project_class_course_id = ? AND ann.project_class_block = ? AND ann.section = ? ORDER BY ann.publishment';
             let values = [course_id, block_id, section];
             if(teacher_id!=undefined){
                 sql += ' AND ann.teacher_id = ?';

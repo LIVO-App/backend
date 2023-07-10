@@ -202,6 +202,7 @@ module.exports.get_project_classes = async (req,res) => {
     }
     let data_cls = cls.map((cl) => {
         return {
+            id: cl.course_id,
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             section: cl.section

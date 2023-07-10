@@ -1,11 +1,11 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async add(student_id, course_id, block_id, section, pending=false){
+    async add(student_id, course_id, block_id, section, context_id, pending=false){
         let actualSection;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !block_id){
+            if(!student_id || !course_id || !block_id || !context_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return false;
@@ -18,9 +18,9 @@ module.exports = {
                 actualSection = section;
                 pen_val =  null;
             }
-            let sql = `INSERT INTO inscribed (student_id, project_class_course_id, project_class_block, section, pending) VALUES (?,?,?,?,?)`;
+            let sql = `INSERT INTO inscribed (student_id, project_class_course_id, project_class_block, section, learning_context_id, pending) VALUES (?,?,?,?,?,?)`;
             
-            values = [student_id, course_id, block_id, actualSection, pen_val]
+            values = [student_id, course_id, block_id, actualSection, context_id, pen_val]
             const rows = await conn.query(sql, values);
             conn.release();
             //console.log("Inserted "+rows.insertedId+" rows.");
@@ -34,7 +34,7 @@ module.exports = {
             conn.release();
         }
     },
-    async remove(student_id, course_id, block_id){
+    async remove(student_id, course_id, block_id, context_id){
         try{
             conn = await pool.getConnection();
             /*if(!student_id || !course_id || !block_id){
@@ -42,8 +42,8 @@ module.exports = {
                 conn.release();
                 return false;
             }*/
-            let sql = 'DELETE FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ?';
-            values = [student_id, course_id, block_id]
+            let sql = 'DELETE FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND learning_context_id = ?';
+            values = [student_id, course_id, block_id, context_id]
             const rows = await conn.query(sql, values);
             conn.release();
             //console.log("Deleted "+rows.affectedRows+" rows.");
@@ -110,17 +110,17 @@ module.exports = {
             conn.release();
         }
     },
-    async read(student_id, course_id, block_id, section){
+    async read(student_id, course_id, block_id, context_id, section){
         let values, rows;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !block_id){
+            if(!student_id || !course_id || !block_id || !context_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_block, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ?';
-            values = [student_id, course_id, block_id];
+            sql = 'SELECT student_id, project_class_course_id, project_class_block, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND learning_context_id = ?';
+            values = [student_id, course_id, block_id, context_id];
             if (section != undefined) {
                 sql += ' AND section = ?';
                 values.push(section);

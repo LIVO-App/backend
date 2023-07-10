@@ -29,6 +29,8 @@ tags:
     description: Everything about ordinary classes
   - name: authentication
     description: Authentication methods
+  - name: announcements
+    description: Announcement methods
 paths:
   /v1/learning_blocks:
     get:
@@ -183,6 +185,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
         - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:
@@ -224,6 +227,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
         - $ref: '#/components/parameters/query_alone'
       summary: View of all the courses
       tags:
@@ -373,18 +377,19 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/courses/{course_id}/learning_contexts:
+  /v1/learning_contexts:
     get:
-      description: Get all the learning contexts that are associated to the course
+      description: Get all the learning contexts in the system
       parameters:
-        - $ref: '#/components/parameters/path_course_id'
-      summary: Collection of learning contexts related to the course
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Collection of learning contexts
       tags:
-        - courses
+        - learning contexts
         - v1
       responses:
         '200':
-          description: "Collection of contexts"
+          description: "Collection of learning contexts"
           content:
             application/json:
               schema:
@@ -408,8 +413,6 @@ paths:
                     items:
                       $ref: '#/components/schemas/learning_context_data'
                     description: "Data return from the api"
-        '404':
-          $ref: '#/components/responses/NotFound'
   /v1/ordinary_classes:
     get:
       description: Get all the ordinary classes in the system.
@@ -579,6 +582,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
           description: "Student curriculum"
@@ -730,6 +734,7 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -754,6 +759,7 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -778,6 +784,7 @@ paths:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -797,6 +804,7 @@ paths:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptInsert'
@@ -1153,6 +1161,52 @@ paths:
                     description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
+  /v1/learning_contexts/correspondence:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/query_student_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Search for learning contexts of a list of courses
+      tags:
+        - learning contexts
+        - v1
+      requestBody:
+        description: Array of courses to search
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+      responses:
+        '200':
+          description: "Learning contexts with courses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/learning_contexts_courses_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
   /v1/teachers/{teacher_id}/active_years:
     get:
       description: Get the years which the teacher was actively teaching in the school
@@ -1272,6 +1326,179 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/project_classes:
+    get:
+      description: Get project classes of a student in a specific learning block
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Get project classes of a student in a learning block
+      tags:
+        - student
+        - v1
+      responses:
+        '200':
+          description: "Student project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/student_project_classes_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/project_classes/{course}/{block}/announcements:
+    get:
+      description: Get all the announcements of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+      summary: Get project class announcements
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project class announcements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_classes_announcements_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/announcements/{announcement_id}:
+    get:
+      description: Get specific announcement from its id
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_announcement_id'
+      tags:
+        - announcements
+        - v1
+      summary: Get specific announcement
+      responses:
+        '200':
+          description: "Project class announcements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/announcement_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/announcements:
+    post:
+      description: Publication of announcements for a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+      summary: Publication of announcements
+      tags:
+        - announcements
+        - v1
+      requestBody:
+        description: Data of the announcement
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sections:
+                  type: array
+                  items:
+                    type: string
+                  description: "Sections of the project class the teacher wants to publish"
+                italian_title:
+                  type: string
+                  description: "Italian title of the announcement"
+                english_title:
+                  type: string 
+                  description: "English title of the announcement"
+                italian_message:
+                  type: string
+                  description: "Italian content of the announcement"
+                english_message:
+                  type: string
+                  description: "English content of the announcement"
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:
@@ -1461,18 +1688,15 @@ components:
         credits:
           type: integer
           description: "Credits that the course provides"
-        italian_displayed_name:
-          type: string
-          description: "Italian displayed name of the project class associated"
-        english_displayed_name:
-          type: string
-          description: "English displayed name of the project class associated"
         learning_area_ref:
           $ref: '#/components/schemas/learning_area_ref'
           description: "Reference to the learning area associated to the course"
         pending:
           type: boolean
           description: "Is the student already inscribed to this course? Or is he waiting for a response?"
+        section:
+          type: string
+          description: "Section of the project class in case the student is inscribed to it"
     proposer_teacher_ref:
       type: object
       properties:
@@ -1697,6 +1921,9 @@ components:
         main_study_year:
           type: boolean
           description: "Specifies if the study year of the class is the one for which the course was created for"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of the learning contexy which the course is open to the ordinary classes"
     teaching_ref:
       type: object
       properties:
@@ -1748,15 +1975,27 @@ components:
     learning_context_data:
       type: object
       properties:
-        learning_context_ref:
-          $ref: '#/components/schemas/learning_context_ref'
-          description: "References to the learning context associated to the course"
+        id:
+          type: integer
+          description: "Learning context id"
+        acronym:
+          type: string
+          description: "Learning context acronym"
         italian_title:
           type: string
-          description: "Italian title of the learning context associated to the course"
+          description: "Italian title of the learning context"
         english_title:
           type: string
-          description: "English title of the learning context associated to the course"
+          description: "English title of the learning context"
+        italian_description:
+          type: string
+          description: "Italian description of the learning context"
+        english_description:
+          type: string
+          description: "English description of the learning context"
+        credits:
+          type: integer
+          description: "Returns the total amount of credits the student needs to have for that specific learning context in case there is not learning areas constraints. If those constraints exist, its value will be null"
     student_auth: 
       type: object
       required:
@@ -1829,12 +2068,6 @@ components:
         english_title:
           type: string
           description: "English title of the course"
-        italian_displayed_name:
-          type: string
-          description: "Italian name displayed for a course"
-        english_displayed_name:
-          type: string
-          description: "English name displayed for a course"
         section:
           type: string 
           description: "Section of the project class the student is currently enrolled in"
@@ -1842,8 +2075,11 @@ components:
           type: integer
           description: "Number of credits that a course give to a student"
         learning_area_ref:
-            $ref: '#/components/schemas/learning_area_ref'
-            description: "Reference to the learning area associated to the course"
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of a learning context"
         final_grade:
           type: integer
           description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
@@ -1859,12 +2095,6 @@ components:
         english_title:
           type: string
           description: "English title of the course"
-        italian_displayed_name:
-          type: string
-          description: "Italian name displayed for a course"
-        english_displayed_name:
-          type: string
-          description: "English name displayed for a course"
         section:
           type: string 
           description: "Section of the project class the student is currently enrolled in"
@@ -1872,8 +2102,11 @@ components:
           type: integer
           description: "Number of credits that a course give to a student"
         learning_area_ref:
-            $ref: '#/components/schemas/learning_area_ref'
-            description: "Reference to the learning area associated to the course"
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        learning_context_acronym:
+          type: string
+          description: "Acronym of a learning context"
         final_grade:
           type: integer
           description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
@@ -1905,10 +2138,10 @@ components:
         id:
           type: integer
           description: "Course id"
-        italian_description:
+        italian_title:
           type: string
           description: "Italian description of a course"
-        english_description:
+        english_title:
           type: string
           description: "English description of a course"
         section:
@@ -1926,10 +2159,10 @@ components:
         id:
           type: integer
           description: "Course id"
-        italian_description:
+        italian_title:
           type: string
           description: "Italian description of a course"
-        english_description:
+        english_title:
           type: string
           description: "English description of a course"
         teaching_ref:
@@ -1992,6 +2225,15 @@ components:
         block_id:
           type: integer
           description: Block Id where a student has taken that course
+    learning_contexts_courses_data:
+      type: object
+      properties:
+        course_id:
+          type: integer
+          description: Course Id
+        context_id:
+          type: integer
+          description: context Id of the course the student can follow
     teacher_active_year_data:
       type: object
       required:
@@ -2024,6 +2266,56 @@ components:
         section:
           type: string
           description: "Ordinary class section"
+    student_project_classes_data:
+      type: object
+      properties:
+        italian_title:
+          type: string
+          description: "Italian title of the project class"
+        english_title:
+          type: string
+          description: "English title of the project class"
+        section:
+          type: string
+          description: "Section of the project class"
+    project_classes_announcements_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "The id of the announcement"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string
+          description: "English title of the announcement"
+        publishment:
+          type: string
+          format: date
+          description: "Date of publication of the announcement"
+    announcement_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "The id of the announcement"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string
+          description: "English title of the announcement"
+        publishment:
+          type: string
+          format: date
+          description: "Date of publication of the announcement"
+        italian_message:
+          type: string
+          description: "Italian message in the announcement"
+        english_message:
+          type: string
+          description: "English message in the announcement"
   parameters:
     query_school_year:
       name: school_year
@@ -2230,3 +2522,16 @@ components:
       description: Specifies if we want information about the classes
       schema:
         type: boolean
+    path_announcement_id:
+      name: announcement_id
+      in: path
+      description: Id of an announcement
+      schema:
+        type: integer
+      required: true
+    query_context_id:
+      name: context_id
+      in: query
+      description: Id of the learning context
+      schema:
+        type: integer

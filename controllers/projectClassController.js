@@ -1,6 +1,8 @@
 'use strict';
 
 const projectClassesSchema = require('../models/projectClassModel');
+const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
+const studentModel = require('../models/studentModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -46,6 +48,7 @@ module.exports.get_project_class_components = async (req, res) => {
             id: cmp.id,
             name: cmp.name,
             surname: cmp.surname,
+            learning_context_acronym: cmp.acronym,
             ord_class_study_year: cmp.ordinary_class_study_year,
             ord_class_address: cmp.ordinary_class_address,
             ord_class_section: cmp.section
@@ -93,6 +96,63 @@ module.exports.get_project_class_sections = async (req,res) => {
         query: {},
         date: new Date(),
         data: data_sections
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_announcments = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    let query = teacher_id ? {teacher_id: teacher_id} : {};
+    if(req.loggedUser.role === "teacher"){
+        if(teacher_id==undefined){
+            teacher_id = req.loggedUser._id;
+        }
+        if(teacher_id != req.loggedUser._id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    }
+    let course_id = req.params.course;
+    let block_id = req.params.block;
+    let section = req.query.section;
+    if(req.loggedUser.role === "student"){
+        let student_id = req.loggedUser._id
+        let student_section = await studentModel.retrieve_section_from_project_class(student_id, course_id, block_id)
+        if(student_section == null){
+            res.status(400).json({status: "error", description: MSG.missingParameter})
+            console.log('project class announcements: missing required information')
+            return
+        }
+        if(!student_section){
+            res.status(404).json({status: "error", description: MSG.notFound})
+            console.log('project class announcements: section not found')
+            return
+        }
+        section = student_section.section
+    }
+    query["section"] = section;
+    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, teacher_id);
+    if(!announcements){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class announcments: missing parameters");
+        return;
+    }
+    let data_announcements = announcements.map((announcement) => {
+        return {
+            id: announcement.id,
+            italian_title: announcement.italian_title,
+            english_title: announcement.english_title,
+            publishment: announcement.publishment
+        }
+    });
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/announcements";
+    let response = {
+        path: path,
+        single: false,
+        query: query,
+        date: new Date(),
+        data: data_announcements
     };
     res.status(200).json(response);
 }

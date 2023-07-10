@@ -32,7 +32,16 @@ module.exports = {
             let values = [student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, publication, grade, final_val];
             const rows = await conn.query(sql, values);
             conn.release();
-            return rows;
+            return {
+                rows: rows,
+                grade: {
+                    publication: publication,
+                    grade: parseFloat(grade),
+                    final: final_val,
+                    italian_description: ita_descr,
+                    english_description: eng_descr
+                }
+            };
         } catch (err) {
             console.log(err);
         } finally {

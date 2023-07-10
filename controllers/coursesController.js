@@ -14,8 +14,9 @@ module.exports.get_courses = async (req, res) => {
     let block_id = req.query.block_id;
     let student_id = req.query.student_id;
     let area_id = req.query.area_id;
+    let context_id = req.query.context_id;
     let alone = req.query.alone;
-    let courses = await courseSchema.list(student_id, area_id, block_id, alone);
+    let courses = await courseSchema.list(student_id, area_id, block_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('courses: resource not found');
@@ -35,8 +36,6 @@ module.exports.get_courses = async (req, res) => {
             italian_title: course.italian_title,
             english_title: course.english_title,
             credits: course.credits,
-            italian_displayed_name: course.italian_displayed_name,
-            english_displayed_name: course.english_displayed_name,
             learning_area_ref: learning_area_ref,
             section: course.section,
             pending: course.inscribed
@@ -49,6 +48,7 @@ module.exports.get_courses = async (req, res) => {
             student_id: student_id,
             area_id: area_id,
             block_id: block_id,
+            context_id: context_id,
             alone: alone
         },
         date: new Date(),
@@ -74,8 +74,9 @@ module.exports.get_courses_v2 = async (req, res) => {
         }
     }
     let area_id = req.query.area_id;
+    let context_id = req.query.context_id;
     let alone = req.query.alone;
-    let courses = await courseSchema.list(student_id, area_id, block_id, alone);
+    let courses = await courseSchema.list(student_id, area_id, block_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('courses: resource not found');
@@ -95,10 +96,9 @@ module.exports.get_courses_v2 = async (req, res) => {
             italian_title: course.italian_title,
             english_title: course.english_title,
             credits: course.credits,
-            italian_displayed_name: course.italian_displayed_name,
-            english_displayed_name: course.english_displayed_name,
             learning_area_ref: learning_area_ref,
-            pending: course.inscribed
+            pending: course.inscribed,
+            section: course.section
         };
     });
     let response = {
@@ -108,6 +108,7 @@ module.exports.get_courses_v2 = async (req, res) => {
             student_id: student_id,
             area_id: area_id,
             block_id: block_id,
+            context_id: context_id,
             alone: alone
         },
         date: new Date(),

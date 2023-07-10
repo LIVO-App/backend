@@ -21,6 +21,7 @@ module.exports.inscribe_project_class = async (req, res) => {
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let section = req.query.section ?? "A";
+    let context_id = req.query.context_id;
     let pen_val = undefined;
     let pending = await inscribe_schema.isClassFull(course_id, block_id);
     if(!pending){
@@ -37,7 +38,7 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, section);
+    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, context_id, section);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -57,7 +58,7 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('resource not found: learning area');
         return;
     }
-    let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id);
+    let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id, context_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
         console.log('missing required information: is max');
@@ -68,7 +69,7 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('max credits limit reached');
         return;
     }
-    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, pen_val);
+    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: subscribe');
@@ -87,6 +88,7 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     let student_id = req.params.student_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
+    let context_id = req.query.context_id;
     let classExist = await pcModel.read(course_id, block_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
@@ -98,7 +100,7 @@ module.exports.unsubscribe_project_class = async (req, res) => {
         console.log('resource not found: unscribe');
         return;
     }
-    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);
+    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id, context_id);
     let res_des = "Deleted " + unsubscribe.affectedRows + " rows";
     let response = {
         status: "deleted", 
@@ -122,13 +124,14 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
+    let context_id = req.query.context_id;
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
         res.status(400).json({status: "error", description: MSG.studentNotExist})
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id);
+    const subscriptionExists = await inscribe_schema.read(student_id, course_id, block_id, context_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -148,7 +151,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
         console.log('resource not found: learning area');
         return;
     }
-    let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id);
+    let isMax = await studentModel.retrieve_credits(student_id, block_id, cour.learning_area_id, context_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
         console.log('missing required information: is max');
@@ -169,7 +172,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     if (section === ""){
         pen_val = true
     }
-    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, pen_val);
+    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: subscribe');
@@ -199,6 +202,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
+    let context_id = req.query.context_id;
     let classExist = await pcModel.read(course_id, block_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
@@ -210,7 +214,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
         console.log('resource not found: unscribe');
         return;
     }
-    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id);
+    let unsubscribe = await inscribe_schema.remove(student_id, course_id, block_id, context_id);
     let res_des = "Deleted " + unsubscribe.affectedRows + " rows";
     let response = {
         status: "deleted", 

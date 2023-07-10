@@ -40,7 +40,8 @@ module.exports.get_institute_classes = async (req, res) => {
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             presidium: cl.presidium,
-            main_study_year: cl.main_study_year
+            main_study_year: cl.main_study_year,
+            learning_context_acronym: cl.acronym
         };
     });
     let path = "/api/v1/courses/"+course_id+"/opento"

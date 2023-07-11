@@ -33,7 +33,7 @@ CREATE TABLE `accessible` (
   `study_address_id` varchar(5) NOT NULL,
   `presidium` tinyint(1) NOT NULL DEFAULT 0,
   `main_study_year` tinyint(1) NOT NULL DEFAULT 0,
-  `learning_context_id` int(11) NOT NULL
+  `learning_context_id` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -41,48 +41,48 @@ CREATE TABLE `accessible` (
 --
 
 INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `presidium`, `main_study_year`, `learning_context_id`) VALUES
-(2, 1, 'ATS', 0, 0, 2),
-(2, 1, 'BIO', 1, 0, 1),
-(2, 1, 'TUR', 0, 0, 2),
-(2, 2, 'ATS', 0, 1, 2),
-(2, 2, 'BIO', 1, 1, 1),
-(2, 2, 'TUR', 0, 1, 2),
-(2, 3, 'ATS', 0, 0, 2),
-(2, 3, 'BIO', 1, 0, 1),
-(2, 3, 'TUR', 0, 0, 2),
-(3, 1, 'ATS', 0, 0, 2),
-(3, 1, 'BIO', 1, 1, 1),
-(3, 1, 'TUR', 0, 0, 2),
-(3, 2, 'ATS', 0, 1, 2),
-(3, 2, 'BIO', 1, 1, 1),
-(3, 2, 'TUR', 0, 1, 2),
-(3, 3, 'ATS', 0, 0, 2),
-(3, 3, 'BIO', 1, 0, 1),
-(3, 3, 'TUR', 0, 0, 2),
-(4, 1, 'ATS', 0, 0, 1),
-(4, 1, 'BIO', 1, 1, 1),
-(4, 1, 'ODO', 0, 0, 1),
-(4, 1, 'TUR', 0, 0, 1),
-(4, 2, 'ATS', 0, 1, 2),
-(4, 2, 'BIO', 1, 0, 2),
-(4, 2, 'ODO', 0, 1, 2),
-(4, 2, 'TUR', 0, 1, 2),
-(5, 1, 'ATS', 0, 1, 2),
-(5, 1, 'BIO', 0, 1, 2),
-(5, 1, 'ODO', 1, 1, 2),
-(5, 1, 'TUR', 0, 1, 2),
-(5, 2, 'ATS', 0, 0, 2),
-(5, 2, 'BIO', 0, 0, 2),
-(5, 2, 'ODO', 1, 0, 2),
-(5, 2, 'TUR', 0, 0, 2),
-(5, 3, 'ATS', 0, 0, 1),
-(5, 3, 'BIO', 0, 0, 1),
-(5, 3, 'ODO', 1, 0, 1),
-(5, 3, 'TUR', 0, 0, 1),
-(5, 4, 'ATS', 0, 0, 1),
-(5, 4, 'BIO', 0, 0, 1),
-(5, 4, 'ODO', 1, 0, 1),
-(5, 4, 'TUR', 0, 0, 1);
+(2, 1, 'ATS', 0, 0, 'PER'),
+(2, 1, 'BIO', 1, 0, 'SPE'),
+(2, 1, 'TUR', 0, 0, 'PER'),
+(2, 2, 'ATS', 0, 1, 'PER'),
+(2, 2, 'BIO', 1, 1, 'SPE'),
+(2, 2, 'TUR', 0, 1, 'PER'),
+(2, 3, 'ATS', 0, 0, 'PER'),
+(2, 3, 'BIO', 1, 0, 'SPE'),
+(2, 3, 'TUR', 0, 0, 'PER'),
+(3, 1, 'ATS', 0, 0, 'PER'),
+(3, 1, 'BIO', 1, 1, 'SPE'),
+(3, 1, 'TUR', 0, 0, 'PER'),
+(3, 2, 'ATS', 0, 1, 'PER'),
+(3, 2, 'BIO', 1, 1, 'SPE'),
+(3, 2, 'TUR', 0, 1, 'PER'),
+(3, 3, 'ATS', 0, 0, 'PER'),
+(3, 3, 'BIO', 1, 0, 'SPE'),
+(3, 3, 'TUR', 0, 0, 'PER'),
+(4, 1, 'ATS', 0, 0, 'SPE'),
+(4, 1, 'BIO', 1, 1, 'SPE'),
+(4, 1, 'ODO', 0, 0, 'SPE'),
+(4, 1, 'TUR', 0, 0, 'SPE'),
+(4, 2, 'ATS', 0, 1, 'PER'),
+(4, 2, 'BIO', 1, 0, 'PER'),
+(4, 2, 'ODO', 0, 1, 'PER'),
+(4, 2, 'TUR', 0, 1, 'PER'),
+(5, 1, 'ATS', 0, 1, 'PER'),
+(5, 1, 'BIO', 0, 1, 'PER'),
+(5, 1, 'ODO', 1, 1, 'PER'),
+(5, 1, 'TUR', 0, 1, 'PER'),
+(5, 2, 'ATS', 0, 0, 'PER'),
+(5, 2, 'BIO', 0, 0, 'PER'),
+(5, 2, 'ODO', 1, 0, 'PER'),
+(5, 2, 'TUR', 0, 0, 'PER'),
+(5, 3, 'ATS', 0, 0, 'SPE'),
+(5, 3, 'BIO', 0, 0, 'SPE'),
+(5, 3, 'ODO', 1, 0, 'SPE'),
+(5, 3, 'TUR', 0, 0, 'SPE'),
+(5, 4, 'ATS', 0, 0, 'SPE'),
+(5, 4, 'BIO', 0, 0, 'SPE'),
+(5, 4, 'ODO', 1, 0, 'SPE'),
+(5, 4, 'TUR', 0, 0, 'SPE');
 
 -- --------------------------------------------------------
 
@@ -273,7 +273,7 @@ CREATE TABLE `constraints` (
   `annual_credits_address` varchar(5) NOT NULL,
   `annual_credits_definition_year` int(11) NOT NULL,
   `learning_area_id` varchar(5),
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -282,54 +282,54 @@ CREATE TABLE `constraints` (
 --
 
 INSERT INTO `constraints` (`id`, `annual_credits_study_year`, `annual_credits_address`, `annual_credits_definition_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
-(1, 1, 'BIO', 2018, 'COM', 1, 14),
-(2, 1, 'BIO', 2018, 'SGET', 1, 10),
-(3, 1, 'BIO', 2018, 'SM', 1, 20),
-(4, 1, 'BIO', 2018, 'TEC', 1, 9),
-(5, 1, 'BIO', 2018, 'TRA', 1, 4),
-(6, 1, 'BIO', 2018, NULL, 2, 3),
-(7, 1, 'BIO', 2022, 'COM', 1, 16),
-(8, 1, 'BIO', 2022, 'SGET', 1, 8),
-(9, 1, 'BIO', 2022, 'SM', 1, 20),
-(10, 1, 'BIO', 2022, 'TEC', 1, 9),
-(11, 1, 'BIO', 2022, 'TRA', 1, 4),
-(12, 1, 'BIO', 2022, NULL, 2, 3),
-(13, 1, 'TUR', 2019, 'COM', 1, 24),
-(14, 1, 'TUR', 2019, 'SGET', 1, 16),
-(15, 1, 'TUR', 2019, 'SM', 1, 16),
-(16, 1, 'TUR', 2019, 'TEC', 1, 10),
-(17, 1, 'TUR', 2019, 'TRA', 1, 6),
-(18, 1, 'TUR', 2019, NULL, 2, 3),
-(19, 2, 'BIO', 2018, 'COM', 1, 16),
-(20, 2, 'BIO', 2018, 'SGET', 1, 8),
-(21, 2, 'BIO', 2018, 'SM', 1, 20),
-(22, 2, 'BIO', 2018, 'TEC', 1, 9),
-(23, 2, 'BIO', 2018, 'TRA', 1, 4),
-(24, 2, 'BIO', 2018, NULL, 2, 3),
-(25, 3, 'BIO', 2018, 'COM', 1, 12),
-(26, 3, 'BIO', 2018, 'SGET', 1, 5),
-(27, 3, 'BIO', 2018, 'SM', 1, 36),
-(28, 3, 'BIO', 2018, 'TEC', 1, 0),
-(29, 3, 'BIO', 2018, 'TRA', 1, 4),
-(30, 3, 'BIO', 2018, NULL, 2, 3),
-(31, 4, 'BIO', 2018, 'COM', 1, 12),
-(32, 4, 'BIO', 2018, 'SGET', 1, 5),
-(33, 4, 'BIO', 2018, 'SM', 1, 36),
-(34, 4, 'BIO', 2018, 'TEC', 1, 0),
-(35, 4, 'BIO', 2018, 'TRA', 1, 4),
-(36, 4, 'BIO', 2018, NULL, 2, 3),
-(37, 4, 'ODO', 2019, 'COM', 1, 12),
-(38, 4, 'ODO', 2019, 'SGET', 1, 3),
-(39, 4, 'ODO', 2019, 'SM', 1, 18),
-(40, 4, 'ODO', 2019, 'TEC', 1, 20),
-(41, 4, 'ODO', 2019, 'TRA', 1, 4),
-(42, 4, 'ODO', 2019, NULL, 2, 3),
-(43, 5, 'BIO', 2018, 'COM', 1, 12),
-(44, 5, 'BIO', 2018, 'SGET', 1, 10),
-(45, 5, 'BIO', 2018, 'SM', 1, 31),
-(46, 5, 'BIO', 2018, 'TEC', 1, 0),
-(47, 5, 'BIO', 2018, 'TRA', 1, 4),
-(48, 5, 'BIO', 2018, NULL, 2, 3);
+(1, 1, 'BIO', 2018, 'COM', 'SPE', 14),
+(2, 1, 'BIO', 2018, 'SGET', 'SPE', 10),
+(3, 1, 'BIO', 2018, 'SM', 'SPE', 20),
+(4, 1, 'BIO', 2018, 'TEC', 'SPE', 9),
+(5, 1, 'BIO', 2018, 'TRA', 'SPE', 4),
+(6, 1, 'BIO', 2018, NULL, 'PER', 3),
+(7, 1, 'BIO', 2022, 'COM', 'SPE', 16),
+(8, 1, 'BIO', 2022, 'SGET', 'SPE', 8),
+(9, 1, 'BIO', 2022, 'SM', 'SPE', 20),
+(10, 1, 'BIO', 2022, 'TEC', 'SPE', 9),
+(11, 1, 'BIO', 2022, 'TRA', 'SPE', 4),
+(12, 1, 'BIO', 2022, NULL, 'PER', 3),
+(13, 1, 'TUR', 2019, 'COM', 'SPE', 24),
+(14, 1, 'TUR', 2019, 'SGET', 'SPE', 16),
+(15, 1, 'TUR', 2019, 'SM', 'SPE', 16),
+(16, 1, 'TUR', 2019, 'TEC', 'SPE', 10),
+(17, 1, 'TUR', 2019, 'TRA', 'SPE', 6),
+(18, 1, 'TUR', 2019, NULL, 'PER', 3),
+(19, 2, 'BIO', 2018, 'COM', 'SPE', 16),
+(20, 2, 'BIO', 2018, 'SGET', 'SPE', 8),
+(21, 2, 'BIO', 2018, 'SM', 'SPE', 20),
+(22, 2, 'BIO', 2018, 'TEC', 'SPE', 9),
+(23, 2, 'BIO', 2018, 'TRA', 'SPE', 4),
+(24, 2, 'BIO', 2018, NULL, 'PER', 3),
+(25, 3, 'BIO', 2018, 'COM', 'SPE', 12),
+(26, 3, 'BIO', 2018, 'SGET', 'SPE', 5),
+(27, 3, 'BIO', 2018, 'SM', 'SPE', 36),
+(28, 3, 'BIO', 2018, 'TEC', 'SPE', 0),
+(29, 3, 'BIO', 2018, 'TRA', 'SPE', 4),
+(30, 3, 'BIO', 2018, NULL, 'PER', 3),
+(31, 4, 'BIO', 2018, 'COM', 'SPE', 12),
+(32, 4, 'BIO', 2018, 'SGET', 'SPE', 5),
+(33, 4, 'BIO', 2018, 'SM', 'SPE', 36),
+(34, 4, 'BIO', 2018, 'TEC', 'SPE', 0),
+(35, 4, 'BIO', 2018, 'TRA', 'SPE', 4),
+(36, 4, 'BIO', 2018, NULL, 'PER', 3),
+(37, 4, 'ODO', 2019, 'COM', 'SPE', 12),
+(38, 4, 'ODO', 2019, 'SGET', 'SPE', 3),
+(39, 4, 'ODO', 2019, 'SM', 'SPE', 18),
+(40, 4, 'ODO', 2019, 'TEC', 'SPE', 20),
+(41, 4, 'ODO', 2019, 'TRA', 'SPE', 4),
+(42, 4, 'ODO', 2019, NULL, 'PER', 3),
+(43, 5, 'BIO', 2018, 'COM', 'SPE', 12),
+(44, 5, 'BIO', 2018, 'SGET', 'SPE', 10),
+(45, 5, 'BIO', 2018, 'SM', 'SPE', 31),
+(46, 5, 'BIO', 2018, 'TEC', 'SPE', 0),
+(47, 5, 'BIO', 2018, 'TRA', 'SPE', 4),
+(48, 5, 'BIO', 2018, NULL, 'PER', 3);
 
 -- --------------------------------------------------------
 
@@ -415,7 +415,7 @@ CREATE TABLE `inscribed` (
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT '',
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `pending` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -424,18 +424,18 @@ CREATE TABLE `inscribed` (
 --
 
 INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_block`, `section`, `learning_context_id`, `pending`) VALUES
-(1, 3, 7, 'A', 1, NULL),
-(1, 4, 6, 'A', 1, NULL),
-(1, 5, 7, 'A', 2, NULL),
-(2, 3, 7, 'A', 1, NULL),
-(2, 4, 7, 'A', 1, NULL),
-(2, 5, 6, 'A', 1, NULL),
-(2, 6, 7, 'A', 1, NULL),
-(3, 5, 7, 'A', 1, NULL),
-(3, 6, 6, 'A', 1, NULL),
-(4, 4, 7, 'A', 1, NULL),
-(4, 5, 6, 'A', 1, NULL),
-(4, 6, 7, 'A', 1, NULL);
+(1, 3, 7, 'A', 'SPE', NULL),
+(1, 4, 6, 'A', 'SPE', NULL),
+(1, 5, 7, 'A', 'PER', NULL),
+(2, 3, 7, 'A', 'SPE', NULL),
+(2, 4, 7, 'A', 'SPE', NULL),
+(2, 5, 6, 'A', 'SPE', NULL),
+(2, 6, 7, 'A', 'SPE', NULL),
+(3, 5, 7, 'A', 'SPE', NULL),
+(3, 6, 6, 'A', 'SPE', NULL),
+(4, 4, 7, 'A', 'SPE', NULL),
+(4, 5, 6, 'A', 'SPE', NULL),
+(4, 6, 7, 'A', 'SPE', NULL);
 
 -- --------------------------------------------------------
 
@@ -496,8 +496,7 @@ INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VAL
 --
 
 CREATE TABLE `learning_context` (
-  `id` int(11) NOT NULL,
-  `acronym` varchar(5) NOT NULL,
+  `id` varchar(5) NOT NULL,
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
   `italian_description` varchar(1000) DEFAULT NULL,
@@ -508,10 +507,10 @@ CREATE TABLE `learning_context` (
 -- Dump dei dati per la tabella `learning_context`
 --
 
-INSERT INTO `learning_context` (`id`, `acronym`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
-(1, 'SPE', 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
-(2, 'PER', 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
-(3, 'ECA', '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
+INSERT INTO `learning_context` (`id`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
+('SPE', 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
+('PER', 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
+('ECA', '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -526,7 +525,7 @@ CREATE TABLE `limited` (
   `ordinary_class_address` varchar(5) NOT NULL,
   `ordinary_class_school_year` int(11) NOT NULL,
   `learning_area_id` varchar(5),
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -535,15 +534,15 @@ CREATE TABLE `limited` (
 --
 
 INSERT INTO `limited` (`id`, `learning_block_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
-(1, 6, 1, 'BIO', 2022, 'SM', 1, 4),
-(2, 6, 4, 'ODO', 2022, 'COM', 1, 2),
-(3, 6, 5, 'BIO', 2022, 'SM', 1, 4),
-(4, 7, 1, 'BIO', 2022, 'COM', 1, 2),
-(5, 7, 1, 'BIO', 2022, 'SM', 1, 8),
-(6, 7, 4, 'ODO', 2022, 'SM', 1, 8),
-(7, 7, 5, 'BIO', 2022, 'COM', 1, 2),
-(8, 7, 5, 'BIO', 2022, 'SM', 1, 8),
-(9, 7, 1, 'BIO', 2022, NULL, 2, 8);
+(1, 6, 1, 'BIO', 2022, 'SM', 'SPE', 4),
+(2, 6, 4, 'ODO', 2022, 'COM', 'SPE', 2),
+(3, 6, 5, 'BIO', 2022, 'SM', 'SPE', 4),
+(4, 7, 1, 'BIO', 2022, 'COM', 'SPE', 2),
+(5, 7, 1, 'BIO', 2022, 'SM', 'SPE', 8),
+(6, 7, 4, 'ODO', 2022, 'SM', 'SPE', 8),
+(7, 7, 5, 'BIO', 2022, 'COM', 'SPE', 2),
+(8, 7, 5, 'BIO', 2022, 'SM', 'SPE', 8),
+(9, 7, 1, 'BIO', 2022, NULL, 'PER', 8);
 
 -- --------------------------------------------------------
 

@@ -403,7 +403,7 @@ describe('/api/v2/students', () => {
 
     beforeAll(async () => {
         projectClass = {
-            course: 3,
+            course: 4,
             block: 7,
             section: 'A'
         }

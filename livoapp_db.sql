@@ -1098,12 +1098,6 @@ ALTER TABLE `learning_block`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT per la tabella `learning_context`
---
-ALTER TABLE `learning_context`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
 -- AUTO_INCREMENT per la tabella `limited`
 --
 ALTER TABLE `limited`

@@ -597,22 +597,23 @@ CREATE TABLE `ordinary_teach` (
   `ordinary_class_school_year` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `teaching_id` varchar(5) NOT NULL,
-  `teacher_id` int(11) NOT NULL
+  `teacher_id` int(11) NOT NULL,
+  `coordinator` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `ordinary_teach`
 --
 
-INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`) VALUES
-(1, 'BIO', 2022, 'A', 'BMTCS', 3),
-(1, 'BIO', 2022, 'A', 'ITA', 1),
-(1, 'BIO', 2022, 'A', 'TB', 2),
-(4, 'ODO', 2022, 'A', 'CHI', 2),
-(4, 'ODO', 2022, 'A', 'DMSL', 3),
-(4, 'ODO', 2022, 'A', 'ITA', 1),
-(5, 'BIO', 2022, 'A', 'ITA', 1),
-(5, 'BIO', 2022, 'A', 'TB', 2);
+INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`) VALUES
+(1, 'BIO', 2022, 'A', 'BMTCS', 3, 1),
+(1, 'BIO', 2022, 'A', 'ITA', 1, 0),
+(1, 'BIO', 2022, 'A', 'TB', 2, 0),
+(4, 'ODO', 2022, 'A', 'CHI', 2, 1),
+(4, 'ODO', 2022, 'A', 'DMSL', 3, 0),
+(4, 'ODO', 2022, 'A', 'ITA', 1, 0),
+(5, 'BIO', 2022, 'A', 'ITA', 1, 0),
+(5, 'BIO', 2022, 'A', 'TB', 2, 1);
 
 -- --------------------------------------------------------
 

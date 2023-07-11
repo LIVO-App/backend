@@ -5,6 +5,7 @@ const app = require('../app');
 describe('/api/v1/project_classes', () => {
     describe('GET methods tests', () => {
         let validToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+        let validTokenAnnouncement = jwt.sign({_id: 2, username: "Teacher2", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
         describe('GET /api/v1/project_classes/:course/:block/components', () => {
@@ -207,7 +208,7 @@ describe('/api/v1/project_classes', () => {
 
             test('GET /api/v1/project_classes/:course/:block/announcements with valid token but missing teacher id should respond with status 200', async () => {
                 return request(app)
-                    .get('/api/v1/project_classes/5/6/announcements')
+                    .get('/api/v1/project_classes/6/7/announcements')
                     .query({section: 'A'})
                     .set('x-access-token', validToken)
                     .expect(200)
@@ -218,7 +219,7 @@ describe('/api/v1/project_classes', () => {
 
             test('GET /api/v1/project_classes/:course/:block/announcements with valid student token but missing teacher id should respond with status 200', async () => {
                 return request(app)
-                    .get('/api/v1/project_classes/5/6/announcements')
+                    .get('/api/v1/project_classes/5/7/announcements')
                     .query({section: 'A'})
                     .set('x-access-token', wrongUserToken) //In this case it's a valid one, it's just to not have redundant variables
                     .expect(200)
@@ -229,9 +230,9 @@ describe('/api/v1/project_classes', () => {
 
             test('GET /api/v1/project_classes/:course/:block/announcements with valid token and parameters should respond with status 200', async () => {
                 return request(app)
-                    .get('/api/v1/project_classes/5/6/announcements')
+                    .get('/api/v1/project_classes/5/7/announcements')
                     .query({section: 'A', teacher_id: 2})
-                    .set('x-access-token', wrongUserToken)
+                    .set('x-access-token', validTokenAnnouncement)
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0);

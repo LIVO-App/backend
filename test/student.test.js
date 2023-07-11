@@ -40,7 +40,7 @@ describe('/api/v1/students', () => {
             test('POST /api/v1/students/:student_id/inscribe with non valid ID should respond 404', async () => {
                 return request(app)
                     .post('/api/v1/students/NonValidID/inscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(400);
             })
 
@@ -55,7 +55,7 @@ describe('/api/v1/students', () => {
             test('POST /api/v1/students/:student_id/inscribe with non existing class should respond 404', async () => {
                 return request(app)
                     .post('/api/v1/students/3/inscribe')
-                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section, context_id: 1})
+                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section, context_id: 'SPE'})
                     .expect(404);
             })
 
@@ -63,7 +63,7 @@ describe('/api/v1/students', () => {
             test('POST /api/v1/students/:student_id/inscribe with valid ID but have max number of credits for that area should respond 200', async () => {
                 return request(app)
                     .post('/api/v1/students/3/inscribe')
-                    .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section, context_id: 1})
+                    .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section, context_id: 'SPE'})
                     .expect(403);
             })
 
@@ -71,7 +71,7 @@ describe('/api/v1/students', () => {
             test('POST /api/v1/students/:student_id/inscribe with valid ID should respond 200', async () => {
                 return request(app)
                     .post('/api/v1/students/3/inscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(201);
             })
 
@@ -79,7 +79,7 @@ describe('/api/v1/students', () => {
             test('POST /api/v1/students/:student_id/inscribe with already enrolled student should respond 409', async () => {
                 return request(app)
                     .post('/api/v1/students/3/inscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(409);
             })
         })
@@ -361,7 +361,7 @@ describe('/api/v1/students', () => {
             test('DELETE /api/v1/students/:student_id/unscribe with non valid ID should respond with status 200', async () => {
                 return request(app)
                     .delete('/api/v1/students/NonValidID/unscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(200)
                     .then((response) => {
                         expect(response.body.description).toBe("Deleted 0 rows");
@@ -379,7 +379,7 @@ describe('/api/v1/students', () => {
             test('DELETE /api/v1/students/:student_id/unscribe should respond with status 200', async () => {
                 return request(app)
                     .delete('/api/v1/students/3/unscribe')
-                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, context_id: 1})
+                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, context_id: 'SPE'})
                     .expect(404);
             })
 
@@ -387,7 +387,7 @@ describe('/api/v1/students', () => {
             test('DELETE /api/v1/students/:student_id/unscribe should respond with status 200', async () => {
                 return request(app)
                     .delete('/api/v1/students/3/unscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(200);
             })
         })
@@ -427,7 +427,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/NonValidID/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -444,7 +444,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section, context_id: 1})
+                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, section: wrongProjectClass.section, context_id: 'SPE'})
                     .expect(404);
             })
 
@@ -453,7 +453,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section, context_id: 1})
+                    .query({course_id: projectClassForMaxCredits.course, block_id: projectClassForMaxCredits.block, section: projectClassForMaxCredits.section, context_id: 'SPE'})
                     .expect(403);
             })
 
@@ -461,7 +461,7 @@ describe('/api/v2/students', () => {
             test('POST /api/v2/students/:student_id/inscribe with valid ID without token should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -470,7 +470,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', invalidToken)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(403);
             })
 
@@ -479,7 +479,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', wrongUserToken)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -488,7 +488,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent2)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -497,7 +497,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(201);
             })
 
@@ -506,7 +506,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .post('/api/v2/students/3/inscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, section: projectClass.section, context_id: 'SPE'})
                     .expect(409);
             })
         })
@@ -665,7 +665,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/NonValidID/unscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -682,7 +682,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, context_id: 1})
+                    .query({course_id: wrongProjectClass.course, block_id: wrongProjectClass.block, context_id: 'SPE'})
                     .expect(404);
             })
             
@@ -690,7 +690,7 @@ describe('/api/v2/students', () => {
             test('DELETE /api/v2/students/:student_id/unscribe without token should respond with status 401', async () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -699,7 +699,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
                     .set('x-access-token', invalidToken)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(403);
             })
 
@@ -708,7 +708,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
                     .set('x-access-token', wrongUserToken)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -717,7 +717,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
                     .set('x-access-token', tokenStudent2)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(401);
             })
 
@@ -726,7 +726,7 @@ describe('/api/v2/students', () => {
                 return request(app)
                     .delete('/api/v2/students/3/unscribe')
                     .set('x-access-token', tokenStudent3)
-                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 1})
+                    .query({course_id: projectClass.course, block_id: projectClass.block, context_id: 'SPE'})
                     .expect(200);
             })
         })

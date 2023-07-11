@@ -44,11 +44,19 @@ module.exports.get_project_class_components = async (req, res) => {
         return;
     }
     let data_cmps = cmps.map((cmp) => {
+        let learning_context_ref = {
+            path: "/api/v1/learning_contexts", 
+            single: true, 
+            query: {},
+            data: {
+                id: cmp.learning_context_id
+            }
+        }
         return {
             id: cmp.id,
             name: cmp.name,
             surname: cmp.surname,
-            learning_context_acronym: cmp.acronym,
+            learning_context_ref: learning_context_ref,
             ord_class_study_year: cmp.ordinary_class_study_year,
             ord_class_address: cmp.ordinary_class_address,
             ord_class_section: cmp.section

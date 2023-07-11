@@ -34,6 +34,14 @@ module.exports.get_institute_classes = async (req, res) => {
                 id: cl.study_address_id
             }
         }
+        let learning_context_ref = {
+            path: "/api/v1/learning_contexts", 
+            single: true, 
+            query: {},
+            data: {
+                id: cl.learning_context_id
+            }
+        }
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,
@@ -41,7 +49,7 @@ module.exports.get_institute_classes = async (req, res) => {
             english_title: cl.english_title,
             presidium: cl.presidium,
             main_study_year: cl.main_study_year,
-            learning_context_acronym: cl.acronym
+            learning_context_ref: learning_context_ref
         };
     });
     let path = "/api/v1/courses/"+course_id+"/opento"

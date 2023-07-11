@@ -23,7 +23,7 @@ describe('/api/v1/courses', () => {
                         student_id: '\"nonValidID\"',
                         block_id: 7,
                         area_id: 'SM',
-                        context_id: 1
+                        context_id: 'SPE'
                     })
                     .expect(404);
             }, 20000);
@@ -72,7 +72,7 @@ describe('/api/v1/courses', () => {
                 return request(app)
                     .get('/api/v1/courses')
                     .query({
-                        context_id: 1,
+                        context_id: 'SPE',
                     })
                     .expect(200)
                     .then((response) => {
@@ -88,7 +88,7 @@ describe('/api/v1/courses', () => {
                         student_id: 1,
                         block_id: 7,
                         area_id: 'SM',
-                        context_id: 1
+                        context_id: 'SPE'
                     })
                     .expect(200)
                     .then((response) => {
@@ -185,7 +185,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -199,7 +199,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(403)
         }, 20000);
@@ -213,7 +213,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -227,7 +227,7 @@ describe('/api/v2/courses', () => {
                     student_id: 2,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -252,7 +252,7 @@ describe('/api/v2/courses', () => {
                     student_id: '\"nonValidID\"',
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401);
         }, 20000);
@@ -305,7 +305,7 @@ describe('/api/v2/courses', () => {
                 .get('/api/v2/courses')
                 .set('x-access-token', validToken)
                 .query({
-                    context_id: 1,
+                    context_id: 'SPE',
                 })
                 .expect(200)
                 .then((response) => {
@@ -322,7 +322,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(200)
                 .then((response) => {

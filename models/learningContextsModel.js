@@ -4,7 +4,7 @@ module.exports = {
     async list(student_id, block_id){
         try {
             conn = await pool.getConnection();
-            sql = "SELECT DISTINCT lc.id, lc.acronym, lc.italian_title, lc.english_title, lc.italian_description, lc.english_description";
+            sql = "SELECT DISTINCT lc.id, lc.italian_title, lc.english_title, lc.italian_description, lc.english_description";
             if (student_id!=undefined && block_id!=undefined){
                 sql += ", CASE WHEN l.learning_area_id IS NULL THEN l.credits ELSE NULL END AS credits"
             }
@@ -29,7 +29,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT ac.course_id AS course, lc.acronym AS context FROM `accessible` AS ac JOIN learning_context AS lc ON ac.learning_context_id = lc.id WHERE ac.study_year_id in (SELECT att.ordinary_class_study_year FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)) AND ac.study_address_id in (SELECT att.ordinary_class_address FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))';
+            let sql = 'SELECT ac.course_id AS course, ac.learning_context_id AS context FROM `accessible` AS ac WHERE ac.study_year_id in (SELECT att.ordinary_class_study_year FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)) AND ac.study_address_id in (SELECT att.ordinary_class_address FROM attend as att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))';
             let values = [student_id, block_id, student_id, block_id];
             for(let i=0; i<courses.length; i++){
                 if(i==0){

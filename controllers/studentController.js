@@ -38,6 +38,14 @@ module.exports.get_curriculum = async (req, res) => {
                 id: curr.learning_area_id
             }
         }
+        let learning_context_ref = {
+            path: "/api/v1/learning_contexts", 
+            single: true, 
+            query: {},
+            data: {
+                id: curr.learning_context_id
+            }
+        }
         return {
             id: curr.course_id,
             italian_title: curr.italian_title,
@@ -47,7 +55,7 @@ module.exports.get_curriculum = async (req, res) => {
             section: curr.section,
             credits: curr.credits,
             learning_area_ref: learning_area_ref,
-            learning_context_acronym: curr.acronym,
+            learning_context_ref: learning_context_ref,
             final_grade: curr.final_grade
         }
     });
@@ -96,6 +104,14 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                     id: curr.learning_area_id
                 }
             }
+            let learning_context_ref = {
+                path: "/api/v1/learning_contexts", 
+                single: true, 
+                query: {},
+                data: {
+                    id: curr.learning_context_id
+                }
+            }
             return {
                 id: curr.course_id,
                 italian_title: curr.italian_title,
@@ -105,7 +121,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 section: curr.section,
                 credits: curr.credits,
                 learning_area_ref: learning_area_ref,
-                learning_context_acronym: curr.acronym,
+                learning_context_ref: learning_context_ref,
                 final_grade: curr.final_grade,
                 future_course: curr.future_course
             }
@@ -145,6 +161,14 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                     id: curr.learning_area_id
                 }
             }
+            let learning_context_ref = {
+                path: "/api/v1/learning_contexts", 
+                single: true, 
+                query: {},
+                data: {
+                    id: curr.learning_context_id
+                }
+            }
             return {
                 id: curr.course_id,
                 italian_title: curr.italian_title,
@@ -154,7 +178,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                 section: curr.section,
                 credits: curr.credits,
                 learning_area_ref: learning_area_ref,
-                learning_context_acronym: curr.acronym,
+                learning_context_ref: learning_context_ref,
                 final_grade: curr.final_grade,
                 future_course: curr.future_course
             }

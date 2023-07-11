@@ -1691,6 +1691,9 @@ components:
         learning_area_ref:
           $ref: '#/components/schemas/learning_area_ref'
           description: "Reference to the learning area associated to the course"
+        group:
+          type: integer
+          description: "Specifies in which group a certain course belongs. If two courses have the same group, they are concurrent. (Only for v2)"
         pending:
           type: boolean
           description: "Is the student already inscribed to this course? Or is he waiting for a response?"

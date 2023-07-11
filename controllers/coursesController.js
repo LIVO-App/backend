@@ -97,6 +97,7 @@ module.exports.get_courses_v2 = async (req, res) => {
             english_title: course.english_title,
             credits: course.credits,
             learning_area_ref: learning_area_ref,
+            group: course.group,
             pending: course.inscribed,
             section: course.section
         };

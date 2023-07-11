@@ -26,7 +26,7 @@ module.exports = {
         try {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
-            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id`;
+            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group`;
             if(student_id != undefined){
                 sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block WHERE `;
                 if(learn_area_id != undefined && block_id != undefined && context_id != undefined){

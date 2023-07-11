@@ -11,7 +11,8 @@ let MSG = {
     itemAlreadyExists: "The student is already inscribe to this project class",
     studentNotExist: "The student does not exist",
     maxCreditsLimit: "The student has passed the maximum number of credits for this learning area",
-    notAuthorized: "Not authorized request"
+    notAuthorized: "Not authorized request",
+    sameGroup: "The course selected is overlaped with another one you are currently enrolled in. Please select another one"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -160,6 +161,12 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached');
+        return;
+    }
+    let notSameGroup = await inscribe_schema.not_same_group(course_id, block_id, student_id, cour.learning_area_id);
+    if(!notSameGroup){
+        res.status(403).json({status: "error", description: MSG.sameGroup})
+        console.log('group already selected')
         return;
     }
     let pen_val = undefined;

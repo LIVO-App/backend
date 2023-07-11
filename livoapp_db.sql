@@ -649,6 +649,7 @@ CREATE TABLE `project_class` (
   `learning_block_id` int(11) NOT NULL,
   `italian_displayed_name` varchar(250) DEFAULT NULL,
   `english_displayed_name` varchar(250) DEFAULT NULL,
+  `group` int(11) NOT NULL DEFAULT 1,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
   `admin_confirmation` date DEFAULT NULL
@@ -658,15 +659,15 @@ CREATE TABLE `project_class` (
 -- Dump dei dati per la tabella `project_class`
 --
 
-INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
-(2, 7, NULL, NULL, 1, 1, '2022-09-09'),
-(3, 7, NULL, NULL, 2, 2, '2022-09-09'),
-(4, 6, NULL, NULL, 2, 2, '2022-09-09'),
-(4, 7, 'Acqua magica', 'Magic water', 2, 2, '2022-09-09'),
-(5, 6, NULL, NULL, 2, 1, '2022-09-09'),
-(5, 7, NULL, NULL, 2, 1, '2022-09-09'),
-(6, 6, NULL, NULL, 1, 2, '2022-09-08'),
-(6, 7, NULL, NULL, 1, 2, '2022-09-08');
+INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
+(2, 7, NULL, NULL, 1, 1, 1, '2022-09-09'),
+(3, 7, NULL, NULL, 1, 2, 2, '2022-09-09'),
+(4, 6, NULL, NULL, 1, 2, 2, '2022-09-09'),
+(4, 7, 'Acqua magica', 'Magic water', 2, 2, 2, '2022-09-09'),
+(5, 6, NULL, NULL, 2, 2, 1, '2022-09-09'),
+(5, 7, NULL, NULL, 1, 2, 1, '2022-09-09'),
+(6, 6, NULL, NULL, 1, 1, 2, '2022-09-08'),
+(6, 7, NULL, NULL, 2, 1, 2, '2022-09-08');
 
 -- --------------------------------------------------------
 

@@ -1505,6 +1505,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_only_recent'
       summary: List of courses models
       tags:
         - courses
@@ -2658,3 +2659,9 @@ components:
       description: Id of the learning context
       schema:
         type: integer
+    query_only_recent:
+      name: only_recent
+      in: query
+      description: Tells if the user wants only the 3 recent models
+      schema:
+        type: boolean

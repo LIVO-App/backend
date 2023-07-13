@@ -201,7 +201,8 @@ module.exports.get_courses_model = async (req, res) => {
         console.log('get_courses_v2: unauthorized access');
         return;
     }
-    let models = await courseSchema.get_models(teacher_id);
+    let only_recent = req.query.only_recent;
+    let models = await courseSchema.get_models(teacher_id, only_recent);
     let data_models = models.map((model) => {
         return{
             id: model.id,

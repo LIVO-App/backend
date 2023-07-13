@@ -172,7 +172,7 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id){
+    async get_models(teacher_id, only_recent = true){
         try {
             conn = await pool.getConnection()
             let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
@@ -182,7 +182,12 @@ module.exports = {
             //console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
-            return rows
+            if (only_recent){
+                return rows.slice(0,3)
+            } else {
+                return rows 
+            }
+            
         } catch (err) {
             console.log(err)
         } finally {

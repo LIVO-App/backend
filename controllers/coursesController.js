@@ -184,6 +184,44 @@ module.exports.get_course = async (req, res) => {
     res.status(200).json(response);
 }
 
+module.exports.get_courses_model = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    if (req.loggedUser.role == "teacher"){
+        if(teacher_id != undefined){
+            if(req.loggedUser._id != teacher_id){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_v2: unauthorized access');
+                return;
+            }
+        } else {
+            teacher_id = req.loggedUser._id
+        }
+    } else if (req.loggedUser.role != "admin"){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_v2: unauthorized access');
+        return;
+    }
+    let models = await courseSchema.get_models(teacher_id);
+    let data_models = models.map((model) => {
+        return{
+            id: model.id,
+            italian_title: model.italian_title,
+            english_title: model.english_title,
+            creation_date: model.creation_date
+        }
+    })
+    let response = {
+        path: "/api/v1/courses/models",
+        single: true,
+        query: {
+            teacher_id: teacher_id
+        },
+        date: new Date(),
+        data: data_models
+    };
+    res.status(200).json(response);
+}
+
 /*courseSchema.list(1, undefined, 7)
     .then(msg => {
         //console.log(msg);

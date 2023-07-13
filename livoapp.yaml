@@ -1538,6 +1538,38 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/growth_areas:
+    get:
+      description: List of growth areas
+      summary: List of growth areas
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          description: "Growth areas list"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/growth_area_data'
+                    description: "Data return from the api"
 components:
   responses:
     NotFound:
@@ -1694,6 +1726,24 @@ components:
         credits:
           type: boolean
           description: "Number of credits for that specific learning area in that specific block"
+    growth_area_data:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the growth area"
+        italian_title:
+          type: string
+          description: "Italian title of the growth area"
+        english_title:
+          type: string
+          description: "English title of the growth area"
+        italian_description:
+          type: string
+          description: "Italian description of the growth area"
+        english_description:
+          type: string
+          description: "English description of the growth area"
     learning_area_ref:
       type: object
       properties:

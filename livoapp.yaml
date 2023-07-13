@@ -1499,6 +1499,45 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/models:
+    get:
+      description: List of courses model
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+      summary: List of courses models
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          description: "Course models"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/course_model_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:
@@ -1822,6 +1861,22 @@ components:
           type: string
           format: date
           description: "Date of the approval of the admin for that course"
+    course_model_data:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the course model"
+        italian_title:
+          type: string
+          description: "Italian title of the course model"
+        english_title:
+          type: string
+          description: "English title of the course model"
+        creation_date:
+          type: string
+          format: date
+          description: "Creation date of the course model"
     annual_credits_ref:
       type: object
       properties:

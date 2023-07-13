@@ -211,7 +211,7 @@ module.exports.get_courses_model = async (req, res) => {
         }
     })
     let response = {
-        path: "/api/v1/courses/models",
+        path: "/api/v1/models",
         single: true,
         query: {
             teacher_id: teacher_id

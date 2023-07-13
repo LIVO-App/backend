@@ -175,10 +175,11 @@ module.exports = {
     async get_models(teacher_id){
         try {
             conn = await pool.getConnection()
-            let sql = 'SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL'
-            if(!teacher_id){
+            let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
+            if(teacher_id != undefined){
                 sql += ` AND c.proposer_teacher_id = ${teacher_id}`
             }
+            //console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
             return rows

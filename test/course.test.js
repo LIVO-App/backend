@@ -1,6 +1,12 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
+const adminModel = require('../models/adminModel');
+
+let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
+let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let wrongUserToken2 = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
 describe('/api/v1/courses', () => {
     describe('GET methods tests', () => {
@@ -171,11 +177,64 @@ describe('/api/v1/courses', () => {
     })
 })
 
+describe('/api/v1/models', () => {
+    describe('GET /api/v1/models', () => {
+        test('GET /api/v1/models without token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .query({teacher_id: 1})
+                .expect(401)
+        });
+
+        test('GET /api/v1/models with invalid token should respond with status 403', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', invalidToken)
+                .expect(403)
+        });
+
+        test('GET /api/v1/models with valid token but of another teacher should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', wrongUserToken) //Valid since it's a teacher
+                .query({teacher_id: 2})
+                .expect(401)
+        });
+
+        test('GET /api/v1/models with wrong user token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', validToken) // Non valid since it's a student
+                .query({teacher_id: 1})
+                .expect(401)
+        });
+
+        test('GET /api/v1/models with valid user token but no teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', wrongUserToken) //Valid since it's a teacher
+                .expect(200)
+        });
+
+        test('GET /api/v1/models with valid user token (admin) but without teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', wrongUserToken2) //Valid since it's a teacher
+                .expect(200)
+        });
+
+        test('GET /api/v1/models with valid user token (admin) but with teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/models')
+                .set('x-access-token', wrongUserToken2) //Valid since it's an admin
+                .query({teacher_id: 1})
+                .expect(200)
+        });
+    })
+})
+
 describe('/api/v2/courses', () => {
     describe('GET methods tests',() => {
-        let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
-        let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
         // GET resources without token
         test('GET /api/v2/courses without a token', async () => {

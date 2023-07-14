@@ -121,7 +121,7 @@ module.exports.get_courses_v2 = async (req, res) => {
 module.exports.get_course = async (req, res) => {
     let course_id = req.params.course_id;
     let admin_info = req.query.admin_info;
-    let course = await courseSchema.read(course_id, admin_info);
+    let course = await courseSchema.read(course_id, admin_info, is_model);
     if(!course){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('single course: resource not found');
@@ -201,8 +201,7 @@ module.exports.get_courses_model = async (req, res) => {
         console.log('get_courses_v2: unauthorized access');
         return;
     }
-    let only_recent = req.query.only_recent;
-    let models = await courseSchema.get_models(teacher_id, only_recent);
+    let models = await courseSchema.get_models(teacher_id, true);
     let data_models = models.map((model) => {
         return{
             id: model.id,
@@ -212,7 +211,49 @@ module.exports.get_courses_model = async (req, res) => {
         }
     })
     let response = {
-        path: "/api/v1/models",
+        path: "/api/v1/propositions",
+        single: true,
+        query: {
+            teacher_id: teacher_id
+        },
+        date: new Date(),
+        data: data_models
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_courses_proposition = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    if (req.loggedUser.role == "teacher"){
+        if(teacher_id != undefined){
+            if(req.loggedUser._id != teacher_id){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_v2: unauthorized access');
+                return;
+            }
+        } else {
+            teacher_id = req.loggedUser._id
+        }
+    } else if (req.loggedUser.role != "admin"){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_v2: unauthorized access');
+        return;
+    }
+    let not_confirmed = req.query.not_confirmed;
+    if (not_confirmed!=undefined){
+        not_confirmed = not_confirmed === "true" ? 1 : 0
+    }
+    let models = await courseSchema.get_models(teacher_id, false, not_confirmed);
+    let data_models = models.map((model) => {
+        return{
+            id: model.id,
+            italian_title: model.italian_title,
+            english_title: model.english_title,
+            creation_date: model.creation_date
+        }
+    })
+    let response = {
+        path: "/api/v1/propositions/courses",
         single: true,
         query: {
             teacher_id: teacher_id

@@ -172,13 +172,25 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id, only_recent = true){
+    async get_models(teacher_id, only_recent = true, not_confirmed = true){
         try {
             conn = await pool.getConnection()
-            let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
-            if(teacher_id != undefined){
-                sql += ` AND c.proposer_teacher_id = ${teacher_id}`
+            let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c `
+            if(only_recent){ // I want to have the last 3 models available
+                sql += `WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
+                if(teacher_id != undefined){
+                    sql += ` AND c.proposer_teacher_id = ${teacher_id}`
+                }
+            } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
+                if(teacher_id!=undefined && not_confirmed){
+                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id} AND c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL`
+                } else if (teacher_id!=undefined){
+                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id}`
+                } else if (not_confirmed){
+                    sql += ` WHERE c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL`
+                }
             }
+            sql += ` ORDER BY c.creation_date DESC`
             //console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
@@ -186,8 +198,7 @@ module.exports = {
                 return rows.slice(0,3)
             } else {
                 return rows 
-            }
-            
+            } 
         } catch (err) {
             console.log(err)
         } finally {

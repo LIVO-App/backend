@@ -1507,7 +1507,47 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_teacher_id'
-        - $ref: '#/components/parameters/query_only_recent'
+      summary: List of courses proposals
+      tags:
+        - courses
+        - propositions
+        - v1
+      responses:
+        '200':
+          description: "Course proposals"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/course_model_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /v1/propositions/courses:
+    get:
+      description: List of courses proposals
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_not_confirmed'
       summary: List of courses proposals
       tags:
         - courses
@@ -1915,12 +1955,30 @@ components:
           type: string
           format: date
           description: "Date of the approval of the admin for that course"
+    course_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Course id of the proposition"
     course_model_data:
       type: object
       properties:
-        id:
-          type: string
-          description: "Id of the course model"
+        course_ref:
+          $ref: '#/components/schemas/course_ref'
+          description: "References to the course the model refers to"
         italian_title:
           type: string
           description: "Italian title of the course model"
@@ -2662,9 +2720,9 @@ components:
       description: Id of the learning context
       schema:
         type: integer
-    query_only_recent:
-      name: only_recent
+    query_not_confirmed:
+      name: not_confirmed
       in: query
-      description: Tells if the user wants only the 3 recent models
+      description: Tells if the user wants to see only the non confirmed courses proposals
       schema:
         type: boolean

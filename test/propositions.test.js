@@ -61,4 +61,74 @@ describe('/api/v1/propositions', () => {
                 .expect(200)
         });
     })
+
+    describe('GET /api/v1/propositions/courses', () => {
+        test('GET /api/v1/propositions/courses without token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .query({teacher_id: 1})
+                .expect(401)
+        });
+
+        test('GET /api/v1/propositions/courses with invalid token should respond with status 403', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', invalidToken)
+                .expect(403)
+        });
+
+        test('GET /api/v1/propositions/courses with valid token but of another teacher should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenTeacher) 
+                .query({teacher_id: 2})
+                .expect(401)
+        });
+
+        test('GET /api/v1/propositions/courses with wrong user token should respond with status 401', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', wrongUserToken)
+                .query({teacher_id: 1})
+                .expect(401)
+        });
+
+        test('GET /api/v1/propositions/courses with valid user token but no teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenTeacher)
+                .expect(200)
+        });
+
+        test('GET /api/v1/propositions/courses with valid user token but no teacher_id and all courses proposals of the teacher should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenTeacher)
+                .query({not_confirmed: false})
+                .expect(200)
+        });
+
+        test('GET /api/v1/propositions/courses with valid user token (admin) but without teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenAdmin)
+                .expect(200)
+        });
+
+        test('GET /api/v1/propositions/courses with valid user token (admin) but with teacher_id should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenAdmin)
+                .query({teacher_id: 1})
+                .expect(200)
+        });
+
+        test('GET /api/v1/propositions/courses with valid user token (admin) and all courses proposals should respond with status 200', async () => {
+            return request(app)
+                .get('/api/v1/propositions')
+                .set('x-access-token', validTokenAdmin)
+                .query({teacher_id: 1, not_confirmed: 'false'})
+                .expect(200)
+        });
+    })
 })

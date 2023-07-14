@@ -121,7 +121,7 @@ module.exports.get_courses_v2 = async (req, res) => {
 module.exports.get_course = async (req, res) => {
     let course_id = req.params.course_id;
     let admin_info = req.query.admin_info;
-    let course = await courseSchema.read(course_id, admin_info, is_model);
+    let course = await courseSchema.read(course_id, admin_info);
     if(!course){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('single course: resource not found');
@@ -203,8 +203,16 @@ module.exports.get_courses_model = async (req, res) => {
     }
     let models = await courseSchema.get_models(teacher_id, true);
     let data_models = models.map((model) => {
+        let course_ref = {
+            path: "/api/v1/courses",
+            single: true,
+            query: {},
+            data: {
+                id: model.id
+            }
+        }
         return{
-            id: model.id,
+            course_ref: course_ref,
             italian_title: model.italian_title,
             english_title: model.english_title,
             creation_date: model.creation_date
@@ -245,8 +253,16 @@ module.exports.get_courses_proposition = async (req, res) => {
     }
     let models = await courseSchema.get_models(teacher_id, false, not_confirmed);
     let data_models = models.map((model) => {
+        let course_ref = {
+            path: "/api/v1/courses",
+            single: true,
+            query: {},
+            data: {
+                id: model.id
+            }
+        }
         return{
-            id: model.id,
+            course_ref: course_ref,
             italian_title: model.italian_title,
             english_title: model.english_title,
             creation_date: model.creation_date

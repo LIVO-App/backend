@@ -204,6 +204,28 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id){
+        try{
+            conn = await pool.getConnection()
+            if(!ita_title || !eng_title || !ita_descr || !eng_descr || !up_hours || !credits || !it_ex_learn || !eng_ex_learn || !ita_cri || !eng_cri || !ita_ac || !eng_ac || !area_id || !growth_id || !min_students || !max_students || !teacher_id){
+                conn.release()
+                return false
+            }
+            let creation_date = new Date()
+            let sql = 'INSERT INTO course (italian_title, english_title, creation_date, italian_description, english_description, up_hours, credits, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities, learning_area_id, growth_area_id, min_students, max_students, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+            let values = [ita_title, eng_title, creation_date, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return {
+                rows: rows,
+                date: new Date()
+            };
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

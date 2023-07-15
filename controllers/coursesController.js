@@ -201,7 +201,15 @@ module.exports.get_courses_model = async (req, res) => {
         console.log('get_courses_v2: unauthorized access');
         return;
     }
-    let models = await courseSchema.get_models(teacher_id, true);
+    let only_recent = req.query.only_recent;
+    if (only_recent!=undefined){
+        only_recent = only_recent === "true" ? true : false
+    }
+    let not_confirmed = req.query.not_confirmed;
+    if (not_confirmed!=undefined){
+        not_confirmed = not_confirmed === "true" ? true : false
+    }
+    let models = await courseSchema.get_models(teacher_id, only_recent, not_confirmed);
     let data_models = models.map((model) => {
         let course_ref = {
             path: "/api/v1/courses",
@@ -222,7 +230,9 @@ module.exports.get_courses_model = async (req, res) => {
         path: "/api/v1/propositions",
         single: true,
         query: {
-            teacher_id: teacher_id
+            teacher_id: teacher_id,
+            only_recent: only_recent,
+            not_confirmed: not_confirmed
         },
         date: new Date(),
         data: data_models

@@ -62,15 +62,15 @@ describe('/api/v1/propositions', () => {
         });
     })
 
-    describe('GET /api/v1/propositions/courses', () => {
-        test('GET /api/v1/propositions/courses without token should respond with status 401', async () => {
+    describe('GET /api/v1/propositions/', () => {
+        test('GET /api/v1/propositions without token should respond with status 401', async () => {
             return request(app)
                 .get('/api/v1/propositions')
-                .query({teacher_id: 1})
+                .query({teacher_id: 1, only_recent: 'false'})
                 .expect(401)
         });
 
-        test('GET /api/v1/propositions/courses with invalid token should respond with status 403', async () => {
+        test('GET /api/v1/propositions with invalid token should respond with status 403', async () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', invalidToken)
@@ -81,7 +81,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenTeacher) 
-                .query({teacher_id: 2})
+                .query({teacher_id: 2, only_recent: 'false'})
                 .expect(401)
         });
 
@@ -89,7 +89,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', wrongUserToken)
-                .query({teacher_id: 1})
+                .query({teacher_id: 1, only_recent: 'false'})
                 .expect(401)
         });
 
@@ -104,7 +104,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenTeacher)
-                .query({not_confirmed: false})
+                .query({not_confirmed: 'false', only_recent: 'false'})
                 .expect(200)
         });
 
@@ -119,7 +119,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenAdmin)
-                .query({teacher_id: 1})
+                .query({teacher_id: 1, only_recent: 'false'})
                 .expect(200)
         });
 
@@ -127,7 +127,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenAdmin)
-                .query({teacher_id: 1, not_confirmed: 'false'})
+                .query({teacher_id: 1, only_recent: 'false', not_confirmed: 'false'})
                 .expect(200)
         });
     })

@@ -26,7 +26,7 @@ module.exports = {
         try {
             let conn = await pool.getConnection()
             // If access_object has no keys it means it does not have any context selected
-            if(Object.keys(access_object).length==0 || !course_id){
+            if(access_object==undefined || Object.keys(access_object).length==0 || !course_id){
                 conn.release();
                 return false
             }
@@ -41,6 +41,7 @@ module.exports = {
                     conn.release()
                     return false
                 }
+                classes_per_context = []
                 for(let i=0;i<value.length;i++){
                     if(Object.keys(value[i]).length==0){
                         conn.release()
@@ -53,10 +54,26 @@ module.exports = {
                     context_id = key
                     study_year = value[i].study_year;
                     study_address = value[i].study_address;
-                    presidium = value[i].presidium;
-                    main_study_year = value[i].main_study_year;
-                    sql += ' (?,?,?,?,?,?)'
-                    values.push(course_id, study_year, study_address, presidium, main_study_year, context_id)
+                    presidium = value[i].presidium > 0 ? 1 : 0;
+                    main_study_year = value[i].main_study_year > 0 ? 1 : 0;
+                    let finded_year, finded_address
+                    for(let j=0;j<classes_per_context.length;j+2){
+                        if(classes_per_context[j]==study_year){
+                            finded_year = true
+                        }
+                        if(classes_per_context[j+1]==study_address){
+                            finded_address = true
+                        }
+                        if(!finded_year || !finded_address){
+                            finded_year = false
+                            finded_address = false
+                        }
+                    }
+                    if(!finded_year && !finded_address){
+                        sql += ' (?,?,?,?,?,?)'
+                        values.push(course_id, study_year, study_address, presidium, main_study_year, context_id)
+                        classes_per_context.push(study_year,study_address)
+                    }
                     if(i<value.length-1){
                         sql += ',';
                     }

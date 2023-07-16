@@ -1,10 +1,16 @@
 'use strict';
 
 const courseSchema = require('../models/coursesModel');
-const projectclassSchema = require('../models/projectClassModel')
-const teachingsSchema = require('../models/courseteachingModel')
-const teacherSchema = require('../models/classesTeacherModel')
-const opentoSchema = require('../models/opentoModel')
+const projectclassSchema = require('../models/projectClassModel');
+const teachingsSchema = require('../models/courseteachingModel');
+const teacherSchema = require('../models/classesTeacherModel');
+const opentoSchema = require('../models/opentoModel');
+const areaSchema = require('../models/learning_areaModel');
+const contextSchema = require('../models/learningContextsModel');
+const growthareaSchema = require('../models/growthAreaModel');
+const blockSchema = require('../models/learning_blocksModel');
+const teacherSchema = require('../models/teacherModel');
+const ordClassSchema = require('../models/ordinaryclassModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -329,20 +335,62 @@ module.exports.add_proposition = async (req, res) => {
     let growth_id = req.body.growth_id;
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
+    let area_id_exists = await areaSchema.read(area_id);
+    if(!area_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: learning area');
+        return;
+    }
+    let growth_id_exists = await growthareaSchema.read(growth_id)
+    if(!growth_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: growth area');
+        return;
+    }
+    let block_id = req.body.block_id;
+    let block_id_exists = await blockSchema.read(block_id);
+    if(!block_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: learning block');
+        return;
+    }
     //If course_id in request body is not undefined, we are using a previous proposal and simply use it in another learning_block
     if(course_id==undefined){
         //If course_id is undefined, add new course to course table
         let new_course = await courseSchema.add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, growth_id, min_students, max_students, teacher_id);
-        if(new_course){
+        if(!new_course){
             res.status(400).json({status: "error", description: MSG.missing_params})
             console.log('missing required information: new course proposal addition');
             return;
         }
         //Get inserted course table for other insertions
-        course_id = new_course.insertedId
-        print(course_id)
+        course_id = new_course.rows.insertId
+        console.log(course_id)
         // Add information about classes that can access the new course
         let access_object = req.body.access_object;
+        let context_exist, class_exist;
+        if(access_object!=undefined){
+            for(const [key,value] in Object.entries(access_object)){
+                context_exist = await contextSchema.read(key)
+                if(!context_exist){
+                    res.status(404).json({status: "error", description: MSG.notFound});
+                    console.log('resource not found: learning context');
+                    let deletion = await courseSchema.deleteProposal(course_id);
+                    return;
+                }
+                for(let i=0;i<value.length;i++){
+                    study_year = value[i].study_year;
+                    study_address = value[i].study_address;
+                    class_exist = await ordClassSchema.read(study_year, study_address)
+                    if(!class_exist){
+                        res.status(404).json({status: "error", description: MSG.notFound});
+                    console.log('resource not found: ordinary class');
+                    let deletion = await courseSchema.deleteProposal(course_id);
+                    return;
+                    }
+                }
+            }
+        }
         let opentoIns = await opentoSchema.add(course_id, access_object);
         if(!opentoIns){
             // If error occurs, delete entry added in course
@@ -364,7 +412,7 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     // Add new project class proposal (no confirmation of admin yet)
-    let block_id = req.body.block_id;
+    
     let ita_class_name = req.body.ita_class_name;
     let eng_class_name = req.body.eng_class_name;
     let class_group = req.body.class_group;
@@ -397,9 +445,6 @@ module.exports.add_proposition = async (req, res) => {
         return
     }
     res.status(201).json({status: "accepted"});
-    
-    
-    
 }
 
 /*courseSchema.list(1, undefined, 7)

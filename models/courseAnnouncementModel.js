@@ -62,6 +62,7 @@ module.exports = {
                 }
             }
             const rows = await conn.query(sql, values);
+            conn.release();
             return rows;
         } catch (err) {
             console.log(err);

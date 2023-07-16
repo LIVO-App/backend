@@ -55,10 +55,14 @@ module.exports = {
             conn.release();
         }
     },
-    async add_project_teach(course_id, block_id, section='A', main_teacher=false, teachers_id){
+    async add_project_teach(course_id, block_id, section='A', teachers_id, main_teachers){
         try {
             conn = await pool.getConnection();
-            if(!course_id || !block_id || !section || !main_teacher || teachers_id.length==0){
+            if(!course_id || !block_id || !section || main_teachers.length == 0 || teachers_id.length==0){
+                conn.release()
+                return false
+            }
+            if(main_teachers.length!=teachers_id.length){
                 conn.release()
                 return false
             }
@@ -66,7 +70,7 @@ module.exports = {
             let values = []
             for(let i=0;i<teachers_id.length;i++){
                 sql += ' (?,?,?,?,?)';
-                values.push(teachers_id[i], course_id, block_id, section, main_teacher)
+                values.push(teachers_id[i], course_id, block_id, section, main_teachers[i])
                 if(i<teachers_id.length-1){
                     sql += ',';
                 }

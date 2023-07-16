@@ -226,6 +226,19 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async deleteProposal(course_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM course WHERE id=?';
+            const rows = await conn.query(sql, course_id)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

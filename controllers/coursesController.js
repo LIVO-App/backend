@@ -1,10 +1,16 @@
 'use strict';
 
 const courseSchema = require('../models/coursesModel');
+const projectclassSchema = require('../models/projectClassModel')
+const teachingsSchema = require('../models/courseteachingModel')
+const teacherSchema = require('../models/classesTeacherModel')
+const opentoSchema = require('../models/opentoModel')
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
+    missing_params: "Bad input. Missing required information",
+    itemAlreadyExists: "The student is already inscribe to this project class",
     notAuthorized: "Not authorized request"
 }
 
@@ -288,6 +294,112 @@ module.exports.get_courses_proposition = async (req, res) => {
         data: data_models
     };
     res.status(200).json(response);
+}
+
+module.exports.add_proposition = async (req, res) => {
+    let teacher_id = req.query.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(teacher_id == undefined){
+            teacher_id = req.loggedUser._id;
+        }
+        if(teacher_id!=req.loggedUser._id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course proposition insertion: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course proposition insertion: unauthorized access');
+        return;
+    }
+    let course_id = req.body.course_id;
+    let ita_title = req.body.ita_title;
+    let eng_title = req.body.eng_title;
+    let ita_descr = req.body.ita_descr;
+    let eng_descr = req.body.eng_descr;
+    let up_hours = req.body.up_hours;
+    let credits = req.body.credits;
+    let ita_exp_l = req.body.ita_exp_l;
+    let eng_exp_l = req.body.eng_exp_l;
+    let ita_cri = req.body.ita_cri;
+    let eng_cri = req.body.eng_cri;
+    let ita_act = req.body.ita_act;
+    let eng_act = req.body.eng_act;
+    let area_id = req.body.area_id;
+    let growth_id = req.body.growth_id;
+    let min_students = req.body.min_students;
+    let max_students = req.body.max_students;
+    //If course_id in request body is not undefined, we are using a previous proposal and simply use it in another learning_block
+    if(course_id==undefined){
+        //If course_id is undefined, add new course to course table
+        let new_course = await courseSchema.add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, growth_id, min_students, max_students, teacher_id);
+        if(new_course){
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing required information: new course proposal addition');
+            return;
+        }
+        //Get inserted course table for other insertions
+        course_id = new_course.insertedId
+        print(course_id)
+        // Add information about classes that can access the new course
+        let access_object = req.body.access_object;
+        let opentoIns = await opentoSchema.add(course_id, access_object);
+        if(!opentoIns){
+            // If error occurs, delete entry added in course
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing required information: new course proposal addition. Accessible classes');
+            let deletion = await courseSchema.deleteProposal(course_id);
+            return
+        }
+        // Add informations about teaching of the course
+        let teaching_list = req.body.teaching_list;
+        let teaching_ins = await teachingsSchema.add(course_id, teaching_list)
+        if(!teaching_ins){
+            // If error occurs, delete entries in accessible table and entry added in course
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing required information: new course proposal addition. Teachings');
+            let del_open = await opentoSchema.delete(course_id)
+            let deletion = await courseSchema.deleteProposal(course_id)
+            return
+        }
+    }
+    // Add new project class proposal (no confirmation of admin yet)
+    let block_id = req.body.block_id;
+    let ita_class_name = req.body.ita_class_name;
+    let eng_class_name = req.body.eng_class_name;
+    let class_group = req.body.class_group;
+    // Check if project class already exists. In case send 409 error response
+    let proj_class_exists = await projectclassSchema.read(course_id, block_id)
+    if(proj_class_exists){
+        res.status(409).send({status: "error", description: MSG.itemAlreadyExists});
+        console.log("record already exists");
+        return;
+    }
+    let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, teacher_id);
+    if(!proj_class_ins){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing required information: new course proposal addition. Project class');
+        return
+    }
+
+    // Add teachers of the course into project_teach
+    let teacher_list = req.body.teacher_list;
+    let main_teachers = req.body.main_teachers; //Array of equal length of teacher_list
+    let section = 'A'
+    if(teacher_list.find(element => element == teacher_id)==undefined){
+        teacher_list.push(teacher_id)
+        main_teachers.push(1)
+    }
+    let teachers_ins = await teacherSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
+    if(!teachers_ins){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing required information: new course proposal addition. Project teach insertion');
+        return
+    }
+    res.status(201).json({status: "accepted"});
+    
+    
+    
 }
 
 /*courseSchema.list(1, undefined, 7)

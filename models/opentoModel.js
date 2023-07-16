@@ -73,5 +73,18 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async delete(course_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM `accessible` WHERE course_id=?';
+            const rows = await conn.query(sql, course_id)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

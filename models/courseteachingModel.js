@@ -21,5 +21,30 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add(course_id, teachings){
+        try{
+            conn = await pool.getConnection()
+            if(!course_id || teachings.length==0){
+                conn.release();
+                return false;
+            }
+            let sql = 'INSERT INTO associated (course_id, teaching_id) VALUES '
+            let values = []
+            for(let i=0;i<teachings.length;i++){
+                sql += ' (?,?)'
+                values.push(course_id, teachings[i])
+                if(i<teachings.length-1){
+                    sql += ','
+                }
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows;
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

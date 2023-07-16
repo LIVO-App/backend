@@ -54,5 +54,30 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add_project_teach(course_id, block_id, section='A', main_teacher=false, teachers_id){
+        try {
+            conn = await pool.getConnection();
+            if(!course_id || !block_id || !section || !main_teacher || teachers_id.length==0){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO project_teach (teacher_id, project_class_course_id, project_class_block, section, main) VALUES ';
+            let values = []
+            for(let i=0;i<teachers_id.length;i++){
+                sql += ' (?,?,?,?,?)';
+                values.push(teachers_id[i], course_id, block_id, section, main_teacher)
+                if(i<teachers_id.length-1){
+                    sql += ',';
+                }
+            }
+            const rows = await conn.query(sql, values)
+            conn.release();
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

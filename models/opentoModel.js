@@ -28,7 +28,7 @@ module.exports = {
             // If access_object has no keys it means it does not have any context selected
             if(Object.keys(access_object).length==0 || !course_id){
                 conn.release();
-                return null
+                return false
             }
             // If each element of access_object has a size of 0 it means it has no classes, meaning that a context was selected, but no classes was assigned to it
             let study_year, study_address, presidium, main_study_year;
@@ -39,16 +39,16 @@ module.exports = {
                 // Value is instead a collection of data related to the classes. It's an array of classes, each element of the array contain the informations we need    
                 if(value.length==0){
                     conn.release()
-                    return null
+                    return false
                 }
                 for(let i=0;i<value.length;i++){
                     if(Object.keys(value[i]).length==0){
                         conn.release()
-                        return null
+                        return false
                     }
-                    if(!value[i].study_year || !value[i].study_address || !value[i].presidium || !value[i].main_study_year){
+                    if(value[i].study_year!=undefined || value[i].study_address!=undefined || value[i].presidium!=undefined || value[i].main_study_year!=undefined){
                         conn.release()
-                        return null
+                        return false
                     }
                     context_id = key
                     study_year = value[i].study_year;

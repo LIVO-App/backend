@@ -1,7 +1,6 @@
 const ptstr = require('../utils/toString.js');
 const pool = require('../utils/db.js');
 const crypto = require('../utils/cipher.js');
-const { add } = require('./inscribeModel.js');
 
 async function read(condition,param){
     try {

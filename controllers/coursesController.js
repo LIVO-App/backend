@@ -2,8 +2,9 @@
 
 const courseSchema = require('../models/coursesModel');
 const projectclassSchema = require('../models/projectClassModel');
-const teachingsSchema = require('../models/courseteachingModel');
-const teacherSchema = require('../models/classesTeacherModel');
+const teachingCourseSchema = require('../models/courseteachingModel');
+const teacherClassSchema = require('../models/classesTeacherModel');
+const teacherSchema = require('../models/teacherModel')
 const opentoSchema = require('../models/opentoModel');
 const areaSchema = require('../models/learning_areaModel');
 const contextSchema = require('../models/learningContextsModel');
@@ -11,6 +12,7 @@ const growthareaSchema = require('../models/growthAreaModel');
 const blockSchema = require('../models/learning_blocksModel');
 const teacherSchema = require('../models/teacherModel');
 const ordClassSchema = require('../models/ordinaryclassModel');
+const teachingSchema = require('../models/teachingModel'); // To check if teaching exists
 
 let MSG = {
     notFound: "Resource not found",
@@ -335,20 +337,20 @@ module.exports.add_proposition = async (req, res) => {
     let growth_id = req.body.growth_id;
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
-    let area_id_exists = await areaSchema.read(area_id);
+    let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
     if(!area_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: learning area');
         return;
     }
-    let growth_id_exists = await growthareaSchema.read(growth_id)
+    let growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
     if(!growth_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: growth area');
         return;
     }
     let block_id = req.body.block_id;
-    let block_id_exists = await blockSchema.read(block_id);
+    let block_id_exists = await blockSchema.read(block_id); // Is learning block present in the database
     if(!block_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: learning block');
@@ -372,7 +374,7 @@ module.exports.add_proposition = async (req, res) => {
         if(access_object!=undefined){
             for(const [key,value] in Object.entries(access_object)){
                 context_exist = await contextSchema.read(key)
-                if(!context_exist){
+                if(!context_exist){ // The learning context exists?
                     res.status(404).json({status: "error", description: MSG.notFound});
                     console.log('resource not found: learning context');
                     let deletion = await courseSchema.deleteProposal(course_id);
@@ -381,12 +383,12 @@ module.exports.add_proposition = async (req, res) => {
                 for(let i=0;i<value.length;i++){
                     study_year = value[i].study_year;
                     study_address = value[i].study_address;
-                    class_exist = await ordClassSchema.read(study_year, study_address)
-                    if(!class_exist){
+                    class_exist = await ordClassSchema.read(study_year, study_address) // The class exists for this school year
+                    if(class_exist){
                         res.status(404).json({status: "error", description: MSG.notFound});
-                    console.log('resource not found: ordinary class');
-                    let deletion = await courseSchema.deleteProposal(course_id);
-                    return;
+                        console.log('resource not found: ordinary class');
+                        let deletion = await courseSchema.deleteProposal(course_id);
+                        return;
                     }
                 }
             }
@@ -401,7 +403,18 @@ module.exports.add_proposition = async (req, res) => {
         }
         // Add informations about teaching of the course
         let teaching_list = req.body.teaching_list;
-        let teaching_ins = await teachingsSchema.add(course_id, teaching_list)
+        let teaching_exist;
+        for(let i = 0; i<teaching_list.length;i++){
+            teaching_exist = await teachingSchema.read(teaching_list[i])
+            if(!teaching_exist){ // The teaching exists in the database
+                res.status(404).json({status: "error", description: MSG.notFound})
+                console.log('resource not found: teachings');
+                let del_open = await opentoSchema.delete(course_id)
+                let deletion = await courseSchema.deleteProposal(course_id);
+                return
+            }
+        }
+        let teaching_ins = await teachingCourseSchema.add(course_id, teaching_list)
         if(!teaching_ins){
             // If error occurs, delete entries in accessible table and entry added in course
             res.status(400).json({status: "error", description: MSG.missing_params})
@@ -432,13 +445,23 @@ module.exports.add_proposition = async (req, res) => {
 
     // Add teachers of the course into project_teach
     let teacher_list = req.body.teacher_list;
+    // The teachers in teacher_list exists?
+    let teacher_exists
+    for(let i=0;i<teacher_list.length;i++){
+        teacher_exists = await teacherSchema.read_id(teacher_list[i])
+        if(!teacher_exists){
+            console.log(`Teacher with id ${i} does not exists. Removing it from the list of associated teachers`)
+            teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists
+            
+        }
+    }
     let main_teachers = req.body.main_teachers; //Array of equal length of teacher_list
     let section = 'A'
     if(teacher_list.find(element => element == teacher_id)==undefined){
         teacher_list.push(teacher_id)
         main_teachers.push(1)
     }
-    let teachers_ins = await teacherSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
+    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
     if(!teachers_ins){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: new course proposal addition. Project teach insertion');

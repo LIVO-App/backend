@@ -46,5 +46,39 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async delete(course_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM associated WHERE course_id=?';
+            const rows = await conn.query(sql, course_id)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async is_present(course_id, teaching_id){
+        try{
+            conn = await pool.getConnection()
+            if(!course_id || !teaching_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM associated WHERE course_id = ? AND teaching_id = ?'
+            let values = [course_id, teaching_id]
+            const rows = await conn.query(sql, values)
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

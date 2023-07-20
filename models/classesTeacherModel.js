@@ -83,5 +83,26 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async is_present(course_id, block_id, section = "A", teacher_id){
+        try{
+            conn = await pool.getConnection()
+            if(!course_id || !block_id || !teacher_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM project_teach WHERE project_class_course_id = ? AND project_class_block = ? AND section = ? AND teacher_id = ?'
+            let values = [course_id, block_id, section, teacher_id]
+            const rows = await conn.query(sql, values)
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

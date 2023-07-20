@@ -134,5 +134,37 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async delete(course_id, block_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM project_class WHERE course_id=? AND block_id = ?';
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async add_to_be_modified(course_id, block_id){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id){
+                conn.release()
+                return null
+            }
+            let sql = 'UPDATE project_class SET to_be_modified = true WHERE course_id = ? AND learning_block_id = ?'
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

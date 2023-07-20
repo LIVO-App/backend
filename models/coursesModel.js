@@ -239,6 +239,46 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id){
+        try{
+            conn = await pool.getConnection()
+            if(!ita_title || !eng_title || !up_hours || !credits || !area_id || !growth_id || !min_students || !max_students || !teacher_id){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT * FROM course WHERE italian_title = ? AND english_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND growth_area_id = ? AND min_students = ? AND max_students = ? AND proposer_teacher_id = ?'
+            let values = [ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length == 1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async add_to_be_modified(course_id){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id){
+                conn.release()
+                return null
+            }
+            let sql = 'UPDATE course SET to_be_modified = true WHERE id = ?'
+            let values = [course_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

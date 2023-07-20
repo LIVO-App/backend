@@ -358,7 +358,8 @@ CREATE TABLE `course` (
   `max_students` int(11) NOT NULL,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
-  `admin_confirmation` date DEFAULT NULL
+  `admin_confirmation` date DEFAULT NULL,
+  `to_be_modified` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -651,7 +652,8 @@ CREATE TABLE `project_class` (
   `group` int(11) NOT NULL DEFAULT 1,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
-  `admin_confirmation` date DEFAULT NULL
+  `admin_confirmation` date DEFAULT NULL,
+  `to_be_modified` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

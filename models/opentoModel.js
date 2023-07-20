@@ -31,31 +31,31 @@ module.exports = {
                 return false
             }
             // If each element of access_object has a size of 0 it means it has no classes, meaning that a context was selected, but no classes was assigned to it
-            let study_year, study_address, presidium, main_study_year;
+            let context_id, study_year, study_address, presidium, main_study_year;
             let sql = 'INSERT INTO `accessible` (course_id, study_year_id, study_address_id, presidium, main_study_year, learning_context_id) VALUES ';
             let values = []
-            for(const [key, value] of Object.entries(access_object)){
+            for(let context in access_object){
                 // key is the learning context for which we want to add the course
                 // Value is instead a collection of data related to the classes. It's an array of classes, each element of the array contain the informations we need    
-                if(value.length==0){
+                if(access_object[context].length==0){
                     conn.release()
                     return false
                 }
                 classes_per_context = []
-                for(let i=0;i<value.length;i++){
-                    if(Object.keys(value[i]).length==0){
+                for(let index=0;index<access_object[context].length;index++){
+                    if(Object.keys(access_object[context][index]).length==0){
                         conn.release()
                         return false
                     }
-                    if(value[i].study_year!=undefined || value[i].study_address!=undefined || value[i].presidium!=undefined || value[i].main_study_year!=undefined){
+                    if(access_object[context][index].study_year!=undefined || access_object[context][index].study_address!=undefined || access_object[context][index].presidium!=undefined || access_object[context][index].main_study_year!=undefined){
                         conn.release()
                         return false
                     }
-                    context_id = key
-                    study_year = value[i].study_year;
-                    study_address = value[i].study_address;
-                    presidium = value[i].presidium > 0 ? 1 : 0;
-                    main_study_year = value[i].main_study_year > 0 ? 1 : 0;
+                    context_id = context
+                    study_year = access_object[context][index].study_year;
+                    study_address = access_object[context][index].study_address;
+                    presidium = access_object[context][index].presidium > 0 ? 1 : 0;
+                    main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
                     let finded_year, finded_address
                     for(let j=0;j<classes_per_context.length;j+2){
                         if(classes_per_context[j]==study_year){
@@ -74,7 +74,7 @@ module.exports = {
                         values.push(course_id, study_year, study_address, presidium, main_study_year, context_id)
                         classes_per_context.push(study_year,study_address)
                     }
-                    if(i<value.length-1){
+                    if(index<access_object[context].length-1){
                         sql += ',';
                     }
                 }
@@ -98,6 +98,27 @@ module.exports = {
             const rows = await conn.query(sql, course_id)
             conn.release()
             return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async is_present(course_id, context_id, study_year, study_address){
+        try{
+            conn = await pool.getConnection()
+            if(!course_id || !context_id || study_year == undefined || !study_address){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM `accessible` WHERE course_id = ? AND study_year_id = ? AND study_address_id = ? AND learning_context_id = ?'
+            let values = [course_id, context_id, study_year, study_address]
+            const rows = await conn.query(sql, values)
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
         } catch (err) {
             console.log(err)
         } finally {

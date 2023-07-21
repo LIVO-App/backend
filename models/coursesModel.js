@@ -175,19 +175,20 @@ module.exports = {
     async get_models(teacher_id, only_recent = true, not_confirmed = true){
         try {
             conn = await pool.getConnection()
-            let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_date FROM course AS c `
+            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.creation_date FROM course AS c`
             if(only_recent){ // I want to have the last 3 models available
                 sql += `WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
                 if(teacher_id != undefined){
                     sql += ` AND c.proposer_teacher_id = ${teacher_id}`
                 }
             } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
+                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id`
                 if(teacher_id!=undefined && not_confirmed){
-                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id} AND c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL`
+                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id} AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
                 } else if (teacher_id!=undefined){
                     sql += ` WHERE c.proposer_teacher_id = ${teacher_id}`
                 } else if (not_confirmed){
-                    sql += ` WHERE c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL`
+                    sql += ` WHERE (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL)`
                 }
             }
             sql += ` ORDER BY c.creation_date DESC`

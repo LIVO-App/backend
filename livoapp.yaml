@@ -1543,6 +1543,31 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+    post:
+      description: Insertion of course proposals
+      summary: Insertion of course proposals
+      tags:
+        - courses
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+      requestBody:
+        description: Object to be inserted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/proposal_object_insertion'
+      responses:
+        '201':
+          $ref: '#/components/responses/CourseInsertion'
+        '400':
+          $ref: '#/components/responses/CourseInsertion'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/CourseInsertion'
   /v1/growth_areas:
     get:
       description: List of growth areas
@@ -1689,6 +1714,31 @@ components:
                 type: string
               description:
                 type: string
+    CourseInsertion:
+      description: Missing parameters in course proposal Insertion
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              wrong_ord_class:
+                type: boolean
+              wrong_context: 
+                type: boolean
+              wrong_teaching: 
+                type: boolean
+              wrong_teacher: 
+                type: boolean 
+              dup_access: 
+                type: boolean
+              dup_teaching: 
+                type: boolean
+              dup_teacher: 
+                type: boolean
   schemas:
     learning_block_data:
       type: object
@@ -2462,6 +2512,120 @@ components:
         english_message:
           type: string
           description: "English message in the announcement"
+    proposal_object_insertion:
+      type: object
+      required:
+        - ita_title
+        - eng_title
+        - ita_descr
+        - eng_descr
+        - up_hours
+        - credits
+        - ita_exp_l
+        - eng_exp_l
+        - ita_cri
+        - eng_cri
+        - ita_act
+        - eng_act
+        - area_id
+        - growth_id
+        - min_students
+        - max_students
+        - block_id
+        - access_object
+        - teaching_list
+        - class_group
+        - teacher_list
+      properties:
+        course_id:
+          type: integer
+          description: "Course id of the course. If specified refers to a previous model already confirmed"
+        ita_title:
+          type: string
+          description: "Italian title of the course"
+        eng_title:
+          type: string
+          description: "English title of the course"
+        ita_descr:
+          type: string
+          description: "Italian description of the course"
+        eng_descr:
+          type: string
+          description: "English description of the course"
+        up_hours:
+          type: integer
+          description: "Up hours planned for the course"
+        credits:
+          type: integer
+          description: "Number of credits planned for the course"
+        ita_exp_l:
+          type: string
+          description: "Italian description of the expected learning results of the course"
+        eng_exp_l:
+          type: string
+          description: "English description of the expected learning results of the course"
+        ita_cri:
+          type: string
+          description: "Italian description of the criterions of the course"
+        eng_cri:
+          type: string
+          description: "English description of the criterions of the course"
+        ita_act:
+          type: string
+          description: "Italian description of the learning activities of the course"
+        eng_act:
+          type: string
+          description: "English description of the learning activities of the course"
+        area_id:
+          type: string
+          description: "Id of the learning area which the course belongs"
+        growth_id:
+          type: integer
+          description: "Id of the growth area related to the course"
+        min_students:
+          type: integer
+          description: "Min number of student of the course"
+        max_students:
+          type: integer
+          description: "Max number of student of the course"
+        block_id:
+          type: integer
+          description: "Learning block in which the teacher wants to hold the course"
+        access_object:
+          type: object
+          properties:
+            context:
+              type: array
+              items:
+                type: object
+                properties:
+                  study_year:
+                    type: integer
+                    description: "Study year of the class the user wants to open the course for a specific learning context"
+                  study_address:
+                    type: string
+                    description: "Study address of the class the user wants to open the course for a specific learning context"
+                  main_study_year:
+                    type: boolean
+                    description: "Is the study year of the class the main one for this course?"
+                  presidium:
+                    type: boolean
+                    description: "Is the study address of the class the main one for this course?"
+                description: "List of ordinary classes the user wants to open the course for a specific learning context"
+              description: "Refers to the context you want to open the course for some class. The label of the object is the id of the context"
+        teaching_list:
+          type: array
+          items:
+            type: string
+            description: "Id of the teaching"
+        class_group:
+          type: integer
+          description: "Group of the project class proposed"
+        teacher_list:
+          type: array
+          items:
+            type: integer
+            description: "Id of the teacher"
   parameters:
     query_school_year:
       name: school_year

@@ -255,8 +255,8 @@ module.exports.get_courses_model = async (req, res) => {
 }
 
 module.exports.add_proposition = async (req, res) => {
-    let wrong_context, wrong_ord_class, wrong_teaching, wrong_teacher = false; //Variables to identify if there are some values that are not valid in insertion
-    let dup_access, dup_teaching, dup_teacher = false; //Variables to identify if the values inserted are duplicated for the arrays
+    let wrong_context, wrong_ord_class, wrong_teaching, wrong_teacher = undefined; //Variables to identify if there are some values that are not valid in insertion
+    let dup_access, dup_teaching, dup_teacher = undefined; //Variables to identify if the values inserted are duplicated for the arrays
     let all_clear = "Insertion of proposal was executed correctly"
     let teacher_id = req.query.teacher_id;
     if(req.loggedUser.role == "teacher"){
@@ -325,7 +325,7 @@ module.exports.add_proposition = async (req, res) => {
         //Get inserted course table for other insertions
         // If course_id was setted from request, we update it with the new instance model
         course_id = new_course.rows.insertId
-        console.log(course_id)
+        //console.log(course_id)
     }
     // Add information about classes that can access the new course
     let access_object = req.body.access_object;
@@ -336,9 +336,10 @@ module.exports.add_proposition = async (req, res) => {
             if(!context_exist){ // The learning context exists?
                 console.log(`The context with id ${context} does not exists. Removing it from the access_object`)
                 wrong_context = true
-                delete access_object[context]          
+                delete access_object[context]
+                continue         
             }
-            for(let index=0;i<access_object[context].length;index++){
+            for(let index=0;index<access_object[context].length;index++){
                 study_year = access_object[context][index].study_year;
                 study_address = access_object[context][index].study_address;
                 class_exist = await ordClassSchema.read(study_year, study_address) // The class exists for this school year
@@ -381,7 +382,7 @@ module.exports.add_proposition = async (req, res) => {
     if(!opentoIns){
         if(new_course_id){
             // If error occurs and the course added is new, delete entry added in course
-            res.status(400).json({status: "error", description: MSG.missing_params})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context})
             console.log('missing required information: new course proposal addition. Accessible classes');
             let deletion = await courseSchema.deleteProposal(course_id);
             return
@@ -400,7 +401,7 @@ module.exports.add_proposition = async (req, res) => {
     }
     for(let i = 0; i<teaching_list.length; i++){
         teaching_present = await teachingSchema.is_present(course_id, teaching_list[i])
-        if(teaching_present){
+        if(teaching_present){// Connection between course and teaching already exist
             console.log(`Teaching ${teaching_list[i]} was already connected to the course ${course_id}. Removing it from the list of teachings`)
             dup_teaching = true
             teacher_list.splice(i, 1)
@@ -410,7 +411,7 @@ module.exports.add_proposition = async (req, res) => {
     if(!teaching_ins){
         if(new_course_id){
             // If error occurs, delete entries in accessible table and entry added in course
-            res.status(400).json({status: "error", description: MSG.missing_params})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching})
             console.log('missing required information: new course proposal addition. Teachings');
             let del_open = await opentoSchema.delete(course_id)
             let deletion = await courseSchema.deleteProposal(course_id)
@@ -432,14 +433,14 @@ module.exports.add_proposition = async (req, res) => {
         let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, teacher_id);
         if(!proj_class_ins){
             if(!course_exist){ // If the course was not inside the database, delete all the information about it
-                res.status(400).json({status: "error", description: MSG.missing_params})
+                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching})
                 console.log('missing required information: new course proposal addition. Project class');
                 let del_teaching = await teachingCourseSchema.delete(course_id)
                 let del_open = await opentoSchema.delete(course_id)
                 let deletion = await courseSchema.deleteProposal(course_id)
                 return
             } else {
-                res.status(400).json({status: "error", description: MSG.missing_params})
+                res.status(400).json({status: "error", description: MSG.missing_params, only_project_class: true})
                 console.log('missing required information: new course proposal addition. Project class');
                 return
             }
@@ -477,7 +478,7 @@ module.exports.add_proposition = async (req, res) => {
     let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
     if(!teachers_ins){
         if(!course_exist){
-            res.status(400).json({status: "error", description: MSG.missing_params})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher})
             console.log('missing required information: new course proposal addition. Project class');
             let del_proj_class = await projectclassSchema.delete(course_id, block_id)
             let del_teaching = await teachingCourseSchema.delete(course_id)
@@ -487,7 +488,7 @@ module.exports.add_proposition = async (req, res) => {
         } else {
             if(!proj_class_exists){
                 let del_proj_class = await projectclassSchema.delete(course_id, block_id)
-                res.status(400).json({status: "error", description: MSG.missing_params})
+                res.status(400).json({status: "error", description: MSG.missing_params, only_project_class: true})
                 console.log('missing required information: new course proposal addition. Project teach insertion');
                 return
             }
@@ -499,7 +500,7 @@ module.exports.add_proposition = async (req, res) => {
         project_class_wrong_value = true
     }
     if(dup_access && dup_teacher && dup_teaching && course_exist && proj_class_exists){
-        res.status(409).json({status: "error", description: MSG.itemAlreadyExists})
+        res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher})
         console.log("course_proposal: tried to insert a proposal that was already inserted")
         return
     }
@@ -509,7 +510,7 @@ module.exports.add_proposition = async (req, res) => {
     if(dup_access || dup_teacher || dup_teaching){
         all_clear += "\n Some other values were not inserted since they were already present in the database."
     }
-    res.status(201).json({status: "accepted", all_clear: all_clear});
+    res.status(201).json({status: "accepted", description: "Course proposal inserted", wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, dup_access: dup_access, dup_teaching: dup_teaching, dup_teacher: dup_teacher});
 }
 
 /*courseSchema.list(1, undefined, 7)

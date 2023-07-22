@@ -1725,20 +1725,31 @@ components:
                 type: string
               description: 
                 type: string
+              course_id:
+                type: integer
+                description: "Course id of the proposal"
+              publication:
+                type: string
+                format: date
+                description: "Publication date of course proposal"
+              course_exist:
+                type: boolean
+                description: "Tells if the course_id refers to a previous proposal. If set to true means it only added the project class proposal"
               wrong_ord_class:
                 type: boolean
+                description: "Tells if some values of the ordinary classes tried to insert were non valid and consequently not inserted"
               wrong_context: 
                 type: boolean
+                description: "Tells if some values of the contexts tried to insert were non valid and consequently not inserted"
               wrong_teaching: 
                 type: boolean
+                description: "Tells if some values of the teachings tried to insert were non valid and consequently not inserted"
               wrong_teacher: 
                 type: boolean 
-              dup_access: 
+                description: "Tells if some values of the teachers tried to insert were non valid and consequently not inserted"
+              new_teacher:
                 type: boolean
-              dup_teaching: 
-                type: boolean
-              dup_teacher: 
-                type: boolean
+                description: "If result of insertion is a duplicate, tells if there are new teachers the user tried to insert"
   schemas:
     learning_block_data:
       type: object

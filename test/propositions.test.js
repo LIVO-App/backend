@@ -50,6 +50,13 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', invalidToken)
                 .expect(403)
         })
+
+        test('POST /api/v1/propositions with wrong user token should respond with status 403', async () => {
+            return request(app)
+                .post('/api/v1/propositions')
+                .set('x-access-token', wrongUserToken)
+                .expect(401)
+        })
     })
 
     describe('GET /api/v1/propositions', () => {

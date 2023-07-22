@@ -256,8 +256,6 @@ module.exports.get_courses_model = async (req, res) => {
 
 module.exports.add_proposition = async (req, res) => {
     let wrong_context, wrong_ord_class, wrong_teaching, wrong_teacher = undefined; //Variables to identify if there are some values that are not valid in insertion
-    let dup_access, dup_teaching, dup_teacher = undefined; //Variables to identify if the values inserted are duplicated for the arrays
-    let all_clear = "Insertion of proposal was executed correctly"
     let teacher_id = req.query.teacher_id;
     if(req.loggedUser.role == "teacher"){
         if(teacher_id == undefined){
@@ -310,26 +308,15 @@ module.exports.add_proposition = async (req, res) => {
         return;
     }
     let new_course_id = course_id == undefined ? true : false
+    let publication = undefined;
     let course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id)
-    //If course_id in request body is not undefined, we are using a previous proposal and simply use it in another learning_block
-    if(!course_exist){
-        // Set new_course_id to true if it was not already done since we created a new course by modifying an existing model
-        new_course_id = true
-        //If the course does not exist, add new course to course table
-        let new_course = await courseSchema.add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, growth_id, min_students, max_students, teacher_id);
-        if(!new_course){
-            res.status(400).json({status: "error", description: MSG.missing_params})
-            console.log('missing required information: new course proposal addition');
-            return;
-        }
-        //Get inserted course table for other insertions
-        // If course_id was setted from request, we update it with the new instance model
-        course_id = new_course.rows.insertId
-        //console.log(course_id)
-    }
-    // Add information about classes that can access the new course
+    // Let's now check if there is any new value in the other objects. If there are new ordinary classes or contexts or new teachings, add new course
     let access_object = req.body.access_object;
+    let new_classes, new_teachings
+    let teaching_list = req.body.teaching_list;
+    // Check information about classes that can access the new course
     let context_exist, class_exist, already_present;
+    // Remove non valid contexts and classes
     if(access_object!=undefined){
         for(var context in access_object){
             context_exist = await contextSchema.read(context)
@@ -364,33 +351,14 @@ module.exports.add_proposition = async (req, res) => {
                 study_year = access_object[context][index].study_year;
                 study_address = access_object[context][index].study_address;
                 already_present = await opentoSchema.is_present(course_id, context_id, study_year, study_address) // The class exists for this school year
-                if(already_present){
-                    console.log(`Course ${course_id} was already accessible for ordinary class ${study_year} ${study_address} with context ${context}. Removing it from the list of classes for a learning context`)
-                    // If at least one class is already present (the course was already inserted in the database), store this info and delete the object from the array
-                    dup_access = true
-                    access_object[context].splice(index, 1)
+                if(!already_present){ // If a class is not present, it means we have a new value -> add new course
+                    new_classes = true
                 }
             }
-            // If all classes of a context are deleted -> delete the context from the object
-            if(access_object[context].length == 0){
-                console.log(`All the classes for context ${context} were already inserted. Removing context from the object`)
-                delete access_object[context]
-            }
         }
     }
-    let opentoIns = await opentoSchema.add(course_id, access_object);
-    if(!opentoIns){
-        if(new_course_id){
-            // If error occurs and the course added is new, delete entry added in course
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context})
-            console.log('missing required information: new course proposal addition. Accessible classes');
-            let deletion = await courseSchema.deleteProposal(course_id);
-            return
-        }
-    }
-    // Add informations about teaching of the course
-    let teaching_list = req.body.teaching_list;
     let teaching_exist, teaching_present;
+    // Remove non valid teachings in order to have right values in case of insertion
     for(let i = 0; i<teaching_list.length;i++){
         teaching_exist = await teachingCourseSchema.read(teaching_list[i])
         if(!teaching_exist){ // The teaching exists in the database
@@ -401,22 +369,53 @@ module.exports.add_proposition = async (req, res) => {
     }
     for(let i = 0; i<teaching_list.length; i++){
         teaching_present = await teachingSchema.is_present(course_id, teaching_list[i])
-        if(teaching_present){// Connection between course and teaching already exist
-            console.log(`Teaching ${teaching_list[i]} was already connected to the course ${course_id}. Removing it from the list of teachings`)
-            dup_teaching = true
-            teacher_list.splice(i, 1)
+        if(!teaching_present){ // If a teaching is not present, it means we have a new value -> add new course
+            new_teachings = true // If a context is new, it means we add new classes, so its the same
         }
     }
-    let teaching_ins = await teachingCourseSchema.add(course_id, teaching_list)
-    if(!teaching_ins){
-        if(new_course_id){
-            // If error occurs, delete entries in accessible table and entry added in course
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching})
-            console.log('missing required information: new course proposal addition. Teachings');
-            let del_open = await opentoSchema.delete(course_id)
-            let deletion = await courseSchema.deleteProposal(course_id)
-            return 
-        } 
+    if(new_teachings || new_classes){
+        course_exist = false
+    }
+    // If course_id in request body is not undefined and all the other values related only to the course already exist,
+    // we are using a previous proposal and simply use it in another learning_block
+    // Else, if even one value is new, we are adding the course again as a new model
+    if(!course_exist){
+        // Set new_course_id to true if it was not already done since we created a new course by modifying an existing model
+        new_course_id = true
+        //If the course does not exist, add new course to course table
+        let new_course = await courseSchema.add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, growth_id, min_students, max_students, teacher_id);
+        if(!new_course){
+            res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
+            console.log('missing required information: new course proposal addition');
+            return;
+        }
+        //Get inserted course table for other insertions
+        // If course_id was setted from request, we update it with the new instance model
+        course_id = new_course.rows.insertId
+        publication = new_course.date
+        //console.log(course_id)
+        let opentoIns = await opentoSchema.add(course_id, access_object);
+        if(!opentoIns){
+            if(new_course_id){
+                // If error occurs and the course added is new, delete entry added in course
+                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, course_exist: course_exist})
+                console.log('missing required information: new course proposal addition. Accessible classes');
+                let deletion = await courseSchema.deleteProposal(course_id);
+                return
+            }
+        }
+        // Add informations about teaching of the course
+        let teaching_ins = await teachingCourseSchema.add(course_id, teaching_list)
+        if(!teaching_ins){
+            if(new_course_id){
+                // If error occurs, delete entries in accessible table and entry added in course
+                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})
+                console.log('missing required information: new course proposal addition. Teachings');
+                let del_open = await opentoSchema.delete(course_id)
+                let deletion = await courseSchema.deleteProposal(course_id)
+                return 
+            } 
+        }
     }
     let course_wrong_value = false
     if((wrong_context || wrong_ord_class || wrong_teaching) && new_course_id) {
@@ -433,14 +432,14 @@ module.exports.add_proposition = async (req, res) => {
         let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, teacher_id);
         if(!proj_class_ins){
             if(!course_exist){ // If the course was not inside the database, delete all the information about it
-                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching})
+                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})
                 console.log('missing required information: new course proposal addition. Project class');
                 let del_teaching = await teachingCourseSchema.delete(course_id)
                 let del_open = await opentoSchema.delete(course_id)
                 let deletion = await courseSchema.deleteProposal(course_id)
                 return
             } else {
-                res.status(400).json({status: "error", description: MSG.missing_params, only_project_class: true})
+                res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
                 console.log('missing required information: new course proposal addition. Project class');
                 return
             }
@@ -478,7 +477,7 @@ module.exports.add_proposition = async (req, res) => {
     let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
     if(!teachers_ins){
         if(!course_exist){
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})
             console.log('missing required information: new course proposal addition. Project class');
             let del_proj_class = await projectclassSchema.delete(course_id, block_id)
             let del_teaching = await teachingCourseSchema.delete(course_id)
@@ -488,7 +487,7 @@ module.exports.add_proposition = async (req, res) => {
         } else {
             if(!proj_class_exists){
                 let del_proj_class = await projectclassSchema.delete(course_id, block_id)
-                res.status(400).json({status: "error", description: MSG.missing_params, only_project_class: true})
+                res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
                 console.log('missing required information: new course proposal addition. Project teach insertion');
                 return
             }
@@ -499,18 +498,12 @@ module.exports.add_proposition = async (req, res) => {
         let update_project_class_prop = await projectclassSchema.add_to_be_modified(course_id, block_id)
         project_class_wrong_value = true
     }
-    if(dup_access && dup_teacher && dup_teaching && course_exist && proj_class_exists){
-        res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher})
+    if(course_exist && proj_class_exists){
+        res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})
         console.log("course_proposal: tried to insert a proposal that was already inserted")
         return
     }
-    if(course_wrong_value || project_class_wrong_value){
-        all_clear = "There was some values that were not inserted since they were not valid."
-    }
-    if(dup_access || dup_teacher || dup_teaching){
-        all_clear += "\n Some other values were not inserted since they were already present in the database."
-    }
-    res.status(201).json({status: "accepted", description: "Course proposal inserted", wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, dup_access: dup_access, dup_teaching: dup_teaching, dup_teacher: dup_teacher});
+    res.status(201).json({status: "accepted", description: "Course proposal inserted", course_id: course_id, publication: publication, course_exist: course_exist, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher});
 }
 
 /*courseSchema.list(1, undefined, 7)

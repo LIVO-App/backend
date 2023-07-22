@@ -228,7 +228,7 @@ module.exports = {
             conn.release()
             return {
                 rows: rows,
-                date: new Date()
+                date: creation_date
             };
         } catch (err) {
             console.log(err)

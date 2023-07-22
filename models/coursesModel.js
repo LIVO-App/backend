@@ -186,7 +186,7 @@ module.exports = {
                 sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id`
             }
             if(only_recent){ // I want to have the last 3 models available
-                sql += `WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
+                sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
                 if(teacher_id != undefined){
                     sql += ` AND c.proposer_teacher_id = ${teacher_id}`
                 }
@@ -200,7 +200,7 @@ module.exports = {
                 }
             }
             sql += ` ORDER BY c.creation_date DESC`
-            //console.log(sql);
+            console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
             if (only_recent){

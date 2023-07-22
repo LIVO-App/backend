@@ -463,7 +463,7 @@ module.exports.add_proposition = async (req, res) => {
         teacher_list.push(teacher_id)
         main_teachers.push(1)
     }
-    let teacher_present
+    let teacher_present, teacher_dup
     for(let i=0;i<teacher_list.length;i++){
         teacher_present = await teacherClassSchema.is_present(course_id, block_id, section, teacher_list[i]);
         if(teacher_present){

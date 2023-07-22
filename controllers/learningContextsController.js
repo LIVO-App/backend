@@ -46,7 +46,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
     let data_contexts = contexts.map( (context) => {
         return {
             course_id: context.course,
-            context: context.context
+            context_id: context.context
         };
     });
     let response = {

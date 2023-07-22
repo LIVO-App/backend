@@ -4,7 +4,6 @@ const courseSchema = require('../models/coursesModel');
 const projectclassSchema = require('../models/projectClassModel');
 const teachingCourseSchema = require('../models/courseteachingModel');
 const teacherClassSchema = require('../models/classesTeacherModel');
-const teacherSchema = require('../models/teacherModel')
 const opentoSchema = require('../models/opentoModel');
 const areaSchema = require('../models/learning_areaModel');
 const contextSchema = require('../models/learningContextsModel');

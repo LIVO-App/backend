@@ -10,6 +10,17 @@ let course_id;
 
 describe('/api/v1/propositions', () => {
     describe('POST /api/v1/propositions', () => {
+        let invalid_proposal = {}
+        let invalid_proposal_course = {
+            area_id: "SM",
+            growth_id: 1,
+            block_id: 7,
+            access_object: {
+                SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
+                PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
+            },
+            teaching_list: ["AT", "CAS"]
+        }
         let valid_proposal = {
             ita_title: "Prova",
             eng_title: "Prova",
@@ -57,6 +68,22 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', wrongUserToken)
                 .expect(401)
         })
+
+        test('POST /api/v1/propositions with valid token but non valid references (learning_area_id, growth_area_id, learning_block_id) should respond with status 404', async () => {
+            return request(app)
+                .post('/api/v1/propositions')
+                .send(invalid_proposal)
+                .set('x-access-token', validTokenTeacher)
+                .expect(404)
+        })
+
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) but missing course informations should respond with status 400', async () => {
+            return request(app)
+                .post('/api/v1/propositions')
+                .send(invalid_proposal_course)
+                .set('x-access-token', validTokenTeacher)
+                .expect(400)
+        }, 20000)
     })
 
     describe('GET /api/v1/propositions', () => {

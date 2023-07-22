@@ -314,7 +314,7 @@ module.exports.add_proposition = async (req, res) => {
     let new_classes, new_teachings
     let teaching_list = req.body.teaching_list;
     // Check information about classes that can access the new course
-    let context_exist, class_exist, already_present;
+    let context_exist, class_exist, already_present, study_year, study_address;
     // Remove non valid contexts and classes
     if(access_object!=undefined){
         for(var context in access_object){
@@ -328,11 +328,12 @@ module.exports.add_proposition = async (req, res) => {
             for(let index=0;index<access_object[context].length;index++){
                 study_year = access_object[context][index].study_year;
                 study_address = access_object[context][index].study_address;
-                class_exist = await ordClassSchema.read(study_year, study_address) // The class exists for this school year
+                class_exist = await ordClassSchema.read(study_year, study_address, block_id) // The class exists for this school year
                 if(!class_exist){
                     console.log(`Ordinary class ${study_year} ${study_address} does not exists. Removing it from the list of classes for a learning context`)
                     wrong_ord_class = true
                     access_object[context].splice(index, 1)
+                    index = index-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
                 }
             }
             if(access_object[context].length == 0){
@@ -346,10 +347,10 @@ module.exports.add_proposition = async (req, res) => {
     if(access_object!=undefined){
         for(var context in access_object){
             // Loop through all valid classes in a context
-            for(let index=0;i<access_object[context].length;index++){
+            for(let index=0;index<access_object[context].length;index++){
                 study_year = access_object[context][index].study_year;
                 study_address = access_object[context][index].study_address;
-                already_present = await opentoSchema.is_present(course_id, context_id, study_year, study_address) // The class exists for this school year
+                already_present = await opentoSchema.is_present(course_id, context, study_year, study_address) // The class exists for this school year
                 if(!already_present){ // If a class is not present, it means we have a new value -> add new course
                     new_classes = true
                 }
@@ -359,15 +360,16 @@ module.exports.add_proposition = async (req, res) => {
     let teaching_exist, teaching_present;
     // Remove non valid teachings in order to have right values in case of insertion
     for(let i = 0; i<teaching_list.length;i++){
-        teaching_exist = await teachingCourseSchema.read(teaching_list[i])
+        teaching_exist = await teachingSchema.read(teaching_list[i])
         if(!teaching_exist){ // The teaching exists in the database
             console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
             wrong_teaching = true // Set variable to true
             teaching_list.splice(i, 1) // Remove wrong teaching from list
+            i = i-1
         }
     }
     for(let i = 0; i<teaching_list.length; i++){
-        teaching_present = await teachingSchema.is_present(course_id, teaching_list[i])
+        teaching_present = await teachingCourseSchema.is_present(course_id, teaching_list[i])
         if(!teaching_present){ // If a teaching is not present, it means we have a new value -> add new course
             new_teachings = true // If a context is new, it means we add new classes, so its the same
         }
@@ -437,6 +439,7 @@ module.exports.add_proposition = async (req, res) => {
             wrong_teacher = true
             teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
             main_teachers.splice(i,1)
+            i = i-1
         }
     }
     let section = 'A'

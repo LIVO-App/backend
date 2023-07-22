@@ -104,5 +104,19 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async delete(course_id, block_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM project_teach WHERE project_class_course_id=? AND project_class_block=?';
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

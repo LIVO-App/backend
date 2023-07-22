@@ -47,7 +47,7 @@ module.exports = {
                         conn.release()
                         return false
                     }
-                    if(access_object[context][index].study_year!=undefined || access_object[context][index].study_address!=undefined || access_object[context][index].presidium!=undefined || access_object[context][index].main_study_year!=undefined){
+                    if(access_object[context][index].study_year==undefined || access_object[context][index].study_address==undefined || access_object[context][index].presidium==undefined || access_object[context][index].main_study_year==undefined){
                         conn.release()
                         return false
                     }
@@ -78,7 +78,7 @@ module.exports = {
                         sql += ',';
                     }
                 }
-                if(key!=Object.keys(access_object)[Object.keys(access_object).length-1]){
+                if(context!=Object.keys(access_object)[Object.keys(access_object).length-1]){
                     sql += ',';
                 }
             }

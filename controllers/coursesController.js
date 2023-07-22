@@ -365,7 +365,7 @@ module.exports.add_proposition = async (req, res) => {
             console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
             wrong_teaching = true // Set variable to true
             teaching_list.splice(i, 1) // Remove wrong teaching from list
-            i = i-1
+            i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
         }
     }
     for(let i = 0; i<teaching_list.length; i++){
@@ -394,7 +394,6 @@ module.exports.add_proposition = async (req, res) => {
         // If course_id was setted from request, we update it with the new instance model
         course_id = new_course.rows.insertId
         publication = new_course.date
-        //console.log(course_id)
         let opentoIns = await opentoSchema.add(course_id, access_object);
         if(!opentoIns){
             if(new_course_id){
@@ -439,7 +438,7 @@ module.exports.add_proposition = async (req, res) => {
             wrong_teacher = true
             teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
             main_teachers.splice(i,1)
-            i = i-1
+            i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
         }
     }
     let section = 'A'
@@ -500,7 +499,18 @@ module.exports.add_proposition = async (req, res) => {
         console.log("course_proposal: tried to insert a proposal that was already inserted")
         return
     }
-    res.status(201).json({status: "accepted", description: "Course proposal inserted", course_id: course_id, publication: publication, course_exist: course_exist, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher});
+    course_id = course_id.toString()
+    res.status(201).json({
+        status: "accepted",
+        description: "Course proposal inserted", 
+        course_id: course_id, 
+        publication: publication, 
+        course_exist: course_exist, 
+        wrong_ord_class: wrong_ord_class, 
+        wrong_context: wrong_context, 
+        wrong_teaching: wrong_teaching, 
+        wrong_teacher: wrong_teacher
+    });
 }
 
 /*courseSchema.list(1, undefined, 7)

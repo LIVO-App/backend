@@ -124,6 +124,8 @@ module.exports = {
                 conn.release()
                 return false;
             }
+            ita_name = ita_name == undefined ? null : ita_name
+            eng_name = eng_name == undefined ? null : eng_name
             let sql = 'INSERT INTO project_class (course_id, learning_block_id, italian_displayed_name, english_displayed_name, `group`, proposer_teacher_id) VALUES (?,?,?,?,?,?)'
             let values = [course_id, block_id, ita_name, eng_name, group, teacher_id]
             const rows = await conn.query(sql, values)
@@ -138,7 +140,7 @@ module.exports = {
     async delete(course_id, block_id){
         try{
             conn = await pool.getConnection();
-            let sql = 'DELETE FROM project_class WHERE course_id=? AND block_id = ?';
+            let sql = 'DELETE FROM project_class WHERE course_id=? AND learning_block_id = ?';
             let values = [course_id, block_id]
             const rows = await conn.query(sql, values)
             conn.release()

@@ -1,12 +1,18 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
+const courseSchema = require('../models/coursesModel');
+const projectclassSchema = require('../models/projectClassModel');
+const teachingCourseSchema = require('../models/courseteachingModel');
+const teacherClassSchema = require('../models/classesTeacherModel');
+const opentoSchema = require('../models/opentoModel');
 
 let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
 let validTokenTeacher = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-let course_id;
+let course_id = [];
+var valid_proposal;
 
 describe('/api/v1/propositions', () => {
     describe('POST /api/v1/propositions', () => {
@@ -21,7 +27,7 @@ describe('/api/v1/propositions', () => {
             },
             teaching_list: ["AT", "CAS"]
         }
-        let valid_proposal = {
+        valid_proposal = {
             ita_title: "Prova",
             eng_title: "Prova",
             ita_descr: "aaaaa",
@@ -84,60 +90,17 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', validTokenTeacher)
                 .expect(400)
         }, 20000)
-    })
 
-    describe('GET /api/v1/propositions', () => {
-        test('GET /api/v1/propositions without token should respond with status 401', async () => {
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
             return request(app)
-                .get('/api/v1/propositions')
-                .query({teacher_id: 1})
-                .expect(401)
-        });
-
-        test('GET /api/v1/propositions with invalid token should respond with status 403', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
-                .set('x-access-token', invalidToken)
-                .expect(403)
-        });
-
-        test('GET /api/v1/propositions with valid token but of another teacher should respond with status 401', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
-                .set('x-access-token', validTokenTeacher) 
-                .query({teacher_id: 2})
-                .expect(401)
-        });
-
-        test('GET /api/v1/propositions with wrong user token should respond with status 401', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
-                .set('x-access-token', wrongUserToken)
-                .query({teacher_id: 1})
-                .expect(401)
-        });
-
-        test('GET /api/v1/propositions with valid user token but no teacher_id should respond with status 200', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
+                .post('/api/v1/propositions')
+                .send(valid_proposal)
                 .set('x-access-token', validTokenTeacher)
-                .expect(200)
-        });
-
-        test('GET /api/v1/propositions with valid user token (admin) but without teacher_id should respond with status 200', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
-                .set('x-access-token', validTokenAdmin)
-                .expect(200)
-        });
-
-        test('GET /api/v1/propositions with valid user token (admin) but with teacher_id should respond with status 200', async () => {
-            return request(app)
-                .get('/api/v1/propositions')
-                .set('x-access-token', validTokenAdmin)
-                .query({teacher_id: 1})
-                .expect(200)
-        });
+                .expect(201)
+                .then((response) => {
+                    course_id.push(response.body.course_id)
+                });
+        }, 20000)
     })
 
     describe('GET /api/v1/propositions/', () => {
@@ -176,6 +139,9 @@ describe('/api/v1/propositions', () => {
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenTeacher)
                 .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                });
         });
 
         test('GET /api/v1/propositions/courses with valid user token but no teacher_id and all courses proposals of the teacher should respond with status 200', async () => {
@@ -184,6 +150,9 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', validTokenTeacher)
                 .query({not_confirmed: 'false', only_recent: 'false'})
                 .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
         });
 
         test('GET /api/v1/propositions/courses with valid user token (admin) but without teacher_id should respond with status 200', async () => {
@@ -191,6 +160,9 @@ describe('/api/v1/propositions', () => {
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenAdmin)
                 .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                });
         });
 
         test('GET /api/v1/propositions/courses with valid user token (admin) but with teacher_id should respond with status 200', async () => {
@@ -199,6 +171,9 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', validTokenAdmin)
                 .query({teacher_id: 1, only_recent: 'false'})
                 .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                });
         });
 
         test('GET /api/v1/propositions/courses with valid user token (admin) and all courses proposals should respond with status 200', async () => {
@@ -207,6 +182,19 @@ describe('/api/v1/propositions', () => {
                 .set('x-access-token', validTokenAdmin)
                 .query({teacher_id: 1, only_recent: 'false', not_confirmed: 'false'})
                 .expect(200)
+                .then((response) => {
+                    expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                });
         });
+    })
+
+    afterAll(async ()=> {
+        for(let i=0;i<course_id.length;i++){
+            let delete_teachers = await teacherClassSchema.delete(course_id[i],valid_proposal.block_id)
+            let delete_project_class = await projectclassSchema.delete(course_id[i], valid_proposal.block_id)
+            let delete_teachings = await teachingCourseSchema.delete(course_id[i])
+            let delete_assoc_classes = await opentoSchema.delete(course_id[i])
+            let delete_course = await courseSchema.deleteProposal(course_id[i])
+        }
     })
 })

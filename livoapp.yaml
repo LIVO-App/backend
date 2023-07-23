@@ -1507,7 +1507,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_teacher_id'
-        - $ref: '#/components/parameters/query_only_recent'
+        - $ref: '#/components/parameters/query_recent_models'
         - $ref: '#/components/parameters/query_not_confirmed'
       summary: List of courses proposals
       tags:
@@ -2868,12 +2868,12 @@ components:
       description: Id of the learning context
       schema:
         type: integer
-    query_only_recent:
-      name: only_recent
+    query_recent_models:
+      name: recent_models
       in: query
-      description: Tells if the user wants to see only the most recent confirmed courses proposals
+      description: Tells how many models the user wants to see in the most recent confirmed courses proposals
       schema:
-        type: boolean
+        type: integer
     query_not_confirmed:
       name: not_confirmed
       in: query

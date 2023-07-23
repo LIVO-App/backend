@@ -101,6 +101,14 @@ describe('/api/v1/propositions', () => {
                     course_id.push(response.body.course_id)
                 });
         }, 20000)
+
+        test('POST /api/v1/propositions with valid token, but duplicate insertion should respond with status 409', async () => {
+            return request(app)
+                .post('/api/v1/propositions')
+                .send(valid_proposal)
+                .set('x-access-token', validTokenTeacher)
+                .expect(409)
+        }, 20000)
     })
 
     describe('GET /api/v1/propositions/', () => {

@@ -27,6 +27,30 @@ describe('/api/v1/propositions', () => {
             },
             teaching_list: ["AT", "CAS"]
         }
+        let invalid_proposal_p_class = {
+            ita_title: "Prova",
+            eng_title: "Prova",
+            ita_descr: "aaaaa",
+            eng_descr: "aaaaa",
+            up_hours: 12,
+            credits: 4,
+            ita_exp_l: "asdf",
+            eng_exp_l: "asdf",
+            ita_cri: "asd",
+            eng_cri: "asd",
+            ita_act: "asw",
+            eng_act: "asw",
+            area_id: "SM",
+            growth_id: 1,
+            min_students: 15,
+            max_students: 25,
+            access_object: {
+                    SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
+                    PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
+            },
+            teaching_list: ["AT", "CAS"],
+            block_id: 7
+        }
         valid_proposal = {
             ita_title: "Prova",
             eng_title: "Prova",
@@ -87,6 +111,14 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(invalid_proposal_course)
+                .set('x-access-token', validTokenTeacher)
+                .expect(400)
+        }, 20000)
+
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) but missing porject class informations should respond with status 400', async () => {
+            return request(app)
+                .post('/api/v1/propositions')
+                .send(invalid_proposal_p_class)
                 .set('x-access-token', validTokenTeacher)
                 .expect(400)
         }, 20000)

@@ -358,22 +358,25 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     let teaching_exist, teaching_present;
-    // Remove non valid teachings in order to have right values in case of insertion
-    for(let i = 0; i<teaching_list.length;i++){
-        teaching_exist = await teachingSchema.read(teaching_list[i])
-        if(!teaching_exist){ // The teaching exists in the database
-            console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
-            wrong_teaching = true // Set variable to true
-            teaching_list.splice(i, 1) // Remove wrong teaching from list
-            i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+    if(teaching_list != undefined){
+        // Remove non valid teachings in order to have right values in case of insertion
+        for(let i = 0; i<teaching_list.length;i++){
+            teaching_exist = await teachingSchema.read(teaching_list[i])
+            if(!teaching_exist){ // The teaching exists in the database
+                console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
+                wrong_teaching = true // Set variable to true
+                teaching_list.splice(i, 1) // Remove wrong teaching from list
+                i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+            }
+        }
+        for(let i = 0; i<teaching_list.length; i++){
+            teaching_present = await teachingCourseSchema.is_present(course_id, teaching_list[i])
+            if(!teaching_present){ // If a teaching is not present, it means we have a new value -> add new course
+                new_teachings = true // If a context is new, it means we add new classes, so its the same
+            }
         }
     }
-    for(let i = 0; i<teaching_list.length; i++){
-        teaching_present = await teachingCourseSchema.is_present(course_id, teaching_list[i])
-        if(!teaching_present){ // If a teaching is not present, it means we have a new value -> add new course
-            new_teachings = true // If a context is new, it means we add new classes, so its the same
-        }
-    }
+    
     if(new_teachings || new_classes){
         course_exist = false
     }
@@ -443,17 +446,26 @@ module.exports.add_proposition = async (req, res) => {
     let main_teachers = req.body.main_teachers; //Array of equal length of teacher_list
     // The teachers in teacher_list exists?
     let teacher_exists
-    for(let i=0;i<teacher_list.length;i++){
-        teacher_exists = await teacherSchema.read_id(teacher_list[i])
-        if(!teacher_exists){
-            console.log(`Teacher with id ${teacher_list[i]} does not exists. Removing it from the list of associated teachers`)
-            wrong_teacher = true
-            teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
-            main_teachers.splice(i,1)
-            i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+    let section = 'A'
+    if(teacher_list!=undefined){
+        for(let i=0;i<teacher_list.length;i++){
+            teacher_exists = await teacherSchema.read_id(teacher_list[i])
+            if(!teacher_exists){
+                console.log(`Teacher with id ${teacher_list[i]} does not exists. Removing it from the list of associated teachers`)
+                wrong_teacher = true
+                teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
+                main_teachers.splice(i,1)
+                i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+            }
+        }
+    } else {
+        teacher_list = [teacher_id]
+        if(main_teachers == undefined){
+            main_teachers = [1]
+        } else {
+            main_teachers.push(1)
         }
     }
-    let section = 'A'
     if(teacher_list.find(element => element == teacher_id)==undefined){
         teacher_list.push(teacher_id)
         main_teachers.push(1)

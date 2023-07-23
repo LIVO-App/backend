@@ -285,7 +285,7 @@ describe('/api/v1/propositions', () => {
         test('GET /api/v1/propositions without token should respond with status 401', async () => {
             return request(app)
                 .get('/api/v1/propositions')
-                .query({teacher_id: 1, only_recent: 'false'})
+                .query({teacher_id: 1, recent_models: 'false'})
                 .expect(401)
         });
 
@@ -300,7 +300,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenTeacher) 
-                .query({teacher_id: 2, only_recent: 'false'})
+                .query({teacher_id: 2, recent_models: 'false'})
                 .expect(401)
         });
 
@@ -308,7 +308,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', wrongUserToken)
-                .query({teacher_id: 1, only_recent: 'false'})
+                .query({teacher_id: 1, recent_models: 'false'})
                 .expect(401)
         });
 
@@ -326,7 +326,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenTeacher)
-                .query({not_confirmed: 'false', only_recent: 'false'})
+                .query({not_confirmed: 'false', recent_models: 'false'})
                 .expect(200)
                 .then((response) => {
                     expect(response.body.data.length).toBeGreaterThanOrEqual(1);
@@ -347,7 +347,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenAdmin)
-                .query({teacher_id: 1, only_recent: 'false'})
+                .query({teacher_id: 1, recent_models: 'false'})
                 .expect(200)
                 .then((response) => {
                     expect(response.body.data.length).toBeGreaterThanOrEqual(1);
@@ -358,7 +358,7 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .get('/api/v1/propositions')
                 .set('x-access-token', validTokenAdmin)
-                .query({teacher_id: 1, only_recent: 'false', not_confirmed: 'false'})
+                .query({teacher_id: 1, recent_models: 'false', not_confirmed: 'false'})
                 .expect(200)
                 .then((response) => {
                     expect(response.body.data.length).toBeGreaterThanOrEqual(0);

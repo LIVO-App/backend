@@ -172,20 +172,20 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id, only_recent = true, not_confirmed = true){
+    async get_models(teacher_id, recent_models, not_confirmed = false){
         try {
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
-            if(only_recent){
+            if(recent_models){
                 sql += `, c.italian_title, c.english_title`
             } else {
-                sql += `, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title'`
+                sql += `, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified'`
             }
-            sql += `, c.creation_date FROM course AS c`
-            if(!only_recent){
+            sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified' FROM course AS c`
+            if(!recent_models){
                 sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id`
             }
-            if(only_recent){ // I want to have the last 3 models available
+            if(recent_models){ // I want to have the last 3 models available
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
                 if(teacher_id != undefined){
                     sql += ` AND c.proposer_teacher_id = ${teacher_id}`
@@ -203,7 +203,7 @@ module.exports = {
             console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
-            if (only_recent){
+            if (recent_models>0){
                 return rows.slice(0,3)
             } else {
                 return rows 
@@ -214,15 +214,15 @@ module.exports = {
             conn.release()
         }
     },
-    async add_proposition(ita_title, eng_title, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id){
+    async add_proposition(ita_title, eng_title, school_year, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id){
         try{
             conn = await pool.getConnection()
             if(!ita_title || !eng_title || !ita_descr || !eng_descr || !up_hours || !credits || !it_ex_learn || !eng_ex_learn || !ita_cri || !eng_cri || !ita_ac || !eng_ac || !area_id || !growth_id || !min_students || !max_students || !teacher_id){
                 conn.release()
                 return false
             }
-            let creation_date = new Date()
-            let sql = 'INSERT INTO course (italian_title, english_title, creation_date, italian_description, english_description, up_hours, credits, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities, learning_area_id, growth_area_id, min_students, max_students, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+            let creation_date = school_year
+            let sql = 'INSERT INTO course (italian_title, english_title, creation_school_year, italian_description, english_description, up_hours, credits, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities, learning_area_id, growth_area_id, min_students, max_students, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
             let values = [ita_title, eng_title, creation_date, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()
@@ -289,15 +289,15 @@ module.exports = {
             conn.release()
         }
     },
-    async already_inserted_today(course_ita_title, course_eng_title){
+    async already_inserted_today(course_ita_title, course_eng_title, school_year){
         try {
             conn = await pool.getConnection()
-            if(!course_ita_title || !course_eng_title){
+            if(!course_ita_title || !course_eng_title || !school_year){
                 conn.release()
                 return null
             }
-            let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.english_title = ? AND c.creation_date = CURDATE()'
-            let values = [course_ita_title, course_eng_title]
+            let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.english_title = ? AND c.creation_school_year = ?'
+            let values = [course_ita_title, course_eng_title, school_year]
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){

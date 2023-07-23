@@ -1903,10 +1903,9 @@ components:
         english_title:
           type: string
           description: "English title of the course"
-        creation_date:
-          type: string
-          format: date
-          description: "Creation date of the course"
+        creation_school_year:
+          type: integer
+          description: "Creation school year of the course"
         italian_description:
           type: string
           description: "Italian description of the course"
@@ -2007,10 +2006,23 @@ components:
         english_title:
           type: string
           description: "English title of the course model"
-        creation_date:
+        creation_school_year:
+          type: integer
+          description: "Creation school year of the course model"
+        project_class_confirmation_date: 
           type: string
           format: date
-          description: "Creation date of the course model"
+          description: "Confirmation date of the project class"
+        project_class_to_be_modified:
+          type: boolean
+          description: "Is at true if the project class has to be modified"
+        course_confirmation_date:
+          type: string
+          format: date
+          description: "Confirmation date of the course"
+        course_to_be_modified:
+          type: boolean
+          description: "Is at true if the course has to be modified"
     annual_credits_ref:
       type: object
       properties:

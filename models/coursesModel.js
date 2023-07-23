@@ -4,7 +4,7 @@ module.exports = {
     async read(id, admin=false){
         try {
             conn = await pool.getConnection();
-            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_date, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",pga.italian_title AS "growth_area_ita",pga.english_title AS "growth_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
+            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_school_year, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",pga.italian_title AS "growth_area_ita",pga.english_title AS "growth_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN personal_growth_area AS pga ON c.growth_area_id = pga.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
             if(admin){
                 sql += 'LEFT ';
             }
@@ -199,7 +199,7 @@ module.exports = {
                     sql += ` WHERE (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL)`
                 }
             }
-            sql += ` ORDER BY c.creation_date DESC`
+            sql += ` ORDER BY c.creation_school_year DESC`
             console.log(sql);
             const rows = await conn.query(sql)
             conn.release()
@@ -221,14 +221,14 @@ module.exports = {
                 conn.release()
                 return false
             }
-            let creation_date = school_year
+            let creation_school_year = school_year
             let sql = 'INSERT INTO course (italian_title, english_title, creation_school_year, italian_description, english_description, up_hours, credits, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities, learning_area_id, growth_area_id, min_students, max_students, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-            let values = [ita_title, eng_title, creation_date, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id]
+            let values = [ita_title, eng_title, creation_school_year, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()
             return {
                 rows: rows,
-                date: creation_date
+                date: creation_school_year
             };
         } catch (err) {
             console.log(err)
@@ -261,7 +261,7 @@ module.exports = {
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){
-                return true
+                return rows[0].id
             } else {
                 return false
             }
@@ -289,15 +289,15 @@ module.exports = {
             conn.release()
         }
     },
-    async already_inserted_today(course_ita_title, course_eng_title, school_year){
+    async already_inserted_year(ita_title, eng_title, school_year){
         try {
             conn = await pool.getConnection()
-            if(!course_ita_title || !course_eng_title || !school_year){
+            if(!ita_title || !eng_title || !school_year){
                 conn.release()
                 return null
             }
             let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.english_title = ? AND c.creation_school_year = ?'
-            let values = [course_ita_title, course_eng_title, school_year]
+            let values = [ita_title, eng_title, school_year]
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){
@@ -317,7 +317,7 @@ module.exports = {
     /*SELECT c.id,
         c.italian_title,
         c.english_title,
-        c.creation_date,
+        c.creation_school_year,
         c.italian_description,
         c.english_description,
         c.up_hours,
@@ -425,7 +425,7 @@ module.exports = {
 SELECT DISTINCT c.id,
        c.italian_title,
        c.english_title,
-       c.creation_date,
+       c.creation_school_year,
        c.italian_description,
        c.english_description,
        c.up_hours,

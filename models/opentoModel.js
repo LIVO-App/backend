@@ -73,10 +73,10 @@ module.exports = {
                         sql += ' (?,?,?,?,?,?)'
                         values.push(course_id, study_year, study_address, presidium, main_study_year, context_id)
                         classes_per_context.push(study_year,study_address)
-                    }
-                    if(index<access_object[context].length-1){
-                        sql += ',';
-                    }
+                        if(index<access_object[context].length-1){
+                            sql += ',';
+                        }
+                    }  
                 }
                 if(context!=Object.keys(access_object)[Object.keys(access_object).length-1]){
                     sql += ',';

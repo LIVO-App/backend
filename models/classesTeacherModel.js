@@ -68,12 +68,23 @@ module.exports = {
             }
             let sql = 'INSERT INTO project_teach (teacher_id, project_class_course_id, project_class_block, section, main) VALUES ';
             let values = []
+            let teacher_insert = []
             for(let i=0;i<teachers_id.length;i++){
-                sql += ' (?,?,?,?,?)';
-                values.push(teachers_id[i], course_id, block_id, section, main_teachers[i])
-                if(i<teachers_id.length-1){
-                    sql += ',';
+                let finded_teacher;
+                for(let j=0;j<teacher_insert.length;j++){
+                    if(teacher_insert[j]==teachers_id[i]){
+                        finded_teacher = true
+                    }
                 }
+                if(!finded_teacher){
+                    sql += ' (?,?,?,?,?)';
+                    values.push(teachers_id[i], course_id, block_id, section, main_teachers[i])
+                    teacher_insert.push(teachers_id[i])
+                    if(i<teachers_id.length-1){
+                        sql += ',';
+                    }
+                }
+                
             }
             const rows = await conn.query(sql, values)
             conn.release();

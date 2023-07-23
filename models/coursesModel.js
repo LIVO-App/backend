@@ -288,6 +288,28 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async already_inserted_today(course_ita_title, course_eng_title){
+        try {
+            conn = await pool.getConnection()
+            if(!course_ita_title || !course_eng_title){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.english_title = ? AND c.creation_date = CURDATE()'
+            let values = [course_ita_title, course_eng_title]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length == 1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

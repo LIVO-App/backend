@@ -381,6 +381,18 @@ module.exports.add_proposition = async (req, res) => {
     // we are using a previous proposal and simply use it in another learning_block
     // Else, if even one value is new, we are adding the course again as a new model
     if(!course_exist){
+        //Check if the same course has been already inserted today
+        let inserted_today = await courseSchema.already_inserted_today(ita_title, eng_title)
+        if(inserted_today == null){
+            res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
+            console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');
+            return;
+        }
+        if(inserted_today){
+            res.status(409).json({status: "error", description: MSG.itemAlreadyExists, course_exist: course_exist})
+            console.log("course proposal insertion: duplicate course. Same course inserted in same day with slightly variations")
+            return
+        }
         // Set new_course_id to true if it was not already done since we created a new course by modifying an existing model
         new_course_id = true
         //If the course does not exist, add new course to course table

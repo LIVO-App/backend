@@ -181,8 +181,8 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3],
-            main_teachers: [0,1]
+            teacher_list: [2,3,3],
+            main_teachers: [0,1,1]
         }
 
         test('POST /api/v1/propositions without token should respond with status 401', async () => {

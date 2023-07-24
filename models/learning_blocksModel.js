@@ -8,6 +8,10 @@ module.exports = {
     async read(id,school_year){
         try {
             conn = await pool.getConnection();
+            if(!id){
+                conn.release()
+                return false
+            }
             let sql = "SELECT id, number, school_year, start, end FROM learning_block WHERE ";
             let rows;
             if (school_year != undefined) {

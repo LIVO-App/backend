@@ -12,6 +12,7 @@ const blockSchema = require('../models/learning_blocksModel');
 const teacherSchema = require('../models/teacherModel');
 const ordClassSchema = require('../models/ordinaryclassModel');
 const teachingSchema = require('../models/teachingModel'); // To check if teaching exists
+const adminSchema = require('../models/adminModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -566,7 +567,7 @@ module.exports.approve_proposals = async (req, res) => {
     let admin_id;
     if(req.loggedUser.role==="admin"){
         admin_id = req.loggedUser._id
-        let user_exist = await teacherSchema.read_id(admin_id)
+        let user_exist = await adminSchema.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('course proposition approval: unauthorized access');
@@ -579,10 +580,10 @@ module.exports.approve_proposals = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
-    let course_exist = await courseSchema.read(course_id);
+    let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('resource not found: course approval');
+        console.log('resource not found: course approval course_id');
         return
     }
     let block_exist = await blockSchema.read(block_id)
@@ -592,6 +593,11 @@ module.exports.approve_proposals = async (req, res) => {
         return
     }
     let class_exist = await projectclassSchema.read(course_id, block_id)
+    if(class_exist == null){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing parameters: project class course approval');
+        return
+    }
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
         console.log('resource not found: project class course approval');
@@ -605,7 +611,7 @@ module.exports.approve_proposals = async (req, res) => {
         console.log('missing required information: course approval');
         return
     }
-    res.status(204).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
+    res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
 }
 
 /*courseSchema.list(1, undefined, 7)

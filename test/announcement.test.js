@@ -131,20 +131,20 @@ describe('/api/v1/announcements', () => {
 
     describe('GET methods', () => {
         describe('GET /api/v1/announcements/:announcement_id', () => {
-            test('GET /api/v1/announcements/:announcement_id without token should respond with status 401', () => {
+            test('GET /api/v1/announcements/:announcement_id without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/announcements/1')
                     .expect(401)
             })
 
-            test('GET /api/v1/announcements/:announcement_id with invalid token should respond with status 403', () => {
+            test('GET /api/v1/announcements/:announcement_id with invalid token should respond with status 403', async () => {
                 return request(app)
                     .get('/api/v1/announcements/1')
                     .set('x-access-token', invalidToken)
                     .expect(403)
             })
 
-            test('GET /api/v1/announcements/:announcement_id with valid token and valid announcement id should respond with status 200', () => {
+            test('GET /api/v1/announcements/:announcement_id with valid token and valid announcement id should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/announcements/1')
                     .set('x-access-token', validToken)
@@ -154,7 +154,7 @@ describe('/api/v1/announcements', () => {
                     });
             })
 
-            test('GET /api/v1/announcements/:announcement_id with valid token of another user and valid announcement id should respond with status 200', () => {
+            test('GET /api/v1/announcements/:announcement_id with valid token of another user and valid announcement id should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/announcements/1')
                     .set('x-access-token', validToken2)
@@ -164,7 +164,7 @@ describe('/api/v1/announcements', () => {
                     });
             })
 
-            test('GET /api/v1/announcements/:announcement_id with valid token should but non existing announcement id respond with status 404', () => {
+            test('GET /api/v1/announcements/:announcement_id with valid token should but non existing announcement id respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/announcements/0')
                     .set('x-access-token', validToken)

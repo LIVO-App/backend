@@ -1585,7 +1585,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
         - $ref: '#/components/parameters/query_approved'
       responses:
-        '204':
+        '200':
           $ref: '#/components/responses/AcceptUpdate'
         '400':
           $ref: '#/components/responses/CourseInsertion'

@@ -310,6 +310,37 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async approve_proposal(course_id, block_id, admin_id, approved = true){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || !block_id || !admin_id){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE course, project_class SET '
+            let values = []
+            let confirmation_date = undefined
+            if(approved) {
+                confirmation_date = new Date()
+                sql += 'course.certifying_admin_id = ?, course.admin_confirmation = ?, course.to_be_modified = NULL, project_class.certifying_admin_id = ?, project_class.admin_confirmation = ?, project_class.to_be_modified = NULL '
+                values.push(admin_id, confirmation_date, admin_id, confirmation_date)
+            } else {
+                sql += 'course.to_be_modified = true, project_class.to_be_modified = true ' 
+            }
+            sql += 'WHERE course.id = ? AND project_class.course_id = ? AND project_class.learning_block_id = ?'
+            values.push(course_id, course_id, block_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return {
+                rows: rows,
+                confirmation_date: confirmation_date
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

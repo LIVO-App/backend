@@ -264,7 +264,8 @@ module.exports.add_proposition = async (req, res) => {
         if(teacher_id == undefined){
             teacher_id = req.loggedUser._id;
         }
-        if(teacher_id!=req.loggedUser._id){
+        let user_exist = await teacherSchema.read_id(teacher_id)
+        if(teacher_id!=req.loggedUser._id || !user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('course proposition insertion: unauthorized access');
             return;
@@ -559,6 +560,45 @@ module.exports.add_proposition = async (req, res) => {
         wrong_teaching: wrong_teaching, 
         wrong_teacher: wrong_teacher
     });
+}
+
+module.exports.approve_proposals = async (req, res) => {
+    let admin_id;
+    if(req.loggedUser.role==="admin"){
+        admin_id = req.loggedUser._id
+        let user_exist = await teacherSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course proposition approval: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course proposition approval: unauthorized access');
+        return;
+    }
+    let course_id = req.query.course_id;
+    let block_id = req.query.block_id;
+    let course_exist = await courseSchema.read(course_id);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('resource not found: course approval');
+        return
+    }
+    let class_exist = await projectclassSchema.read(course_id, block_id)
+    if(!class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('resource not found: project class course approval');
+        return
+    }
+    let approved = req.query.approved;
+    let course_approval = await courseSchema.approve_proposal(course_id, block_id, admin_id, approved)
+    if(!course_approval){
+        res.status(400).json({status: "error", description: MSG.missing_params})
+        console.log('missing required information: course approval');
+        return
+    }
+    res.status(204).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
 }
 
 /*courseSchema.list(1, undefined, 7)

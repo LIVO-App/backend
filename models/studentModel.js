@@ -22,12 +22,21 @@ async function read(condition,param){
 
 module.exports = {
     read_username(username) {
+        if(!username){
+            return false;
+        }
         return read("username = ?",username);
     },
     read_email(email) {
+        if(!email){
+            return false;
+        }
         return read("email = ?",email);
     },
     read_id(student_id){
+        if(!student_id){
+            return false;
+        }
         return read("id = ?",student_id);
     },
     async list() {

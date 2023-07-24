@@ -26,6 +26,10 @@ module.exports = {
     async read(id){
         try {
             conn = await pool.getConnection();
+            if(!id){
+                conn.release()
+                return false
+            }
             let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment, ann.italian_message, ann.english_message FROM announcement AS ann WHERE ann.id=?';
             const rows = await conn.query(sql, id);
             conn.release();

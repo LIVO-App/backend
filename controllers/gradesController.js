@@ -49,6 +49,12 @@ module.exports.get_grades = async (req, res) => {
 
 module.exports.get_grades_v2 = async (req, res) => {
     let student_id = req.params.student_id;
+    let student_exist = await studentModel.read_id(student_id)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_v2: unauthorized access');
+            return;
+        }
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -94,6 +100,12 @@ module.exports.insert_grade = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
+    let teacher_exists = await studentModel.read_id(teacher_id)
+    if(!teacher_exists){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_v2: unauthorized access');
+        return;
+    }
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});

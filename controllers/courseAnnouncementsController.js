@@ -44,7 +44,8 @@ module.exports.publish_announcement = async (req, res) => {
         if(teacher_id == undefined){
             teacher_id = req.loggedUser._id;
         }
-        if(teacher_id!=req.loggedUser._id){
+        let teacher_exist = await teacherSchema.read_id(teacher_id)
+        if(teacher_id!=req.loggedUser._id || !teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('project_class sections: unauthorized access');
             return;

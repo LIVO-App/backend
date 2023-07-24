@@ -13,6 +13,7 @@ const teacherSchema = require('../models/teacherModel');
 const ordClassSchema = require('../models/ordinaryclassModel');
 const teachingSchema = require('../models/teachingModel'); // To check if teaching exists
 const adminSchema = require('../models/adminModel')
+const studentSchema = require('../models/studentModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -75,6 +76,12 @@ module.exports.get_courses_v2 = async (req, res) => {
     let block_id = req.query.block_id;
     let student_id = req.query.student_id;
     if(student_id!=undefined){
+        let student_exist = await studentModel.read_id(student_id)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_v2: unauthorized access');
+            return;
+        }
         if(req.loggedUser.role == "student"){
             if(req.loggedUser._id != student_id){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});

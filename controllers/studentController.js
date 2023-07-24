@@ -78,6 +78,12 @@ module.exports.get_curriculum_v2 = async (req, res) => {
     let context_id = req.query.context_id;
     //console.log(req.loggedUser);
     if(req.loggedUser.role == "student"){
+        let student_exist = await studentModel.read_id(student_exist)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_v2: unauthorized access');
+            return;
+        }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_curriculum: unauthorized access');
@@ -207,6 +213,12 @@ module.exports.get_curriculum_v2 = async (req, res) => {
 module.exports.get_project_classes = async (req,res) => {
     let student_id = req.params.student_id;
     if(req.loggedUser.role === "student"){
+        let student_exist = await studentModel.read_id(student_exist)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_v2: unauthorized access');
+            return;
+        }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('student project classes: unauthorized access');

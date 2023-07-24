@@ -585,6 +585,12 @@ module.exports.approve_proposals = async (req, res) => {
         console.log('resource not found: course approval');
         return
     }
+    let block_exist = await blockSchema.read(block_id)
+    if(!block_exist){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('resource not found: block course approval');
+        return
+    }
     let class_exist = await projectclassSchema.read(course_id, block_id)
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
@@ -592,6 +598,7 @@ module.exports.approve_proposals = async (req, res) => {
         return
     }
     let approved = req.query.approved;
+    approved = approved === "false" ? 0 : 1;
     let course_approval = await courseSchema.approve_proposal(course_id, block_id, admin_id, approved)
     if(!course_approval){
         res.status(400).json({status: "error", description: MSG.missing_params})

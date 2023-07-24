@@ -1564,10 +1564,37 @@ paths:
           $ref: '#/components/responses/CourseInsertion'
         '400':
           $ref: '#/components/responses/CourseInsertion'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/CourseInsertion'
+  /v1/proposals/approval:
+    put:
+      description: Confirmation of course proposals
+      summary: Course confirmation
+      tags:
+        - courses
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_approved'
+      responses:
+        '204':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/CourseInsertion'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/growth_areas:
     get:
       description: List of growth areas
@@ -1692,6 +1719,24 @@ components:
           example:
             status: "deleted"
             description: "Deleted 1 rows"
+    AcceptUpdate:
+      description: Update record into the database
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
+              confirmation_date:
+                type: string
+                format: date
+                description: "Confirmation date for course approval"
+            example:
+              status: "accepted"
+              description: "Resources updated successfully"
     Forbidden:
       description: Operation forbided
       content:
@@ -2878,5 +2923,11 @@ components:
       name: not_confirmed
       in: query
       description: Tells if the user wants to see only the non confirmed courses proposals
+      schema:
+        type: boolean
+    query_approved:
+      name: approved
+      in: query
+      description: Tells if the course was confirmed or rejected
       schema:
         type: boolean

@@ -7,6 +7,7 @@ describe('/api/v1/project_classes', () => {
         let validToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let validTokenAnnouncement = jwt.sign({_id: 2, username: "Teacher2", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+        let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
         let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
         describe('GET /api/v1/project_classes/', () => {
@@ -67,7 +68,47 @@ describe('/api/v1/project_classes', () => {
                     .get('/api/v1/project_classes')
                     .query({year: true})
                     .set('x-access-token', validTokenAdmin)
+                    .expect(400);
+            })
+        })
+
+        describe('GET /api/v1/project_classes/:course/:block', () => {
+            test('GET /api/v1/project_classes/:course/:block without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7')
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block with valid token but wrong user type should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7')
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block with valid token and wrong values should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/1')
+                    .set('x-access-token', validTokenAdmin)
                     .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block with valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/7')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.course_id).toBe(5)
+                        expect(response.body.data.learning_block).toBe(7)
+                    });
             })
         })
 

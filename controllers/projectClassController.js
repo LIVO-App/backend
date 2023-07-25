@@ -16,6 +16,52 @@ let MSG = {
 
 process.env.TZ = 'Etc/Universal';
 
+module.exports.get_classes = async (req, res) => {
+    if(req.loggedUser.role=="admin"){
+        let admin_exist = await adminModel.read_id(req.loggedUser._id);
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class list: unauthorized access');
+        return;
+    }
+    let block_id = req.query.block_id;
+    let year = req.query.year;
+    let cls = await projectClassesSchema.list(block_id, year);
+    if(!cls){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class: missing parameters. Specified year but not learning block to use");
+        return;
+    }
+    let data_classes = cls.map((cl) => {
+        return {
+            id: cl.course_id,
+            learning_block: cl.learning_block_id,
+            italian_title: cl.italian_title,
+            english_title: cl.english_title,
+            group: cl.group,
+            teacher_name: cl.teacher_name,
+            teacher_surname: cl.teacher_surname,
+            admin_name: cl.admin_name,
+            admin_surname: cl.admin_surname,
+            to_be_modified: cl.to_be_modified
+        }
+    });
+    let path = "/api/v1/project_classes/"
+    let response = {
+        path: path,
+        single: true,
+        query: {block_id: block_id, year: year},
+        date: new Date(),
+        data: data_classes
+    };
+    res.status(200).json(response);
+}
+
 module.exports.get_project_class_components = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let query = teacher_id ? {teacher_id: teacher_id} : {}; 

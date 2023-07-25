@@ -24,8 +24,32 @@ module.exports = {
             conn.release();
         }
     },
-    async list(){
-
+    async list(block_id, year = false){
+        try{
+            conn = await pool.getConnection();
+            if(year && block_id==undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT pc.course_id, pc.learning_block_id, pc.italian_displayed_name, pc.english_displayed_name, pc.group, t.name as "teacher_name", t.surname as "teacher_surname", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id';
+            let values = [];
+            if(block_id!=undefined){
+                if(year){
+                    sql += ' WHERE pc.learning_block_id IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year IN (SELECT lb1.school_year FROM learning_block AS lb1 WHERE lb1.id = ?))'
+                } else {
+                    sql += ' WHERE pc.learning_block_id = ?'
+                }
+                values.push(block_id)
+            }
+            sql += ' ORDER BY pc.course_id'
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     },
     async isStudentEnrolled(student_id, course_id, block_id) {
         try {

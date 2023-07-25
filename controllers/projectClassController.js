@@ -131,7 +131,7 @@ module.exports.get_announcments = async (req, res) => {
         if(teacher_id==undefined){
             teacher_id = req.loggedUser._id;
         }
-        let teacher_exists = await studentModel.read_id(teacher_exists)
+        let teacher_exists = await teacherModel.read_id(teacher_id)
         if(!teacher_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
@@ -148,7 +148,7 @@ module.exports.get_announcments = async (req, res) => {
     let section = req.query.section;
     if(req.loggedUser.role === "student"){
         let student_id = req.loggedUser._id
-        let student_exist = await studentModel.read_id(student_exist)
+        let student_exist = await studentModel.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
@@ -220,9 +220,9 @@ module.exports.get_teachers = async (req, res) => {
         console.log('project_class sections: unauthorized access');
         return;
     }
-    let course_id = req.params.course_id;
-    let block_id = req.params.block_id;
-    let cls = await projectClassTeacherSchema.read_from_course(course_id, block_id);
+    let course_id = req.params.course;
+    let block_id = req.params.block;
+    let cls = await projectClassTeacherSchema.read_from_project_class(course_id, block_id);
     if(cls===null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('missing parameters for project class teachers');

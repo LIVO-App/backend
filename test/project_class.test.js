@@ -239,5 +239,37 @@ describe('/api/v1/project_classes', () => {
                     });
             })
         })
+
+        describe('GET /api/v1/project_classes/:course/:block/teachers', () => {
+            test('GET /api/v1/project_classes/:course/:block/teachers without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/teachers')
+                    .expect(401);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/teachers with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/5/6/teachers')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/teachers with valid token but wrong class should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/1/6/teachers')
+                    .set('x-access-token', validToken)
+                    .expect(404);
+            })
+
+            test('GET /api/v1/project_classes/:course/:block/teachers with valid token should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/project_classes/6/7/teachers')
+                    .set('x-access-token', validToken)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
+            })
+        })
     })
 })

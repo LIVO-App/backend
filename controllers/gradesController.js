@@ -3,6 +3,7 @@
 const gradesSchema = require('../models/gradesModel');
 const project_classSchema = require('../models/projectClassModel');
 const studentModel = require('../models/studentModel');
+const teacherModel = require('../models/teacherModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -100,7 +101,7 @@ module.exports.insert_grade = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
-    let teacher_exists = await studentModel.read_id(teacher_id)
+    let teacher_exists = await teacherModel.read_id(teacher_id)
     if(!teacher_exists){
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('get_courses_v2: unauthorized access');

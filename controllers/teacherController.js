@@ -93,7 +93,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
 module.exports.get_my_project_classes_v2 = async (req, res) => {
     let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
-        let teacher_exist = await studentModel.read_id(teacher_exist)
+        let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
@@ -149,7 +149,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
 module.exports.get_associated_project_classes_v2 = async (req, res) => {
     let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
-        let teacher_exist = await studentModel.read_id(teacher_exist)
+        let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
@@ -204,7 +204,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
 module.exports.get_my_ordinary_classes = async (req, res) => {
     let teacher_id = req.params.teacher_id;
     if(req.loggedUser.role == "teacher"){
-        let teacher_exist = await studentModel.read_id(teacher_exist)
+        let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');

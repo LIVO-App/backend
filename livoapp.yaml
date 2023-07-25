@@ -1290,6 +1290,47 @@ paths:
           $ref: "#/components/responses/BadInputs"
         '404':
           $ref: '#/components/responses/NotFound'  
+  /v1/project_classes/{course}/{block}/teachers:
+    get:
+      description: Get all teachers of a specific project class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+      summary: Get project classes teachers in a certain learning block
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project classes sections"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_class_teachers_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '404':
+          $ref: '#/components/responses/NotFound'  
   /v1/ordinary_classes/{student}/{block}:
     get:
       description: Get ordinary class of a student in a specific learning block
@@ -2468,6 +2509,24 @@ components:
         ord_class_section:
           type: string
           description: Section of the ordinary class the student attend during the project class period
+    project_class_teachers_data:
+      type: object
+      properties:
+        teacher_ref:
+          type: integer
+          description: Teacher Id
+        name:
+          type: string
+          description: Name of the teacher
+        surname:
+          type: string
+          description: Surname of the teacher
+        section:
+          type: string
+          description: Section in which the teacher teaches
+        main_teacher:
+          type: boolean
+          description: Tells if the teacher is the main teacher of the course
     ordinary_class_component_data:
       type: object
       properties:

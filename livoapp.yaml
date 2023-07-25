@@ -1027,6 +1027,49 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/project_classes/:
+    get:
+      description: Get all project classes of the school
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_year'
+      summary: Get project classes
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          description: "Project classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project_classes_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
   /v1/project_classes/{course}/{block}/components:
     get:
       description: Get all components of a specific project class
@@ -2527,6 +2570,45 @@ components:
         main_teacher:
           type: boolean
           description: Tells if the teacher is the main teacher of the course
+    project_classes_data:
+      type: object
+      properties:
+        course_id: 
+          type: integer
+          description: Id of the course the project class refers to
+        learning_block:
+          type: integer
+          description: Id of the course the project class refers to
+        italian_title:
+          type: string
+          description: Italian name of the project class
+        english_title:
+          type: string
+          description: English name of the project class
+        group:
+          type: integer
+          description: Group in which the project class belongs
+        teacher_ref:
+          type: integer
+          description: Proposer teacher Id
+        teacher_name:
+          type: string
+          description: Name of the proposer teacher
+        teacher_surname:
+          type: string
+          description: Surname of the proposer teacher
+        admin_ref:
+          type: integer
+          description: Certifying admin Id
+        admin_name:
+          type: string
+          description: Name of the certifying admin
+        admin_surname:
+          type: string
+          description: Surname of the certifying admin
+        to_be_modified:
+          type: boolean
+          description: Tells if the class is to be modified
     ordinary_class_component_data:
       type: object
       properties:
@@ -2988,5 +3070,11 @@ components:
       name: approved
       in: query
       description: Tells if the course was confirmed or rejected
+      schema:
+        type: boolean
+    query_year:
+      name: year
+      in: query
+      description: Specifies if the learning block is used to get the school year or it is simply used
       schema:
         type: boolean

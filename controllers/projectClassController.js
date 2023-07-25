@@ -38,14 +38,32 @@ module.exports.get_classes = async (req, res) => {
         return;
     }
     let data_classes = cls.map((cl) => {
+        let teacher_ref = {
+            path: "/api/v1/teachers", 
+            single: true, 
+            query: {},
+            data:{
+                id: cl.teacher_id
+            }
+        }
+        let admin_ref = {
+            path: "/api/v1/admins", 
+            single: true, 
+            query: {},
+            data:{
+                id: cl.admin_id
+            }
+        }
         return {
-            id: cl.course_id,
+            course_id: cl.course_id,
             learning_block: cl.learning_block_id,
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             group: cl.group,
+            teacher_ref: teacher_ref,
             teacher_name: cl.teacher_name,
             teacher_surname: cl.teacher_surname,
+            admin_ref: cl.admin_ref,
             admin_name: cl.admin_name,
             admin_surname: cl.admin_surname,
             to_be_modified: cl.to_be_modified

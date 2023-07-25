@@ -63,7 +63,7 @@ module.exports.get_classes = async (req, res) => {
             teacher_ref: teacher_ref,
             teacher_name: cl.teacher_name,
             teacher_surname: cl.teacher_surname,
-            admin_ref: cl.admin_ref,
+            admin_ref: admin_ref,
             admin_name: cl.admin_name,
             admin_surname: cl.admin_surname,
             to_be_modified: cl.to_be_modified
@@ -76,6 +76,87 @@ module.exports.get_classes = async (req, res) => {
         query: {block_id: block_id, year: year},
         date: new Date(),
         data: data_classes
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_class = async (req, res) => {
+    if(req.loggedUser.role=="admin"){
+        let admin_exist = await adminModel.read_id(req.loggedUser._id);
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "teacher") {
+        let teacher_exist = await teacherModel.read_id(req.loggedUser._id);
+        if(!teacher_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "student") {
+        let student_exist = await studentModel.read_id(req.loggedUser._id);
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class list: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course
+    let block_id = req.params.block;
+    let cl = await projectClassesSchema.read(course_id, block_id);
+    if(cl==null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("project class: missing parameters");
+        return;
+    }
+    if(!cl){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("project class: resource not found");
+        return;
+    }
+    let teacher_ref = {
+        path: "/api/v1/teachers", 
+        single: true, 
+        query: {},
+        data:{
+            id: cl.teacher_id
+        }
+    }
+    let admin_ref = {
+        path: "/api/v1/admins", 
+        single: true, 
+        query: {},
+        data:{
+            id: cl.admin_id
+        }
+    }
+    let data_class ={
+        course_id: cl.course_id,
+        learning_block: cl.learning_block_id,
+        italian_title: cl.italian_title,
+        english_title: cl.english_title,
+        group: cl.group,
+        teacher_ref: teacher_ref,
+        teacher_name: cl.teacher_name,
+        teacher_surname: cl.teacher_surname,
+        admin_ref: admin_ref,
+        admin_name: cl.admin_name,
+        admin_surname: cl.admin_surname,
+        to_be_modified: cl.to_be_modified
+    }
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: data_class
     };
     res.status(200).json(response);
 }

@@ -3,6 +3,9 @@
 const projectClassesSchema = require('../models/projectClassModel');
 const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
 const studentModel = require('../models/studentModel');
+const adminModel = require('../models/adminModel');
+const teacherModel = require('../models/teacherModel')
+const projectClassTeacherSchema = require('../models/projectClassTeacherModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -26,6 +29,13 @@ module.exports.get_project_class_components = async (req, res) => {
         } else {
             teacher_id = req.loggedUser._id;
         }
+    } else if(req.loggedUser.role == "admin"){
+        let admin_exists = await adminModel.read_id(req.loggedUser._id)
+        if(!admin_exists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class components: unauthorized access');
+            return;
+        }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('project_class components: unauthorized access');
@@ -37,7 +47,13 @@ module.exports.get_project_class_components = async (req, res) => {
     query["section"] = section;
     let associated_class = req.query.assoc_class;
     query["assoc_class"] = associated_class
-    let cmps = await projectClassesSchema.classComponents(course_id, block_id, section, teacher_id, associated_class);
+    let cmps;
+    if(req.loggedUser.role=="admin"){
+        cmps = await projectClassesSchema.classComponents(course_id, block_id, section);
+    } else {
+        cmps = await projectClassesSchema.classComponents(course_id, block_id, section, teacher_id, associated_class);
+    }
+    
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class components: missing parameters");
@@ -174,5 +190,73 @@ module.exports.get_announcments = async (req, res) => {
         date: new Date(),
         data: data_announcements
     };
+    res.status(200).json(response);
+}
+
+module.exports.get_teachers = async (req, res) => {
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(req.loggedUser._id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    } else if(req.loggedUser.role == "teacher"){
+        let teacher_exist = await teacherModel.read_id(req.loggedUser._id)
+        if(!teacher_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    } else if(req.loggedUser.role == "student"){
+        let student_exist = await studentModel.read_id(req.loggedUser._id)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project_class sections: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project_class sections: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course_id;
+    let block_id = req.params.block_id;
+    let cls = await projectClassTeacherSchema.read_from_course(course_id, block_id);
+    if(cls===null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log('missing parameters for project class teachers');
+        return;
+    }
+    if(!cls){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project_class teachers: resource not found');
+        return;
+    }
+    let data_cls = cls.map((cl) => {
+        let teacher_ref = {
+            path: "/api/v1/teachers", 
+            single: true, 
+            query: {},
+            data:{
+                id: cl.id
+            }
+        }
+        return {
+            teacher_ref: cl.id,
+            teacher_name: cl.name,
+            teacher_surname: cl.surname,
+            section: cl.section,
+            main_teacher: cl.main
+        };
+    });
+    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/teachers"
+    let response = {
+        path: path,
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_cls
+    }
     res.status(200).json(response);
 }

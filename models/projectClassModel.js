@@ -9,7 +9,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT * FROM project_class WHERE course_id = ? AND learning_block_id = ?';
+            let sql = 'SELECT pc.course_id, pc.learning_block_id, pc.italian_displayed_name, pc.english_displayed_name, pc.group, t.name, t.surname, a.name, a.surname, pc.admin_confirmation, pc.to_be_modified FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_block_id = ?';
             values = [course_id, block_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -23,6 +23,9 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async list(){
+
     },
     async isStudentEnrolled(student_id, course_id, block_id) {
         try {

@@ -1794,6 +1794,48 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/student/{student_id}/annual_credits:
+    get:
+      description: Annual credits situation of the student
+      summary: Student annual credits
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_school_year'
+      tags:
+        - students
+        - v1
+      responses:
+        '200':
+          description: "Student annual credits information"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/student_credits_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -2947,6 +2989,21 @@ components:
             type: boolean
             description: "Is the study address of the class the main one for this course?"
         description: "List of ordinary classes the user wants to open the course for a specific learning context"
+    student_credits_data:
+      type: object
+      properties:
+        learning_area_ref:
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the credit model"
+        learning_context_ref:
+          $ref: '#/components/schemas/learining_context_ref'
+          description: "Reference to the learning context associated to the credit model"
+        credits:
+          type: integer
+          description: "Number of credits the student has already obtained"
+        max_credits:
+          type: integer
+          description: "Number of total credits the student has to obtain for a certain combination of contexts and areas in a year."
   parameters:
     query_school_year:
       name: school_year

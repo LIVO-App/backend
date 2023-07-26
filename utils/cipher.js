@@ -1,6 +1,4 @@
 const CryptoJS = require('crypto-js');
-//import * as CryptoJS from 'crypto-js'
-
 
 /*var JsonFormatter = {
     stringify: function(cipherParams) {
@@ -37,9 +35,7 @@ const CryptoJS = require('crypto-js');
 
 function cipher(str){
     console.log(str)
-    var ciphertext = CryptoJS.AES.encrypt(str, process.env.DB_SUPER_SECRET/*,{
-        format: JsonFormatter
-    }*/).toString();
+    var ciphertext = CryptoJS.AES.encrypt(str, process.env.DB_SUPER_SECRET/*,{format: JsonFormatter}*/);
     //console.log("IN ENCRYPT");
     //console.log(ciphertext);
     return ciphertext;
@@ -61,9 +57,9 @@ function encrypt_password(str){
     return encrypted;
 }
 
-/*txt = cipher("NZZFDR82M63L649S");
+txt = cipher("NZZFDR82M63L649S");
 console.log("Codice Fiscale: "+txt.toString());
-text = decipher(txt.toString());*/
+text = decipher(txt.toString());
 /*text = decipher("U2FsdGVkX19ocoZH/Qb3aHrH7rZ2VEIc2I0o3rgtyFu3kvCxnawsGL0Mh6SG7eGR");
 console.log(text);*/
 /*txt2 = cipher("23/08/1982");

@@ -8,6 +8,8 @@ const inscribeHandler = require('../../controllers/inscribeController');
 const gradeHandler = require('../../controllers/gradesController');
 const tokenChecker = require('../tokenChecker');
 
+router.get('/:student_id', tokenChecker)
+router.get('/:student_id', studentHandler.get_student);
 router.get('/:student_id/curriculum', studentHandler.get_curriculum);
 router.get('/:student_id/grades', gradeHandler.get_grades);
 router.post('/:student_id/inscribe', inscribeHandler.inscribe_project_class);

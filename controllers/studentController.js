@@ -4,6 +4,8 @@ const courseSchema = require('../models/coursesModel');
 const ordinaryclassSchema = require('../models/ordinaryclassModel');
 const studentModel = require('../models/studentModel');
 const teacherModel = require('../models/teacherModel');
+const adminModel = require('../models/adminModel');
+const crypto = require('../utils/cipher');
 
 let MSG = {
     notFound: "Resource not found",
@@ -13,6 +15,56 @@ let MSG = {
 }
 
 process.env.TZ = 'Etc/Universal';
+
+module.exports.get_student = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "teacher"){
+        let teacher_esist = teacherModel.read_id(user_id);
+        if(!teacher_esist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
+        let admin_exist = adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_student: unauthorized access');
+        return;
+    }
+    let student_id = req.params.student_id;
+    let student = await studentModel.read_id(student_id)
+    if(!student){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get_student: student not found');
+        return;
+    }
+    
+    let student_data = {
+        cf: student.cf,
+        username: student.username,
+        name: student.name,
+        surname: student.surname,
+        gender: student.gender,
+        birth_date: student.birth_date,
+        address: student.address,
+        email: student.email
+    }
+    let path = "/api/v1/students/"+student_id
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: student_data
+    };
+    res.status(200).json(response);
+}
 
 module.exports.get_curriculum = async (req, res) => {
     let student_id = req.params.student_id;

@@ -1753,6 +1753,46 @@ paths:
                     type: object
                     $ref: '#/components/schemas/growth_area_data'
                     description: "Data return from the api"
+  /v1/student/{student_id}:
+    get:
+      description: information of the student
+      summary: Student information
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - students
+        - v1
+      responses:
+        '200':
+          description: "Student information"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/student_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -2701,6 +2741,34 @@ components:
         section:
           type: string
           description: "Section of the project class in a given learning block"
+    student_data:
+      type: object
+      properties:
+        cf:
+          type: string
+          description: "Fiscal code of the student. The value is crypted"
+        username:
+          type: string
+          description: "Userame of the student"
+        name:
+          type: string
+          description: "Name of the student"
+        surname:
+          type: string
+          description: "Surname of the student"
+        gender:
+          type: string
+          description: "Gender of the student. It may be crypted"
+        birth_date:
+          type: string
+          format: date
+          description: "Birth date of the student. It may be crypted"
+        address:
+          type: string
+          description: "Address of the student. It may be crypted"
+        email:
+          type: string
+          description: "Email of the student"
     student_ordinary_class_data:
       type: object
       properties:

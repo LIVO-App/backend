@@ -264,11 +264,73 @@ describe('/api/v1/students', () => {
             })
 
             // Valid token and existing student
-            test('GET /api/v1/students/:student_id/ with valid token and student should respond with status 404', async () => {
+            test('GET /api/v1/students/:student_id/ with valid token and student should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/students/1/')
                     .set('x-access-token', teacherToken)
                     .expect(200);
+            })
+        })
+
+        describe('GET /api/v1/students/:student_id/annual_credits', () => {
+            // No token
+            test('GET /api/v1/students/:student_id/annual_credits without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .expect(401);
+            })
+
+            // Invalid token
+            test('GET /api/v1/students/:student_id/annual_credits with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            // Student token
+            test('GET /api/v1/students/:student_id/annual_credits with valid token but of student should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .set('x-access-token', tokenStudent1)
+                    .expect(401);
+            })
+
+            // Valid token but non existing user
+            test('GET /api/v1/students/:student_id/annual_credits with valid token but non existing id should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .set('x-access-token', nonvalideacherToken)
+                    .expect(401);
+            })
+
+            // Valid token but non existing student
+            test('GET /api/v1/students/:student_id/annual_credits with valid token but non existing student should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/students/0/annual_credits')
+                    .query({school_year: 2000})
+                    .set('x-access-token', teacherToken)
+                    .expect(404);
+            })
+
+            // Valid token and existing student
+            test('GET /api/v1/students/:student_id/annual_credits with valid token and student but wrong school year should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .query({school_year: 2000})
+                    .set('x-access-token', teacherToken)
+                    .expect(404);
+            })
+
+            test('GET /api/v1/students/:student_id/annual_credits with valid token and valid informations should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/annual_credits')
+                    .query({school_year: 2022})
+                    .set('x-access-token', teacherToken)
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0);
+                    });
             })
         })
 

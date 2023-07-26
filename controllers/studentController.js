@@ -44,15 +44,18 @@ module.exports.get_student = async (req, res) => {
         console.log('get_student: student not found');
         return;
     }
-    
+    let cf = crypto.decipher(student.cf.toString())
+    let gender = crypto.decipher(student.gender.toString())
+    let birth_date = crypto.decipher(student.birth_date.toString())
+    let address = crypto.decipher(student.address.toString())
     let student_data = {
-        cf: student.cf,
+        cf: cf,
         username: student.username,
         name: student.name,
         surname: student.surname,
-        gender: student.gender,
-        birth_date: student.birth_date,
-        address: student.address,
+        gender: gender,
+        birth_date: birth_date,
+        address: address,
         email: student.email
     }
     let path = "/api/v1/students/"+student_id

@@ -7,6 +7,8 @@ let tokenStudent1 = jwt.sign({_id: 1, username: "Student1", role: "student"}, pr
 let tokenStudent3 = jwt.sign({_id: 3, username: "Student3", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
+let teacherToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let nonvalideacherToken = jwt.sign({_id: 0, username: "Teacher0", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
 
 describe('/api/v1/students', () => {
@@ -221,6 +223,55 @@ describe('/api/v1/students', () => {
     })
 
     describe('GET methods', () => {
+        describe('GET /api/v1/students/:student_id', () => {
+            // No token
+            test('GET /api/v1/students/:student_id/ without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/')
+                    .expect(401);
+            })
+
+            // Invalid token
+            test('GET /api/v1/students/:student_id/ with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/')
+                    .set('x-access-token', invalidToken)
+                    .expect(403);
+            })
+
+            // Student token
+            test('GET /api/v1/students/:student_id/ with valid token but of student should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/')
+                    .set('x-access-token', tokenStudent1)
+                    .expect(401);
+            })
+
+            // Valid token but non existing user
+            test('GET /api/v1/students/:student_id/ with valid token but non existing id should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/')
+                    .set('x-access-token', nonvalideacherToken)
+                    .expect(401);
+            })
+
+            // Valid token but non existing student
+            test('GET /api/v1/students/:student_id/ with valid token but non existing student should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/students/0/')
+                    .set('x-access-token', teacherToken)
+                    .expect(404);
+            })
+
+            // Valid token and existing student
+            test('GET /api/v1/students/:student_id/ with valid token and student should respond with status 404', async () => {
+                return request(app)
+                    .get('/api/v1/students/1/')
+                    .set('x-access-token', teacherToken)
+                    .expect(200);
+            })
+        })
+
         describe('GET /api/v1/students/:student_id/curriculum', () => {
             // Get curriculum with non valid ID
             test('GET /api/v1/students/:student_id/curriculum with non valid ID should respond with status 404', async () => {

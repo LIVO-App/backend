@@ -1759,6 +1759,7 @@ paths:
       summary: Student information
       parameters:
         - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
       tags:
         - students
         - v1

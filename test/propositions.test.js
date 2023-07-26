@@ -184,7 +184,7 @@ describe('/api/v1/propositions', () => {
             block_id: 7,
             class_group: 1,
             teacher_list: [2,3,3],
-            main_teachers: [0,1,1]
+            main_teachers: [0,0,0]
         }
         valid_proposal2 = {
             ita_title: "Tests",

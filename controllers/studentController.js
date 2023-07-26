@@ -6,6 +6,7 @@ const studentModel = require('../models/studentModel');
 const teacherModel = require('../models/teacherModel');
 const adminModel = require('../models/adminModel');
 const crypto = require('../utils/cipher');
+const constraintModel = require('../models/constraintModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -65,6 +66,86 @@ module.exports.get_student = async (req, res) => {
         query: {},
         date: new Date(),
         data: student_data
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_credits_annual_progession = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "teacher"){
+        let teacher_esist = teacherModel.read_id(user_id);
+        if(!teacher_esist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
+        let admin_exist = adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_student: unauthorized access');
+        return;
+    }
+    let student_id = req.params.student_id;
+    let school_year = req.query.school_year;
+    let annual_constraints = await constraintModel.get_annual_constraints(student_id,school_year)
+    if(!annual_constraints){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get annual credits constraints: resource not found');
+        return;
+    }
+    let area_id = []; // build it as an array from the annual constraints
+    let context_id = []; // build it as an array from the annual constraints
+    let constraints = annual_constraints.map((constr) => {
+        area_id.push(constr.learning_area_id)
+        context_id.push(constr.learning_context_id)
+    })
+    let student_progression = await studentModel.retrieve_annual_credits(student_id, school_year, area_id, context_id)
+    if(!student_progression){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get annual credits progression: resource not found');
+        return;
+    }
+    //console.log(student_progression)
+    let data_credits = []
+    for(let i = 0; i<student_progression.length;i++){
+        let learning_area_ref = {
+            path: "/api/v1/learning_areas",
+            single: true,
+            query: {},
+            data: {
+                id: area_id[i]
+            }
+        }
+        let learning_context_ref = {
+            path: "/api/v1/learning_contexts", 
+            single: true, 
+            query: {},
+            data: {
+                id: context_id[i]
+            }
+        }
+        data_credits.push({
+            learning_area_ref: learning_area_ref,
+            learning_context_ref: learning_context_ref,
+            credits: student_progression[i].credits,
+            max_credits: student_progression[i].max_credits
+        })
+    }
+    let path = "/api/v1/students/"+student_id+"/annual_credits"
+    let response = {
+        path: path,
+        single: false,
+        query: {
+            school_year: school_year
+        },
+        date: new Date(),
+        data: data_credits
     };
     res.status(200).json(response);
 }

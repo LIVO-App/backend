@@ -138,5 +138,53 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async retrieve_annual_credits(student_id, school_year, area_id, context_id){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !school_year){
+                conn.release();
+                return false;
+            }
+            if(area_id.length==0 || context_id.length==0){
+                conn.release();
+                return false;
+            }
+            let sql = ``;
+            let values = [];
+            for(let i=0;i<area_id.length;i++){
+                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ? AND pc.learning_block_id IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year=?)`
+                values.push(student_id, school_year)
+                if(context_id[i]=='PER'){
+                    sql += ` AND ins.learning_context_id = ?`;
+                    values.push(context_id[i])
+                } else {
+                    sql += ` AND c.learning_area_id = ? AND ins.learning_context_id = ?`;
+                    values.push(area_id[i], context_id[i])
+                }
+                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT cst.credits FROM \`constraints\` AS cst WHERE cst.annual_credits_definition_year = ? AND cst.annual_credits_study_year = att.ordinary_class_study_year AND cst.annual_credits_address = att.ordinary_class_address `
+                values.push(school_year)
+                if(context_id[i]=='PER'){
+                    sql += ` AND cst.learning_area_id IS NULL AND cst.learning_context_id = ?`;
+                    values.push(context_id[i])
+                } else {
+                    sql += ` AND cst.learning_area_id = ? AND cst.learning_context_id = ?`;
+                    values.push(area_id[i], context_id[i])
+                }
+                sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?`
+                values.push(student_id)
+                if(i<area_id.length-1){
+                    sql += " UNION "
+                }
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+
     }
 };

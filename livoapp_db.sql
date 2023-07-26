@@ -287,7 +287,7 @@ INSERT INTO `constraints` (`id`, `annual_credits_study_year`, `annual_credits_ad
 (3, 1, 'BIO', 2018, 'SM', 'SPE', 20),
 (4, 1, 'BIO', 2018, 'TEC', 'SPE', 9),
 (5, 1, 'BIO', 2018, 'TRA', 'SPE', 4),
-(6, 1, 'BIO', 2018, NULL, 'PER', 3),
+(6, 1, 'BIO', 2018, NULL, 'PER', 4),
 (7, 1, 'BIO', 2022, 'COM', 'SPE', 16),
 (8, 1, 'BIO', 2022, 'SGET', 'SPE', 8),
 (9, 1, 'BIO', 2022, 'SM', 'SPE', 20),

@@ -415,13 +415,20 @@ module.exports.add_proposition = async (req, res) => {
     if(teaching_list != undefined){
         // Remove non valid teachings in order to have right values in case of insertion
         for(let i = 0; i<teaching_list.length;i++){
-            teaching_exist = await teachingSchema.read(teaching_list[i])
-            if(!teaching_exist){ // The teaching exists in the database
-                console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
+            if(i>=3){
+                console.log(`Teaching ${teaching_list[i]} is more. There should be at most 3 teachings per course proposal. Removing it from the list of teachings`)
                 wrong_teaching = true // Set variable to true
-                teaching_list.splice(i, 1) // Remove wrong teaching from list
-                i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
-            }
+                teaching_list.splice(i,1)
+                i = i - 1
+            } else {
+                teaching_exist = await teachingSchema.read(teaching_list[i])
+                if(!teaching_exist){ // The teaching exists in the database
+                    console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
+                    wrong_teaching = true // Set variable to true
+                    teaching_list.splice(i, 1) // Remove wrong teaching from list
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                }
+            } 
         }
         for(let i = 0; i<teaching_list.length; i++){
             teaching_present = await teachingCourseSchema.is_present(course_id, teaching_list[i])

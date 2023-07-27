@@ -49,6 +49,15 @@ module.exports.get_student = async (req, res) => {
     let gender = crypto.decipher(student.gender.toString())
     let birth_date = crypto.decipher(student.birth_date.toString())
     let address = crypto.decipher(student.address.toString())
+    let ordinary_class_ref = {
+        path: "/api/v1/ordinary_classes",
+            single: true,
+            query: {},
+            data: {
+                study_year: student.ordinary_class_study_year,
+                study_address: student.ordinary_class_address
+            }
+    }
     let student_data = {
         cf: cf,
         username: student.username,
@@ -57,7 +66,8 @@ module.exports.get_student = async (req, res) => {
         gender: gender,
         birth_date: birth_date,
         address: address,
-        email: student.email
+        email: student.email,
+        ordinary_class_ref: ordinary_class_ref
     }
     let path = "/api/v1/students/"+student_id
     let response = {

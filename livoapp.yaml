@@ -2784,6 +2784,15 @@ components:
         section:
           type: string
           description: "Section of the project class in a given learning block"
+    ordinary_class_ref:
+      type: object
+      properties:
+        study_year:
+          type: integer
+          description: "Study year of the ordinary class"
+        study_address:
+          type: string
+          description: "Study address of the ordinary class"
     student_data:
       type: object
       properties:
@@ -2812,6 +2821,9 @@ components:
         email:
           type: string
           description: "Email of the student"
+        ordinary_class_ref:
+          $ref: '#/components/schemas/ordinary_class_ref'
+          description: Current ordinary class of the student.
     student_ordinary_class_data:
       type: object
       properties:

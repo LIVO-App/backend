@@ -67,7 +67,8 @@ module.exports.get_student = async (req, res) => {
         birth_date: birth_date,
         address: address,
         email: student.email,
-        ordinary_class_ref: ordinary_class_ref
+        ordinary_class_ref: ordinary_class_ref,
+        class_section: student.section
     }
     let path = "/api/v1/students/"+student_id
     let response = {

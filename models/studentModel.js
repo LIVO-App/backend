@@ -5,7 +5,7 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, att.ordinary_class_study_year, att.ordinary_class_address FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
+        sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
         const rows = await conn.query(sql,param);
         conn.release();
         if (rows.length>=1){

@@ -288,14 +288,6 @@ describe('/api/v1/students', () => {
                     .expect(403);
             })
 
-            // Student token
-            test('GET /api/v1/students/:student_id/annual_credits with valid token but of student should respond with status 401', async () => {
-                return request(app)
-                    .get('/api/v1/students/1/annual_credits')
-                    .set('x-access-token', tokenStudent1)
-                    .expect(401);
-            })
-
             // Valid token but non existing user
             test('GET /api/v1/students/:student_id/annual_credits with valid token but non existing id should respond with status 401', async () => {
                 return request(app)

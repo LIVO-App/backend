@@ -2892,18 +2892,18 @@ components:
     proposal_object_insertion:
       type: object
       required:
-        - ita_title
-        - eng_title
-        - ita_descr
-        - eng_descr
+        - italian_title
+        - english_title
+        - italian_descr
+        - english_descr
         - up_hours
         - credits
-        - ita_exp_l
-        - eng_exp_l
-        - ita_cri
-        - eng_cri
-        - ita_act
-        - eng_act
+        - italian_exp_l
+        - english_exp_l
+        - italian_cri
+        - english_cri
+        - italian_act
+        - english_act
         - area_id
         - growth_id
         - min_students
@@ -2917,16 +2917,16 @@ components:
         course_id:
           type: integer
           description: "Course id of the course. If specified refers to a previous model already confirmed"
-        ita_title:
+        italian_title:
           type: string
           description: "Italian title of the course"
-        eng_title:
+        english_title:
           type: string
           description: "English title of the course"
-        ita_descr:
+        italian_descr:
           type: string
           description: "Italian description of the course"
-        eng_descr:
+        english_descr:
           type: string
           description: "English description of the course"
         up_hours:
@@ -2935,22 +2935,22 @@ components:
         credits:
           type: integer
           description: "Number of credits planned for the course"
-        ita_exp_l:
+        italian_exp_l:
           type: string
           description: "Italian description of the expected learning results of the course"
-        eng_exp_l:
+        english_exp_l:
           type: string
           description: "English description of the expected learning results of the course"
-        ita_cri:
+        italian_cri:
           type: string
           description: "Italian description of the criterions of the course"
-        eng_cri:
+        english_cri:
           type: string
           description: "English description of the criterions of the course"
-        ita_act:
+        italian_act:
           type: string
           description: "Italian description of the learning activities of the course"
-        eng_act:
+        english_act:
           type: string
           description: "English description of the learning activities of the course"
         area_id:

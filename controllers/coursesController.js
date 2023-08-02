@@ -284,18 +284,18 @@ module.exports.add_proposition = async (req, res) => {
         return;
     }
     let course_id = req.body.course_id;
-    let ita_title = req.body.ita_title;
-    let eng_title = req.body.eng_title;
-    let ita_descr = req.body.ita_descr;
-    let eng_descr = req.body.eng_descr;
+    let ita_title = req.body.italian_title;
+    let eng_title = req.body.english_title;
+    let ita_descr = req.body.italian_descr;
+    let eng_descr = req.body.english_descr;
     let up_hours = req.body.up_hours;
     let credits = req.body.credits;
-    let ita_exp_l = req.body.ita_exp_l;
-    let eng_exp_l = req.body.eng_exp_l;
-    let ita_cri = req.body.ita_cri;
-    let eng_cri = req.body.eng_cri;
-    let ita_act = req.body.ita_act;
-    let eng_act = req.body.eng_act;
+    let ita_exp_l = req.body.italian_exp_l;
+    let eng_exp_l = req.body.english_exp_l;
+    let ita_cri = req.body.italian_cri;
+    let eng_cri = req.body.english_cri;
+    let ita_act = req.body.italian_act;
+    let eng_act = req.body.english_act;
     let area_id = req.body.area_id;
     let growth_id = req.body.growth_id;
     let min_students = req.body.min_students;

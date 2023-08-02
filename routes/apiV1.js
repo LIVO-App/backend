@@ -13,6 +13,8 @@ const teacherRouter = require('./apiV1/teacher');
 const projclassRouter = require('./apiV1/project_class');
 const announcementRouter = require('./apiV1/announcement');
 const learningContextRouter = require('./apiV1/learning_context');
+const propositionsRouter = require('./apiV1/propositions');
+const growthAreaRouter = require('./apiV1/growth_area');
 
 apiV1.use('/auth', authRouter);
 apiV1.use('/learning_blocks', blocksRouter);
@@ -24,5 +26,7 @@ apiV1.use('/teachers', teacherRouter);
 apiV1.use('/project_classes', projclassRouter);
 apiV1.use('/announcements', announcementRouter);
 apiV1.use('/learning_contexts', learningContextRouter);
+apiV1.use('/propositions', propositionsRouter);
+apiV1.use('/growth_areas', growthAreaRouter);
 
 module.exports = apiV1;

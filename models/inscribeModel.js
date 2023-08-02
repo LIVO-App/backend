@@ -137,5 +137,23 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async not_same_group(course_id, block_id, student_id, area_id){
+        try {
+            conn = await pool.getConnection()
+            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_block_id = ? AND pc.group IN (SELECT pc1.group FROM inscribed AS ins JOIN project_class AS pc1 ON pc1.course_id = ins.project_class_course_id AND pc1.learning_block_id = ins.project_class_block JOIN course AS c ON c.id = pc1.course_id WHERE ins.student_id = ? AND c.learning_area_id = ?)'
+            let values = [course_id, block_id, student_id, area_id]
+            const rows = await conn.query(sql, values);
+            conn.release()
+            if(rows.length == 0){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

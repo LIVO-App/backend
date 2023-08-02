@@ -1,6 +1,12 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
+const adminModel = require('../models/adminModel');
+
+let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
+let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let wrongUserToken2 = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
 describe('/api/v1/courses', () => {
     describe('GET methods tests', () => {
@@ -23,7 +29,7 @@ describe('/api/v1/courses', () => {
                         student_id: '\"nonValidID\"',
                         block_id: 7,
                         area_id: 'SM',
-                        context_id: 1
+                        context_id: 'SPE'
                     })
                     .expect(404);
             }, 20000);
@@ -72,7 +78,7 @@ describe('/api/v1/courses', () => {
                 return request(app)
                     .get('/api/v1/courses')
                     .query({
-                        context_id: 1,
+                        context_id: 'SPE',
                     })
                     .expect(200)
                     .then((response) => {
@@ -88,7 +94,7 @@ describe('/api/v1/courses', () => {
                         student_id: 1,
                         block_id: 7,
                         area_id: 'SM',
-                        context_id: 1
+                        context_id: 'SPE'
                     })
                     .expect(200)
                     .then((response) => {
@@ -173,9 +179,6 @@ describe('/api/v1/courses', () => {
 
 describe('/api/v2/courses', () => {
     describe('GET methods tests',() => {
-        let validToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
-        let wrongUserToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
         // GET resources without token
         test('GET /api/v2/courses without a token', async () => {
@@ -185,7 +188,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -199,7 +202,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(403)
         }, 20000);
@@ -213,7 +216,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -227,7 +230,7 @@ describe('/api/v2/courses', () => {
                     student_id: 2,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401)
         }, 20000);
@@ -252,7 +255,7 @@ describe('/api/v2/courses', () => {
                     student_id: '\"nonValidID\"',
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(401);
         }, 20000);
@@ -305,7 +308,7 @@ describe('/api/v2/courses', () => {
                 .get('/api/v2/courses')
                 .set('x-access-token', validToken)
                 .query({
-                    context_id: 1,
+                    context_id: 'SPE',
                 })
                 .expect(200)
                 .then((response) => {
@@ -322,7 +325,7 @@ describe('/api/v2/courses', () => {
                     student_id: 1,
                     block_id: 7,
                     area_id: 'SM',
-                    context_id: 1
+                    context_id: 'SPE'
                 })
                 .expect(200)
                 .then((response) => {

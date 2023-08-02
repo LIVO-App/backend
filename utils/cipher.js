@@ -1,4 +1,4 @@
-const cryptoJs = require('crypto-js');
+const CryptoJS = require('crypto-js');
 
 /*var JsonFormatter = {
     stringify: function(cipherParams) {
@@ -34,36 +34,35 @@ const cryptoJs = require('crypto-js');
   };*/
 
 function cipher(str){
-    var ciphertext = cryptoJs.AES.encrypt(str, process.env.DB_SUPER_SECRET/*,{
-        format: JsonFormatter
-    }*/);
+    console.log(str)
+    var ciphertext = CryptoJS.AES.encrypt(str, process.env.DB_SUPER_SECRET/*,{format: JsonFormatter}*/);
     //console.log("IN ENCRYPT");
     //console.log(ciphertext);
     return ciphertext;
 }
 
 function decipher(str){
-
-    var decrypted = cryptoJs.AES.decrypt(str, process.env.DB_SUPER_SECRET/*,{format: JsonFormatter}*/);
+    //console.log(str)
+    var decrypted = CryptoJS.AES.decrypt(str, process.env.DB_SUPER_SECRET/*,{format: JsonFormatter}*/);
     //console.log("DATA DECRYPTED");
     //console.log(decrypted);
-    var originalText = decrypted.toString(cryptoJs.enc.Utf8);
+    var originalText = decrypted.toString(CryptoJS.enc.Utf8);
     //console.log("REAL DATA");
     //console.log(originalText);
     return originalText;
 }
 
 function encrypt_password(str){
-    var encrypted = cryptoJs.SHA256(str);
+    var encrypted = CryptoJS.SHA256(str);
     return encrypted;
 }
 
 /*txt = cipher("NZZFDR82M63L649S");
 console.log("Codice Fiscale: "+txt.toString());
-text = decipher(txt.toString());
-//text = decipher("0xd150986669fada97d8b78cf00b1b4de2");
-console.log(text);
-txt2 = cipher("23/08/1982");
+text = decipher(txt.toString());*/
+/*text = decipher("U2FsdGVkX19ocoZH/Qb3aHrH7rZ2VEIc2I0o3rgtyFu3kvCxnawsGL0Mh6SG7eGR");
+console.log(text);*/
+/*txt2 = cipher("23/08/1982");
 //console.log(decipher("U2FsdGVkX1+53h4iPaTwOlGAMQeF2aisy3ZiI1uUu24="));
 console.log("Data Nascita: "+txt2.toString());
 console.log(decipher(txt2));
@@ -72,7 +71,7 @@ console.log("Indirizzo: "+txt3);
 console.log(decipher(txt3));
 //console.log("CIPHER");
 //console.log(cipher(text));
-
+*//*
 psw = encrypt_password("Password");
 console.log("Password = "+psw);*/
 module.exports = {cipher, decipher, encrypt_password};

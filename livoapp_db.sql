@@ -33,7 +33,7 @@ CREATE TABLE `accessible` (
   `study_address_id` varchar(5) NOT NULL,
   `presidium` tinyint(1) NOT NULL DEFAULT 0,
   `main_study_year` tinyint(1) NOT NULL DEFAULT 0,
-  `learning_context_id` int(11) NOT NULL
+  `learning_context_id` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -41,48 +41,48 @@ CREATE TABLE `accessible` (
 --
 
 INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `presidium`, `main_study_year`, `learning_context_id`) VALUES
-(2, 1, 'ATS', 0, 0, 2),
-(2, 1, 'BIO', 1, 0, 1),
-(2, 1, 'TUR', 0, 0, 2),
-(2, 2, 'ATS', 0, 1, 2),
-(2, 2, 'BIO', 1, 1, 1),
-(2, 2, 'TUR', 0, 1, 2),
-(2, 3, 'ATS', 0, 0, 2),
-(2, 3, 'BIO', 1, 0, 1),
-(2, 3, 'TUR', 0, 0, 2),
-(3, 1, 'ATS', 0, 0, 2),
-(3, 1, 'BIO', 1, 1, 1),
-(3, 1, 'TUR', 0, 0, 2),
-(3, 2, 'ATS', 0, 1, 2),
-(3, 2, 'BIO', 1, 1, 1),
-(3, 2, 'TUR', 0, 1, 2),
-(3, 3, 'ATS', 0, 0, 2),
-(3, 3, 'BIO', 1, 0, 1),
-(3, 3, 'TUR', 0, 0, 2),
-(4, 1, 'ATS', 0, 0, 1),
-(4, 1, 'BIO', 1, 1, 1),
-(4, 1, 'ODO', 0, 0, 1),
-(4, 1, 'TUR', 0, 0, 1),
-(4, 2, 'ATS', 0, 1, 2),
-(4, 2, 'BIO', 1, 0, 2),
-(4, 2, 'ODO', 0, 1, 2),
-(4, 2, 'TUR', 0, 1, 2),
-(5, 1, 'ATS', 0, 1, 2),
-(5, 1, 'BIO', 0, 1, 2),
-(5, 1, 'ODO', 1, 1, 2),
-(5, 1, 'TUR', 0, 1, 2),
-(5, 2, 'ATS', 0, 0, 2),
-(5, 2, 'BIO', 0, 0, 2),
-(5, 2, 'ODO', 1, 0, 2),
-(5, 2, 'TUR', 0, 0, 2),
-(5, 3, 'ATS', 0, 0, 1),
-(5, 3, 'BIO', 0, 0, 1),
-(5, 3, 'ODO', 1, 0, 1),
-(5, 3, 'TUR', 0, 0, 1),
-(5, 4, 'ATS', 0, 0, 1),
-(5, 4, 'BIO', 0, 0, 1),
-(5, 4, 'ODO', 1, 0, 1),
-(5, 4, 'TUR', 0, 0, 1);
+(2, 1, 'ATS', 0, 0, 'PER'),
+(2, 1, 'BIO', 1, 0, 'SPE'),
+(2, 1, 'TUR', 0, 0, 'PER'),
+(2, 2, 'ATS', 0, 1, 'PER'),
+(2, 2, 'BIO', 1, 1, 'SPE'),
+(2, 2, 'TUR', 0, 1, 'PER'),
+(2, 3, 'ATS', 0, 0, 'PER'),
+(2, 3, 'BIO', 1, 0, 'SPE'),
+(2, 3, 'TUR', 0, 0, 'PER'),
+(3, 1, 'ATS', 0, 0, 'PER'),
+(3, 1, 'BIO', 1, 1, 'SPE'),
+(3, 1, 'TUR', 0, 0, 'PER'),
+(3, 2, 'ATS', 0, 1, 'PER'),
+(3, 2, 'BIO', 1, 1, 'SPE'),
+(3, 2, 'TUR', 0, 1, 'PER'),
+(3, 3, 'ATS', 0, 0, 'PER'),
+(3, 3, 'BIO', 1, 0, 'SPE'),
+(3, 3, 'TUR', 0, 0, 'PER'),
+(4, 1, 'ATS', 0, 0, 'SPE'),
+(4, 1, 'BIO', 1, 1, 'SPE'),
+(4, 1, 'ODO', 0, 0, 'SPE'),
+(4, 1, 'TUR', 0, 0, 'SPE'),
+(4, 2, 'ATS', 0, 1, 'PER'),
+(4, 2, 'BIO', 1, 0, 'PER'),
+(4, 2, 'ODO', 0, 1, 'PER'),
+(4, 2, 'TUR', 0, 1, 'PER'),
+(5, 1, 'ATS', 0, 1, 'PER'),
+(5, 1, 'BIO', 0, 1, 'PER'),
+(5, 1, 'ODO', 1, 1, 'PER'),
+(5, 1, 'TUR', 0, 1, 'PER'),
+(5, 2, 'ATS', 0, 0, 'PER'),
+(5, 2, 'BIO', 0, 0, 'PER'),
+(5, 2, 'ODO', 1, 0, 'PER'),
+(5, 2, 'TUR', 0, 0, 'PER'),
+(5, 3, 'ATS', 0, 0, 'SPE'),
+(5, 3, 'BIO', 0, 0, 'SPE'),
+(5, 3, 'ODO', 1, 0, 'SPE'),
+(5, 3, 'TUR', 0, 0, 'SPE'),
+(5, 4, 'ATS', 0, 0, 'SPE'),
+(5, 4, 'BIO', 0, 0, 'SPE'),
+(5, 4, 'ODO', 1, 0, 'SPE'),
+(5, 4, 'TUR', 0, 0, 'SPE');
 
 -- --------------------------------------------------------
 
@@ -273,7 +273,7 @@ CREATE TABLE `constraints` (
   `annual_credits_address` varchar(5) NOT NULL,
   `annual_credits_definition_year` int(11) NOT NULL,
   `learning_area_id` varchar(5),
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -282,54 +282,54 @@ CREATE TABLE `constraints` (
 --
 
 INSERT INTO `constraints` (`id`, `annual_credits_study_year`, `annual_credits_address`, `annual_credits_definition_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
-(1, 1, 'BIO', 2018, 'COM', 1, 14),
-(2, 1, 'BIO', 2018, 'SGET', 1, 10),
-(3, 1, 'BIO', 2018, 'SM', 1, 20),
-(4, 1, 'BIO', 2018, 'TEC', 1, 9),
-(5, 1, 'BIO', 2018, 'TRA', 1, 4),
-(6, 1, 'BIO', 2018, NULL, 2, 3),
-(7, 1, 'BIO', 2022, 'COM', 1, 16),
-(8, 1, 'BIO', 2022, 'SGET', 1, 8),
-(9, 1, 'BIO', 2022, 'SM', 1, 20),
-(10, 1, 'BIO', 2022, 'TEC', 1, 9),
-(11, 1, 'BIO', 2022, 'TRA', 1, 4),
-(12, 1, 'BIO', 2022, NULL, 2, 3),
-(13, 1, 'TUR', 2019, 'COM', 1, 24),
-(14, 1, 'TUR', 2019, 'SGET', 1, 16),
-(15, 1, 'TUR', 2019, 'SM', 1, 16),
-(16, 1, 'TUR', 2019, 'TEC', 1, 10),
-(17, 1, 'TUR', 2019, 'TRA', 1, 6),
-(18, 1, 'TUR', 2019, NULL, 2, 3),
-(19, 2, 'BIO', 2018, 'COM', 1, 16),
-(20, 2, 'BIO', 2018, 'SGET', 1, 8),
-(21, 2, 'BIO', 2018, 'SM', 1, 20),
-(22, 2, 'BIO', 2018, 'TEC', 1, 9),
-(23, 2, 'BIO', 2018, 'TRA', 1, 4),
-(24, 2, 'BIO', 2018, NULL, 2, 3),
-(25, 3, 'BIO', 2018, 'COM', 1, 12),
-(26, 3, 'BIO', 2018, 'SGET', 1, 5),
-(27, 3, 'BIO', 2018, 'SM', 1, 36),
-(28, 3, 'BIO', 2018, 'TEC', 1, 0),
-(29, 3, 'BIO', 2018, 'TRA', 1, 4),
-(30, 3, 'BIO', 2018, NULL, 2, 3),
-(31, 4, 'BIO', 2018, 'COM', 1, 12),
-(32, 4, 'BIO', 2018, 'SGET', 1, 5),
-(33, 4, 'BIO', 2018, 'SM', 1, 36),
-(34, 4, 'BIO', 2018, 'TEC', 1, 0),
-(35, 4, 'BIO', 2018, 'TRA', 1, 4),
-(36, 4, 'BIO', 2018, NULL, 2, 3),
-(37, 4, 'ODO', 2019, 'COM', 1, 12),
-(38, 4, 'ODO', 2019, 'SGET', 1, 3),
-(39, 4, 'ODO', 2019, 'SM', 1, 18),
-(40, 4, 'ODO', 2019, 'TEC', 1, 20),
-(41, 4, 'ODO', 2019, 'TRA', 1, 4),
-(42, 4, 'ODO', 2019, NULL, 2, 3),
-(43, 5, 'BIO', 2018, 'COM', 1, 12),
-(44, 5, 'BIO', 2018, 'SGET', 1, 10),
-(45, 5, 'BIO', 2018, 'SM', 1, 31),
-(46, 5, 'BIO', 2018, 'TEC', 1, 0),
-(47, 5, 'BIO', 2018, 'TRA', 1, 4),
-(48, 5, 'BIO', 2018, NULL, 2, 3);
+(1, 1, 'BIO', 2018, 'COM', 'SPE', 14),
+(2, 1, 'BIO', 2018, 'SGET', 'SPE', 10),
+(3, 1, 'BIO', 2018, 'SM', 'SPE', 20),
+(4, 1, 'BIO', 2018, 'TEC', 'SPE', 9),
+(5, 1, 'BIO', 2018, 'TRA', 'SPE', 4),
+(6, 1, 'BIO', 2018, NULL, 'PER', 4),
+(7, 1, 'BIO', 2022, 'COM', 'SPE', 16),
+(8, 1, 'BIO', 2022, 'SGET', 'SPE', 8),
+(9, 1, 'BIO', 2022, 'SM', 'SPE', 20),
+(10, 1, 'BIO', 2022, 'TEC', 'SPE', 9),
+(11, 1, 'BIO', 2022, 'TRA', 'SPE', 4),
+(12, 1, 'BIO', 2022, NULL, 'PER', 3),
+(13, 1, 'TUR', 2019, 'COM', 'SPE', 24),
+(14, 1, 'TUR', 2019, 'SGET', 'SPE', 16),
+(15, 1, 'TUR', 2019, 'SM', 'SPE', 16),
+(16, 1, 'TUR', 2019, 'TEC', 'SPE', 10),
+(17, 1, 'TUR', 2019, 'TRA', 'SPE', 6),
+(18, 1, 'TUR', 2019, NULL, 'PER', 3),
+(19, 2, 'BIO', 2018, 'COM', 'SPE', 16),
+(20, 2, 'BIO', 2018, 'SGET', 'SPE', 8),
+(21, 2, 'BIO', 2018, 'SM', 'SPE', 20),
+(22, 2, 'BIO', 2018, 'TEC', 'SPE', 9),
+(23, 2, 'BIO', 2018, 'TRA', 'SPE', 4),
+(24, 2, 'BIO', 2018, NULL, 'PER', 3),
+(25, 3, 'BIO', 2018, 'COM', 'SPE', 12),
+(26, 3, 'BIO', 2018, 'SGET', 'SPE', 5),
+(27, 3, 'BIO', 2018, 'SM', 'SPE', 36),
+(28, 3, 'BIO', 2018, 'TEC', 'SPE', 0),
+(29, 3, 'BIO', 2018, 'TRA', 'SPE', 4),
+(30, 3, 'BIO', 2018, NULL, 'PER', 3),
+(31, 4, 'BIO', 2018, 'COM', 'SPE', 12),
+(32, 4, 'BIO', 2018, 'SGET', 'SPE', 5),
+(33, 4, 'BIO', 2018, 'SM', 'SPE', 36),
+(34, 4, 'BIO', 2018, 'TEC', 'SPE', 0),
+(35, 4, 'BIO', 2018, 'TRA', 'SPE', 4),
+(36, 4, 'BIO', 2018, NULL, 'PER', 3),
+(37, 4, 'ODO', 2019, 'COM', 'SPE', 12),
+(38, 4, 'ODO', 2019, 'SGET', 'SPE', 3),
+(39, 4, 'ODO', 2019, 'SM', 'SPE', 18),
+(40, 4, 'ODO', 2019, 'TEC', 'SPE', 20),
+(41, 4, 'ODO', 2019, 'TRA', 'SPE', 4),
+(42, 4, 'ODO', 2019, NULL, 'PER', 3),
+(43, 5, 'BIO', 2018, 'COM', 'SPE', 12),
+(44, 5, 'BIO', 2018, 'SGET', 'SPE', 10),
+(45, 5, 'BIO', 2018, 'SM', 'SPE', 31),
+(46, 5, 'BIO', 2018, 'TEC', 'SPE', 0),
+(47, 5, 'BIO', 2018, 'TRA', 'SPE', 4),
+(48, 5, 'BIO', 2018, NULL, 'PER', 3);
 
 -- --------------------------------------------------------
 
@@ -341,7 +341,7 @@ CREATE TABLE `course` (
   `id` int(11) NOT NULL,
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
-  `creation_date` date NOT NULL,
+  `creation_school_year` int(11) NOT NULL,
   `italian_description` varchar(1000) NOT NULL,
   `english_description` varchar(1000) NOT NULL,
   `up_hours` int(11) NOT NULL,
@@ -358,14 +358,15 @@ CREATE TABLE `course` (
   `max_students` int(11) NOT NULL,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
-  `admin_confirmation` date DEFAULT NULL
+  `admin_confirmation` date DEFAULT NULL,
+  `to_be_modified` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `course`
 --
 
-INSERT INTO `course` (`id`, `italian_title`, `english_title`, `creation_date`, `italian_description`, `english_description`, `up_hours`, `credits`, `italian_expected_learning_results`, `english_expected_learning_results`, `italian_criterions`, `english_criterions`, `italian_activities`, `english_activities`, `learning_area_id`, `growth_area_id`, `min_students`, `max_students`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
+INSERT INTO `course` (`id`, `italian_title`, `english_title`, `creation_school_year`, `italian_description`, `english_description`, `up_hours`, `credits`, `italian_expected_learning_results`, `english_expected_learning_results`, `italian_criterions`, `english_criterions`, `italian_activities`, `english_activities`, `learning_area_id`, `growth_area_id`, `min_students`, `max_students`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
 (1, 'Gestire il cambiamento', 'Managing change', '2022-08-25', '<p>\nL’unica costante nella nostra vita è il cambiamento. A volte siamo noi a decidere consapevolmente di dare una svolta alla nostra vita (ad es. quando cambiamo sport, scuola, amici); altre volte è il contesto che cambia attorno a noi e ci costringe ad adeguarci alle nuove condizioni. Quanti cambiamenti hai già affrontato nella tua vita? Li hai accolti come un’opportunità o ti sei sentito in difficoltà?\n</p>', '<p>\r\nThe one constant in our lives is change. Sometimes it is we who consciously decide to turn our lives around (e.g. when we change sport, school, friends); other times it is the context that changes around us and forces us to adapt to the new conditions. How many changes have you already faced in your life? Did you welcome them as an opportunity or did you feel challenged?\r\n</p>', 12, 4, '<ul>\r\n<li><b>Riconoscere</b> e <b>descrivere</b> le principali dinamiche legate ai singoli momenti di un cambiamento, sia personale che professionale;</li>\r\n<li><b>Affrontare</b> con maggiore consapevolezza e sicurezza interiore processi di cambiamento;</li>\r\n<li><b>Applicare</b> diverse strategie per lavorare in modo costruttivo in situazioni inaspettate e imprevedibili;</li>\r\n<li><b>Interagire</b> con gli altri in modo appropriato al contesto e alle aspettative sociali</li>\r\n</ul>', '<ul>\r\n<li><b>Recognize</b> and <b>describe</b> the main dynamics associated with individual moments of change, both personal and professional;</li>\r\n<li><b>Deal</b> with greater awareness and inner confidence in change processes;</li>\r\n<li><b>Apply</b> different strategies to work constructively in unexpected and unpredictable situations;</li>\r\n<li><b>Interact</b> with others in ways appropriate to the context and social expectations</li>\r\n</ul>', '<p>\r\nIl corso presenta diverse domande in itinere, alcune sotto forma di quiz, altre proposte unicamente per stimolare la tua riflessione personale. Queste domande non verranno valutate ai fini del superamento del corso. Verranno invece valutati i quiz che faremo al termine di ogni \"\"capitolo\"\".<br />\r\nInoltre <b>sarà valutata la partecipazione</b> alle attività di riflessione e di Role Play\r\n</p>', '<p>\r\nThe course has several on-going questions, some in the form of quizzes, others offered solely to stimulate your personal reflection. These questions will not be evaluated for the purpose of passing the course. Instead, the quizzes we will take at the end of each \"\"chapter\"\" will be evaluated.<br />\r\nIn addition, <b>participation</b> in the reflection and Role Play activities will be <b>evaluated</b>\r\n</p>', '<p>\r\nDurante il corso sono proposti strumenti e attività pratiche per avviare un processo di riflessione sul proprio modo di porsi nei confronti del cambiamento. Le attività affronteranno 5 temi:\r\n</p>\r\n<ul>\r\n<li>Riconoscere il cambiamento e trarne il meglio</li>\r\n<li>Il processo di cambiamento</li>\r\n<li>Gestione del cambiamento in classe</li>\r\n<li>Gestione del cambiamento in famiglia e nel mio ambiente sociale</li>\r\n<li>Competenze necessarie per il cambiamento</li>\r\n</ul>', '<p>\r\nDuring the course, practical tools and activities are offered to initiate a process of reflection on one\'s attitude toward change. Activities will address 5 themes:\r\n</p>\r\n<ul>\r\n<li>Recognizing change and making the best of it</li>\r\n<li>The process of change</li>\r\n<li>Change management in the classroom</li>\r\n<li>Managing change in the family and in my social environment</li>\r\n<li>Skills needed for change</li>\r\n</ul>', 'COM', 1, 10, 15, 1, NULL, NULL),
 (2, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2021-08-25', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\n</p>', 'SM', 2, 10, 15, 2, 1, '2021-09-13'),
 (3, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2022-09-08', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\r\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\r\n</p>', 'SM', 2, 10, 25, 2, 2, '2022-09-09'),
@@ -415,7 +416,7 @@ CREATE TABLE `inscribed` (
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT '',
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `pending` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -424,18 +425,18 @@ CREATE TABLE `inscribed` (
 --
 
 INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_block`, `section`, `learning_context_id`, `pending`) VALUES
-(1, 3, 7, 'A', 1, NULL),
-(1, 4, 6, 'A', 1, NULL),
-(1, 5, 7, 'A', 2, NULL),
-(2, 3, 7, 'A', 1, NULL),
-(2, 4, 7, 'A', 1, NULL),
-(2, 5, 6, 'A', 1, NULL),
-(2, 6, 7, 'A', 1, NULL),
-(3, 5, 7, 'A', 1, NULL),
-(3, 6, 6, 'A', 1, NULL),
-(4, 4, 7, 'A', 1, NULL),
-(4, 5, 6, 'A', 1, NULL),
-(4, 6, 7, 'A', 1, NULL);
+(1, 3, 7, 'A', 'SPE', NULL),
+(1, 4, 6, 'A', 'SPE', NULL),
+(1, 5, 7, 'A', 'PER', NULL),
+(2, 3, 7, 'A', 'SPE', NULL),
+(2, 4, 7, 'A', 'SPE', NULL),
+(2, 5, 6, 'A', 'SPE', NULL),
+(2, 6, 7, 'A', 'SPE', NULL),
+(3, 5, 7, 'A', 'SPE', NULL),
+(3, 6, 6, 'A', 'SPE', NULL),
+(4, 4, 7, 'A', 'SPE', NULL),
+(4, 5, 6, 'A', 'SPE', NULL),
+(4, 6, 7, 'A', 'SPE', NULL);
 
 -- --------------------------------------------------------
 
@@ -486,8 +487,8 @@ INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VAL
 (3, 2, 2022, '2022-09-14', '2022-10-26'),
 (4, 3, 2022, '2023-01-07', '2023-02-18'),
 (5, 4, 2022, '2023-02-18', '2023-04-01'),
-(6, 5, 2022, '2023-06-01', '2023-07-15'),
-(7, 6, 2022, '2023-07-15', '2023-07-31');
+(6, 5, 2022, '2023-06-01', '2023-08-30'),
+(7, 6, 2022, '2023-08-31', '2023-09-30');
 
 -- --------------------------------------------------------
 
@@ -496,8 +497,7 @@ INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VAL
 --
 
 CREATE TABLE `learning_context` (
-  `id` int(11) NOT NULL,
-  `acronym` varchar(5) NOT NULL,
+  `id` varchar(5) NOT NULL,
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
   `italian_description` varchar(1000) DEFAULT NULL,
@@ -508,10 +508,10 @@ CREATE TABLE `learning_context` (
 -- Dump dei dati per la tabella `learning_context`
 --
 
-INSERT INTO `learning_context` (`id`, `acronym`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
-(1, 'SPE', 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
-(2, 'PER', 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
-(3, 'ECA', '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
+INSERT INTO `learning_context` (`id`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
+('SPE', 'Progetto individuale \"SPECIFICO\"', 'Individual project \"SPECIFIC\"', '<p>\r\nAttività orientate al potenziamento delle abilità riguardanti il proprio settore\r\n</p>', '<p>\r\nActivities geared toward skill enhancement concerning one\'s field\r\n</p>'),
+('PER', 'Progetto individuale \"PERSONALE\"', 'Individual project \"PERSONAL\"', NULL, NULL),
+('ECA', '\"ESPERIENZE DI CITTADINANZA ATTIVA\"', '\"ACTIVE CITIZENSHIP EXPERIENCES\"', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -526,7 +526,7 @@ CREATE TABLE `limited` (
   `ordinary_class_address` varchar(5) NOT NULL,
   `ordinary_class_school_year` int(11) NOT NULL,
   `learning_area_id` varchar(5),
-  `learning_context_id` int(11) NOT NULL,
+  `learning_context_id` varchar(5) NOT NULL,
   `credits` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -535,15 +535,15 @@ CREATE TABLE `limited` (
 --
 
 INSERT INTO `limited` (`id`, `learning_block_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
-(1, 6, 1, 'BIO', 2022, 'SM', 1, 4),
-(2, 6, 4, 'ODO', 2022, 'COM', 1, 2),
-(3, 6, 5, 'BIO', 2022, 'SM', 1, 4),
-(4, 7, 1, 'BIO', 2022, 'COM', 1, 2),
-(5, 7, 1, 'BIO', 2022, 'SM', 1, 8),
-(6, 7, 4, 'ODO', 2022, 'SM', 1, 8),
-(7, 7, 5, 'BIO', 2022, 'COM', 1, 2),
-(8, 7, 5, 'BIO', 2022, 'SM', 1, 8),
-(9, 7, 1, 'BIO', 2022, NULL, 2, 8);
+(1, 6, 1, 'BIO', 2022, 'SM', 'SPE', 4),
+(2, 6, 4, 'ODO', 2022, 'COM', 'SPE', 2),
+(3, 6, 5, 'BIO', 2022, 'SM', 'SPE', 4),
+(4, 7, 1, 'BIO', 2022, 'COM', 'SPE', 2),
+(5, 7, 1, 'BIO', 2022, 'SM', 'SPE', 8),
+(6, 7, 4, 'ODO', 2022, 'SM', 'SPE', 8),
+(7, 7, 5, 'BIO', 2022, 'COM', 'SPE', 2),
+(8, 7, 5, 'BIO', 2022, 'SM', 'SPE', 8),
+(9, 7, 1, 'BIO', 2022, NULL, 'PER', 8);
 
 -- --------------------------------------------------------
 
@@ -597,22 +597,23 @@ CREATE TABLE `ordinary_teach` (
   `ordinary_class_school_year` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `teaching_id` varchar(5) NOT NULL,
-  `teacher_id` int(11) NOT NULL
+  `teacher_id` int(11) NOT NULL,
+  `coordinator` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `ordinary_teach`
 --
 
-INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`) VALUES
-(1, 'BIO', 2022, 'A', 'BMTCS', 3),
-(1, 'BIO', 2022, 'A', 'ITA', 1),
-(1, 'BIO', 2022, 'A', 'TB', 2),
-(4, 'ODO', 2022, 'A', 'CHI', 2),
-(4, 'ODO', 2022, 'A', 'DMSL', 3),
-(4, 'ODO', 2022, 'A', 'ITA', 1),
-(5, 'BIO', 2022, 'A', 'ITA', 1),
-(5, 'BIO', 2022, 'A', 'TB', 2);
+INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`) VALUES
+(1, 'BIO', 2022, 'A', 'BMTCS', 3, 1),
+(1, 'BIO', 2022, 'A', 'ITA', 1, 0),
+(1, 'BIO', 2022, 'A', 'TB', 2, 0),
+(4, 'ODO', 2022, 'A', 'CHI', 2, 1),
+(4, 'ODO', 2022, 'A', 'DMSL', 3, 0),
+(4, 'ODO', 2022, 'A', 'ITA', 1, 0),
+(5, 'BIO', 2022, 'A', 'ITA', 1, 0),
+(5, 'BIO', 2022, 'A', 'TB', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -648,24 +649,26 @@ CREATE TABLE `project_class` (
   `learning_block_id` int(11) NOT NULL,
   `italian_displayed_name` varchar(250) DEFAULT NULL,
   `english_displayed_name` varchar(250) DEFAULT NULL,
+  `group` int(11) NOT NULL DEFAULT 1,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
-  `admin_confirmation` date DEFAULT NULL
+  `admin_confirmation` date DEFAULT NULL,
+  `to_be_modified` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `project_class`
 --
 
-INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
-(2, 7, NULL, NULL, 1, 1, '2022-09-09'),
-(3, 7, NULL, NULL, 2, 2, '2022-09-09'),
-(4, 6, NULL, NULL, 2, 2, '2022-09-09'),
-(4, 7, 'Acqua magica', 'Magic water', 2, 2, '2022-09-09'),
-(5, 6, NULL, NULL, 2, 1, '2022-09-09'),
-(5, 7, NULL, NULL, 2, 1, '2022-09-09'),
-(6, 6, NULL, NULL, 1, 2, '2022-09-08'),
-(6, 7, NULL, NULL, 1, 2, '2022-09-08');
+INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
+(2, 7, NULL, NULL, 1, 1, 1, '2022-09-09'),
+(3, 7, NULL, NULL, 1, 2, 2, '2022-09-09'),
+(4, 6, NULL, NULL, 1, 2, 2, '2022-09-09'),
+(4, 7, 'Acqua magica', 'Magic water', 2, 2, 2, '2022-09-09'),
+(5, 6, NULL, NULL, 2, 2, 1, '2022-09-09'),
+(5, 7, NULL, NULL, 1, 2, 1, '2022-09-09'),
+(6, 6, NULL, NULL, 1, 1, 2, '2022-09-08'),
+(6, 7, NULL, NULL, 2, 1, 2, '2022-09-08');
 
 -- --------------------------------------------------------
 
@@ -893,6 +896,7 @@ ALTER TABLE `annual_credits`
 -- Indici per le tabelle `associated`
 --
 ALTER TABLE `associated`
+  ADD PRIMARY KEY (`course_id`, `teaching_id`),
   ADD KEY `course_id` (`course_id`),
   ADD KEY `teaching_id` (`teaching_id`);
 
@@ -925,7 +929,7 @@ ALTER TABLE `constraints`
 --
 ALTER TABLE `course`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `course` (`italian_title`,`english_title`,`creation_date`),
+  ADD UNIQUE KEY `course` (`italian_title`,`english_title`,`creation_school_year`),
   ADD KEY `learning_area_id` (`learning_area_id`),
   ADD KEY `growth_area_id` (`growth_area_id`),
   ADD KEY `course_ibfk_3` (`proposer_teacher_id`),
@@ -1007,6 +1011,7 @@ ALTER TABLE `personal_growth_area`
 --
 ALTER TABLE `project_class`
   ADD PRIMARY KEY (`course_id`,`learning_block_id`),
+  ADD KEY `course_id` (`course_id`),
   ADD KEY `learning_block_id` (`learning_block_id`),
   ADD KEY `project_class_ibfk_3` (`proposer_teacher_id`),
   ADD KEY `project_class_ibfk_4` (`certifying_admin_id`);
@@ -1088,19 +1093,13 @@ ALTER TABLE `constraints`
 -- AUTO_INCREMENT per la tabella `course`
 --
 ALTER TABLE `course`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT per la tabella `learning_block`
 --
 ALTER TABLE `learning_block`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT per la tabella `learning_context`
---
-ALTER TABLE `learning_context`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT per la tabella `limited`

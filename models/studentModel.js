@@ -5,10 +5,10 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google FROM student WHERE " + condition;
+        sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
         const rows = await conn.query(sql,param);
         conn.release();
-        if (rows.length == 1){
+        if (rows.length>=1){
             return rows[0];
         } else {
             return false;
@@ -22,12 +22,21 @@ async function read(condition,param){
 
 module.exports = {
     read_username(username) {
+        if(!username){
+            return false;
+        }
         return read("username = ?",username);
     },
     read_email(email) {
+        if(!email){
+            return false;
+        }
         return read("email = ?",email);
     },
     read_id(student_id){
+        if(!student_id){
+            return false;
+        }
         return read("id = ?",student_id);
     },
     async list() {
@@ -67,16 +76,16 @@ module.exports = {
                 return false;
             }
             sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id}`
-            if(context_id==2){
-                sql += ` AND ins.learning_context_id=${context_id}`;
+            if(context_id=='PER'){
+                sql += ` AND ins.learning_context_id=\'${context_id}\'`;
             } else {
-                sql += ` AND c.learning_area_id=\'${area_id}\' AND ins.learning_context_id=${context_id}`;
+                sql += ` AND c.learning_area_id=\'${area_id}\' AND ins.learning_context_id=\'${context_id}\'`;
             }
             sql += ` AND pc.learning_block_id = ${block_id} AND ins.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_block_id = ${block_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
-            if(context_id==2){
-                sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=${context_id}`;
+            if(context_id=='PER'){
+                sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=\'${context_id}\'`;
             } else {
-                sql += ` AND lm.learning_area_id = \'${area_id}\' AND lm.learning_context_id=${context_id}`;
+                sql += ` AND lm.learning_area_id = \'${area_id}\' AND lm.learning_context_id=\'${context_id}\'`;
             }
             sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ${student_id};`
             const rows = await conn.query(sql);
@@ -129,5 +138,53 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async retrieve_annual_credits(student_id, school_year, area_id, context_id){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id || !school_year){
+                conn.release();
+                return false;
+            }
+            if(area_id.length==0 || context_id.length==0){
+                conn.release();
+                return false;
+            }
+            let sql = ``;
+            let values = [];
+            for(let i=0;i<area_id.length;i++){
+                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ? AND pc.learning_block_id IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year=?)`
+                values.push(student_id, school_year)
+                if(context_id[i]=='PER'){
+                    sql += ` AND ins.learning_context_id = ?`;
+                    values.push(context_id[i])
+                } else {
+                    sql += ` AND c.learning_area_id = ? AND ins.learning_context_id = ?`;
+                    values.push(area_id[i], context_id[i])
+                }
+                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT cst.credits FROM \`constraints\` AS cst WHERE cst.annual_credits_definition_year = ? AND cst.annual_credits_study_year = att.ordinary_class_study_year AND cst.annual_credits_address = att.ordinary_class_address `
+                values.push(school_year)
+                if(context_id[i]=='PER'){
+                    sql += ` AND cst.learning_area_id IS NULL AND cst.learning_context_id = ?`;
+                    values.push(context_id[i])
+                } else {
+                    sql += ` AND cst.learning_area_id = ? AND cst.learning_context_id = ?`;
+                    values.push(area_id[i], context_id[i])
+                }
+                sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?`
+                values.push(student_id)
+                if(i<area_id.length-1){
+                    sql += " UNION "
+                }
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+
     }
 };

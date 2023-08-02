@@ -16,7 +16,6 @@ module.exports.get_contexts = async (req, res) => {
     let data_contexts = contexts.map((context) => {
         return {
             id: context.id,
-            acronym: context.acronym,
             italian_title: context.italian_title,
             english_title: context.english_title,
             italian_description: context.italian_description,
@@ -47,7 +46,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
     let data_contexts = contexts.map( (context) => {
         return {
             course_id: context.course,
-            context_acronym: context.context
+            context_id: context.context
         };
     });
     let response = {

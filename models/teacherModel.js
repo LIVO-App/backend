@@ -1,7 +1,6 @@
 const ptstr = require('../utils/toString.js');
 const pool = require('../utils/db.js');
 const crypto = require('../utils/cipher.js');
-const { add } = require('./inscribeModel.js');
 
 async function read(condition,param){
     try {
@@ -23,12 +22,21 @@ async function read(condition,param){
 
 module.exports = {
     read_username(username) {
+        if(!username){
+            return false
+        }
         return read("username = ?",username);
     },
     read_email(email) {
+        if(!email){
+            return false
+        }
         return read("email = ?",email);
     },
     read_id(id) {
+        if(!id){
+            return false
+        }
         return read("id = ?", id);
     },
     async list() {

@@ -54,5 +54,80 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add_project_teach(course_id, block_id, section='A', teachers_id, main_teachers){
+        try {
+            conn = await pool.getConnection();
+            if(!course_id || !block_id || !section || main_teachers.length == 0 || teachers_id.length==0){
+                conn.release()
+                return false
+            }
+            if(main_teachers.length!=teachers_id.length){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO project_teach (teacher_id, project_class_course_id, project_class_block, section, main) VALUES ';
+            let values = []
+            let teacher_insert = []
+            for(let i=0;i<teachers_id.length;i++){
+                let finded_teacher;
+                for(let j=0;j<teacher_insert.length;j++){
+                    if(teacher_insert[j]==teachers_id[i]){
+                        finded_teacher = true
+                    }
+                }
+                if(!finded_teacher){
+                    sql += ' (?,?,?,?,?)';
+                    values.push(teachers_id[i], course_id, block_id, section, main_teachers[i])
+                    teacher_insert.push(teachers_id[i])
+                    if(i<teachers_id.length-1){
+                        sql += ',';
+                    }
+                }
+                
+            }
+            const rows = await conn.query(sql, values)
+            conn.release();
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async is_present(course_id, block_id, section = "A", teacher_id){
+        try{
+            conn = await pool.getConnection()
+            if(!course_id || !block_id || !teacher_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM project_teach WHERE project_class_course_id = ? AND project_class_block = ? AND section = ? AND teacher_id = ?'
+            let values = [course_id, block_id, section, teacher_id]
+            const rows = await conn.query(sql, values)
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async delete(course_id, block_id){
+        try{
+            conn = await pool.getConnection();
+            let sql = 'DELETE FROM project_teach WHERE project_class_course_id=? AND project_class_block=?';
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

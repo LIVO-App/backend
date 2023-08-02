@@ -108,6 +108,28 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async read(study_year, study_address, block_id){
+        try {
+            conn = await pool.getConnection()
+            if(!study_year || !study_address || !block_id){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT * FROM ordinary_class AS oc WHERE oc.study_year_id = ? AND oc.study_address_id = ? AND oc.school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)';
+            let values = [study_year, study_address, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length==1){
+                return rows[0]
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

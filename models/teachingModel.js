@@ -21,5 +21,18 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async list(){
+        try {
+            conn = await pool.getConnection();
+            sql = 'SELECT id, italian_title, english_title, italian_description, english_description FROM teaching'
+            const rows = await conn.query(sql, id);
+            conn.release();
+            return rows
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
     }
 }

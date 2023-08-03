@@ -1504,6 +1504,8 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
         - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/query_publisher_id'
+        - $ref: '#/components/parameters/query_is_admin'
       summary: Get project class announcements
       tags:
         - project classes
@@ -1586,8 +1588,8 @@ paths:
       description: Publication of announcements for a specific project class
       parameters:
         - $ref: '#/components/parameters/header_token'
-        - $ref: '#/components/parameters/query_teacher_id'
-        - $ref: '#/components/parameters/query_admin_id'
+        - $ref: '#/components/parameters/query_publisher_id'
+        - $ref: '#/components/parameters/query_is_admin'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
       summary: Publication of announcements
@@ -2985,8 +2987,8 @@ components:
         teacher_list:
           type: array
           items:
-            type: integer
-            description: "Id of the teacher"
+            $ref: '#/components/schemas/teacher_list_property'
+            description: "Refers to the teachers you want to associate with the course, specifying teacher, sections in which he teaches and if he is the coordinator"
     context_property:
       type: array
       items:
@@ -3005,6 +3007,20 @@ components:
             type: boolean
             description: "Is the study address of the class the main one for this course?"
         description: "List of ordinary classes the user wants to open the course for a specific learning context"
+    teacher_list_property:
+      type: object
+      properties:
+        teacher_id:
+          type: integer
+          description: "Id of the teacher we want to associate to a course"
+        main:
+          type: boolean
+          description: "Tells if the teacher in question is the class coordinator"
+        sections:
+          type: array
+          description: "Array of sections in which the teacher teaches for a project class"
+          items:
+            type: string
     student_credits_data:
       type: object
       properties:
@@ -3263,9 +3279,15 @@ components:
       description: Specifies if the learning block is used to get the school year or it is simply used
       schema:
         type: boolean
-    query_admin_id:
-      name: admin_id
+    query_publisher_id:
+      name: publisher_id
       in: query
-      description: Specifies the id of the admin
+      description: Specifies the id of the publisher of an announcement
       schema:
         type: integer
+    query_is_admin:
+      name: is_admin
+      in: query
+      description: Specifies if the publisher of the announcement is an administrator or not
+      schema:
+        type: boolean

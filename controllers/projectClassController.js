@@ -270,37 +270,39 @@ module.exports.get_project_class_sections = async (req,res) => {
 }
 
 module.exports.get_announcments = async (req, res) => {
-    let teacher_id = req.query.teacher_id;
-    let query = teacher_id ? {teacher_id: teacher_id} : {};
-    let admin_id = req.query.admin_id;
-    query["admin_id"] = admin_id
+    let publisher_id = req.query.publisher_id;
+    let query = publisher_id ? {publisher_id: publisher_id} : {};
+    let is_admin = req.query.is_admin;
+    query["is_admin"] = is_admin
     if(req.loggedUser.role === "teacher"){
-        if(teacher_id==undefined){
-            teacher_id = req.loggedUser._id;
+        if(publisher_id==undefined){
+            publisher_id = req.loggedUser._id;
+            is_admin = 0
         }
-        let teacher_exists = await teacherModel.read_id(teacher_id)
+        let teacher_exists = await teacherModel.read_id(publisher_id)
         if(!teacher_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
             return;
         }
-        if(teacher_id != req.loggedUser._id){
+        if(publisher_id != req.loggedUser._id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('project_class sections: unauthorized access');
             return;
         }
     }
     if(req.loggedUser.role === "admin"){
-        if(admin_id==undefined){
-            admin_id = req.loggedUser._id;
+        if(publisher_id==undefined){
+            publisher_id = req.loggedUser._id;
+            is_admin = 1
         }
-        let admin_exist = await adminModel.read_id(admin_id)
+        let admin_exist = await adminModel.read_id(publisher_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
             return;
         }
-        if(admin_id != req.loggedUser._id){
+        if(publisher_id != req.loggedUser._id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('project_class sections: unauthorized access');
             return;
@@ -331,7 +333,7 @@ module.exports.get_announcments = async (req, res) => {
         section = student_section.section
     }
     query["section"] = section;
-    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, teacher_id, admin_id);
+    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, publisher_id);
     if(!announcements){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class announcments: missing parameters");

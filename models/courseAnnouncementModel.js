@@ -1,7 +1,7 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async list(course_id, block_id, section, teacher_id, admin_id){
+    async list(course_id, block_id, section, publisher_id, is_admin = false){
         try {
             conn = await pool.getConnection();
             if(!course_id || !block_id || !section){
@@ -10,12 +10,14 @@ module.exports = {
             }
             let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment FROM announcement AS ann WHERE ann.project_class_course_id = ? AND ann.project_class_block = ? AND ann.section = ?';
             let values = [course_id, block_id, section];
-            if(teacher_id!=undefined){
-                sql += ' AND ann.publisher_id = ? AND ann.is_admin = 0';
-                values.push(teacher_id);
-            } else if(admin_id!=undefined) {
-                sql += ' AND ann.publisher_id = ? AND ann.is_admin = 1';
-                values.push(admin_id)
+            if(publisher_id!=undefined){
+                sql += ' AND ann.publisher_id = ?'
+                if(is_admin){
+                    sql += ' AND ann.is_admin = 1'
+                } else {
+                    sql += ' AND ann.is_admin = 0'
+                }
+                values.push(publisher_id);
             }
             sql += ' ORDER BY ann.publishment'
             const rows = await conn.query(sql, values);
@@ -48,14 +50,10 @@ module.exports = {
             conn.release();
         }
     },
-    async add(teacher_id, admin_id, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
+    async add(publisher_id, is_admin = false, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
         try{
             conn = await pool.getConnection();
-            if(!teacher_id && !admin_id){
-                conn.release();
-                return false;
-            }
-            if(!course_id || !block_id || !section || !italian_title || !english_title || !italian_message || !english_message){
+            if(!publisher_id || !course_id || !block_id || !section || !italian_title || !english_title || !italian_message || !english_message){
                 conn.release();
                 return false;
             }
@@ -68,12 +66,7 @@ module.exports = {
             let values = [];
             for(let i=0;i<section.length;i++){
                 sql += ' (?,?,?,?,?,?,?,?,?,?)';
-                if(teacher_id!=undefined){
-                    values.push(teacher_id, 0)
-                } else if (admin_id!=undefined){
-                    values.push(admin_id, 1)
-                }
-                values.push(course_id, block_id, section[i], publishment, italian_title, english_title, italian_message, english_message)
+                values.push(publisher_id, is_admin,course_id, block_id, section[i], publishment, italian_title, english_title, italian_message, english_message)
                 if(i<section.length-1){
                     sql += ',';
                 }
@@ -87,20 +80,11 @@ module.exports = {
             conn.release();
         }
     },
-    async remove(teacher_id, admin_id, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
+    async remove(publisher_id, is_admin=false, course_id, block_id, section, italian_title, english_title, italian_message, english_message){
         try{
             conn = await pool.getConnection();
-            let sql = 'DELETE FROM announcement WHERE '
-            let values = [] 
-            if(teacher_id!=undefined){
-                sql += 'publisher_id = ? AND is_admin=0 '
-                values.push(teacher_id)
-            } else if(admin_id!=undefined){
-                sql += 'publisher_id = ? AND is_admin = 1 '
-                values.push(admin_id)
-            }
-            sql += 'AND project_class_course_id = ? AND project_class_block = ? AND section = ? AND italian_title = ? AND english_title = ? AND italian_message = ? AND english_message = ?';
-            values.push(course_id, block_id, section, italian_title, english_title, italian_message, english_message)
+            let sql = 'DELETE FROM announcement WHERE publisher_id = ? AND is_admin=? AND project_class_course_id = ? AND project_class_block = ? AND section = ? AND italian_title = ? AND english_title = ? AND italian_message = ? AND english_message = ?'
+            let values = [publisher_id, is_admin, course_id, block_id, section, italian_title, english_title, italian_message, english_message] 
             const rows = await pool.getConnection(sql, values);
             conn.release();
             return rows;

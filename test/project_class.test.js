@@ -298,7 +298,7 @@ describe('/api/v1/project_classes', () => {
             test('GET /api/v1/project_classes/:course/:block/announcements with valid token but wrong user id should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/announcements')
-                    .query({section: 'A', teacher_id: 2})
+                    .query({section: 'A', publisher_id: 2})
                     .set('x-access-token', validToken)
                     .expect(401);
             })
@@ -335,7 +335,7 @@ describe('/api/v1/project_classes', () => {
             test('GET /api/v1/project_classes/:course/:block/announcements with valid token and parameters should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/announcements')
-                    .query({section: 'A', teacher_id: 2})
+                    .query({section: 'A', publisher_id: 2})
                     .set('x-access-token', validTokenAnnouncement)
                     .expect(200)
                     .then((response) => {

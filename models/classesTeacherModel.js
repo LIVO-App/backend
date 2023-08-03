@@ -90,6 +90,9 @@ module.exports = {
                 }
                 
             }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1) // Remove the comma if the last teachers inserted are the ones that are replicated
+            }
             const rows = await conn.query(sql, values)
             conn.release();
             return rows

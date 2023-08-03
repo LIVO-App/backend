@@ -120,7 +120,8 @@ INSERT INTO `admin` (`id`, `cf`, `username`, `email`, `password`, `name`, `surna
 
 CREATE TABLE `announcement` (
   `id` int(11) NOT NULL,
-  `teacher_id` int(11) NOT NULL,
+  `publisher_id` int(11) NOT NULL,
+  `is_admin` tinyint(1) DEFAULT 0,
   `project_class_course_id` int(11) NOT NULL,
   `project_class_block` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
@@ -135,8 +136,8 @@ CREATE TABLE `announcement` (
 -- Dump dei dati per la tabella `announcement`
 --
 
-INSERT INTO `announcement` (`id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `section`, `publishment`, `italian_title`, `english_title` , `italian_message`, `english_message`) VALUES
-(1, 2, 5, 6, 'A', '2023-03-25', 'Avviso di fine corso', 'End of the course announcement', 'Attenzione, il corso sta per finire', 'Attention, the course is about to end');
+INSERT INTO `announcement` (`id`, `publisher_id`, `is_admin`, `project_class_course_id`, `project_class_block`, `section`, `publishment`, `italian_title`, `english_title` , `italian_message`, `english_message`) VALUES
+(1, 2, 0, 5, 6, 'A', '2023-03-25', 'Avviso di fine corso', 'End of the course announcement', 'Attenzione, il corso sta per finire', 'Attention, the course is about to end');
 
 -- --------------------------------------------------------
 
@@ -474,21 +475,22 @@ CREATE TABLE `learning_block` (
   `number` int(11) NOT NULL,
   `school_year` int(11) NOT NULL,
   `start` date NOT NULL,
-  `end` date NOT NULL
+  `end` date NOT NULL,
+  `num_groups` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `learning_block`
 --
 
-INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`) VALUES
-(1, 5, 2021, '2022-04-27', '2022-06-08'),
-(2, 1, 2022, '2022-10-26', '2022-12-06'),
-(3, 2, 2022, '2022-09-14', '2022-10-26'),
-(4, 3, 2022, '2023-01-07', '2023-02-18'),
-(5, 4, 2022, '2023-02-18', '2023-04-01'),
-(6, 5, 2022, '2023-06-01', '2023-08-30'),
-(7, 6, 2022, '2023-08-31', '2023-09-30');
+INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`, `num_groups`) VALUES
+(1, 5, 2021, '2022-04-27', '2022-06-08', 2),
+(2, 1, 2022, '2022-10-26', '2022-12-06', 1),
+(3, 2, 2022, '2022-09-14', '2022-10-26', 1),
+(4, 3, 2022, '2023-01-07', '2023-02-18', 1),
+(5, 4, 2022, '2023-02-18', '2023-04-01', 1),
+(6, 5, 2022, '2023-06-01', '2023-08-30', 2),
+(7, 6, 2022, '2023-08-31', '2023-09-30', 2);
 
 -- --------------------------------------------------------
 
@@ -650,25 +652,27 @@ CREATE TABLE `project_class` (
   `italian_displayed_name` varchar(250) DEFAULT NULL,
   `english_displayed_name` varchar(250) DEFAULT NULL,
   `group` int(11) NOT NULL DEFAULT 1,
+  `num_section` int(11) NOT NULL DEFAULT 1,
   `proposer_teacher_id` int(11) NOT NULL,
   `certifying_admin_id` int(11) DEFAULT NULL,
   `admin_confirmation` date DEFAULT NULL,
-  `to_be_modified` tinyint(1) DEFAULT NULL
+  `to_be_modified` tinyint(1) DEFAULT NULL,
+  `final_confirmation` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `project_class`
 --
 
-INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
-(2, 7, NULL, NULL, 1, 1, 1, '2022-09-09'),
-(3, 7, NULL, NULL, 1, 2, 2, '2022-09-09'),
-(4, 6, NULL, NULL, 1, 2, 2, '2022-09-09'),
-(4, 7, 'Acqua magica', 'Magic water', 2, 2, 2, '2022-09-09'),
-(5, 6, NULL, NULL, 2, 2, 1, '2022-09-09'),
-(5, 7, NULL, NULL, 1, 2, 1, '2022-09-09'),
-(6, 6, NULL, NULL, 1, 1, 2, '2022-09-08'),
-(6, 7, NULL, NULL, 2, 1, 2, '2022-09-08');
+INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
+(2, 7, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, NULL),
+(3, 7, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, NULL),
+(4, 6, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, NULL),
+(4, 7, 'Acqua magica', 'Magic water', 2, 1, 2, 2, '2022-09-09', NULL, NULL),
+(5, 6, NULL, NULL, 2, 1, 2, 1, '2022-09-09', NULL, NULL),
+(5, 7, NULL, NULL, 1, 1, 2, 1, '2022-09-09', NULL, NULL),
+(6, 6, NULL, NULL, 1, 1, 1, 2, '2022-09-08', NULL, NULL),
+(6, 7, NULL, NULL, 2, 1, 1, 2, '2022-09-08', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -882,7 +886,6 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `announcement`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `teacher_id` (`teacher_id`),
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
 
 --
@@ -1142,7 +1145,6 @@ ALTER TABLE `accessible`
 -- Limiti per la tabella `announcement`
 --
 ALTER TABLE `announcement`
-  ADD CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`),
   ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
 
 --

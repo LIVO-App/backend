@@ -12,6 +12,7 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_areas = async (req, res) => {
     let block_id = req.query.block_id;
     let all_data = req.query.all_data;
+    all_data = all_data === "true" ? 1 : 0;
     let credits = req.query.credits;
     let areas;
     if (block_id != undefined) {

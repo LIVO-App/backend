@@ -1,6 +1,5 @@
 'use strict';
 
-const { response } = require('express');
 const classesSchema = require('../models/classesTeacherModel');
 const ord_classSchema = require('../models/ordinaryclassModel');
 const teacherSchema = require('../models/teacherModel');
@@ -14,6 +13,55 @@ let MSG = {
 }
 
 process.env.TZ = 'Etc/Universal';
+
+module.exports.get_teachers = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "teacher"){
+        let teacher_esist = teacherModel.read_id(user_id);
+        if(!teacher_esist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
+        let admin_exist = adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_student: unauthorized access');
+        return;
+    }
+    let teachers = await teacherSchema.list()
+    let data_teachers = teachers.map((teacher) => {
+        let cf = crypto.decipher(teacher.cf.toString())
+        let gender = crypto.decipher(teacher.gender.toString())
+        let birth_date = crypto.decipher(teacher.birth_date.toString())
+        let address = crypto.decipher(teacher.address.toString())
+        return {
+            cf: cf,
+            username: teacher.username,
+            name: teacher.name,
+            surname: teacher.surname,
+            gender: gender,
+            birth_date: birth_date,
+            address: address,
+            email: teacher.email
+        }
+    })
+    let path = "/api/v1/teachers/"
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: data_teachers
+    };
+    res.status(200).json(response);
+}
 
 module.exports.get_my_project_classes = async (req, res) => {
     let teacher_id = req.params.teacher_id;

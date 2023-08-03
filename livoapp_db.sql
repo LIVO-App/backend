@@ -658,7 +658,7 @@ CREATE TABLE `project_class` (
   `certifying_admin_id` int(11) DEFAULT NULL,
   `admin_confirmation` date DEFAULT NULL,
   `to_be_modified` tinyint(1) DEFAULT NULL,
-  `final_confirmation` tinyint(1) DEFAULT NULL
+  `final_confirmation` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -666,14 +666,14 @@ CREATE TABLE `project_class` (
 --
 
 INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
-(2, 7, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, NULL),
-(3, 7, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, NULL),
-(4, 6, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, NULL),
-(4, 7, 'Acqua magica', 'Magic water', 2, 1, 2, 2, '2022-09-09', NULL, NULL),
-(5, 6, NULL, NULL, 2, 1, 2, 1, '2022-09-09', NULL, NULL),
-(5, 7, NULL, NULL, 1, 1, 2, 1, '2022-09-09', NULL, NULL),
-(6, 6, NULL, NULL, 1, 1, 1, 2, '2022-09-08', NULL, NULL),
-(6, 7, NULL, NULL, 2, 1, 1, 2, '2022-09-08', NULL, NULL);
+(2, 7, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, '2022-10-01'),
+(3, 7, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
+(4, 6, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
+(4, 7, 'Acqua magica', 'Magic water', 2, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
+(5, 6, NULL, NULL, 2, 1, 2, 1, '2022-09-09', NULL, '2022-10-01'),
+(5, 7, NULL, NULL, 1, 1, 2, 1, '2022-09-09', NULL, '2022-10-01'),
+(6, 6, NULL, NULL, 1, 1, 1, 2, '2022-09-08', NULL, '2022-10-01'),
+(6, 7, NULL, NULL, 2, 1, 1, 2, '2022-09-08', NULL, '2022-10-01');
 
 -- --------------------------------------------------------
 

@@ -76,8 +76,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3],
-            main_teachers: [0,1]
+            teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         let invalid_proposal_classes = {
             italian_title: "Prova",
@@ -102,8 +101,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3],
-            main_teachers: [0,1]
+            teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         let invalid_proposal_teachings = {
             italian_title: "Prova",
@@ -129,8 +127,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: [],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3],
-            main_teachers: [0,1]
+            teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         let invalid_proposal_teachers = {
             italian_title: "Prova",
@@ -156,8 +153,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [],
-            main_teachers: [0,1]
+            teacher_list: []
         }
         valid_proposal = {
             italian_title: "Prova",
@@ -183,8 +179,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3,3],
-            main_teachers: [0,0,0]
+            teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         valid_proposal2 = {
             italian_title: "Tests",
@@ -210,8 +205,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
-            teacher_list: [2,3,3],
-            main_teachers: [0,1,1]
+            teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         test('POST /api/v1/propositions without token should respond with status 401', async () => {
             return request(app)

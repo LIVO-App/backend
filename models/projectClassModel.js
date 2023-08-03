@@ -195,5 +195,27 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async get_section_number(course_id, block_id){
+        try{
+            conn = await pool.getConnection()
+            if(!block_id){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT num_section FROM project_class WHERE course_id = ? AND learning_block_id = ?'
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length != 0){
+                return rows
+            } else {
+                return 0
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

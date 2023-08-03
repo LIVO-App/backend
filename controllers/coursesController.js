@@ -340,7 +340,6 @@ module.exports.add_proposition = async (req, res) => {
     let class_group = req.body.class_group;
     // Add teachers of the course into project_teach
     let teacher_list = req.body.teacher_list;
-    let main_teachers = req.body.main_teachers; //Array of equal length of teacher_list
     let new_course_id = course_id == undefined ? true : false
     let publication = undefined;
     let course_exist, course_id_exist, same_year;
@@ -514,37 +513,52 @@ module.exports.add_proposition = async (req, res) => {
     }
     // The teachers in teacher_list exists?
     let teacher_exists
-    let section = 'A'
+    // Teacher list is structure in this way: [{teacher_id, main, sections:[]}]
     if(teacher_list!=undefined){
         for(let i=0;i<teacher_list.length;i++){
-            teacher_exists = await teacherSchema.read_id(teacher_list[i])
+            let t_id = teacher_list[i]["teacher_id"]
+            let main_teacher = teacher_list[i]["main"]
+            let sections = teacher_list[i]["sections"]
+            teacher_exists = await teacherSchema.read_id(t_id)
             if(!teacher_exists){
-                console.log(`Teacher with id ${teacher_list[i]} does not exists. Removing it from the list of associated teachers`)
+                console.log(`Teacher with id ${t_id} does not exists. Removing it from the list of associated teachers`)
                 wrong_teacher = true
                 teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
-                main_teachers.splice(i,1)
                 i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
             }
         }
     } else {
-        teacher_list = [teacher_id]
-        if(main_teachers == undefined){
-            main_teachers = [1]
-        } else {
-            main_teachers.push(1)
+        teacher_list = []
+        let sections = await projectclassSchema.get_section_number(course_id, block_id)
+        for(let i=0; i<sections;i++){
+            teacher_list.push({teacher_id: teacher_id, main: 1, section: String.fromCharCode(65+i)})
         }
     }
-    if(teacher_list.find(element => element == teacher_id)==undefined){
-        teacher_list.push(teacher_id)
-        main_teachers.push(1)
+    let myself = false
+    for(let i=0; i<teacher_list.length && !myself;i++){
+        if(teacher_list[i]["teacher_id"]==teacher_id){
+            myself = true
+        }
+    }
+    if(!myself){
+        let sections = await projectclassSchema.get_section_number(course_id, block_id)
+        for(let i=0; i<sections;i++){
+            teacher_list.push({teacher_id: teacher_id, main: 1, section: String.fromCharCode(65+i)})
+        }
     }
     let teacher_present, new_teacher
     if(proj_class_exists){
         for(let i=0;i<teacher_list.length;i++){
-            teacher_present = await teacherClassSchema.is_present(course_id, block_id, section, teacher_list[i]);
-            if(!teacher_present){
-                new_teacher = true
+            let t_id = teacher_list[i]["teacher_id"]
+            let main_teacher = teacher_list[i]["main"]
+            let sections = teacher_list[i]["sections"]
+            for(let j=0;j<sections.length;i++){
+                teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j], t_id, main_teacher);
+                if(!teacher_present){
+                    new_teacher = true
+                }
             }
+            
         }
     }
     let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, teacher_id);
@@ -565,7 +579,7 @@ module.exports.add_proposition = async (req, res) => {
             return
         }
     }
-    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list, main_teachers);
+    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list);
     if(!teachers_ins){
         if(!course_exist){
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})

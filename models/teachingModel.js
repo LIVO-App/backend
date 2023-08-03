@@ -26,7 +26,7 @@ module.exports = {
         try {
             conn = await pool.getConnection();
             sql = 'SELECT id, italian_title, english_title, italian_description, english_description FROM teaching'
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql);
             conn.release();
             return rows
         } catch (err) {

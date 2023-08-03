@@ -638,7 +638,8 @@ CREATE TABLE `personal_growth_area` (
 INSERT INTO `personal_growth_area` (`id`, `italian_title`, `english_title`, `italian_description`, `english_description`) VALUES
 (1, 'Benessere personale', 'Personal well-being', NULL, NULL),
 (2, 'Prospettive di crescita', 'Growth prospects', '<p>Area in cui uno studente può effettuare corsi che gli permettono di crescere e migliorare le sue competenze</p>', '<p>Area in which a student can take courses that enable him/her to grow and improve his/her skills</p>'),
-(3, 'Imprenditività', 'Entrepreneurship', NULL, NULL);
+(3, 'Imprenditività', 'Entrepreneurship', NULL, NULL),
+(4, 'Orientamento', 'Orientation', NULL, NULL);
 
 -- --------------------------------------------------------
 

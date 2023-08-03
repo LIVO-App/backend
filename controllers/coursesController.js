@@ -20,6 +20,7 @@ let MSG = {
     updateFailed: "Failed to save",
     missing_params: "Bad input. Missing required information",
     itemAlreadyExists: "The student is already inscribe to this project class",
+    pastBlock: "Block already expired or imminent",
     notAuthorized: "Not authorized request"
 }
 
@@ -320,6 +321,15 @@ module.exports.add_proposition = async (req, res) => {
         return;
     }
     let block_year = block_id_exists.school_year
+    //Check if block starting date is ahead in time of at least 10 days
+    let starting_date = new Date(block_id_exists.start)
+    let today = new Date()
+    let _10days = today.setDate(today.getDate() + 10)
+    if (starting_date <= today || starting_date <= _10days){
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('course proposition insertion: tried to add a proposition for a block already started');
+        return;
+    }
     // Add new classes
     let access_object = req.body.access_object;
     // Add new teachings

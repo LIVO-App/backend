@@ -9,6 +9,17 @@ let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, p
 describe('/api/v1/teachers', () => {
     
     describe('GET methods', () => {
+        describe('GET /api/v1/teachers', () => {
+            test('GET /api/v1/teachers should respond with status 200', async () => {
+                return request(app)
+                    .get('/api/v1/teachers')
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1)
+                    });
+            })
+        })
+
         describe('GET /api/v1/teachers/:teacher_id/my_project_classes', () => {
             // GET my project classes with missing parameters
             test('GET /api/v1/teachers/:teacher_id/my_project_classes with missing parameters should respond with status 400', async () => {

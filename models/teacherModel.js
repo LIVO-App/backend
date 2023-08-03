@@ -43,7 +43,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = `SELECT cf, username, name, surname, gender, birth_date, address, email FROM teacher`;
-            console.log(sql);
+            //console.log(sql);
             const rows = await conn.query(sql);
             //console.log("rows");
             conn.release();

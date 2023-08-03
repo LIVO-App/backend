@@ -42,11 +42,11 @@ module.exports.get_announcement = async (req, res) => {
 module.exports.publish_announcement = async (req, res) => {
     let publisher_id = req.query.publisher_id;
     let is_admin = req.query.is_admin;
-    is_admin = is_admin === "true" ? 1 : 0;
+    is_admin = is_admin === "true" ? true : false;
     if(req.loggedUser.role == "teacher"){
         if(publisher_id == undefined){
             publisher_id = req.loggedUser._id;
-            is_admin = 0
+            is_admin = false
         }
         let teacher_exist = await teacherSchema.read_id(publisher_id)
         if(publisher_id!=req.loggedUser._id || !teacher_exist){
@@ -57,7 +57,7 @@ module.exports.publish_announcement = async (req, res) => {
     } else if(req.loggedUser.role == "admin") {
         if(publisher_id == undefined){
             publisher_id = req.loggedUser._id;
-            is_admin = 1;
+            is_admin = true;
         }
         let admin_exists = await adminSchema.read_id(publisher_id)
         if(publisher_id!=req.loggedUser._id || !admin_exists){
@@ -73,7 +73,7 @@ module.exports.publish_announcement = async (req, res) => {
     let course_id = req.query.course_id;
     let block_id = req.query.block_id;
     let sections = req.body.sections;
-    if(publisher_id!=undefined && is_admin == 0){
+    if(publisher_id!=undefined && !is_admin){
         for(let i=0;i<sections.length;i++){
             let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, block_id, sections[i].toUpperCase());
             if(teacherTeach==null){

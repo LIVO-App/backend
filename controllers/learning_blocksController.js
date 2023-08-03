@@ -13,7 +13,10 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_blocks = async (req, res) => {
     let school_year = req.query.school_year;
     let year_of = req.query.year_of;
-    let blocks = await learningBlockSchema.list(school_year, year_of);
+    year_of = school_year != undefined ? undefined : year_of;
+    let future_block = req.query.future_block;
+    future_block = future_block === "true" ? true : false;
+    let blocks = await learningBlockSchema.list(school_year, year_of, future_block);
     let data_blocks = blocks.map( (block) => {
         return {
             id: block.id,
@@ -27,7 +30,9 @@ module.exports.get_blocks = async (req, res) => {
         path: "/api/v1/learning_blocks/",
         single: true,
         query: {
-            school_year: school_year
+            school_year: school_year,
+            year_of: year_of,
+            future_block: future_block
         },
         date: new Date(),
         data: data_blocks

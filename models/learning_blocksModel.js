@@ -33,20 +33,27 @@ module.exports = {
             conn.release();
         }
     },
-    async list(school_year, year_of){
+    async list(school_year, year_of, future_block = false){
         try {
             conn = await pool.getConnection();
             let sql = "SELECT id, number, school_year, start, end FROM learning_block";
-            let rows;
+            let values = [];
             if (school_year != undefined) {
                 sql += " WHERE school_year = ?";
-                rows = await conn.query(sql,school_year);
+                values.push(school_year)
+                if(future_block){
+                    sql += " AND start > NOW() AND DATEDIFF(start, NOW()) > 10"
+                }
             } else if (year_of != undefined) {
                 sql += " WHERE school_year IN (SELECT school_year FROM learning_block WHERE id = ?)";
-                rows = await conn.query(sql,year_of);
-            } else{
-                rows = await conn.query(sql);
+                values.push(year_of)
+                if(future_block){
+                    sql += " AND start > NOW() AND DATEDIFF(start, NOW()) > 10"
+                }
+            } else if(future_block){
+                sql += " WHERE start > NOW() AND DATEDIFF(start, NOW()) > 10"
             }
+            const rows = await conn.query(sql, values);
             conn.release();
             return rows;
         } catch (err) {

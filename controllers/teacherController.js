@@ -3,6 +3,8 @@
 const classesSchema = require('../models/classesTeacherModel');
 const ord_classSchema = require('../models/ordinaryclassModel');
 const teacherSchema = require('../models/teacherModel');
+const adminModel = require('../models/adminModel');
+const crypto = require('../utils/cipher');
 
 let MSG = {
     notFound: "Resource not found",
@@ -17,7 +19,7 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_teachers = async (req, res) => {
     let user_id = req.loggedUser._id;
     if(req.loggedUser.role == "teacher"){
-        let teacher_esist = teacherModel.read_id(user_id);
+        let teacher_esist = teacherSchema.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_student: unauthorized access');

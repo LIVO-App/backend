@@ -375,7 +375,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/teaching_data'
+                      $ref: '#/components/schemas/teaching_related_data'
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
@@ -1839,6 +1839,76 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/teachings:
+    get:
+      description: Get all the teachings in the system
+      summary: View of all the teachings
+      tags:
+        - teachings
+        - v1
+      responses:
+        '200':
+          description: "Collection of teachings"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/teaching_data'
+                    description: "Data return from the api"
+  /v1/teachings/{teaching_id}:
+    get:
+      description: Get a specific teaching from its id.
+      parameters:
+        - $ref: '#/components/parameters/path_teaching_id'
+      summary: View of a single teaching
+      tags:
+        - teaching
+        - v1
+      responses:
+        '200':
+          description: "View of a single teaching"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/teaching_data'
+                    description: "Data return from the api"
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -2421,7 +2491,7 @@ components:
             id:
               type: integer
               description: "Id of the teaching"
-    teaching_data:
+    teaching_related_data:
       type: object
       properties:
         teaching_ref:
@@ -3036,6 +3106,24 @@ components:
         max_credits:
           type: integer
           description: "Number of total credits the student has to obtain for a certain combination of contexts and areas in a year."
+    teaching_data:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the teaching"
+        italian_title:
+          type: string
+          description: "Italian title of the teaching"
+        english_title: 
+          type: string
+          description: "English title of the teaching"
+        italian_description: 
+          type: string
+          description: "Italian description of the teaching"
+        english_description:
+          type: string
+          description: "English description of the teaching"
   parameters:
     query_school_year:
       name: school_year
@@ -3291,3 +3379,10 @@ components:
       description: Specifies if the publisher of the announcement is an administrator or not
       schema:
         type: boolean
+    path_teaching_id:
+      name: teaching_id
+      in: path
+      description: Id of the teaching
+      schema:
+        type: string
+      required: true

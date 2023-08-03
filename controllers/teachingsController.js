@@ -33,6 +33,11 @@ module.exports.get_teachings = async (req, res) => {
 module.exports.get_teaching = async (req, res) => {
     let teaching_id = req.params.teaching_id;
     let teaching = await teachingsSchema.read(teaching_id);
+    if(!teaching){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('single teaching: resource not found');
+        return;
+    }
     let data_teachings = {
         id: teaching.id,
         italian_title: teaching.italian_title,

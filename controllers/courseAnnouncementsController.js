@@ -75,7 +75,7 @@ module.exports.publish_announcement = async (req, res) => {
     let sections = req.body.sections;
     if(publisher_id!=undefined && is_admin == 0){
         for(let i=0;i<sections.length;i++){
-            let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, block_id, sections[i]);
+            let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, block_id, sections[i].toUpperCase());
             if(teacherTeach==null){
                 res.status(400).json({status: "error", description: MSG.missing_params})
                 console.log('missing required information: teacher teach in project class');

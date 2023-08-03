@@ -123,7 +123,7 @@ module.exports = {
             values = [student_id, course_id, block_id, context_id];
             if (section != undefined) {
                 sql += ' AND section = ?';
-                values.push(section);
+                values.push(section.toUpperCase());
             }
             rows = await conn.query(sql, values);
             conn.release();

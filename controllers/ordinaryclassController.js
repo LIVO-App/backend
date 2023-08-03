@@ -79,13 +79,13 @@ module.exports.get_components = async (req, res) => {
     let study_year = req.params.study_year;
     let address = req.params.address;
     let school_year = req.query.school_year;
-    let section = req.query.section;
+    let section = req.query.section.toUpperCase();
     if(req.loggedUser.role == "teacher"){
         let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
         //console.log(teach);
         if(teach==null){
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log("ordinary_class components: missing parameters");
+            console.log("ordinary_class components: missing parameters teacher");
             return;
         }
         if(!teach){

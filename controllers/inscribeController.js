@@ -179,7 +179,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     if (section === ""){
         pen_val = true
     }
-    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section, context_id, pen_val);
+    let subscribe = await inscribe_schema.add(student_id, course_id, block_id, section.toUpperCase(), context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: subscribe');

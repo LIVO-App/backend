@@ -66,7 +66,7 @@ module.exports = {
             let values = [];
             for(let i=0;i<section.length;i++){
                 sql += ' (?,?,?,?,?,?,?,?,?,?)';
-                values.push(publisher_id, is_admin,course_id, block_id, section[i], publishment, italian_title, english_title, italian_message, english_message)
+                values.push(publisher_id, is_admin,course_id, block_id, section[i].toUpperCase(), publishment, italian_title, english_title, italian_message, english_message)
                 if(i<section.length-1){
                     sql += ',';
                 }
@@ -84,7 +84,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             let sql = 'DELETE FROM announcement WHERE publisher_id = ? AND is_admin=? AND project_class_course_id = ? AND project_class_block = ? AND section = ? AND italian_title = ? AND english_title = ? AND italian_message = ? AND english_message = ?'
-            let values = [publisher_id, is_admin, course_id, block_id, section, italian_title, english_title, italian_message, english_message] 
+            let values = [publisher_id, is_admin, course_id, block_id, section.toUpperCase(), italian_title, english_title, italian_message, english_message] 
             const rows = await pool.getConnection(sql, values);
             conn.release();
             return rows;

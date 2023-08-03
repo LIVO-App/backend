@@ -55,32 +55,36 @@ module.exports = {
             conn.release();
         }
     },
-    async add_project_teach(course_id, block_id, section='A', teachers_id, main_teachers){
+    async add_project_teach(course_id, block_id, teacher_list){
         try {
             conn = await pool.getConnection();
-            if(!course_id || !block_id || !section || main_teachers.length == 0 || teachers_id.length==0){
-                conn.release()
-                return false
-            }
-            if(main_teachers.length!=teachers_id.length){
+            if(!course_id || !block_id || teacher_list.length == 0){
                 conn.release()
                 return false
             }
             let sql = 'INSERT INTO project_teach (teacher_id, project_class_course_id, project_class_block, section, main) VALUES ';
             let values = []
             let teacher_insert = []
-            for(let i=0;i<teachers_id.length;i++){
+            for(let i=0;i<teacher_list.length;i++){
                 let finded_teacher;
-                for(let j=0;j<teacher_insert.length;j++){
-                    if(teacher_insert[j]==teachers_id[i]){
+                let teacher_id = teacher_list[i]["teacher_id"]
+                let main_teacher = teacher_list[i]["main"]
+                let sections = teacher_list[i]["sections"]
+                for(let j=0;j<teacher_list.length;j++){
+                    if(teacher_insert[j]==teacher_id){
                         finded_teacher = true
                     }
                 }
                 if(!finded_teacher){
-                    sql += ' (?,?,?,?,?)';
-                    values.push(teachers_id[i], course_id, block_id, section, main_teachers[i])
-                    teacher_insert.push(teachers_id[i])
-                    if(i<teachers_id.length-1){
+                    for(let j=0;j<sections.length;j++){
+                        sql += ' (?,?,?,?,?)';
+                        values.push(teacher_id, course_id, block_id, sections[j], main_teacher)
+                        if(j<sections.length-1){
+                            sql+=','
+                        }
+                    }
+                    teacher_insert.push(teacher_id)
+                    if(i<teacher_list.length-1){
                         sql += ',';
                     }
                 }

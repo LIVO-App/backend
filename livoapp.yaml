@@ -1587,6 +1587,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_admin_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_block_id'
       summary: Publication of announcements
@@ -3262,3 +3263,9 @@ components:
       description: Specifies if the learning block is used to get the school year or it is simply used
       schema:
         type: boolean
+    query_admin_id:
+      name: admin_id
+      in: query
+      description: Specifies the id of the admin
+      schema:
+        type: integer

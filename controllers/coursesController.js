@@ -579,7 +579,7 @@ module.exports.add_proposition = async (req, res) => {
             return
         }
     }
-    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, section, teacher_list);
+    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, teacher_list);
     if(!teachers_ins){
         if(!course_exist){
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})

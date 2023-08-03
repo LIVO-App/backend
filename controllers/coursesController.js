@@ -518,7 +518,7 @@ module.exports.add_proposition = async (req, res) => {
     if(teacher_list!=undefined){
         for(let i=0;i<teacher_list.length;i++){
             let t_id = teacher_list[i]["teacher_id"]
-            let sections = teacher_list[i]["sections"]
+            let sections = teacher_list[i]["sections"].toUpperCase()
             teacher_exists = await teacherSchema.read_id(t_id)
             if(!teacher_exists){
                 console.log(`Teacher with id ${t_id} does not exists. Removing it from the list of associated teachers`)
@@ -565,7 +565,7 @@ module.exports.add_proposition = async (req, res) => {
         for(let i=0;i<teacher_list.length;i++){
             let t_id = teacher_list[i]["teacher_id"]
             let main_teacher = teacher_list[i]["main"]
-            let sections = teacher_list[i]["sections"]
+            let sections = teacher_list[i]["sections"].toUpperCase()
             for(let j=0;j<sections.length;i++){
                 teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j], t_id, main_teacher);
                 if(!teacher_present){

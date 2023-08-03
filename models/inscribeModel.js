@@ -97,11 +97,20 @@ module.exports = {
             sql = 'SELECT section,COUNT(*) AS students FROM inscribed WHERE project_class_course_id = ? AND project_class_block = ? GROUP BY section ORDER BY section;'
             values.push(block_id);
             rows = await conn.query(sql, values);
-            conn.release();
             for (const section of rows) {
                 if (Number(section.students) < max_students) {
                     return section.section;
                 }
+            }
+            num_section_already_on = rows.length;
+            sql = 'SELECT num_section FROM project_class WHERE course_id = ? AND learning_block_id = ?'
+            rows = await conn.query(sql, values)
+            conn.release();
+            if(rows[0].num_section > num_section_already_on){
+                // If we have that a class can have at most 3 sections (num_section) and has currently active 2 sections (num_section_already_on)
+                // that are both full (otherwise we have had return before), we return the section with character 65 + num_section_already_on
+                // = 65 + 2 => 67 => 'C'
+                return String.fromCharCode(65+num_section_already_on)
             }
             return "";
         } catch (err) {

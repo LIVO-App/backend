@@ -2871,7 +2871,7 @@ components:
           type: integer
           description: Course Id
         context_id:
-          type: integer
+          type: string
           description: context Id of the course the student can follow
     teacher_active_year_data:
       type: object
@@ -3021,6 +3021,7 @@ components:
         - access_object
         - teaching_list
         - class_group
+        - num_section
         - teacher_list
       properties:
         course_id:
@@ -3090,6 +3091,9 @@ components:
         class_group:
           type: integer
           description: "Group of the project class proposed"
+        num_section:
+          type: integer
+          description: "Max number of section expected for the project class proposed"
         teacher_list:
           type: array
           items:
@@ -3406,7 +3410,7 @@ components:
       in: query
       description: Id of the learning context
       schema:
-        type: integer
+        type: string
     query_recent_models:
       name: recent_models
       in: query

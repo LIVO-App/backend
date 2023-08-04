@@ -338,6 +338,7 @@ module.exports.add_proposition = async (req, res) => {
     let ita_class_name = req.body.ita_class_name;
     let eng_class_name = req.body.eng_class_name;
     let class_group = req.body.class_group;
+    let num_section = req.body.num_section;
     // Add teachers of the course into project_teach
     let teacher_list = req.body.teacher_list;
     let new_course_id = course_id == undefined ? true : false
@@ -575,7 +576,7 @@ module.exports.add_proposition = async (req, res) => {
             
         }
     }
-    let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, teacher_id);
+    let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})

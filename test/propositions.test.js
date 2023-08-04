@@ -153,6 +153,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
+            num_section: 2,
             teacher_list: []
         }
         valid_proposal = {
@@ -179,6 +180,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
+            num_section: 2,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         valid_proposal2 = {
@@ -205,6 +207,7 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"],
             block_id: 7,
             class_group: 1,
+            num_section: 2,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         test('POST /api/v1/propositions without token should respond with status 401', async () => {

@@ -36,7 +36,7 @@ module.exports = {
     async list(school_year, year_of, future_block = false){
         try {
             conn = await pool.getConnection();
-            let sql = "SELECT id, number, school_year, start, end FROM learning_block";
+            let sql = "SELECT id, number, school_year, start, end, num_groups FROM learning_block";
             let values = [];
             if (school_year != undefined) {
                 sql += " WHERE school_year = ?";

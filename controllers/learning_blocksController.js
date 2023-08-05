@@ -23,7 +23,8 @@ module.exports.get_blocks = async (req, res) => {
             number: block.number,
             school_year: block.school_year,
             start: block.start,
-            end: block.end
+            end: block.end,
+            num_groups: block.num_groups
         };
     });
     let response = {

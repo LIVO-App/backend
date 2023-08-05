@@ -2134,6 +2134,9 @@ components:
           type: string
           format: date
           description: "Ending date of the learning block"
+        num_groups:
+          type: integer
+          description: "Max number of group for a certain learning block"
     learning_area_data:
       type: object
       properties:

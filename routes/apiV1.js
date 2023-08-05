@@ -16,6 +16,7 @@ const learningContextRouter = require('./apiV1/learning_context');
 const propositionsRouter = require('./apiV1/propositions');
 const growthAreaRouter = require('./apiV1/growth_area');
 const teachingRouter = require('./apiV1/teaching');
+const constraintRouter = require('./apiV1/constraints')
 
 apiV1.use('/auth', authRouter);
 apiV1.use('/learning_blocks', blocksRouter);
@@ -29,6 +30,7 @@ apiV1.use('/announcements', announcementRouter);
 apiV1.use('/learning_contexts', learningContextRouter);
 apiV1.use('/propositions', propositionsRouter);
 apiV1.use('/growth_areas', growthAreaRouter);
-apiV1.use('/teachings', teachingRouter)
+apiV1.use('/teachings', teachingRouter);
+apiV1.use('/constraints', constraintRouter);
 
 module.exports = apiV1;

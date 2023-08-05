@@ -26,10 +26,6 @@ module.exports = {
     async get_constraints(block_id, year_of = false, context_id, area_id, study_year, study_address){
         try {
             conn = await pool.getConnection()
-            if(!block_id || !context_id || !area_id || !study_address || !study_year){
-                conn.release()
-                return false
-            }
             let sql = 'SELECT l.id, l.learning_block_id, l.ordinary_class_study_year, l.ordinary_class_address, l.ordinary_class_school_year, l.learning_area_id, l.learning_context_id, l.credits FROM limited AS l'
             let values = []
             if(block_id!=undefined || context_id!=undefined || area_id!=undefined || study_year!=undefined || study_address!=undefined){
@@ -73,7 +69,11 @@ module.exports = {
             }
             const rows = await conn.query(sql, values)
             conn.release()
-            return rows
+            if(rows.length > 0){
+                return rows
+            } else {
+                return false
+            }
         } catch (err) {
             console.log(err)
         } finally {

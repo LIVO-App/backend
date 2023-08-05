@@ -13,7 +13,7 @@ tags:
     description: Refers to the version 2 of that api
   - name: learning blocks
     description: Everything about learning blocks
-  - name: learning area
+  - name: learning areas
     description: Everything about learning areas
   - name: courses
     description: Everything about courses
@@ -35,6 +35,8 @@ tags:
     description: Course propositions methods
   - name: teachings
     description: Teachings methods
+  - name: constraints
+    description: Credit constraints methods
 paths:
   /v1/learning_blocks:
     get:
@@ -1466,7 +1468,7 @@ paths:
         - $ref: '#/components/parameters/query_block_id'
       summary: Get project classes of a student in a learning block
       tags:
-        - student
+        - students
         - v1
       responses:
         '200':
@@ -1704,12 +1706,13 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/CourseInsertion'
-  /v1/proposals/approval:
+  /v1/propositions/approval:
     put:
       description: Confirmation of course proposals
       summary: Course confirmation
       tags:
         - courses
+        - propositions
         - v1
       parameters:
         - $ref: '#/components/parameters/header_token'
@@ -1882,7 +1885,7 @@ paths:
         - $ref: '#/components/parameters/path_teaching_id'
       summary: View of a single teaching
       tags:
-        - teaching
+        - teachings
         - v1
       responses:
         '200':
@@ -1945,6 +1948,46 @@ paths:
                     items:
                       $ref: '#/components/schemas/teacher_data'
                     description: "Data return from the api"
+  /v1/constraints:
+    get:
+      description: Get all the constraints in the system
+      parameters:
+        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_year_of_constr'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
+        - $ref: '#/components/parameters/query_study_year'
+        - $ref: '#/components/parameters/query_study_address'
+      summary: View of all the constraints
+      tags:
+        - constraints
+        - v1
+      responses:
+        '200':
+          description: "Collection of constraints"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/constraints_data'
+                    description: "Data return from the api"      
 components:
   responses:
     NotFound:
@@ -2193,7 +2236,7 @@ components:
           properties:
             id:
               type: integer
-              description: "Id of the learning area associated to the course"
+              description: "Id of the learning area associated to the reference"
     course_data_short:
       type: object
       properties:
@@ -2559,7 +2602,7 @@ components:
           properties:
             id:
               type: integer
-              description: "Id of the learning context"
+              description: "Id of the learning context associated to the reference"
     learning_context_data:
       type: object
       properties:
@@ -3195,6 +3238,48 @@ components:
         email:
           type: string
           description: "Email of the teacher"
+    learning_block_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Id of the learning block associated to the reference"
+    constraints_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "Id of the constraint"
+        learning_block_ref:
+          $ref: '#/components/schemas/learning_block_ref'
+          description: "Refers to the learning block"
+        ordinary_class_ref:
+          $ref: '#/components/schemas/ordinary_class_ref'
+          description: "Refers to the ordinary class"
+        ordinary_class_school_year:
+          type: integer
+          description: "First year of a school year that represents it e.g. school year 2022/2023 -> school_year = 2022"
+        learning_context_ref:
+          $ref: '#/components/schemas/learining_context_ref'
+          description: "Refers to the learning context"
+        learning_area_ref:
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Refers to the learning area"
+        credits:
+          type: integer
+          description: "Number of credits for a specific constraint"
   parameters:
     query_school_year:
       name: school_year
@@ -3463,3 +3548,21 @@ components:
       description: Specifies if the blocks we want to see are only the future ones (no past, current and imminent blocks)
       schema:
         type: boolean
+    query_year_of_constr:
+      name: year_of
+      in: query
+      description: Specifies if it should consider simply the learning block id or search for the learning blocks with the same school year as the one passed
+      schema:
+        type: boolean
+    query_study_year:
+      name: study_year
+      in: query
+      description: Study year of the class we want to filter
+      schema:
+        type: integer
+    query_study_address:
+      name: study_address
+      in: query
+      description: Study address of the class we want to filter
+      schema:
+        type: string

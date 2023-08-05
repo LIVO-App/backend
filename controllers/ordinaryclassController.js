@@ -79,7 +79,7 @@ module.exports.get_components = async (req, res) => {
     let study_year = req.params.study_year;
     let address = req.params.address;
     let school_year = req.query.school_year;
-    let section = req.query.section.toUpperCase();
+    let section = req.query.section!=undefined ? req.query.section.toUpperCase() : undefined;
     if(req.loggedUser.role == "teacher"){
         let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
         //console.log(teach);

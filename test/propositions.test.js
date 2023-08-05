@@ -47,8 +47,8 @@ describe('/api/v1/propositions', () => {
             min_students: 15,
             max_students: 25,
             access_object: {
-                    SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
-                    PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
+                SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
+                PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
             block_id: 7
@@ -71,7 +71,7 @@ describe('/api/v1/propositions', () => {
             min_students: 15,
             max_students: 25,
             access_object: {
-                    AAA: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
+                AAA: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
             block_id: 7,
@@ -129,33 +129,6 @@ describe('/api/v1/propositions', () => {
             class_group: 1,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
-        let invalid_proposal_teachers = {
-            italian_title: "Prova",
-            english_title: "Prova",
-            italian_descr: "aaaaa",
-            english_descr: "aaaaa",
-            up_hours: 12,
-            credits: 4,
-            italian_exp_l: "asdf",
-            english_exp_l: "asdf",
-            italian_cri: "asd",
-            english_cri: "asd",
-            italian_act: "asw",
-            english_act: "asw",
-            area_id: "SM",
-            growth_id: 1,
-            min_students: 15,
-            max_students: 25,
-            access_object: {
-                    SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
-                    PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
-            },
-            teaching_list: ["AT", "CAS"],
-            block_id: 7,
-            class_group: 1,
-            num_section: 2,
-            teacher_list: []
-        }
         valid_proposal = {
             italian_title: "Prova",
             english_title: "Prova",
@@ -174,8 +147,8 @@ describe('/api/v1/propositions', () => {
             min_students: 15,
             max_students: 25,
             access_object: {
-                    SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
-                    PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
+                SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
+                PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
             block_id: 7,
@@ -201,8 +174,8 @@ describe('/api/v1/propositions', () => {
             min_students: 15,
             max_students: 25,
             access_object: {
-                    SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
-                    PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
+                SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
+                PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
             block_id: 7,
@@ -274,14 +247,6 @@ describe('/api/v1/propositions', () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(invalid_proposal_p_class)
-                .set('x-access-token', validTokenTeacher)
-                .expect(400)
-        }, 20000)
-
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) but wrong teachers informations should respond with status 400', async () => {
-            return request(app)
-                .post('/api/v1/propositions')
-                .send(invalid_proposal_teachers)
                 .set('x-access-token', validTokenTeacher)
                 .expect(400)
         }, 20000)

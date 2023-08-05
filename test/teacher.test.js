@@ -10,9 +10,23 @@ describe('/api/v1/teachers', () => {
     
     describe('GET methods', () => {
         describe('GET /api/v1/teachers', () => {
+            test('GET /api/v1/teachers without token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/teachers')
+                    .expect(401)
+            })
+
+            test('GET /api/v1/teachers with invalid token should respond with status 401', async () => {
+                return request(app)
+                    .get('/api/v1/teachers')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
             test('GET /api/v1/teachers should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/teachers')
+                    .set('x-access-token', validToken)
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(1)

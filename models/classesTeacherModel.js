@@ -70,7 +70,7 @@ module.exports = {
                 let teacher_id = teacher_list[i]["teacher_id"]
                 let main_teacher = teacher_list[i]["main"]
                 let sections = teacher_list[i]["sections"]
-                for(let j=0;j<teacher_list.length;j++){
+                for(let j=0;j<teacher_insert.length;j++){
                     if(teacher_insert[j]==teacher_id){
                         finded_teacher = true
                     }

@@ -153,7 +153,7 @@ module.exports = {
             }
             ita_name = ita_name == undefined ? null : ita_name
             eng_name = eng_name == undefined ? null : eng_name
-            let sql = 'INSERT INTO project_class (course_id, learning_block_id, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?)'
+            let sql = 'INSERT INTO project_class (course_id, learning_block_id, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?,?)'
             let values = [course_id, block_id, ita_name, eng_name, group, num_section, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()

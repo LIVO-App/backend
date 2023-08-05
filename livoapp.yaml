@@ -1988,6 +1988,14 @@ paths:
                     items:
                       $ref: '#/components/schemas/constraints_data'
                     description: "Data return from the api"      
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:

@@ -68,17 +68,15 @@ module.exports = {
                     }
                     values.push(study_year, study_address, block_id)
                 } else {
-                    conn.release()
-                    return null
+                    if(study_address==undefined ^ study_year == undefined){
+                        conn.release()
+                        return false
+                    }
                 }
             }
             const rows = await conn.query(sql, values)
             conn.release()
-            if(rows.length > 0){
-                return rows
-            } else {
-                return false
-            }
+            return rows
         } catch (err) {
             console.log(err)
         } finally {

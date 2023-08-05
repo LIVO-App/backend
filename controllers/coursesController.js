@@ -519,7 +519,7 @@ module.exports.add_proposition = async (req, res) => {
     if(teacher_list!=undefined){
         for(let i=0;i<teacher_list.length;i++){
             let t_id = teacher_list[i]["teacher_id"]
-            let sections = teacher_list[i]["sections"].toUpperCase()
+            let sections = teacher_list[i]["sections"]
             teacher_exists = await teacherSchema.read_id(t_id)
             if(!teacher_exists){
                 console.log(`Teacher with id ${t_id} does not exists. Removing it from the list of associated teachers`)
@@ -527,9 +527,8 @@ module.exports.add_proposition = async (req, res) => {
                 teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
                 i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
             } else {
-                
                 for(let j=0;j<sections.length;j++){
-                    if(sections[j]>String.fromCharCode(65+possible_sections)){
+                    if(sections[j].toUpperCase()>String.fromCharCode(65+possible_sections)){
                         console.log(`Requested add new class for teacher ${t_id} with section ${sections[j]}, but it is not available. Removing it from the list of the sections of the teachers`)
                         sections.splice(j,1)
                         j = j-1
@@ -545,10 +544,12 @@ module.exports.add_proposition = async (req, res) => {
             
         }
     } else {
-        teacher_list = []
-        for(let i=0; i<possible_sections;i++){
-            teacher_list.push({teacher_id: teacher_id, main: 1, section: String.fromCharCode(65+i)})
+        teacher_list = [];
+        let sections = [];
+        for(let i=0; i<num_section;i++){
+            sections.push(String.fromCharCode(65+i))
         }
+        teacher_list.push({teacher_id: teacher_id, main: 1, sections: sections})
     }
     let myself = false
     for(let i=0; i<teacher_list.length && !myself;i++){
@@ -557,18 +558,20 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     if(!myself){
-        for(let i=0; i<possible_sections;i++){
-            teacher_list.push({teacher_id: teacher_id, main: 1, section: String.fromCharCode(65+i)})
+        let sections = [];
+        for(let i=0; i<num_section;i++){
+            sections.push(String.fromCharCode(65+i))
         }
+        teacher_list.push({teacher_id: teacher_id, main: 1, sections: sections})
     }
     let teacher_present, new_teacher
     if(proj_class_exists){
         for(let i=0;i<teacher_list.length;i++){
             let t_id = teacher_list[i]["teacher_id"]
             let main_teacher = teacher_list[i]["main"]
-            let sections = teacher_list[i]["sections"].toUpperCase()
+            let sections = teacher_list[i]["sections"]
             for(let j=0;j<sections.length;i++){
-                teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j], t_id, main_teacher);
+                teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j].toUpperCase(), t_id, main_teacher);
                 if(!teacher_present){
                     new_teacher = true
                 }

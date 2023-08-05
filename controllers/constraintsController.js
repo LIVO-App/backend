@@ -32,6 +32,11 @@ module.exports.get_constraints = async (req, res) => {
     let study_year = req.query.study_year;
     let study_address = req.query.study_address;
     let constraints = await constraintSchema.get_constraints(block_id,year_of,context_id, area_id, study_year, study_address);
+    if(constraints == null){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('get constraints: missing parameters');
+        return;
+    }
     if (!constraints) {
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('get constraints: resource not found');

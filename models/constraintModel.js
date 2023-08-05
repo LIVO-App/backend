@@ -50,13 +50,15 @@ module.exports = {
                     values.push(context_id)
                 }
                 if(area_id!=undefined){
-                    if(sql.slice(-5) == "WHERE"){
-                        sql += ' l.learning_area_id '
-                    } else {
-                        sql += ' AND l.learning_area_id '
+                    if(context_id=="SPE"){
+                        if(sql.slice(-5) == "WHERE"){
+                            sql += ' l.learning_area_id '
+                        } else {
+                            sql += ' AND l.learning_area_id '
+                        }
+                        sql += ' = ?'
+                        values.push(area_id)
                     }
-                    sql += ' = ?'
-                    values.push(area_id)
                 }
                 if(study_address!=undefined && study_year != undefined){
                     if(sql.slice(-5) == "WHERE"){
@@ -65,6 +67,9 @@ module.exports = {
                         sql += ' AND l.ordinary_class_study_year = ? AND l.ordinary_class_address = ? AND l.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)'
                     }
                     values.push(study_year, study_address, block_id)
+                } else {
+                    conn.release()
+                    return null
                 }
             }
             const rows = await conn.query(sql, values)

@@ -82,5 +82,88 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async add_block_constraints(study_year, study_address, constraints_object){
+        try {
+            conn = await pool.getConnection();
+            if(Object.keys(constraints_object).length==0 || constraints_object == undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO `limited` (learning_block_id, ordinary_class_study_year, ordinary_class_address, ordinary_class_school_year, learning_area_id, learning_context_id, credits) VALUES ';
+            let values = []
+            let rows;
+            let context_id, area_id, credits;
+            for (let block_id in constraints_object){
+                if(constraints_object[block_id].length==0){
+                    conn.release()
+                    return false
+                }
+                constraints_per_block = []
+                for(let index=0; index<constraints_object[block_id].length; index++){
+                    if(Object.keys(constraints_object[block_id][index]).length==0){
+                        conn.release()
+                        return false
+                    }
+                    if(constraints_object[block_id][index].context_id == undefined || constraints_object[block_id][index].area_id == undefined || constraints_object[block_id][index].credits == undefined){
+                        conn.release()
+                        return false
+                    }
+                    context_id = constraints_object[block_id][index].context_id
+                    area_id = constraints_object[block_id][index].area_id
+                    credits = constraints_object[block_id][index].credits
+                    let sql1 = 'SELECT school_year FROM learning_block WHERE id = ?'
+                    rows = await conn.query(sql1, block_id)
+                    school_year = rows[0].school_year;
+                    classes = constraints_object[block_id][index].classes;
+                    let finded_year, finded_address, finded_context, finded_area;
+                    for(let j=0; j<classes.length;j++){
+                        study_year = classes[j].study_year
+                        study_address = classes[j].study_address
+                        for(let k=0; k<constraints_per_block;k+4){
+                            if(constraints_per_block[k]==context_id){
+                                finded_context = true
+                            }
+                            if(constraints_per_block[k+1]==study_year){
+                                finded_year = true
+                            }
+                            if(constraints_per_block[k+2]==study_address){
+                                finded_address = true
+                            }
+                            if(constraints_per_block[k+3]==area_id){
+                                finded_area
+                            }
+                            if(!finded_year || !finded_address || !finded_context || !finded_area){
+                                finded_year = false
+                                finded_address = false
+                                finded_context = false
+                                finded_area = false
+                            }
+                        }
+                        if(!finded_year && !finded_address && !finded_context && !finded_area){
+                            sql += ' (?,?,?,?,?,?,?)'
+                            values.push(block_id, study_year, study_address, school_year, area_id, context_id, credits)
+                            constraints_per_block.push(context_id, study_year, study_address, area_id)
+                            if(j<classes.length-1){
+                                sql += ',';
+                            }
+                        }
+                    }
+                    if(index<constraints_object[block_id].length-1){
+                        sql += ',';
+                    }
+                }
+            }
+            if(sql[sql.length-1]==','){
+                sql = sql.slice(0,-1);
+            }
+            rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

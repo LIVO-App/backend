@@ -1,5 +1,4 @@
 const pool = require('../utils/db.js');
-const { retrieve_annual_credits } = require('./studentModel.js');
 
 module.exports = {
     async get_annual_constraints(student_id, school_year){
@@ -9,7 +8,7 @@ module.exports = {
                 conn.release()
                 return false
             }
-            sql = "SELECT cst.learning_area_id, cst.learning_context_id FROM constraints AS cst JOIN attend AS att ON att.ordinary_class_study_year = cst.annual_credits_study_year AND att.ordinary_class_address = cst.annual_credits_address AND att.ordinary_class_school_year = cst.annual_credits_definition_year WHERE att.student_id = ? AND att.ordinary_class_school_year = ?;";
+            sql = "SELECT DISTINCT l.learning_area_id, l.learning_context_id FROM limited AS l JOIN attend AS att ON att.ordinary_class_study_year = l.ordinary_class_study_year AND att.ordinary_class_address = l.ordinary_class_address AND att.ordinary_class_school_year = l.ordinary_class_school_year WHERE att.student_id = ? AND att.ordinary_class_school_year = ?;";
             let values = [student_id, school_year]
             const rows = await conn.query(sql,values);
             conn.release();
@@ -208,7 +207,7 @@ module.exports = {
         } finally {
             conn.release()
         }
-    },
+    }/*,
     async is_annual_constraint_present(context_id, study_year, study_address, area_id, school_year){
         try{
             conn = await pool.getConnection()
@@ -290,5 +289,5 @@ module.exports = {
         } finally {
             conn.release()
         }
-    }
+    }*/
 }

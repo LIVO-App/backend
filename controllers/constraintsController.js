@@ -216,7 +216,7 @@ module.exports.insert_constraints = async (req, res) => {
             }
         }
     }
-    let num_block_constraints_inserted = 0
+    let num_constraints_inserted = 0
     let constraints_insert = await constraintSchema.add_block_constraints(constraints_object);
     if(!constraints_insert){
         if(new_constraints){
@@ -229,8 +229,8 @@ module.exports.insert_constraints = async (req, res) => {
             return;
         }
     }
-    num_block_constraints_inserted = constraints_insert.affectedRows;
-    let years_to_check = []
+    num_constraints_inserted = constraints_insert.affectedRows;
+    /*let years_to_check = []
     let num_updated, num_annual_constraints_inserted = 0
     // Get sum of all constraints for each year of the block_id and insert this sum in the constraints table.
     // If already present do an update. Else simply insert it
@@ -277,7 +277,7 @@ module.exports.insert_constraints = async (req, res) => {
                 years_to_check.push(year_of)
             }
         }
-    }
+    }*/
     res.status(201).json({
         status: "accepted",
         description: "Constraints inserted", 
@@ -286,9 +286,9 @@ module.exports.insert_constraints = async (req, res) => {
         wrong_class: wrong_class,
         wrong_context: wrong_context,
         constraint_present: constraint_present,
-        num_block_constraints_inserted: num_block_constraints_inserted,
-        num_annual_constraints_inserted: num_annual_constraints_inserted,
-        num_updated: num_updated
+        num_constraints_inserted: num_constraints_inserted
+        /*num_annual_constraints_inserted: num_annual_constraints_inserted,
+        num_updated: num_updated*/
     });
 
 }

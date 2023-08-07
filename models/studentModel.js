@@ -162,13 +162,13 @@ module.exports = {
                     sql += ` AND c.learning_area_id = ? AND ins.learning_context_id = ?`;
                     values.push(area_id[i], context_id[i])
                 }
-                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT cst.credits FROM \`constraints\` AS cst WHERE cst.annual_credits_definition_year = ? AND cst.annual_credits_study_year = att.ordinary_class_study_year AND cst.annual_credits_address = att.ordinary_class_address `
+                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT SUM(l.credits) AS total_credits FROM limited AS l WHERE l.ordinary_class_school_year = ? AND l.ordinary_class_study_year = att.ordinary_class_study_year AND l.ordinary_class_address = att.ordinary_class_address `
                 values.push(school_year)
                 if(context_id[i]=='PER'){
-                    sql += ` AND cst.learning_area_id IS NULL AND cst.learning_context_id = ?`;
+                    sql += ` AND l.learning_area_id IS NULL AND l.learning_context_id = ?`;
                     values.push(context_id[i])
                 } else {
-                    sql += ` AND cst.learning_area_id = ? AND cst.learning_context_id = ?`;
+                    sql += ` AND l.learning_area_id = ? AND l.learning_context_id = ?`;
                     values.push(area_id[i], context_id[i])
                 }
                 sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?`

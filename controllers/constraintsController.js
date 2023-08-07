@@ -151,6 +151,7 @@ module.exports.insert_constraints = async (req, res) => {
         return;
     }
     let constraints_object = req.body.constraints_object;
+    let new_constraints = false
     let block_exists, context_exists, area_exists, class_exist, study_year, study_address, context_id, area_id, credits;
     let wrong_block, wrong_context, wrong_area, wrong_class, constraint_present = undefined;
     if(constraints_object!=undefined){
@@ -202,6 +203,8 @@ module.exports.insert_constraints = async (req, res) => {
                             constraint_present = true
                             classes.splice(j, 1);
                             j = j-1;
+                        } else {
+                            new_constraints = true
                         }
                     }
                 }
@@ -213,14 +216,22 @@ module.exports.insert_constraints = async (req, res) => {
             }
         }
     }
+    let num_block_constraints_inserted = 0
     let constraints_insert = await constraintSchema.add_block_constraints(constraints_object);
     if(!constraints_insert){
-        res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
-        console.log('duplicated information: new block constraints addition');
-        return;
+        if(new_constraints){
+            res.status(400).json({status: "error", description: MSG.missingParameters, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
+            console.log('missing required information: new block constraints addition');
+            return;
+        } else {
+            res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
+            console.log('duplicated information: new block constraints addition');
+            return;
+        }
     }
+    num_block_constraints_inserted = constraints_insert.affectedRows;
     let years_to_check = []
-    let num_updated, num_inserted = 0
+    let num_updated, num_annual_constraints_inserted = 0
     // Get sum of all constraints for each year of the block_id and insert this sum in the constraints table.
     // If already present do an update. Else simply insert it
     if(constraints_object!=undefined){
@@ -260,7 +271,7 @@ module.exports.insert_constraints = async (req, res) => {
                             let annual_credits_definition_insert = await constraintSchema.annual_credits_definition(cl_study_year, cl_study_address, cl_school_year)
                         }
                         let insert_constraints = await constraintSchema.insert_annual_constraint(cl_study_year, cl_study_address, cl_school_year, learning_area_id, learning_context_id, total_credits)
-                        num_inserted = num_inserted + 1
+                        num_annual_constraints_inserted = num_annual_constraints_inserted + 1
                     }
                 }
                 years_to_check.push(year_of)
@@ -275,7 +286,8 @@ module.exports.insert_constraints = async (req, res) => {
         wrong_class: wrong_class,
         wrong_context: wrong_context,
         constraint_present: constraint_present,
-        num_inserted: num_inserted,
+        num_block_constraints_inserted: num_block_constraints_inserted,
+        num_annual_constraints_inserted: num_annual_constraints_inserted,
         num_updated: num_updated
     });
 

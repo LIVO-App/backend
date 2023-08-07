@@ -19,6 +19,7 @@ let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
     missing_params: "Bad input. Missing required information",
+    already_confirmed: "There are project classes for this course that are already confirmed. Deletion abort",
     itemAlreadyExists: "The student is already inscribe to this project class",
     pastBlock: "Block already expired or imminent",
     notAuthorized: "Not authorized request"
@@ -686,6 +687,52 @@ module.exports.approve_proposals = async (req, res) => {
         return
     }
     res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
+}
+
+module.exports.delete_course = async (req, res) => {
+    if(req.loggedUser.role==="admin"){
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course proposition approval: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course proposition approval: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course_id;
+    let course_exist = await courseSchema.read(course_id, true);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('course deletion: course does not exists');
+        return;
+    }
+    let blocks = await projectclassSchema.get_blocks(course_id)
+    if(!blocks){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('course deletion: course does not exists');
+        return;
+    }
+    let project_class_confirmed;
+    for(let i in blocks){
+        project_class_confirmed = await projectclassSchema.class_confirmed_exists(course_id, blocks[i].learning_block_id)
+        if(project_class_confirmed){
+            res.status(400).json({status: "error", description: MSG.already_confirmed});
+            console.log('course deletion: project classes already confirmed');
+            return;
+        }
+    }
+    for(let i in blocks){
+        await teacherClassSchema.delete(course_id, blocks[i].learning_block_id)
+        await projectclassSchema.delete(course_id, blocks[i].learning_block_id)
+    }
+    await opentoSchema.delete(course_id)
+    await teachingCourseSchema.delete(course_id)
+    await courseSchema.deleteProposal(course_id)
+    res.status(200).json({status: "deleted", description: "Course deleted successfully"});
 }
 
 /*courseSchema.list(1, undefined, 7)

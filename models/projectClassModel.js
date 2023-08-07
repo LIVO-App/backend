@@ -217,5 +217,49 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async class_confirmed_exists(course_id, block_id){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || !block_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_block_id = ? AND pc.admin_confirmation IS NOT NULL'
+            let values = [course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length>0){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async get_blocks(course_id){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT pc.learning_block_id FROM project_class AS pc WHERE pc.course_id = ?'
+            let values = [course_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length>0){
+                return rows
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

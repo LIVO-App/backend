@@ -20,9 +20,9 @@ module.exports = {
         try {
             conn = await pool.getConnection();
             let sql = `SELECT oc.study_year_id, oc.study_address_id, oc.school_year, oc.italian_displayed_name, oc.english_displayed_name`;
-            if(credits){
+            /*if(credits){
                 sql += `, oc.annual_credits_study_year, oc.annual_credits_address, oc.annual_credits_definition_year `
-            }
+            }*/
             sql += ` FROM ordinary_class as oc `
             if(student_id != undefined && school_year != undefined){
                 sql += `JOIN attend as att ON att.ordinary_class_study_year = oc.study_year_id AND att.ordinary_class_address = oc.study_address_id AND att.ordinary_class_school_year = oc.school_year WHERE att.student_id = ${student_id} AND oc.school_year = ${school_year}`;

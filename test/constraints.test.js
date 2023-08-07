@@ -8,6 +8,7 @@ describe('/api/v1/constraints', () => {
     let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
     let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
     let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+    let ids_to_delete = []
     describe('POST methods tests', () => {
         describe('POST /api/v1/constraints', () => {
             let invalid_const = {constraints_object: {}}
@@ -28,7 +29,7 @@ describe('/api/v1/constraints', () => {
                     6: [{context_id: "SPE", area_id: "SGET", credits: 4, classes: [{study_year: 1, study_address: "BIO"}, {study_year: 2, study_address: "BIO"}]}]
                 }
             }
-            let ids_to_delete = []
+            
             test('POST /api/v1/constraints without token should respond with status 401', async () => {
                 return request(app)
                     .post('/api/v1/constraints')
@@ -89,7 +90,7 @@ describe('/api/v1/constraints', () => {
                     .expect(201)
                     .then((response) =>{
                         let id = parseInt(response.body.starting_id)
-                        for(let i=0;i<response.body.num_constraints_inserted;i++){
+                        for(let i=0;i<parseInt(response.body.num_constraints_inserted);i++){
                             ids_to_delete.push(id+i)
                         }
                     })
@@ -107,7 +108,7 @@ describe('/api/v1/constraints', () => {
             })
 
             afterAll(async ()=> {
-                for(let i=0;i<ids_to_delete;i++){
+                for(let i=0;i<ids_to_delete.length;i++){
                     await constraintModel.delete_constraint(ids_to_delete[i])
                 }
             })

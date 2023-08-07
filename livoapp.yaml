@@ -426,7 +426,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_school_year'
-        - $ref: '#/components/parameters/query_credits'
+        #- $ref: '#/components/parameters/query_credits'
         - $ref: '#/components/parameters/query_descending'
       summary: Collection of ordinary classes
       tags:
@@ -1682,6 +1682,7 @@ paths:
       summary: Insertion of course proposals
       tags:
         - courses
+        - propositions
         - v1
       parameters:
         - $ref: '#/components/parameters/header_token'
@@ -1996,6 +1997,32 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      description: Insertion of credit constraints for some blocks
+      summary: Insertion of credit constraints
+      tags:
+        - constraints
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        description: Object to be inserted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/constraints_object'
+      responses:
+        '201':
+          $ref: '#/components/responses/ConstraintsInsertion'
+        '400':
+          $ref: '#/components/responses/ConstraintsInsertion'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/ConstraintsInsertion'
 components:
   responses:
     NotFound:
@@ -2129,7 +2156,7 @@ components:
               description:
                 type: string
     CourseInsertion:
-      description: Missing parameters in course proposal Insertion
+      description: Course proposal insertion response
       content:
         application/json:
           schema:
@@ -2164,6 +2191,38 @@ components:
               new_teacher:
                 type: boolean
                 description: "If result of insertion is a duplicate, tells if there are new teachers the user tried to insert"
+    ConstraintsInsertion:
+      description: Constraint insertion response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              wrong_block:
+                type: boolean
+                description: "Tells if there is a block that is not valid or not existing"
+              wrong_area:
+                type: boolean
+                description: "Tells if there is an area that is not valid or not existing"
+              wrong_class:
+                type: boolean
+                description: "Tells if some values of the ordinary classes tried to insert were non valid and consequently not inserted"
+              wrong_context: 
+                type: boolean
+                description: "Tells if some values of the contexts tried to insert were non valid and consequently not inserted"
+              constraint_present:
+                type: boolean
+                description: "Tells if some constraints were already presents and consequently not inserted"
+              starting_id:
+                type: string
+                description: "First id of the constraints that were inserted"
+              num_constraints_inserted:
+                type: integer
+                description: "Tells how many constraints were inserted in the database"
   schemas:
     learning_block_data:
       type: object
@@ -3291,6 +3350,40 @@ components:
         credits:
           type: integer
           description: "Number of credits for a specific constraint"
+    constraints_object:
+      type: object
+      properties:
+        additionalProperties:
+            $ref: "#/components/schemas/block_property"
+            description: "Refers to the block id you want to add new constraints to"
+    block_property:
+      type: array
+      items:
+        type: object
+        properties:
+          context_id:
+            type: string
+            description: "Id of the context the constraint refers to"
+          area_id:
+            type: string
+            description: "Id of the area the constraint refers to"
+          credits:
+            type: integer
+            description: "Number of credits for the constraint"
+          classes:
+            type: array
+            items:
+              $ref: '#/components/schemas/class_property'
+              description: "Object containing a class information to be added"
+    class_property:
+      type: object
+      properties:
+        study_year:
+          type: integer
+          description: "Study year of the ordinary class that will have the constraint"
+        study_address: 
+          type: string
+          description: "Study address of the ordinary class that will have the constraint"
   parameters:
     query_school_year:
       name: school_year

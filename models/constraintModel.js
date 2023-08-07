@@ -207,7 +207,26 @@ module.exports = {
         } finally {
             conn.release()
         }
-    }/*,
+    },
+    async delete_constraint(constraint_id){
+        try {
+            conn = await pool.getConnection()
+            if(!constraint_id){
+                conn.release()
+                return null;
+            }
+            let sql = 'DELETE FROM limited WHERE id = ?'
+            let values = [constraint_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    }
+    /*,
     async is_annual_constraint_present(context_id, study_year, study_address, area_id, school_year){
         try{
             conn = await pool.getConnection()

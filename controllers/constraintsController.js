@@ -151,7 +151,6 @@ module.exports.insert_constraints = async (req, res) => {
         return;
     }
     let constraints_object = req.body.constraints_object;
-    let new_constraints = false
     let block_exists, context_exists, area_exists, class_exist, study_year, study_address, context_id, area_id, credits;
     let wrong_block, wrong_context, wrong_area, wrong_class, constraint_present = undefined;
     if(constraints_object!=undefined){
@@ -203,10 +202,15 @@ module.exports.insert_constraints = async (req, res) => {
                             constraint_present = true
                             classes.splice(j, 1);
                             j = j-1;
-                        } else {
-                            new_constraints = true
                         }
                     }
+                }
+                if(classes.length == 0){
+                    console.log(`All classes inserted for the constraint were wrong or already present. Removing element from block array`)
+                    wrong_class = true
+                    constraints_object[block].splice(index, 1);
+                    index = index-1;
+                    continue;
                 }
                 if(constraints_object[block].length == 0){
                     console.log(`All constraints inserted for a learning block are wrong or already present. Removing learning block key`)
@@ -219,7 +223,7 @@ module.exports.insert_constraints = async (req, res) => {
     let num_constraints_inserted = 0
     let constraints_insert = await constraintSchema.add_block_constraints(constraints_object);
     if(!constraints_insert){
-        if(new_constraints){
+        if(!constraint_present){
             res.status(400).json({status: "error", description: MSG.missingParameters, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
             console.log('missing required information: new block constraints addition');
             return;
@@ -278,6 +282,7 @@ module.exports.insert_constraints = async (req, res) => {
             }
         }
     }*/
+    let starting_id = constraints_insert.insertId.toString()
     res.status(201).json({
         status: "accepted",
         description: "Constraints inserted", 
@@ -286,6 +291,7 @@ module.exports.insert_constraints = async (req, res) => {
         wrong_class: wrong_class,
         wrong_context: wrong_context,
         constraint_present: constraint_present,
+        starting_id: starting_id, //Starting id of the ones inserted
         num_constraints_inserted: num_constraints_inserted
         /*num_annual_constraints_inserted: num_annual_constraints_inserted,
         num_updated: num_updated*/

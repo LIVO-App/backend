@@ -336,8 +336,8 @@ module.exports.add_proposition = async (req, res) => {
     // Add new teachings
     let teaching_list = req.body.teaching_list;
     // Add new project class proposal (no confirmation of admin yet)
-    let ita_class_name = req.body.ita_class_name;
-    let eng_class_name = req.body.eng_class_name;
+    let ita_class_name = req.body.italian_class_name;
+    let eng_class_name = req.body.english_class_name;
     let class_group = req.body.class_group;
     let num_section = req.body.num_section;
     // Add teachers of the course into project_teach
@@ -351,10 +351,10 @@ module.exports.add_proposition = async (req, res) => {
         course_id_exist = false
     }
     if(course_id_exist){
-        if(course_id_exist.italian_title == ita_title && course_id_exist.english_title == eng_title && course_id_exist.creation_school_year == creation_school_year){
+        if(course_id_exist.italian_title == ita_title && course_id_exist.english_title == eng_title && course_id_exist.creation_school_year == today.getFullYear()){
             same_year = true
         } else {
-            same_year = await courseSchema.already_inserted_year(ita_title, eng_title, block_year)
+            same_year = await courseSchema.already_inserted_year(ita_title, eng_title, today.getFullYear())
             if(same_year == null){
                 res.status(400).json({status: "error", description: MSG.missing_params, course_exist: false})
                 console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');
@@ -369,15 +369,15 @@ module.exports.add_proposition = async (req, res) => {
             return;
         }
     }
-    
     course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id)
     if(course_exist){
         course_id = course_exist
     } else {
         course_id = 0
     }
+    //console.log(course_id)
     // Let's now check if there is any new value in the other objects. If there are new ordinary classes or contexts or new teachings, add new course
-    let new_classes, new_teachings
+    let new_classes, new_teachings = false
     // Check information about classes that can access the new course
     let context_exist, class_exist, already_present, study_year, study_address;
     // Remove non valid contexts and classes

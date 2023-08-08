@@ -555,7 +555,7 @@ CREATE TABLE `project_class` (
 --
 
 INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
-(2, 7, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, '2022-10-01'),
+(2, 6, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, '2022-10-01'),
 (3, 7, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
 (4, 6, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
 (4, 7, 'Acqua magica', 'Magic water', 2, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),

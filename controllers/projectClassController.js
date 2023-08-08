@@ -5,11 +5,15 @@ const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
 const studentModel = require('../models/studentModel');
 const adminModel = require('../models/adminModel');
 const teacherModel = require('../models/teacherModel')
-const projectClassTeacherSchema = require('../models/projectClassTeacherModel')
+const projectClassTeacherSchema = require('../models/projectClassTeacherModel');
+const courseSchema = require('../models/coursesModel')
+const learning_blocksModel = require('../models/learning_blocksModel');
+const classesTeacherModel = require('../models/classesTeacherModel');
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
+    has_grades: "The project class you want to delete already has grades. Abort deletion",
     missingParameter: "Missing required information",
     notAuthorized: "Not authorized request"
 }
@@ -424,4 +428,43 @@ module.exports.get_teachers = async (req, res) => {
         data: data_cls
     }
     res.status(200).json(response);
+}
+
+module.exports.delete_project_class = async (req, res) => {
+    if(req.loggedUser.role==="admin"){
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminModel.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course proposition approval: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course proposition approval: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course;
+    let course_exist = await courseSchema.read(course_id, true);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project_class deletion: course does not exists');
+        return;
+    }
+    let block_id = req.params.block;
+    let block_exist = await learning_blocksModel.read(block_id)
+    if(!block_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project_class deletion: block does not exists');
+        return;
+    }
+    let existing_grades = await projectClassesSchema.grades_present(course_id, block_id)
+    if(existing_grades){
+        res.status(400).json({status: "error", description: MSG.has_grades});
+        console.log('project class deletion: project classes already has grades');
+        return;
+    }
+    await classesTeacherModel.delete(course_id, block_id)
+    await projectClassesSchema.delete(course_id, block_id)
+    res.status(200).json({status: "deleted", description: "Project class deleted successfully"});
 }

@@ -18,5 +18,7 @@ router.get('/:course/:block/sections', tokenChecker);
 router.get('/:course/:block/sections', projectclassHandler.get_project_class_sections);
 router.get('/:course/:block/announcements', tokenChecker);
 router.get('/:course/:block/announcements', projectclassHandler.get_announcments);
+router.delete('/:course/:block/', tokenChecker);
+router.delete('/:course/:block/', projectclassHandler.delete_project_class);
 
 module.exports = router;

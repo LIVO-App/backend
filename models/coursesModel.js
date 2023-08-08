@@ -221,7 +221,7 @@ module.exports = {
     async add_proposition(ita_title, eng_title, school_year, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, growth_id, min_students, max_students, teacher_id){
         try{
             conn = await pool.getConnection()
-            if(!ita_title || !eng_title || !ita_descr || !eng_descr || up_hours!=undefined || credits!=undefined || !it_ex_learn || !eng_ex_learn || !ita_cri || !eng_cri || !ita_ac || !eng_ac || !area_id || !growth_id || min_students!=undefined || max_students!=undefined || !teacher_id){
+            if(!ita_title || !eng_title || !ita_descr || !eng_descr || up_hours==undefined || credits==undefined || !it_ex_learn || !eng_ex_learn || !ita_cri || !eng_cri || !ita_ac || !eng_ac || !area_id || !growth_id || min_students==undefined || max_students==undefined || !teacher_id){
                 conn.release()
                 return false
             }

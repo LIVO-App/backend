@@ -458,6 +458,13 @@ module.exports.delete_project_class = async (req, res) => {
         console.log('project_class deletion: block does not exists');
         return;
     }
+    let starting_date = new Date(block_exist.start)
+    let today = new Date()
+    if (starting_date <= today){
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('project class deletion: tried to delete a project class helded in a block already started');
+        return;
+    }
     let existing_grades = await projectClassesSchema.grades_present(course_id, block_id)
     if(existing_grades){
         res.status(400).json({status: "error", description: MSG.has_grades});

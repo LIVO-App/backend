@@ -2,14 +2,54 @@ const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../app');
 
+let validToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let validTokenAnnouncement = jwt.sign({_id: 2, username: "Teacher2", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
+
 describe('/api/v1/project_classes', () => {
+    describe('POST methods tests', () => {
+        // We use propositions since, if we use a course_id, we add only the project class
+        describe('POST /api/v1/propositions', () => {
+            let valid_proposal = {
+                course_id: 2,
+                italian_title: "Green Power🌳🌵🪷: come le piante dominano il mondo",
+                english_title: "Green Power🌳🌵🪷: how plants rule the world",
+                italian_descr: "aaaaa",
+                english_descr: "aaaaa",
+                up_hours: 0,
+                credits: 4,
+                italian_exp_l: "asdf",
+                english_exp_l: "asdf",
+                italian_cri: "asd",
+                english_cri: "asd",
+                italian_act: "asw",
+                english_act: "asw",
+                area_id: "SM",
+                growth_id: 2,
+                min_students: 10,
+                max_students: 15,
+                block_id: 7,
+                class_group: 1,
+                num_section: 1,
+                teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
+            }
+
+            // Only test for valid insertion since its the same controls we have in propositions.test.js
+            test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations for project class should respond with status 201', async () => {
+                return request(app)
+                    .post('/api/v1/propositions')
+                    .send(valid_proposal)
+                    .set('x-access-token', validToken)
+                    .expect(201)
+            }, 20000)
+        })
+    })
+
     describe('GET methods tests', () => {
-        let validToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let validTokenAnnouncement = jwt.sign({_id: 2, username: "Teacher2", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let wrongUserToken = jwt.sign({_id: 1, username: "Student1", role: "student"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
+        
         describe('GET /api/v1/project_classes/', () => {
             test('GET /api/v1/project_classes without token should respond with status 401', async () => {
                 return request(app)
@@ -373,6 +413,65 @@ describe('/api/v1/project_classes', () => {
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0);
                     });
+            })
+        })
+    })
+
+    describe('DELETE methods tests', () => {
+        describe('DELETE /api/v1/project_classes/:course/:block', () => {
+            test('DELETE /api/v1/project_classes/:course/:block without token should respond with statut 401', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/7')
+                    .expect(401)
+            })
+            
+            test('DELETE /api/v1/project_classes/:course/:block with invalid token should respond with statut 403', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/7')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with non existing admin token should respond with statut 401', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/7')
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with valid token but non existing course should respond with statut 404', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/0/7')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with valid token but non existing block should respond with statut 404', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with valid token but past block should respond with statut 400', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/6')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with valid token but grades have already been added to it should respond with statut 400', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/4/6')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+
+            test('DELETE /api/v1/project_classes/:course/:block with valid token and parameters should respond with statut 200', async () => {
+                return request(app)
+                    .delete('/api/v1/project_classes/2/7')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(200)
             })
         })
     })

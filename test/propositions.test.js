@@ -12,8 +12,8 @@ let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
 let validTokenTeacher = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let invalidTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-let course_id = [];
-let block_id = [];
+let course_id_1, course_id_2;
+let block_id_1, block_id_2;
 var valid_proposal, valid_proposal2;
 
 describe('/api/v1/propositions', () => {
@@ -251,37 +251,47 @@ describe('/api/v1/propositions', () => {
                 .expect(400)
         }, 20000)
 
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
-            return request(app)
-                .post('/api/v1/propositions')
-                .send(valid_proposal)
-                .set('x-access-token', validTokenTeacher)
-                .expect(201)
-                .then((response) => {
-                    course_id.push(response.body.course_id)
-                    block_id.push(valid_proposal.block_id)
-                });
-        }, 20000)
-
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
-            return request(app)
-                .post('/api/v1/propositions')
-                .send(valid_proposal2)
-                .set('x-access-token', validTokenTeacher)
-                .expect(201)
-                .then((response) => {
-                    course_id.push(response.body.course_id)
-                    block_id.push(valid_proposal2.block_id)
-                });
-        }, 20000)
-
-        test('POST /api/v1/propositions with valid token, but duplicate insertion should respond with status 409', async () => {
-            return request(app)
-                .post('/api/v1/propositions')
-                .send(valid_proposal)
-                .set('x-access-token', validTokenTeacher)
-                .expect(409)
-        }, 20000)
+        describe('POST /api/v1/propositions valid for first course', () => {
+            test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
+                return request(app)
+                    .post('/api/v1/propositions')
+                    .send(valid_proposal)
+                    .set('x-access-token', validTokenTeacher)
+                    .expect(201)
+                    .then((response) => {
+                        course_id_1 = response.body.course_id
+                        block_id_1 = valid_proposal.block_id
+                        /*course_id.push(response.body.course_id)
+                        block_id.push(valid_proposal.block_id)*/
+                    });
+            }, 20000)
+        })
+        
+        describe('POST /api/v1/propositions duplicated for first course', () => {
+            test('POST /api/v1/propositions with valid token, but duplicate insertion should respond with status 409', async () => {
+                return request(app)
+                    .post('/api/v1/propositions')
+                    .send(valid_proposal)
+                    .set('x-access-token', validTokenTeacher)
+                    .expect(409)
+            }, 20000)
+        })
+        
+        describe('POST /api/v1/propositions valid for second course', () => {
+            test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
+                return request(app)
+                    .post('/api/v1/propositions')
+                    .send(valid_proposal2)
+                    .set('x-access-token', validTokenTeacher)
+                    .expect(201)
+                    .then((response) => {
+                        course_id_2 = response.body.course_id
+                        block_id_2 = valid_proposal2.block_id
+                        /*course_id.push(response.body.course_id)
+                        block_id.push(valid_proposal2.block_id)*/
+                    });
+            }, 20000)
+        })
     })
 
     describe('PUT /api/v1/propositions/approval', () => {
@@ -346,7 +356,7 @@ describe('/api/v1/propositions', () => {
         test('PUT /api/v1/propositions/approval with valid token but valid information should respond with status 204', () => {
             return request(app)
                 .put('/api/v1/propositions/approval')
-                .query({course_id: course_id[0], block_id: block_id[0]})
+                .query({course_id: course_id_1, block_id: block_id_1})
                 .set('x-access-token', validTokenAdmin)
                 .expect(200)
         })
@@ -354,7 +364,7 @@ describe('/api/v1/propositions', () => {
         test('PUT /api/v1/propositions/approval with valid token but valid information and not confirmed should respond with status 204', () => {
             return request(app)
                 .put('/api/v1/propositions/approval')
-                .query({course_id: course_id[1], block_id: block_id[1], approved: false})
+                .query({course_id: course_id_1, block_id: block_id_1, approved: "false"})
                 .set('x-access-token', validTokenAdmin)
                 .expect(200)
         })
@@ -447,7 +457,59 @@ describe('/api/v1/propositions', () => {
         });
     })
 
-    afterAll(async ()=> {
+    // Tests for delete of courses is put here since the POST method for courses is in the path /propositions
+    describe('DELETE /api/v1/courses/:course_id', () => {
+        test('DELETE /api/v1/courses/:course_id without token should respond with status 401', async () => {
+            return request(app)
+                .delete("/api/v1/courses/"+course_id_1)
+                .expect(401)
+        })
+
+        test('DELETE /api/v1/courses/:course_id with invalid token should respond with status 403', async () => {
+            return request(app)
+                .delete("/api/v1/courses/"+course_id_1)
+                .set('x-access-token', invalidToken)
+                .expect(403)
+        })
+
+        test('DELETE /api/v1/courses/:course_id with non existing admin token should respond with status 401', async () => {
+            return request(app)
+                .delete("/api/v1/courses/"+course_id_1)
+                .set('x-access-token', invalidTokenAdmin)
+                .expect(401)
+        })
+
+        test('DELETE /api/v1/courses/:course_id with valid token but non existing course should respond with status 404', async () => {
+            return request(app)
+                .delete("/api/v1/courses/0")
+                .set('x-access-token', validTokenAdmin)
+                .expect(404)
+        })
+
+        test('DELETE /api/v1/courses/:course_id with valid token but of a course that was already confirmed should respond with status 400', async () => {
+            return request(app)
+                .delete("/api/v1/courses/4")
+                .set('x-access-token', validTokenAdmin)
+                .expect(400)
+        })
+
+        test('DELETE /api/v1/courses/:course_id with valid token and valid conditions should respond with status 200', async () => {
+            return request(app)
+                .delete("/api/v1/courses/"+course_id_1)
+                .set('x-access-token', validTokenAdmin)
+                .expect(200)
+        })
+
+        // Done only to clear the database from the data of the added by the post
+        test('DELETE /api/v1/courses/:course_id with valid token and valid conditions should respond with status 200', async () => {
+            return request(app)
+                .delete("/api/v1/courses/"+course_id_2)
+                .set('x-access-token', validTokenAdmin)
+                .expect(200)
+        })
+    })
+
+    /*afterAll(async ()=> {
         for(let i=0;i<course_id.length;i++){
             await teacherClassSchema.delete(course_id[i],valid_proposal.block_id)
             await projectclassSchema.delete(course_id[i], valid_proposal.block_id)
@@ -455,5 +517,5 @@ describe('/api/v1/propositions', () => {
             await opentoSchema.delete(course_id[i])
             await courseSchema.deleteProposal(course_id[i])
         }
-    })
+    })*/
 })

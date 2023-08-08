@@ -330,7 +330,7 @@ module.exports = {
                 sql += 'course.certifying_admin_id = ?, course.admin_confirmation = ?, course.to_be_modified = NULL, project_class.certifying_admin_id = ?, project_class.admin_confirmation = ?, project_class.to_be_modified = NULL '
                 values.push(admin_id, confirmation_date, admin_id, confirmation_date)
             } else {
-                sql += 'course.to_be_modified = true, project_class.to_be_modified = true ' 
+                sql += 'course.to_be_modified = true, project_class.to_be_modified = true, project_class.certifying_admin_id = NULL, project_class.admin_confirmation = NULL '
             }
             sql += 'WHERE course.id = ? AND project_class.course_id = ? AND project_class.learning_block_id = ?'
             values.push(course_id, course_id, block_id)

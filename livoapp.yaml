@@ -310,6 +310,26 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    delete:
+      description: Delete the course in course_id
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
   /v1/courses/{course_id}/opento:
     get:
       description: Get all the classes that can see the course

@@ -1137,6 +1137,27 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+    delete:
+      description: Delete the project class specified if it is in a non current block and it has no grades yet
+      parameters:
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - project classes
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
   /v1/project_classes/{course}/{block}/components:
     get:
       description: Get all components of a specific project class

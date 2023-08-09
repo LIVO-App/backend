@@ -316,6 +316,7 @@ module.exports.get_announcments = async (req, res) => {
     let course_id = req.params.course;
     let block_id = req.params.block;
     let section = req.query.section;
+    let is_student = false
     if(req.loggedUser.role === "student"){
         let student_id = req.loggedUser._id
         let student_exist = await studentModel.read_id(student_id)
@@ -336,9 +337,10 @@ module.exports.get_announcments = async (req, res) => {
             return
         }
         section = student_section.section
+        is_student = true
     }
     query["section"] = section;
-    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, publisher_id);
+    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, publisher_id, is_admin, is_student);
     if(!announcements){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class announcments: missing parameters");
@@ -413,7 +415,7 @@ module.exports.get_teachers = async (req, res) => {
             }
         }
         return {
-            teacher_ref: cl.id,
+            teacher_ref: teacher_ref,
             teacher_name: cl.name,
             teacher_surname: cl.surname,
             section: cl.section,

@@ -121,11 +121,8 @@ describe('/api/v1/announcements', () => {
             })
 
             afterAll(async () => {
-                let admin_id = undefined
                 //Delete all the grades posted
-                await announcementModel.remove(1, 0, validMessage.course_id, validMessage.block_id, validMessage.sections[0], validMessage.italian_title, validMessage.english_title, validMessage.italian_message, validMessage.english_message).then(msg => {
-                    console.log(msg);
-                })
+                await announcementModel.remove(1, false, validMessage.course_id, validMessage.block_id, validMessage.sections[0], validMessage.italian_title, validMessage.english_title, validMessage.italian_message, validMessage.english_message)
             })      
         })
     })

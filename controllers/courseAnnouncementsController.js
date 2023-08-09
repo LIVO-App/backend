@@ -14,8 +14,12 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_announcement = async (req, res) => {
+    let is_student = false;
+    if(req.loggedUser.role=="student"){
+        is_student = true;
+    }
     let announcement_id = req.params.announcement_id;
-    let announcement = await announcementSchema.read(announcement_id);
+    let announcement = await announcementSchema.read(announcement_id, is_student);
     if(!announcement){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("Announcement: resource not found");
@@ -92,7 +96,8 @@ module.exports.publish_announcement = async (req, res) => {
     let english_title = req.body.english_title;
     let italian_message = req.body.italian_message;
     let english_message = req.body.english_message;
-    let publish = await announcementSchema.add(publisher_id, is_admin, course_id, block_id, sections, italian_title, english_title, italian_message, english_message);
+    let publish_date = req.body.publish_date;
+    let publish = await announcementSchema.add(publisher_id, is_admin, course_id, block_id, sections, italian_title, english_title, italian_message, english_message, publish_date);
     if(publish==null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('no sections: announcement publishing');

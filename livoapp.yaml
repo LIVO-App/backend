@@ -2064,6 +2064,27 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/ConstraintsInsertion'
+  /v1/constraints/:constr_id:
+    delete:
+      description: Delete the constraint specified if it is not for a past, current, imminent
+      parameters:
+        - $ref: '#/components/parameters/path_constr_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - constraints
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'      
 components:
   responses:
     NotFound:
@@ -3711,3 +3732,10 @@ components:
       description: Study address of the class we want to filter
       schema:
         type: string
+    path_constr_id:
+      name: constr_id
+      in: path
+      description: Constraint id
+      schema:
+        type: integer
+      required: true

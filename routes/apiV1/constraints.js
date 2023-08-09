@@ -10,5 +10,7 @@ router.get('/', tokenChecker)
 router.get('/', constraintsHandler.get_constraints);
 router.post('/', tokenChecker)
 router.post('/', constraintsHandler.insert_constraints);
+router.delete('/:constr_id', tokenChecker)
+router.delete('/:constr_id', constraintsHandler.delete_constraint);
 
 module.exports = router;

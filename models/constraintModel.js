@@ -225,6 +225,28 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async read(constraint_id){
+        try {
+            conn = await pool.getConnection()
+            if(!constraint_id){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT * FROM limited WHERE id = ?'
+            let values = [constraint_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length>0){
+                return rows[0]
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
     /*,
     async is_annual_constraint_present(context_id, study_year, study_address, area_id, school_year){

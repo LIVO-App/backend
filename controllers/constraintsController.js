@@ -169,17 +169,19 @@ module.exports.insert_constraints = async (req, res) => {
             let today = new Date()
             let _10days = today.setDate(today.getDate() + 10)
             if (starting_date <= today || starting_date <= _10days){
-                res.status(400).json({status: "error", description: MSG.pastBlock});
-                console.log('constraints insertion: tried to add a constraint for a block already started or that is going to start');
-                return;
+                console.log(`The block with id ${block} is a past, current or imminent. Removing it from constraints_object`);
+                wrong_block = true;
+                delete constraints_object[block];
+                continue;
             } else {
                 let past_block = await learning_blocksModel.read(block-1)
                 if(past_block){
-                    past_starting_date = new Date(past_block.start)
+                    let past_starting_date = new Date(past_block.start)
                     if(past_starting_date <= today || past_starting_date <= _10days){
-                        res.status(400).json({status: "error", description: MSG.firstFutureBlock});
-                        console.log('constraints insertion: tried to add a constraint for the first future block that is the one where the students are choosing the courses right now.');
-                        return;
+                        console.log(`The block with id ${block} is the first future block where students are choosing new constraints. Removing it from constraints_object`);
+                        wrong_block = true;
+                        delete constraints_object[block];
+                        continue;
                     }
                 }
             }

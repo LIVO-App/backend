@@ -298,3 +298,7 @@ module.exports.insert_constraints = async (req, res) => {
     });
 
 }
+
+module.exports.delete_constraint = async (req, res) => {
+
+}

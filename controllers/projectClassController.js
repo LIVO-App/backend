@@ -9,6 +9,7 @@ const projectClassTeacherSchema = require('../models/projectClassTeacherModel');
 const courseSchema = require('../models/coursesModel')
 const learning_blocksModel = require('../models/learning_blocksModel');
 const classesTeacherModel = require('../models/classesTeacherModel');
+const inscribeSchema = require('../models/inscribeModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -465,11 +466,27 @@ module.exports.delete_project_class = async (req, res) => {
         console.log('project class deletion: tried to delete a project class helded in a block already started');
         return;
     }
+    let project_class_exist = await projectClassesSchema.read(course_id, block_id);
+    if(!project_class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project_class deletion: project class does not exists');
+        return;
+    }
+    let num_section = project_class_exist.num_section;
     let existing_grades = await projectClassesSchema.grades_present(course_id, block_id)
     if(existing_grades){
         res.status(400).json({status: "error", description: MSG.has_grades});
         console.log('project class deletion: project classes already has grades');
         return;
+    }
+    let components;
+    for(let i=0;i<num_section;i++){
+        components = await projectClassesSchema.classComponents(course_id, block_id, String.fromCharCode(65+i))
+        if(components){
+            for(let j in components){
+                await inscribeSchema.remove(components[j].id, course_id, block_id, components[j].learning_context_id)
+            }
+        }
     }
     await classesTeacherModel.delete(course_id, block_id)
     await projectClassesSchema.delete(course_id, block_id)

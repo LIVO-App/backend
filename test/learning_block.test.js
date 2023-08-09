@@ -48,7 +48,7 @@ describe('/api/v1/learning_blocks', () => {
             test('GET /api/v1/learning_blocks?year_of with non valid valid block id should respond with status 200 but empty data', async () => {
                 let response = request(app)
                     .get('/api/v1/learning_blocks')
-                    .query({year_of: 8})
+                    .query({year_of: 0})
                     .expect(200)
                     .then((res) => {
                         //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods

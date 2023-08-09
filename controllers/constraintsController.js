@@ -338,7 +338,7 @@ module.exports.delete_constraint = async (req, res) => {
     let constr_id = req.params.constr_id
     let constr_exist = await constraintSchema.read(constr_id)
     if(!constr_exist){
-        res.status(400).json({status: "error", description: MSG.notFound});
+        res.status(404).json({status: "error", description: MSG.notFound});
         console.log('constraint deletion: resource not found');
         return;
     }

@@ -243,4 +243,42 @@ describe('/api/v1/constraints', () => {
             });
         })
     })
+
+    describe('DELETE methods tests', () => {
+        describe('DELETE /api/v1/constraints/:constr_id', () => {
+            test('DELETE /api/v1/constraints/:constr_id without token should respond with status 401', async () => {
+                return request(app)
+                    .delete('/api/v1/constraints/1')
+                    .expect(401)
+            })
+    
+            test('DELETE /api/v1/constraints/:constr_id with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .delete('/api/v1/constraints/1')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+    
+            test('DELETE /api/v1/constraints/:constr_id with non existing user token should respond with status 401', async () => {
+                return request(app)
+                    .delete('/api/v1/constraints/1')
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401)
+            })
+    
+            test('DELETE /api/v1/constraints/:constr_id with valid token but non valid constraint id should respond with status 404', async () => {
+                return request(app)
+                    .delete('/api/v1/constraints/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('DELETE /api/v1/constraints/:constr_id with valid token but constraint of past block should respond with status 400', async () => {
+                return request(app)
+                    .delete('/api/v1/constraints/1')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+        })
+    })
 })

@@ -11,6 +11,8 @@ let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
     itemAlreadyExists: "The constraints are all already presents",
+    pastBlock: "Block already expired or imminent",
+    firstFutureBlock: "First future block. The students are choosing their courses right now. You can't add new constraints",
     missingParameters: "Missing required information"
 }
 
@@ -162,8 +164,26 @@ module.exports.insert_constraints = async (req, res) => {
                 delete constraints_object[block];
                 continue;
             }
+            // Check the block is not past, current, imminent or the first one that is immimediatly future (the one where the students are choosing new courses)
+            let starting_date = new Date(block_exists.start)
+            let today = new Date()
+            let _10days = today.setDate(today.getDate() + 10)
+            if (starting_date <= today || starting_date <= _10days){
+                res.status(400).json({status: "error", description: MSG.pastBlock});
+                console.log('constraints insertion: tried to add a constraint for a block already started or that is going to start');
+                return;
+            } else {
+                let past_block = await learning_blocksModel.read(block-1)
+                if(past_block){
+                    past_starting_date = new Date(past_block.start)
+                    if(past_starting_date <= today || past_starting_date <= _10days){
+                        res.status(400).json({status: "error", description: MSG.firstFutureBlock});
+                        console.log('constraints insertion: tried to add a constraint for the first future block that is the one where the students are choosing the courses right now.');
+                        return;
+                    }
+                }
+            }
             for(let index=0;index<constraints_object[block].length;index++){
-                
                 context_id = constraints_object[block][index].context_id;
                 context_exists = await learningContextsModel.read(context_id);
                 if(!context_exists){

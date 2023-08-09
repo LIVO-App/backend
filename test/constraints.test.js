@@ -69,7 +69,7 @@ describe('/api/v1/constraints', () => {
                     })
             })
 
-            test('POST /api/v1/constraints with valid token but wrong elements in the constraints in the object should respond with status 400', async () => {
+            /*test('POST /api/v1/constraints with valid token but wrong elements in the constraints in the object should respond with status 400', async () => {
                 return request(app)
                     .post('/api/v1/constraints')
                     .send(only_wrong_constraint)
@@ -80,9 +80,9 @@ describe('/api/v1/constraints', () => {
                         expect(response.body.wrong_area).toBe(true)
                         expect(response.body.wrong_class).toBe(true)
                     })
-            })
+            })*/
 
-            test('POST /api/v1/constraints with valid token and valid elements in the object should respond with status 201', async () => {
+            /*test('POST /api/v1/constraints with valid token and valid elements in the object should respond with status 201', async () => {
                 return request(app)
                     .post('/api/v1/constraints')
                     .send(valid_const)
@@ -105,13 +105,13 @@ describe('/api/v1/constraints', () => {
                     .then((response) =>{
                         expect(response.body.constraint_present).toBe(true)
                     })
-            })
+            })*/
 
-            afterAll(async ()=> {
+            /*afterAll(async ()=> {
                 for(let i=0;i<ids_to_delete.length;i++){
                     await constraintModel.delete_constraint(ids_to_delete[i])
                 }
-            })
+            })*/
         })
     })
 

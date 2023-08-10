@@ -228,7 +228,7 @@ module.exports.add_blocks = async (req, res) => {
     
     let insert_blocks = await learningBlockSchema.add(blocks_list)
     if(!insert_blocks){
-        if(existing_block){
+        if(existing_block && !wrong_block){
             res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_block: wrong_block, existing_block: existing_block, overlapping: overlapping})
             console.log('duplicated information: new learning block addition');
             return;
@@ -240,7 +240,15 @@ module.exports.add_blocks = async (req, res) => {
     }
     let first_inserted_id = insert_blocks.insertId.toString()
     let num_inserted = insert_blocks.affectedRows
-    res.status(201).json({status: "accepted", description: "Blocks inserted", wrong_block: wrong_block, existing_block: existing_block, overlapping: overlapping, first_inserted_id: first_inserted_id, num_inserted: num_inserted})
+    res.status(201).json({
+        status: "accepted", 
+        description: "Blocks inserted", 
+        wrong_block: wrong_block, 
+        existing_block: existing_block, 
+        overlapping: overlapping, 
+        first_inserted_id: first_inserted_id, 
+        num_inserted: num_inserted
+    })
 }
 /*
 obj.sort((a,b) => {

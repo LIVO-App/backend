@@ -133,5 +133,23 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async delete(block_id){
+        try {
+            conn = await pool.getConnection()
+            if(!block_id){
+                conn.release()
+                return null;
+            }
+            let sql = 'DELETE FROM learning_block WHERE id = ?'
+            let values = [block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

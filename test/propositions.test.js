@@ -266,17 +266,19 @@ describe('/api/v1/propositions', () => {
                             block_id.push(valid_proposal.block_id)*/
                         });
                 }, 20000)
+
+                describe('POST /api/v1/propositions duplicated for first course', () => {
+                    test('POST /api/v1/propositions with valid token, but duplicate insertion should respond with status 409', async () => {
+                        return request(app)
+                            .post('/api/v1/propositions')
+                            .send(valid_proposal)
+                            .set('x-access-token', validTokenTeacher)
+                            .expect(409)
+                    }, 20000)
+                })
             })
             
-            describe('POST /api/v1/propositions duplicated for first course', () => {
-                test('POST /api/v1/propositions with valid token, but duplicate insertion should respond with status 409', async () => {
-                    return request(app)
-                        .post('/api/v1/propositions')
-                        .send(valid_proposal)
-                        .set('x-access-token', validTokenTeacher)
-                        .expect(409)
-                }, 20000)
-            })
+            
         })
         
         describe('POST /api/v1/propositions valid for second course', () => {

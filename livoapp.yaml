@@ -75,6 +75,34 @@ paths:
                     items:
                       $ref: '#/components/schemas/learning_block_data'
                     description: "Data return from the api"
+    post:
+      description: Insertion of learning block
+      summary: Insertion of learning block
+      tags:
+        - learning blocks
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        description: Object to be inserted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/block_object_insertion'
+      responses:
+        '201':
+          $ref: '#/components/responses/BlockInsertion'
+        '400':
+          $ref: '#/components/responses/BlockInsertion'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/BlockInsertion'
   /v1/learning_blocks/{block_id}:
     get:
       description: Get specific learning block from its ID.
@@ -2285,6 +2313,29 @@ components:
               num_constraints_inserted:
                 type: integer
                 description: "Tells how many constraints were inserted in the database"
+    BlockInsertion:
+      description: Learning block insertion response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              wrong_block:
+                type: boolean
+                description: "Tells if there is a block that has ending date smaller than starting date"
+              existing_block:
+                type: boolean
+                description: "Tells if there is a block that was already inserted (a combination of number + school_year)"
+              first_inserted_id:
+                type: string
+                description: "First id of the learning blocks that were inserted"
+              num_inserted:
+                type: integer
+                description: "Tells how many learning blocks were inserted in the database"
   schemas:
     learning_block_data:
       type: object
@@ -3446,6 +3497,40 @@ components:
         study_address: 
           type: string
           description: "Study address of the ordinary class that will have the constraint"
+    block_object_insertion:
+      type: object
+      properties:
+        blocks_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/single_block_obj'
+          description: "List of learning blocks to add"
+    single_block_obj:
+      type: object
+      required:
+        - number
+        - school_year
+        - start_date
+        - end_date
+        - num_groups
+      properties:
+        number:
+          type: integer
+          description: "Number of the block to be add"
+        school_year:
+          type: integer
+          description: "School year of the block to be add. It is only the first year of the school year of reference (e.g. school year 2022/2023 => school_year = 2022)"
+        start_date:
+          type: string
+          format: date
+          description: "Starting date of the block to be add"
+        end_date:
+          type: string
+          format: date
+          description: "Ending date of the block to be add"
+        num_groups:
+          type: integer
+          description: "Maximum number of groups of the block to be add"
   parameters:
     query_school_year:
       name: school_year

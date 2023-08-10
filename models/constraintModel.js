@@ -120,7 +120,7 @@ module.exports = {
                     for(let j=0; j<classes.length;j++){
                         study_year = classes[j].study_year
                         study_address = classes[j].study_address
-                        for(let k=0; k<constraints_per_block;k+4){
+                        for(let k=0; k<constraints_per_block.length;k=k+4){
                             if(constraints_per_block[k]==context_id){
                                 finded_context = true
                             }

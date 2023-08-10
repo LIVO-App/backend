@@ -90,5 +90,48 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async add(block_list){
+        try {
+            conn = await pool.getConnection()
+            if(block_list==undefined || block_list.length == 0){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO learning_block (number, school_year, start, end, num_groups) VALUES '
+            let values = []
+            let inserted_blocks = []
+            for(let i = 0; i<block_list.length; i++){
+                let finded_block = false
+                let number = block_list[i].number
+                let school_year = block_list[i].school_year
+                let start_date = block_list[i].start_date
+                let end_date = block_list[i].end_date
+                let num_groups = block_list[i].num_groups
+                for(let j=0;j<inserted_blocks.length;j=j+2){
+                    if (number == inserted_blocks[j] && school_year == inserted_blocks[j+1]){
+                        finded_block = true
+                    }
+                }
+                if(!finded_block){
+                    sql += ' (?,?,?,?,?)'
+                    values.push(number, school_year, start_date, end_date, num_groups)
+                    inserted_blocks.push(number, school_year)
+                    if(i<block_list.length-1){
+                        sql += ','
+                    }
+                }
+            }
+            if(sql[sql.length-1]==','){
+                sql = sql.slice(0,-1);
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

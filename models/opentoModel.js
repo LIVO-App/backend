@@ -57,7 +57,7 @@ module.exports = {
                     presidium = access_object[context][index].presidium > 0 ? 1 : 0;
                     main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
                     let finded_year, finded_address
-                    for(let j=0;j<classes_per_context.length;j+2){
+                    for(let j=0;j<classes_per_context.length;j=j+2){
                         if(classes_per_context[j]==study_year){
                             finded_year = true
                         }

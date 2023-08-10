@@ -10,6 +10,7 @@ const ordinaryclassModel = require('../models/ordinaryclassModel');
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
+    notAuthorized: "Not authorized request",
     itemAlreadyExists: "The constraints are all already presents",
     pastBlock: "Block already expired or imminent. You can't change the constraints",
     firstFutureBlock: "First future block. The students are choosing their courses right now. You can't change the constraints",

@@ -337,6 +337,69 @@ module.exports.get_active_years = async (req, res) => {
     res.status(200).json(response);
 }
 
+module.exports.update_info = async (req, res) => {
+    let teacher_id = req.params.teacher_id
+    if(req.loggedUser.role == "teacher"){
+        let teacher_esist = await teacherSchema.read_id(teacher_id);
+        if(!teacher_esist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student information: student does not exists');
+            return;
+        }
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('update student information: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update student information: unauthorized access');
+        return;
+    }
+    let information = req.body.student_info
+    let update_info = await teacherSchema.update(teacher_id, information)
+    if(!update_info){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log('update student information: no parameters to change')
+        return
+    }
+    res.status(200).json({status: "updated", description: "Information updated successfully"})
+}
+
+module.exports.update_password = async (req, res) => {
+    let teacher_id = req.params.teacher_id
+    if(req.loggedUser.role == "teacher"){
+        let teacher_esist = await teacherSchema.read_id(teacher_id);
+        if(!teacher_esist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('update student psw: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update student psw: unauthorized access');
+        return;
+    }
+    let psw = req.body.psw
+    let update_psw = await teacherSchema.change_psw(teacher_id, psw)
+    if(update_psw==null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log('update student psw: no parameters to change')
+        return
+    }
+    if(!update_psw){
+        res.status(400).json({status: "error", description: "The password is the same. Please change it."});
+        console.log('update student psw: same password')
+        return
+    }
+    res.status(200).json({status: "updated", description: "Password updated successfully"})
+}
+
 /*classesSchema.read_project_classes_associated(3,7).then(msg => {
     for(var i=0;i<msg.length;i++){
         console.log("classes "+i);

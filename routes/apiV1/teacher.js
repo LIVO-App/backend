@@ -13,5 +13,9 @@ router.get('/:teacher_id/associated_project_classes', teacherHandler.get_associa
 router.get('/:teacher_id/my_ordinary_classes', tokenChecker);
 router.get('/:teacher_id/my_ordinary_classes', teacherHandler.get_my_ordinary_classes);
 router.get('/:teacher_id/active_years', teacherHandler.get_active_years);
+router.put('/:teacher_id', tokenChecker);
+router.put('/:teacher_id', teacherHandler.update_info);
+router.put('/:teacher_id/password', tokenChecker);
+router.put('/:teacher_id/password', teacherHandler.update_password);
 
 module.exports = router;

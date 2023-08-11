@@ -67,5 +67,87 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async update(admin_id, infos){
+        try {
+            conn = await pool.getConnection()
+            if(admin_id == undefined || infos == undefined || Object.keys(infos).length == 0){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE admin SET'
+            let values = []
+            let name = infos.name
+            let surname = infos.surname
+            let gender = infos.gender
+            let birth_date = infos.birth_date
+            let address = infos.address
+            if(name == "" && surname == "" && gender == "" && birth_date == "" && address == ""){
+                conn.release()
+                return false
+            }
+            if(name!=undefined && name!=""){
+                sql += ' name = ?,'
+                values.push(name)
+            }
+            if(surname!=undefined && surname!=""){
+                sql += ' surname = ?,'
+                values.push(surname)
+            }
+            if(gender!=undefined && gender!=""){
+                sql += ' gender = ?,'
+                values.push(crypto.cipher(gender.toString()).toString())
+            }
+            if(birth_date!=undefined && birth_date!=""){
+                sql += ' birth_date = ?,'
+                values.push(crypto.cipher(birth_date.toString()).toString())
+            }
+            if(address!=undefined && address!=""){
+                sql += ' address = ?'
+                values.push(crypto.cipher(address.toString()).toString())
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1);
+            }
+            sql += ' WHERE id = ?'
+            values.push(admin_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async change_psw(admin_id, psw){
+        try {
+            conn = await pool.getConnection()
+            if(admin_id == undefined || psw == undefined){
+                conn.release()
+                return null
+            }
+            let new_psw = crypto.encrypt_password(psw).toString()
+            let sql = 'SELECT password FROM admin WHERE id = ?'
+            let rows = await conn.query(sql, admin_id)
+            if(rows.length==1){
+                if(rows[0].password.toString() === new_psw){
+                    conn.release()
+                    return false
+                }
+            } else {
+                conn.release()
+                return null
+            }
+            sql = 'UPDATE admin SET password = ? WHERE id = ?'
+            let values = [new_psw, admin_id]
+            rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

@@ -1408,6 +1408,112 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}:
+    put:
+      description: Update of information of the teacher
+      summary: Update teacher information
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      tags:
+        - teachers
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_user_info_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/password:
+    put:
+      description: Update of password of the teacher
+      summary: Update teacher password
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      tags:
+        - teachers
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              type: string
+              description: "Password to be updated"
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'  
+  /v1/admins/{admin_id}:
+    put:
+      description: Update of information of the admin
+      summary: Update teacher information
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_admin_id'
+      tags:
+        - admins
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_user_info_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/admins/{admin_id}/password:
+    put:
+      description: Update of password of the admin
+      summary: Update admin password
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_admin_id'
+      tags:
+        - admins
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              type: string
+              description: "Password to be updated"
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'  
   /v1/project_classes/{course}/{block}/sections:
     get:
       description: Get all sections of a specific project class
@@ -3892,6 +3998,13 @@ components:
       name: constr_id
       in: path
       description: Constraint id
+      schema:
+        type: integer
+      required: true
+    path_admin_id:
+      name: admin_id
+      in: path
+      description: Admin Id
       schema:
         type: integer
       required: true

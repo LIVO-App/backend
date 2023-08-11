@@ -20,5 +20,7 @@ router.get('/:student_id/project_classes', tokenChecker);
 router.get('/:student_id/project_classes', studentHandler.get_project_classes);
 router.get('/:student_id/annual_credits', tokenChecker);
 router.get('/:student_id/annual_credits', studentHandler.get_credits_annual_progession);
+router.put('/:student_id', tokenChecker);
+router.put('/:student_id', studentHandler.update_info);
 
 module.exports = router;

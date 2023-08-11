@@ -34,7 +34,7 @@ const CryptoJS = require('crypto-js');
   };*/
 
 function cipher(str){
-    console.log(str)
+    //console.log(str)
     var ciphertext = CryptoJS.AES.encrypt(str, process.env.DB_SUPER_SECRET/*,{format: JsonFormatter}*/);
     //console.log("IN ENCRYPT");
     //console.log(ciphertext);

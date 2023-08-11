@@ -408,3 +408,32 @@ module.exports.get_project_classes = async (req,res) => {
     };
     res.status(200).json(response);
 }
+
+module.exports.update_info = async (req, res) => {
+    let student_id = req.params.student_id
+    if(req.loggedUser.role == "student"){
+        let student_exist = await studentModel.read_id(student_id);
+        if(!student_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student information: student does not exists');
+            return;
+        }
+        if(req.loggedUser._id != student_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('update student information: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update student information: unauthorized access');
+        return;
+    }
+    let information = req.body.student_info
+    let update_info = await studentModel.update(student_id, information)
+    if(!update_info){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('update student information: no parameters to change')
+        return
+    }
+    res.status(200).json({status: "updated", description: "Information updated successfully"})
+}

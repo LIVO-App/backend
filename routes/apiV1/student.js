@@ -22,5 +22,7 @@ router.get('/:student_id/annual_credits', tokenChecker);
 router.get('/:student_id/annual_credits', studentHandler.get_credits_annual_progession);
 router.put('/:student_id', tokenChecker);
 router.put('/:student_id', studentHandler.update_info);
+router.put('/:student_id/password', tokenChecker);
+router.put('/:student_id/password', studentHandler.update_password);
 
 module.exports = router;

@@ -244,11 +244,23 @@ module.exports = {
             conn = await pool.getConnection()
             if(student_id == undefined || psw == undefined){
                 conn.release()
-                return false
+                return null
             }
-            let sql = 'UPDATE student SET password = ? WHERE id = ?'
-            let values = [crypto.encrypt_password(psw), student_id]
-            const rows = await conn.query(sql, values)
+            let new_psw = crypto.encrypt_password(psw).toString()
+            let sql = 'SELECT password FROM student WHERE id = ?'
+            let rows = await conn.query(sql, student_id)
+            if(rows.length==1){
+                if(rows[0].password.toString() === new_psw){
+                    conn.release()
+                    return false
+                }
+            } else {
+                conn.release()
+                return null
+            }
+            sql = 'UPDATE student SET password = ? WHERE id = ?'
+            let values = [new_psw, student_id]
+            rows = await conn.query(sql, values)
             conn.release()
             return rows
         } catch (err) {

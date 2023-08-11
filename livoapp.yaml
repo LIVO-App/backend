@@ -1873,6 +1873,58 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+    put:
+      description: Update of information of the student
+      summary: Update student information
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+      tags:
+        - students
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_user_info_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/student/{student_id}/password:
+    put:
+      description: Update of password of the student
+      summary: Update student password
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+      tags:
+        - students
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              type: string
+              description: "Password to be updated"
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'      
   /v1/student/{student_id}/annual_credits:
     get:
       description: Annual credits situation of the student
@@ -3531,6 +3583,25 @@ components:
         num_groups:
           type: integer
           description: "Maximum number of groups of the block to be add"
+    update_user_info_data:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Name of the student to be update"
+        surname:
+          type: string
+          description: "Surname of the student to be update"
+        gender:
+          type: string
+          description: "Gender of the student to be update"
+        birth_date:
+          type: string
+          format: date
+          description: "Birth date of the student to be update"
+        address:
+          type: string
+          description: "Address of the student to be update"
   parameters:
     query_school_year:
       name: school_year

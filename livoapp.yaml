@@ -2288,7 +2288,35 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '409':
           $ref: '#/components/responses/ConstraintsInsertion'
-  /v1/constraints/:constr_id:
+  /v1/constraints/{constr_id}:
+    put:
+      description: Update of credit constraints for a certain block
+      summary: Update of credit constraints
+      tags:
+        - constraints
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        description: Number of credits to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                num_credits:
+                  type: number
+                  description: "Number of credits to be update"
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'      
     delete:
       description: Delete the constraint specified if it is not for a past, current, imminent
       parameters:

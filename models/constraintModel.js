@@ -247,6 +247,24 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async update(constraint_id, num_credits){
+        try {
+            conn = await pool.getConnection()
+            if(constraint_id == undefined || !num_credits){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE limited SET credits = ? WHERE id = ?'
+            let values = [num_credits, constraint_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
     /*,
     async is_annual_constraint_present(context_id, study_year, study_address, area_id, school_year){

@@ -328,7 +328,7 @@ module.exports.delete_constraint = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course proposition deletion: unauthorized access');
+            console.log('deletion constraints: unauthorized access');
             return;
         }
     } else {
@@ -365,4 +365,55 @@ module.exports.delete_constraint = async (req, res) => {
     }
     await constraintSchema.delete_constraint(constr_id)
     res.status(200).json({status: "deleted", description: "Constraint deleted successfully"});
+}
+
+module.exports.update_constraints = async (req, res) => {
+    if(req.loggedUser.role == "admin"){
+        let user_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(user_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('update constraints: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update constraints: unauthorized access');
+        return;
+    }
+    let constr_id = req.params.constr_id
+    let constr_exist = await constraintSchema.read(constr_id)
+    if(!constr_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('constraint update: resource not found');
+        return;
+    }
+    let block_id = constr_exist.learning_block_id
+    let block_exists = await learning_blocksModel.read(block_id)
+    let starting_date = new Date(block_exists.start)
+    let today = new Date()
+    let _10days = today.setDate(today.getDate() + 10)
+    if (starting_date <= today || starting_date <= _10days){
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('constraint deletion: the block is a past, current or imminent block. Abort update');
+        return;
+    } else {
+        let past_block = await learning_blocksModel.read(block_id-1)
+        if(past_block){
+            let past_starting_date = new Date(past_block.start)
+            if(past_starting_date <= today || past_starting_date <= _10days){
+                res.status(400).json({status: "error", description: MSG.firstFutureBlock});
+                console.log('constraint deletion: the block is the first future block, where the students are choosing the next courses. You can\'t change the constraints. Abort update');
+                return;
+            }
+        }
+    }
+    let num_credits = req.body.num_credits;
+    let update_constraints = await constraintSchema.update(constr_id, num_credits)
+    if(!update_constraints){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('constraint update: missing parameters');
+        return;
+    }
+    res.status(200).json({status: "updated", description: "Constraint updated successfully"})
 }

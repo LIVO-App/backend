@@ -115,6 +115,49 @@ describe('/api/v1/constraints', () => {
         })
     })
 
+    describe('PUT methods tests', () => {
+        describe('PUT /api/v1/constraints/:constr_id', () => {
+            // No token
+            test('PUT /api/v1/constraints/:constr_id without token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/constraints/1')
+                    .expect(401)
+            })
+
+            // Invalid token
+            test('PUT /api/v1/constraints/:constr_id with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/constraints/1')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
+            // Wrong token
+            test('PUT /api/v1/constraints/:constr_id with non existing admin token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/constraints/1')
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401)
+            })
+
+            // Valid token but non existing id
+            test('PUT /api/v1/constraints/:constr_id with valid token but non existing constraint should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/constraints/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            // Valid token but past block
+            test('PUT /api/v1/constraints/:constr_id with valid token but constraint of past block should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/constraints/1')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+        })
+    })
+
     describe('GET methods tests', () => {
         describe('GET /api/v1/constraints', () => {
             

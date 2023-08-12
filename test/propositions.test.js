@@ -260,6 +260,7 @@ describe('/api/v1/propositions', () => {
                 .then((response) => {
                     course_id_1 = response.body.course_id
                     block_id_1 = valid_proposal.block_id
+                    console.log(response.body.description)
                     /*course_id.push(response.body.course_id)
                     block_id.push(valid_proposal.block_id)*/
                 });

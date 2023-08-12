@@ -18,7 +18,9 @@ let MSG = {
     missingParameter: "Missing required information",
     notAuthorized: "Not authorized request",
     minStudents: "Not reached min students. You can't confirm the class",
-    maxStudents: "Too many students. Please check the components of the class"
+    maxStudents: "Too many students. Please check the components of the class",
+    classToBeModified: "The project class has still to be modified. Please change it before confirm it",
+    alreadyConfirmed: "The project class was already confirmed definitely-"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -529,6 +531,16 @@ module.exports.final_confirmation = async (req, res) => {
     if(!project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('project course final confirmation: project class does not exists');
+        return;
+    }
+    if(project_class_exist.to_be_modified == "true"){
+        res.status(400).json({status: "error", description: MSG.classToBeModified});
+        console.log('project course final confirmation: project class needs to be modified');
+        return;
+    }
+    if(project_class_exist.final_confirmation == "true"){
+        res.status(400).json({status: "error", description: MSG.alreadyConfirmed});
+        console.log('project course final confirmation: project class already confirmed');
         return;
     }
     let min_students = course_exist.min_students

@@ -9,7 +9,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT pc.course_id, pc.learning_block_id, pc.italian_displayed_name, pc.english_displayed_name, pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_block_id = ?';
+            let sql = 'SELECT pc.course_id, pc.learning_block_id, pc.italian_displayed_name, pc.english_displayed_name, pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_block_id = ?';
             values = [course_id, block_id];
             const rows = await conn.query(sql, values);
             conn.release();

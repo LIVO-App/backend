@@ -140,6 +140,33 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    put:
+      description: Update the learning block specified by changing some data like starting and ending date or the max number of groups
+      parameters:
+        - $ref: '#/components/parameters/path_block_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - project classes
+        - v1
+      requestBody:
+        description: Data of final message
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/update_block_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
   /v1/learning_areas:
     get:
       description: Get all learning areas in the system.
@@ -3760,6 +3787,20 @@ components:
         english_message:
           type: string
           description: "English content of the announcement"
+    update_block_data:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: "New starting date to be updated"
+        end_date:
+          type: string
+          format: date
+          description: "New ending date to be updated"
+        num_groups:
+          type: integer
+          description: "New number of groups to be updated"
   parameters:
     query_school_year:
       name: school_year

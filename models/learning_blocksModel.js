@@ -151,5 +151,47 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async update(block_id, block_info){
+        try {
+            conn = await pool.getConnection()
+            if(block_id == undefined || block_info == undefined || Object.keys(block_info).length == 0){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE learning_block SET'
+            let values = []
+            let start_date = block_info.start_date
+            let end_date = block_info.end_date
+            let num_groups = block_info.num_groups
+            if(start_date == "" && end_date == "" && num_groups == ""){
+                conn.release()
+                return false
+            }
+            if(start_date!=undefined && start_date!=""){
+                sql += ' start = ?,'
+                values.push(start_date)
+            }
+            if(end_date!=undefined && end_date!=""){
+                sql += ' end = ?,'
+                values.push(end_date)
+            }
+            if(num_groups!=undefined && num_groups!=""){
+                sql += ' num_groups = ?'
+                values.push(num_groups)
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1);
+            }
+            sql += ' WHERE id = ?'
+            values.push(block_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

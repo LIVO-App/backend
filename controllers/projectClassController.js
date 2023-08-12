@@ -585,5 +585,5 @@ module.exports.final_confirmation = async (req, res) => {
             return;
         }
     }
-    res.status(201).json({status: "updated", description: "Course confirmed definetly. Added first message of the course"})
+    res.status(201).json({status: "updated", description: "Project class confirmed definetly. Added first message of the course"})
 }

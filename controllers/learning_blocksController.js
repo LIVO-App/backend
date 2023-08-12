@@ -250,8 +250,86 @@ module.exports.add_blocks = async (req, res) => {
         num_inserted: num_inserted
     })
 }
-/*
-obj.sort((a,b) => {
+
+module.exports.update_block = async (req, res) => {
+    if(req.loggedUser.role == "admin"){
+        let user_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(user_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('learning blocks update: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('learning blocks update: unauthorized access');
+        return;
+    }
+    let block_id = req.params.block_id
+    let block_info = req.body.block_info
+    let block_exists = await learningBlockSchema.read(block_id)
+    if(!block_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('learning block update: block does not exist');
+        return;
+    }
+    let starting_date = new Date(block_exists.start)
+    let today = new Date()
+    let _10days = today.setDate(today.getDate() + 10)
+    if (starting_date <= today || starting_date <= _10days){
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('learning block update: the block is a past, current or imminent block. Abort update');
+        return;
+    }
+    let future_blocks_existing = await learningBlockSchema.list(undefined, undefined, true);
+    if(!future_blocks_existing){
+        res.status(400).json({status: "error", description: MSG.somethingWrong});
+        console.log('learning blocks update: something went wrong in get future blocks');
+        return;
+    }
+    future_blocks_existing.reverse()
+    // Check if block overlaps blocks or is changed to past block
+    let overlapping, valid_block;
+    for(let j in future_blocks_existing){
+        let future_block_start = new Date(future_blocks_existing[j].start)
+        let future_block_end = new Date(future_blocks_existing[j].end)
+        if(block_info.start_date > future_block_start){
+            if(block_info.start_date > future_block_end){
+                // If we are in the most recent future block we are safe
+                // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
+                valid_block = true
+                break
+            } else {
+                overlapping = true
+                res.status(400).json({status: "error", description: MSG.overlappingBlocks});
+                console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
+                return;
+            }
+        } else {
+            // Check ending date to see if it is still overlapping or not
+            if(block_info.end_date>future_block_start){
+                overlapping = true
+                res.status(400).json({status: "error", description: MSG.overlappingBlocks});
+                console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
+                return;
+            }
+        }
+        if(!valid_block){
+            overlapping = true
+            res.status(400).json({status: "error", description: MSG.pastBlock});
+            console.log('learning blocks update: you can\'t change a block and move it to the past. Please try again');
+            return;
+        }
+    }
+    let update_block = await learningBlockSchema.update(block_id, block_info);
+    if(!update_block){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('learning blocks update: missing parameters');
+        return;
+    }
+    res.status(200).json({status: "updated", description: "Learning block updated successfully"})
+}
+/*obj.sort((a,b) => {
 	let school_year_a = a.school_year
     let school_year_b = b.school_year
 	let start_date_a = new Date(a.start_date)

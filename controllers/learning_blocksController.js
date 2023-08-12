@@ -11,7 +11,8 @@ let MSG = {
     itemAlreadyExists: "The learning blocks are all already presents",
     overlappingBlocks: "The blocks you tried to add are overlapping. Try again",
     somethingWrong: "Something went wrong",
-    missingParameters: "Missing required information"
+    missingParameters: "Missing required information",
+    wrongData: "The data are not correct. Please try again"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -267,11 +268,34 @@ module.exports.update_block = async (req, res) => {
     }
     let block_id = req.params.block_id
     let block_info = req.body.block_info
+    if(block_info!=undefined){
+        if(block_info.end_date != undefined && block_info.start_date != undefined){
+            if(block_info.end_date<=block_info.start_date){
+                res.status(400).json({status: "error", description: MSG.wrongData});
+                console.log('learning block update: the block has wrong data. Abort update');
+                return;
+            }
+        } 
+    }
     let block_exists = await learningBlockSchema.read(block_id)
     if(!block_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('learning block update: block does not exist');
         return;
+    }
+    if(block_info.start_date!=undefined && block_info.start_date != ""){
+        if(new Date(block_info.start_date)>=new Date(block_exists.end)){
+            res.status(400).json({status: "error", description: MSG.wrongData});
+            console.log('learning block update: the block has wrong data. Abort update');
+            return;
+        }
+    }
+    if(block_info.end_date!=undefined && block_info.end_date != ""){
+        if(new Date(block_info.end_date)>=new Date(block_exists.start)){
+            res.status(400).json({status: "error", description: MSG.wrongData});
+            console.log('learning block update: the block has wrong data. Abort update');
+            return;
+        }
     }
     let starting_date = new Date(block_exists.start)
     let today = new Date()

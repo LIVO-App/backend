@@ -280,79 +280,81 @@ describe('/api/v1/propositions', () => {
         }, 20000)
     })
 
-    describe('PUT /api/v1/propositions/approval', () => {
-        test('PUT /api/v1/propositions/approval without token should respond with status 401', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .expect(401)
-        })
-
-        test('PUT /api/v1/propositions/approval with invalid token should respond with status 403', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .set('x-access-token', invalidToken)
-                .expect(403)
-        })
-
-        test('PUT /api/v1/propositions/approval with wrong user token should respond with status 403', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .set('x-access-token', wrongUserToken)
-                .expect(401)
-        })
-
-        test('PUT /api/v1/propositions/approval with non existing admin token should respond with status 401', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .set('x-access-token', invalidTokenAdmin)
-                .expect(401)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but no parameters should respond with status 404', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .set('x-access-token', validTokenAdmin)
-                .expect(404)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but non existing course should respond with status 404', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .query({course_id: 0, block_id: 7})
-                .set('x-access-token', validTokenAdmin)
-                .expect(404)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but non existing block should respond with status 404', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .query({course_id: 1, block_id: 0})
-                .set('x-access-token', validTokenAdmin)
-                .expect(404)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but non existing project class should respond with status 404', async () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .query({course_id: 1, block_id: 7})
-                .set('x-access-token', validTokenAdmin)
-                .expect(404)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but valid information should respond with status 204', () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .query({course_id: course_id_1, block_id: block_id_1})
-                .set('x-access-token', validTokenAdmin)
-                .expect(200)
-        })
-
-        test('PUT /api/v1/propositions/approval with valid token but valid information and not confirmed should respond with status 204', () => {
-            return request(app)
-                .put('/api/v1/propositions/approval')
-                .query({course_id: course_id_1, block_id: block_id_1, approved: "false"})
-                .set('x-access-token', validTokenAdmin)
-                .expect(200)
+    describe('PUT /api/v1/propositions', () => {
+        describe('PUT /api/v1/propositions/approval', () => {
+            test('PUT /api/v1/propositions/approval without token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .expect(401)
+            })
+    
+            test('PUT /api/v1/propositions/approval with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+    
+            test('PUT /api/v1/propositions/approval with wrong user token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .set('x-access-token', wrongUserToken)
+                    .expect(401)
+            })
+    
+            test('PUT /api/v1/propositions/approval with non existing admin token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .set('x-access-token', invalidTokenAdmin)
+                    .expect(401)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but no parameters should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but non existing course should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .query({course_id: 0, block_id: 7})
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but non existing block should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .query({course_id: 1, block_id: 0})
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but non existing project class should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .query({course_id: 1, block_id: 7})
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but valid information should respond with status 204', () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .query({course_id: course_id_1, block_id: block_id_1})
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(200)
+            })
+    
+            test('PUT /api/v1/propositions/approval with valid token but valid information and not confirmed should respond with status 204', () => {
+                return request(app)
+                    .put('/api/v1/propositions/approval')
+                    .query({course_id: course_id_1, block_id: block_id_1, approved: "false"})
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(200)
+            })
         })
     })
 

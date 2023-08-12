@@ -538,7 +538,7 @@ module.exports.final_confirmation = async (req, res) => {
         console.log('project course final confirmation: project class needs to be modified');
         return;
     }
-    if(project_class_exist.final_confirmation == "true"){
+    if(project_class_exist.final_confirmation != null){
         res.status(400).json({status: "error", description: MSG.alreadyConfirmed});
         console.log('project course final confirmation: project class already confirmed');
         return;
@@ -550,12 +550,12 @@ module.exports.final_confirmation = async (req, res) => {
     for(let i=0;i<num_section;i++){
         let components = await projectClassesSchema.classComponents(course_id, block_id, String.fromCharCode(65+i))
         if(components.length<min_students){
-            res.status(404).json({status: "error", description: MSG.minStudents});
+            res.status(400).json({status: "error", description: MSG.minStudents});
             console.log('project course final confirmation: project class does not have min students required');
             return;
         }
         if(components.length>max_students){
-            res.status(404).json({status: "error", description: MSG.maxStudents});
+            res.status(400).json({status: "error", description: MSG.maxStudents});
             console.log('project course final confirmation: project class has too much students w.r.t. the ones required');
             return;
         }
@@ -585,5 +585,5 @@ module.exports.final_confirmation = async (req, res) => {
             return;
         }
     }
-    res.send(201).json({status: "updated", description: "Course confirmed definetly. Added first message of the course"})
+    res.status(201).json({status: "updated", description: "Course confirmed definetly. Added first message of the course"})
 }

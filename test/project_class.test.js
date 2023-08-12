@@ -48,6 +48,69 @@ describe('/api/v1/project_classes', () => {
         })
     })
 
+    describe('PUT methods tests', () => {
+        describe('PUT /api/v1/project_classes/:course/:block/final_confirmation', () => {
+            // No token
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation without token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/7/final_confirmation')
+                    .expect(401)
+            })
+
+            // Invalid token
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/7/final_confirmation')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
+            // Wrong admin token
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with non existing admin token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/7/final_confirmation')
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401)
+            })
+
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing course should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/0/7/final_confirmation')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing block should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/0/final_confirmation')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing project class should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/1/7/final_confirmation')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but already confirmed project class should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/6/final_confirmation')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+
+            // Valid token but no students
+            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but no students in the class should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/project_classes/2/7/final_confirmation')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+        })
+    })
+
     describe('GET methods tests', () => {
         
         describe('GET /api/v1/project_classes/', () => {

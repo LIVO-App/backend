@@ -4,14 +4,13 @@ const app = require('../app');
 const learning_blocksModel = require('../models/learning_blocksModel');
 //const { response } = require('../app');
 
+let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
+let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let starting_id, number_of_insert;
 
 describe('/api/v1/learning_blocks', () => {
     describe('POST methods tests', () => {
-        let invalidToken = jwt.sign({_id: 5}, 'wrongSecret', {expiresIn: 86400});
-        let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-        let wrongTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
-
         let empty_data = {}
         let empty_array = {blocks_list: []}
         let already_inserted_block = {blocks_list: [{number: 5, school_year: 2021, start_date: "2022/03/01", end_date: "2022/04/30", num_groups: 1}]}
@@ -144,6 +143,119 @@ describe('/api/v1/learning_blocks', () => {
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
                     });
+            })
+        })
+    })
+
+    describe('PUT methods tests', () => {
+        describe('PUT /api/v1/learning_blocks/:block_id', () => {
+            let empty_data = {}
+            let no_data = {block_info: {}}
+            let wrong_date = {block_info: {start_date: "2022/03/01", end_date: "2022/01/30"}}
+            let start_date_overlap = {block_info: {start_date: "2022/09/29"}}
+            let end_date_overlap = {block_info: {start_date: "2022/11/01"}}
+            let moved_to_past = {block_info: {start_date: "2022/01/30", end_date: "2022/02/28"}}
+            let valid_update = {block_info: {start_date: "2023/10/10", end_date: "2023/10/30", num_groups: 2}}
+            // Block to be changed it the first one inserted
+            // No token
+            test('PUT /api/v1/learning_blocks/:block_id without token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .expect(401)
+            })
+
+            // Invalid token
+            test('PUT /api/v1/learning_blocks/:block_id with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
+            // Wrong admin token
+            test('PUT /api/v1/learning_blocks/:block_id with non existing admin token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', wrongTokenAdmin)
+                    .expect(401)
+            })
+
+            // Valid token but non existing block
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but non existing block should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(404)
+            })
+
+            // Valid token but new end_date <= start_date
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but wrong starting and ending date should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(wrong_date)
+                    .expect(400)
+            })
+
+            // Valid token but past block updated
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but non existing block should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/1')
+                    .set('x-access-token', validTokenAdmin)
+                    .expect(400)
+            })
+
+            // Valid token but start date overlapping with other future blocks
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but starting date is overlapping should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(start_date_overlap)
+                    .expect(400)
+            })
+
+            // Valid token but end date overlapping with other future blocks
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but ending date is overlapping should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(end_date_overlap)
+                    .expect(400)
+            })
+
+            // Valid token moved as past blocks
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but block is moved as past block should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(moved_to_past)
+                    .expect(400)
+            })
+
+            // Valid token but empty data
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but empty data should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(empty_data)
+                    .expect(400)
+            })
+
+            test('PUT /api/v1/learning_blocks/:block_id with valid token but no data should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(no_data)
+                    .expect(400)
+            })
+
+            // Valid token and valid update
+            test('PUT /api/v1/learning_blocks/:block_id with valid token and valid updates data should respond with status 200', async () => {
+                return request(app)
+                    .put('/api/v1/learning_blocks/'+starting_id)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(valid_update)
+                    .expect(200)
             })
         })
     })

@@ -320,38 +320,48 @@ module.exports.update_block = async (req, res) => {
     future_blocks_existing.reverse()
     // Check if block overlaps blocks or is changed to past block
     let overlapping, valid_block;
-    for(let j in future_blocks_existing){
-        let start_date_update = start_date != undefined ? start_date : block_exists.start
-        let end_date_update = end_date != undefined ? end_date : block_exists.end
-        let future_block_start = new Date(future_blocks_existing[j].start)
-        let future_block_end = new Date(future_blocks_existing[j].end)
-        if(start_date_update > future_block_start){
-            if(start_date_update > future_block_end){
-                // If we are in the most recent future block we are safe
-                // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
-                valid_block = true
-                break
+    if(block_info!=undefined){
+        for(let j in future_blocks_existing){
+            let start_date_update = start_date != undefined ? start_date : block_exists.start
+            let end_date_update = end_date != undefined ? end_date : block_exists.end
+            let future_block_start = new Date(future_blocks_existing[j].start)
+            let future_block_end = new Date(future_blocks_existing[j].end)
+            if(future_blocks_existing[j].id!=block_id){
+                if(start_date_update > future_block_start){
+                    if(start_date_update > future_block_end){
+                        // If we are in the most recent future block we are safe
+                        // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
+                        valid_block = true
+                        break
+                    } else {
+                        overlapping = true
+                        res.status(400).json({status: "error", description: MSG.overlappingBlocks});
+                        console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
+                        return;
+                    }
+                } else {
+                    // Check ending date to see if it is still overlapping or not
+                    if(end_date_update>future_block_start){
+                        overlapping = true
+                        res.status(400).json({status: "error", description: MSG.overlappingBlocks});
+                        console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
+                        return;
+                    }
+                }        
+                
             } else {
-                overlapping = true
-                res.status(400).json({status: "error", description: MSG.overlappingBlocks});
-                console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
-                return;
+                if(start_date_update >= future_block_start){
+                    valid_block = true
+                    break
+                }
             }
-        } else {
-            // Check ending date to see if it is still overlapping or not
-            if(end_date_update>future_block_start){
-                overlapping = true
-                res.status(400).json({status: "error", description: MSG.overlappingBlocks});
-                console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
-                return;
-            }
-        }        
-        if(!valid_block){
-            overlapping = true
-            res.status(400).json({status: "error", description: MSG.pastBlock});
-            console.log('learning blocks update: you can\'t change a block and move it to the past. Please try again');
-            return;
         }
+    }
+    if(!valid_block){
+        overlapping = true
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('learning blocks update: you can\'t change a block and move it to the past. Please try again');
+        return;
     }
     let update_block = await learningBlockSchema.update(block_id, block_info);
     if(!update_block){

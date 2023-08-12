@@ -9,14 +9,16 @@ const projectClassTeacherSchema = require('../models/projectClassTeacherModel');
 const courseSchema = require('../models/coursesModel')
 const learning_blocksModel = require('../models/learning_blocksModel');
 const classesTeacherModel = require('../models/classesTeacherModel');
-const inscribeSchema = require('../models/inscribeModel')
+const inscribeSchema = require('../models/inscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
     has_grades: "The project class you want to delete already has grades. Abort deletion",
     missingParameter: "Missing required information",
-    notAuthorized: "Not authorized request"
+    notAuthorized: "Not authorized request",
+    minStudents: "Not reached min students. You can't confirm the class",
+    maxStudents: "Too many students. Please check the components of the class"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -439,12 +441,12 @@ module.exports.delete_project_class = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course proposition approval: unauthorized access');
+            console.log('project_class deletion: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course proposition approval: unauthorized access');
+        console.log('project_class deletion: unauthorized access');
         return;
     }
     let course_id = req.params.course;
@@ -493,4 +495,83 @@ module.exports.delete_project_class = async (req, res) => {
     await classesTeacherModel.delete(course_id, block_id)
     await projectClassesSchema.delete(course_id, block_id)
     res.status(200).json({status: "deleted", description: "Project class deleted successfully"});
+}
+
+module.exports.final_confirmation = async (req, res) => {
+    let user_id = req.loggedUser._id
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project course final confirmation: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project course final confirmation: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course;
+    let course_exist = await courseSchema.read(course_id, true);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project course final confirmation: course does not exists');
+        return;
+    }
+    let block_id = req.params.block;
+    let block_exist = await learning_blocksModel.read(block_id)
+    if(!block_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project course final confirmation: block does not exists');
+        return;
+    }
+    let project_class_exist = await projectClassesSchema.read(course_id, block_id);
+    if(!project_class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project course final confirmation: project class does not exists');
+        return;
+    }
+    let min_students = course_exist.min_students
+    let max_students = course_exist.max_students
+    let num_section = project_class_exist.num_section;
+    // Check that the components are at least min_students and at most max_students for all the classes
+    for(let i=0;i<num_section;i++){
+        let components = await projectClassesSchema.classComponents(course_id, block_id, String.fromCharCode(65+i))
+        if(components.length<min_students){
+            res.status(404).json({status: "error", description: MSG.minStudents});
+            console.log('project course final confirmation: project class does not have min students required');
+            return;
+        }
+        if(components.length>max_students){
+            res.status(404).json({status: "error", description: MSG.maxStudents});
+            console.log('project course final confirmation: project class has too much students w.r.t. the ones required');
+            return;
+        }
+    }
+    // If all goes right: update with final confirmation and add new announcement for start of course.
+    let final_confirmation = await projectClassesSchema.final_confirmation(course_id, block_id, true)
+    if(!final_confirmation){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log('project course final confirmation: missing parameters');
+        return;
+    }
+    let italian_title = req.body.italian_title
+    let english_title = req.body.english_title
+    let italian_message = req.body.italian_message
+    let english_message = req.body.english_message
+    let starting_date = block_exist.start
+    italian_title = italian_title == undefined ? "Inizio del corso" : italian_title;
+    english_title = english_title == undefined ? "Start of the course" : english_title;
+    italian_message = italian_message == undefined ? "Il corso inizierà oggi "+starting_date+". Recati nell'aula predisposta." : italian_message
+    english_message = english_message == undefined ? "The course will start today "+starting_date+". Please, go to the arranged class." : english_message
+    for(let i=0;i<num_section;i++){
+        let first_announcement = await courseAnnouncementSchema.add(user_id, true, course_id, block_id, String.fromCharCode(65+i), italian_title, english_title, italian_message, english_message, starting_date)
+        if(!first_announcement){
+            await projectClassesSchema.final_confirmation(course_id, block_id)
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log('project course final confirmation: final message parameters');
+            return;
+        }
+    }
+    res.send(201).json({status: "updated", description: "Course confirmed definetly. Added first message of the course"})
 }

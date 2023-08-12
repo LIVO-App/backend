@@ -283,5 +283,29 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async final_confirmation(course_id, block_id, confirmation = false){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || !block_id){
+                conn.release()
+                return false
+            }
+            let confirmation_date;
+            if(confirmation){
+                confirmation_date = new Date()
+            } else {
+                confirmation_date = null
+            }
+            let sql = 'UPDATE project_class SET final_confirmation = ? WHERE course_id = ? AND learning_block_id = ?'
+            let values = [confirmation_date, course_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

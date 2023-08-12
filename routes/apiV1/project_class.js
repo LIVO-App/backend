@@ -20,5 +20,7 @@ router.get('/:course/:block/announcements', tokenChecker);
 router.get('/:course/:block/announcements', projectclassHandler.get_announcments);
 router.delete('/:course/:block/', tokenChecker);
 router.delete('/:course/:block/', projectclassHandler.delete_project_class);
+router.put('/:course/:block/final_confirmation', tokenChecker)
+router.put('/:course/:block/final_confirmation', projectclassHandler.final_confirmation)
 
 module.exports = router;

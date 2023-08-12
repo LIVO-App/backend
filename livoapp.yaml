@@ -1186,6 +1186,35 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404': 
           $ref: '#/components/responses/NotFound'
+  /v1/project_classes/{course}/{block}/final_confirmation:
+    put:
+      description: Update the project class specified by setting the final confirmation field to true
+      parameters:
+        - $ref: '#/components/parameters/path_course_id_param'
+        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - project classes
+        - v1
+      requestBody:
+        description: Data of final message
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/final_confirmation_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
   /v1/project_classes/{course}/{block}/components:
     get:
       description: Get all components of a specific project class
@@ -1782,25 +1811,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                sections:
-                  type: array
-                  items:
-                    type: string
-                  description: "Sections of the project class the teacher wants to publish"
-                italian_title:
-                  type: string
-                  description: "Italian title of the announcement"
-                english_title:
-                  type: string 
-                  description: "English title of the announcement"
-                italian_message:
-                  type: string
-                  description: "Italian content of the announcement"
-                english_message:
-                  type: string
-                  description: "English content of the announcement"
+              $ref: '#/components/schemas/announcements_post_data'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -3708,6 +3719,47 @@ components:
         address:
           type: string
           description: "Address of the student to be update"
+    announcements_post_data:
+      type: object
+      required:
+        - sections
+        - italian_title
+        - english_title
+        - italian_message
+        - english_message
+      properties:
+        sections:
+          type: array
+          items:
+            type: string
+          description: "Sections of the project class the teacher wants to publish"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string 
+          description: "English title of the announcement"
+        italian_message:
+          type: string
+          description: "Italian content of the announcement"
+        english_message:
+          type: string
+          description: "English content of the announcement"
+    final_confirmation_data:
+      type: object
+      properties:
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string 
+          description: "English title of the announcement"
+        italian_message:
+          type: string
+          description: "Italian content of the announcement"
+        english_message:
+          type: string
+          description: "English content of the announcement"
   parameters:
     query_school_year:
       name: school_year

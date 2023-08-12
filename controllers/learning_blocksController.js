@@ -268,9 +268,13 @@ module.exports.update_block = async (req, res) => {
     }
     let block_id = req.params.block_id
     let block_info = req.body.block_info
+    let both_date = false
+    let start_date = block_info!=undefined ? new Date(block_info.start_date) : undefined
+    let end_date = block_info!=undefined ? new Date(block_info.end_date) : undefined
     if(block_info!=undefined){
-        if(block_info.end_date != undefined && block_info.start_date != undefined){
-            if(block_info.end_date<=block_info.start_date){
+        if(end_date != undefined && start_date != undefined){
+            both_date = true
+            if(end_date<=start_date){
                 res.status(400).json({status: "error", description: MSG.wrongData});
                 console.log('learning block update: the block has wrong data. Abort update');
                 return;
@@ -283,18 +287,20 @@ module.exports.update_block = async (req, res) => {
         console.log('learning block update: block does not exist');
         return;
     }
-    if(block_info.start_date!=undefined && block_info.start_date != ""){
-        if(new Date(block_info.start_date)>=new Date(block_exists.end)){
-            res.status(400).json({status: "error", description: MSG.wrongData});
-            console.log('learning block update: the block has wrong data. Abort update');
-            return;
+    if(!both_date){
+        if(start_date!=undefined && start_date != ""){
+            if(start_date>=new Date(block_exists.end)){
+                res.status(400).json({status: "error", description: MSG.wrongData});
+                console.log('learning block update: the block has wrong data. Abort update');
+                return;
+            }
         }
-    }
-    if(block_info.end_date!=undefined && block_info.end_date != ""){
-        if(new Date(block_info.end_date)>=new Date(block_exists.start)){
-            res.status(400).json({status: "error", description: MSG.wrongData});
-            console.log('learning block update: the block has wrong data. Abort update');
-            return;
+        if(end_date!=undefined && end_date != ""){
+            if(end_date>=block_exists.start){
+                res.status(400).json({status: "error", description: MSG.wrongData});
+                console.log('learning block update: the block has wrong data. Abort update');
+                return;
+            }
         }
     }
     let starting_date = new Date(block_exists.start)
@@ -315,10 +321,12 @@ module.exports.update_block = async (req, res) => {
     // Check if block overlaps blocks or is changed to past block
     let overlapping, valid_block;
     for(let j in future_blocks_existing){
+        let start_date_update = start_date != undefined ? start_date : block_exists.start
+        let end_date_update = end_date != undefined ? end_date : block_exists.end
         let future_block_start = new Date(future_blocks_existing[j].start)
         let future_block_end = new Date(future_blocks_existing[j].end)
-        if(block_info.start_date > future_block_start){
-            if(block_info.start_date > future_block_end){
+        if(start_date_update > future_block_start){
+            if(start_date_update > future_block_end){
                 // If we are in the most recent future block we are safe
                 // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
                 valid_block = true
@@ -331,13 +339,13 @@ module.exports.update_block = async (req, res) => {
             }
         } else {
             // Check ending date to see if it is still overlapping or not
-            if(block_info.end_date>future_block_start){
+            if(end_date_update>future_block_start){
                 overlapping = true
                 res.status(400).json({status: "error", description: MSG.overlappingBlocks});
                 console.log('learning blocks update: the block you wanted to update is overlapping with already existing ones. Please try again');
                 return;
             }
-        }
+        }        
         if(!valid_block){
             overlapping = true
             res.status(400).json({status: "error", description: MSG.pastBlock});

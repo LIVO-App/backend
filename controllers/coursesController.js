@@ -469,7 +469,7 @@ module.exports.add_proposition = async (req, res) => {
         }
         //Get inserted course table for other insertions
         // If course_id was setted from request, we update it with the new instance model
-        course_id = new_course.rows.insertId
+        course_id = new_course.rows.insertId.toString()
         publication = new_course.date
         let opentoIns = await opentoSchema.add(course_id, access_object);
         if(!opentoIns){
@@ -580,6 +580,7 @@ module.exports.add_proposition = async (req, res) => {
             
         }
     }
+    //console.log(course_id)
     let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
@@ -621,7 +622,6 @@ module.exports.add_proposition = async (req, res) => {
     if((wrong_teacher || course_wrong_value) && !proj_class_exists){
         await projectclassSchema.add_to_be_modified(course_id, block_id)
     }
-    course_id = course_id.toString()
     if(course_exist){
         course_exist = true
     }

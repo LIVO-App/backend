@@ -30,8 +30,8 @@ describe('/api/v1/propositions', () => {
             teaching_list: ["AT", "CAS"]
         }
         let invalid_proposal_p_class = {
-            italian_title: "Prova",
-            english_title: "Prova",
+            italian_title: "ProvaInvalidProjectClass",
+            english_title: "ProvaInvalidProjectClass",
             italian_descr: "aaaaa",
             english_descr: "aaaaa",
             up_hours: 12,
@@ -54,8 +54,8 @@ describe('/api/v1/propositions', () => {
             block_id: 7
         }
         let invalid_proposal_context = {
-            italian_title: "Prova",
-            english_title: "Prova",
+            italian_title: "ProvaInvalidContext",
+            english_title: "ProvaInvalidContext",
             italian_descr: "aaaaa",
             english_descr: "aaaaa",
             up_hours: 12,
@@ -79,8 +79,8 @@ describe('/api/v1/propositions', () => {
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         let invalid_proposal_classes = {
-            italian_title: "Prova",
-            english_title: "Prova",
+            italian_title: "ProvaInvalidaClassi",
+            english_title: "ProvaInvalidClass",
             italian_descr: "aaaaa",
             english_descr: "aaaaa",
             up_hours: 12,
@@ -104,8 +104,8 @@ describe('/api/v1/propositions', () => {
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         let invalid_proposal_teachings = {
-            italian_title: "Prova",
-            english_title: "Prova",
+            italian_title: "ProvaInvalidaTeachings",
+            english_title: "ProvaInvalidTeachings",
             italian_descr: "aaaaa",
             english_descr: "aaaaa",
             up_hours: 12,
@@ -130,8 +130,8 @@ describe('/api/v1/propositions', () => {
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
         valid_proposal = {
-            italian_title: "Prova",
-            english_title: "Prova",
+            italian_title: "ProvaValida",
+            english_title: "ProvaValid",
             italian_descr: "aaaaa",
             english_descr: "aaaaa",
             up_hours: 12,
@@ -260,7 +260,6 @@ describe('/api/v1/propositions', () => {
                 .then((response) => {
                     course_id_1 = response.body.course_id
                     block_id_1 = valid_proposal.block_id
-                    console.log(response.body.description)
                     /*course_id.push(response.body.course_id)
                     block_id.push(valid_proposal.block_id)*/
                 });

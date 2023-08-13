@@ -2336,7 +2336,35 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
         '404': 
-          $ref: '#/components/responses/NotFound'      
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/move_class: 
+    put:
+      description: Update of subscription of a student made by an admin
+      summary: Update of subscriptions
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+      requestBody:
+        description: Classes information (from class, to class)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/move_class'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden' 
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -3829,6 +3857,32 @@ components:
         num_groups:
           type: integer
           description: "New number of groups to be updated"
+    move_class:
+      type: object
+      properties:
+        from:
+          type: object
+          properties:
+            course_id:
+              type: integer
+              description: "Id of the course of the project class from where you want to move the student from"
+            block_id:
+              type: integer
+              description: "Id of the block of the project class from where you want to move the student from"
+          description: "Information of the project class you want to move the student from"
+        to:
+          type: object
+          properties:
+            course_id:
+              type: integer
+              description: "Id of the course of the project class where you want to move the student to"
+            block_id:
+              type: integer
+              description: "Id of the block of the project class where you want to move the student to"
+            section:
+              type: string
+              description: "Section of the project class where you want to move the student to"
+          description: "Information of the project class you want to move the student from"
   parameters:
     query_school_year:
       name: school_year

@@ -24,5 +24,7 @@ router.put('/:student_id', tokenChecker);
 router.put('/:student_id', studentHandler.update_info);
 router.put('/:student_id/password', tokenChecker);
 router.put('/:student_id/password', studentHandler.update_password);
+router.put('/:student_id/move_class', tokenChecker);
+router.put('/:student_id/move_class', studentHandler.move_class_component);
 
 module.exports = router;

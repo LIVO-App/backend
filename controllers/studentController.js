@@ -2,17 +2,26 @@
 
 const courseSchema = require('../models/coursesModel');
 const ordinaryclassSchema = require('../models/ordinaryclassModel');
+const projectClassesSchema = require('../models/projectClassModel')
+const learning_blocksModel = require('../models/learning_blocksModel')
 const studentModel = require('../models/studentModel');
 const teacherModel = require('../models/teacherModel');
 const adminModel = require('../models/adminModel');
+const opentoSchema = require('../models/opentoModel');
 const crypto = require('../utils/cipher');
-const constraintModel = require('../models/constraintModel')
+const constraintModel = require('../models/constraintModel');
+const inscribeModel = require('../models/inscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
     notAuthorized: "Not authorized request",
-    missingParameters: "Missing required information"
+    missingParameters: "Missing required information",
+    classToBeModified: "The project class has still to be modified. Please change it before confirm it",
+    student_not_enrolled: "The student is not enrolled to the starting project class.",
+    student_already_enrolled: "The student is already enrolled to the arrival project class.",
+    classNotAccessible: "The class you want to move the student is not accessible to him or is not accessible for the specific learning context of the original class you want to move him from. Please choose another class.",
+    notCredits: "The destination course has not the same number of credits of the start course. The student will not respect anymore the constraints you created. Please, choose another destination course."
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -470,4 +479,129 @@ module.exports.update_password = async (req, res) => {
         return
     }
     res.status(200).json({status: "updated", description: "Password updated successfully"})
+}
+
+module.exports.move_class_component = async (req, res) => {
+    let user_id = req.loggedUser._id
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project class update components: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project class update components: unauthorized access');
+        return;
+    }
+    let student_id = req.params.student_id
+    let start_class = req.body.from
+    let start_course_id = start_class.course_id;
+    let course_exist = await courseSchema.read(start_course_id, true);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: course does not exists');
+        return;
+    }
+    let start_block_id = start_class.block_id;
+    let block_exist = await learning_blocksModel.read(start_block_id)
+    if(!block_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: block does not exists');
+        return;
+    }
+    let start_project_class_exist = await projectClassesSchema.read(start_course_id, start_block_id);
+    if(!start_project_class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: project class does not exists');
+        return;
+    }
+    if(start_project_class_exist.to_be_modified == "true"){
+        res.status(400).json({status: "error", description: MSG.classToBeModified});
+        console.log('project class update components: project class needs to be modified');
+        return;
+    }
+    // Check if student is part of start project class
+    let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, start_course_id, start_block_id)
+    if(!is_student_present){
+        res.status(400).json({status: "error", description: MSG.student_not_enrolled});
+        console.log('project class update components: student is not enrolled to start project class. Abort move class');
+        return;
+    }
+    let start_class_section = is_student_present.section
+    let start_class_context = is_student_present.learning_context_id
+    // Check if the components go under min_students
+    let start_components = await projectClassesSchema.classComponents(start_course_id, start_block_id, start_class_section)
+    if(start_components.length==course_exist.min_students){
+        res.status(400).json({status: "error", description: MSG.minStudents});
+        console.log('project course update components: project class will not have min students required');
+        return;
+    }
+    let arrival_class = req.body.to
+    let arrival_course_id = arrival_class.course_id
+    let arrival_course_exist = await courseSchema.read(arrival_course_id, true);
+    if(!arrival_course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: course does not exists');
+        return;
+    }
+    if(course_exist.credits != arrival_course_exist.credits){
+        res.status(400).json({status: "error", description: MSG.notCredits});
+        console.log('project class update components: the course you want to move the student has not the same number of credits of the original one.')
+        return
+    }
+    let arrival_block_id = arrival_class.block_id
+    let arrival_block_exist = await learning_blocksModel.read(arrival_block_id)
+    if(!arrival_block_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: block does not exists');
+        return;
+    }
+    let arrival_class_section = arrival_class.section
+    let arrival_project_class_exist = await projectClassesSchema.read(arrival_course_id, arrival_block_id);
+    if(!arrival_project_class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class fupdate components: project class does not exists');
+        return;
+    }
+    if(arrival_project_class_exist.to_be_modified == "true"){
+        res.status(400).json({status: "error", description: MSG.classToBeModified});
+        console.log('project course update components: project class needs to be modified');
+        return;
+    }
+    // Check if destination project class is accessible to student
+    let is_class_accessible = await opentoSchema.is_course_accessible(student_id, arrival_course_id, arrival_block_id, start_class_context);
+    if(is_class_accessible == null){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('project class update components: missing parameters. Is arrival project class accessible')
+        return
+    }
+    if(!is_class_accessible){
+        res.status(400).json({status: "error", description: MSG.classNotAccessible});
+        console.log('project class update components: the course is not accessible for the student given the learning context of the starting class')
+        return
+    }
+    // Check if student is not enrolled to any section of the destination project class
+    let is_student_present_dest = await projectClassesSchema.isStudentEnrolled(student_id, arrival_course_id, arrival_block_id)
+    if(is_student_present_dest){
+        res.status(400).json({status: "error", description: MSG.student_already_enrolled});
+        console.log('project class update components: student is enrolled to the destination project class. Abort move class');
+        return;
+    }
+    // Check if destination is already full
+    let arrival_components = await projectClassesSchema.classComponents(arrival_course_id, arrival_block_id, arrival_class_section)
+    if(arrival_components.length==arrival_course_exist.max_students){
+        res.status(400).json({status: "error", description: MSG.minStudents});
+        console.log('project course update components: project class has max students required');
+        return;
+    }
+    let unscribeStudent = await inscribeModel.remove(student_id, start_course_id, start_block_id, start_class_context);
+    let inscribeStudent = await inscribeModel.add(student_id, arrival_course_id, arrival_block_id, arrival_class_section, start_class_context);
+    if(!inscribeStudent){
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('project class update components: missing parameters. Inscribe to destination')
+        return
+    }
+    res.status(201).json({status: "accepted", description: "Student moved successfully"})
 }

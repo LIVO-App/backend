@@ -127,5 +127,27 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async is_course_accessible(student_id, course_id, block_id, context_id){
+        try {
+            conn = await pool.getConnection()
+            if(!student_id || !course_id || !block_id || !context_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM `accessible` AS acc WHERE acc.course_id = ? AND acc.learning_context_id = ? AND acc.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)) AND acc.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?))'
+            let values = [course_id, context_id, student_id, block_id, student_id, block_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length == 1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

@@ -358,21 +358,112 @@ describe('/api/v1/propositions', () => {
         })
 
         describe('PUT /api/v1/courses/:course_id', () => {
+            let non_valid_change = {
+                italian_title: "Prova2",
+                english_title: "Prova",
+                credits: 4,
+                up_hours: 10,
+                area_id: "SM",
+                growth_id: 1,
+                min_students: 10,
+                max_students: 25,
+                access_object: {
+                    SPE: [{study_year: 1, study_address: "BIO", presidium: 1, main_study_year: 0}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
+                },
+                block_id: 7,
+                class_group: 1,
+                num_section: 2,
+                teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 1, sections:["A"]}]
+        }
+            let valid_change = {
+                    up_hours: 10,
+                    access_object: {
+                        SPE: [{study_year: 1, study_address: "BIO", presidium: 1, main_study_year: 0}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
+                    },
+                    block_id: 7,
+                    class_group: 1,
+                    num_section: 2,
+                    teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 1, sections:["A"]}]
+            }
             // No token
+            test('PUT /api/v1/courses/:course_id without token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .send(valid_change)
+                    .expect(401)
+            })
 
             // Invalid token
+            test('PUT /api/v1/courses/:course_id with invalid token should respond with status 403', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', invalidToken)
+                    .send(valid_change)
+                    .expect(403)
+            })
 
             // Wrong admin token
+            test('PUT /api/v1/courses/:course_id with wrong admin token should respond with status 401', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', invalidTokenAdmin)
+                    .send(valid_change)
+                    .expect(401)
+            })
 
             // Non existing course
+            test('PUT /api/v1/courses/:course_id with valid token but non existing course should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/courses/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .send(valid_change)
+                    .expect(404)
+            }, 20000)
 
             // Non existing block
+            test('PUT /api/v1/courses/:course_id with valid token but non existing course should respond with status 404', async () => {
+                return request(app)
+                    .put('/api/v1/courses/0')
+                    .set('x-access-token', validTokenAdmin)
+                    .send({block_id: 0})
+                    .expect(404)
+            }, 20000)
 
-            // Non past block
+            // Past block
+            test('PUT /api/v1/courses/:course_id with valid token but non existing course should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', validTokenAdmin)
+                    .send({block_id: 1})
+                    .expect(400)
+            }, 20000)
 
             // No info to be changed
+            test('PUT /api/v1/courses/:course_id with valid token but no actual changes should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', validTokenAdmin)
+                    .send({block_id: 7})
+                    .expect(400)
+            }, 20000)
+
+            // But changes of some important information
+            test('PUT /api/v1/courses/:course_id with valid token but changes on relevant information should respond with status 400', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(non_valid_change)
+                    .expect(400)
+            }, 20000)
 
             // Some info per each element
+            test('PUT /api/v1/courses/:course_id with valid token and changes should respond with status 200', async () => {
+                return request(app)
+                    .put('/api/v1/courses/'+course_id_1)
+                    .set('x-access-token', validTokenAdmin)
+                    .send(valid_change)
+                    .expect(200)
+            }, 20000)
         })
     })
 

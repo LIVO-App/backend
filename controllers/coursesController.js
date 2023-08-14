@@ -800,7 +800,7 @@ module.exports.update_course = async (req, res) => {
             return;
         }
     }
-    let growth_area_id
+    let growth_id_exists
     if(growth_id!=undefined){
         growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
         if(!growth_id_exists){
@@ -853,6 +853,7 @@ module.exports.update_course = async (req, res) => {
     let wrong_context, wrong_ord_class, wrong_teacher, wrong_teaching
     let new_classes, new_teachings, new_teacher = false
     let context_exist, already_present, teacher_exist, teacher_present, teaching_present, teaching_exist
+    let study_year, study_address
     if(access_object!=undefined){
         for(var context in access_object){
             context_exist = await contextSchema.read(context)
@@ -951,13 +952,14 @@ module.exports.update_course = async (req, res) => {
     }
     let course_update = await courseSchema.update_course(course_id, ita_title, eng_title, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
     let access_update = await opentoSchema.update(course_id, access_object)
-    let new_project_class = false;
+    let new_project_class;
     let proj_class_exists = await projectclassSchema.read(course_id, block_id)
     if(!proj_class_exists){
         new_project_class = true
     }
-    let project_class_update, teacher_update = false
-    if(!new_project_class){
+    let project_class_update = false
+    let teacher_update
+    if(!new_project_class || new_project_class == undefined){
         project_class_update = await projectclassSchema.update(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section)
         let possible_sections = await projectclassSchema.get_section_number(course_id, block_id)
         possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
@@ -1026,6 +1028,7 @@ module.exports.update_course = async (req, res) => {
             new_teachings: new_teachings, 
             new_teacher: new_teacher
         })
+        return
     }
     res.status(200).json({
         status: "updated",

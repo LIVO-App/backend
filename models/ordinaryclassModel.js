@@ -165,7 +165,7 @@ module.exports = {
                 conn.release()
                 return false
             }
-            let sql = 'SELECT * FROM study_address WHERE id = ?'
+            let sql = 'SELECT id, italian_title, english_title, italian_description, english_description, max_classes FROM study_address WHERE id = ?'
             let values = [study_address]
             const rows = await conn.query(sql,values)
             conn.release()
@@ -174,6 +174,19 @@ module.exports = {
             } else {
                 return false
             }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async get_study_address(){
+        try{
+            conn = await pool.getConnection()
+            let sql = 'SELECT id, italian_title, english_title, italian_description, english_description, max_classes FROM study_address'
+            const rows = await conn.query(sql)
+            conn.release()
+            return rows
         } catch (err) {
             console.log(err)
         } finally {

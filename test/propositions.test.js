@@ -356,6 +356,24 @@ describe('/api/v1/propositions', () => {
                     .expect(200)
             })
         })
+
+        describe('PUT /api/v1/courses/:course_id', () => {
+            // No token
+
+            // Invalid token
+
+            // Wrong admin token
+
+            // Non existing course
+
+            // Non existing block
+
+            // Non past block
+
+            // No info to be changed
+
+            // Some info per each element
+        })
     })
 
     describe('GET /api/v1/propositions/', () => {

@@ -14,5 +14,7 @@ router.get('/:course_id/opento', opentoHandler.get_institute_classes);
 router.get('/:course_id/teachings', courseteachingHandler.get_teachings);
 router.delete('/:course_id', tokenChecker);
 router.delete('/:course_id', coursesHandler.delete_course);
+router.put('/:course_id', tokenChecker)
+router.put('/:course_id', coursesHandler.update_course)
 
 module.exports = router;

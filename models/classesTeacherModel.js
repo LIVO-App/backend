@@ -151,10 +151,10 @@ module.exports = {
                 let main_teacher = teacher_list[i]["main"]
                 let sections = teacher_list[i]["sections"]
                 for(let j=0;j<sections.length;j++){
-                    sql += 'UPDATE project_teach SET main = ? WHERE teacher_id = ? AND project_class_course_id= ? AND project_class_block = ? AND section = ?';
+                    sql += 'UPDATE project_teach SET main = ? WHERE teacher_id = ? AND project_class_course_id = ? AND project_class_block = ? AND section = ?';
                     values.push(main_teacher, teacher_id, course_id, block_id, sections[j])
                     if(j<sections.length-1){
-                        sql+=';'
+                        sql+='; '
                     }
                 }
                 if(i<teacher_list.length-1){

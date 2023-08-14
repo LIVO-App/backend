@@ -22,7 +22,8 @@ let MSG = {
     already_confirmed: "There are project classes for this course that are already confirmed. Deletion abort",
     itemAlreadyExists: "The student is already inscribe to this project class",
     pastBlock: "Block already expired or imminent",
-    notAuthorized: "Not authorized request"
+    notAuthorized: "Not authorized request",
+    changedUniqueInformation: "Some information you wanted to change must remain the same. If you want to change them, please, create a new course model."
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -392,13 +393,30 @@ module.exports.add_proposition = async (req, res) => {
             }
             for(let index=0;index<access_object[context].length;index++){
                 study_year = access_object[context][index].study_year;
-                study_address = access_object[context][index].study_address;
-                class_exist = await ordClassSchema.read(study_year, study_address, block_id) // The class exists for this school year
-                if(!class_exist){
-                    console.log(`Ordinary class ${study_year} ${study_address} does not exists. Removing it from the list of classes for a learning context`)
+                let study_year_exist = await ordClassSchema.check_study_year(study_year)
+                if(!study_year_exist){
+                    console.log(`The study year ${study_year} does not exists. Removing class from the list of classes for a learning context`)
                     wrong_ord_class = true
                     access_object[context].splice(index, 1)
-                    index = index-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                    index = index - 1
+                    continue
+                }
+                study_address = access_object[context][index].study_address;
+                let study_address_exists = await ordClassSchema.check_study_address(study_address)
+                if(!study_address_exists){
+                    console.log(`The study address ${study_address_exists} does not exists. Removing class from the list of classes for a learning context`)
+                    wrong_ord_class = true
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+                let study_address_max_num = study_address_exists.num_classes
+                if(study_year>study_address_max_num){
+                    console.log(`The class ${study_year} ${study_address} does not exists. Removing it from the list of classes for a learning context`)
+                    wrong_ord_class = true
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
                 }
             }
             if(access_object[context].length == 0){
@@ -516,6 +534,7 @@ module.exports.add_proposition = async (req, res) => {
     // The teachers in teacher_list exists?
     let teacher_exists
     let possible_sections = await projectclassSchema.get_section_number(course_id, block_id)
+    possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
     // Teacher list is structure in this way: [{teacher_id, main, sections:[]}]
     if(teacher_list!=undefined){
         for(let i=0;i<teacher_list.length;i++){
@@ -571,7 +590,7 @@ module.exports.add_proposition = async (req, res) => {
             let t_id = teacher_list[i]["teacher_id"]
             let main_teacher = teacher_list[i]["main"]
             let sections = teacher_list[i]["sections"]
-            for(let j=0;j<sections.length;i++){
+            for(let j=0;j<sections.length;j++){
                 teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j].toUpperCase(), t_id, main_teacher);
                 if(!teacher_present){
                     new_teacher = true
@@ -733,6 +752,292 @@ module.exports.delete_course = async (req, res) => {
     await teachingCourseSchema.delete(course_id)
     await courseSchema.deleteProposal(course_id)
     res.status(200).json({status: "deleted", description: "Course deleted successfully"});
+}
+
+module.exports.update_course = async (req, res) => {
+    if(req.loggedUser.role==="admin"){
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course update: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course update: unauthorized access');
+        return;
+    }
+    let course_id = req.params.course_id;
+    let course_exist = await courseSchema.read(course_id, true)
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('course update: course not found');
+        return;
+    }
+    let ita_title = req.body.italian_title;
+    let eng_title = req.body.english_title;
+    let ita_descr = req.body.italian_descr;
+    let eng_descr = req.body.english_descr;
+    let up_hours = req.body.up_hours;
+    let credits = req.body.credits;
+    let ita_exp_l = req.body.italian_exp_l;
+    let eng_exp_l = req.body.english_exp_l;
+    let ita_cri = req.body.italian_cri;
+    let eng_cri = req.body.english_cri;
+    let ita_act = req.body.italian_act;
+    let eng_act = req.body.english_act;
+    let area_id = req.body.area_id;
+    let growth_id = req.body.growth_id;
+    let min_students = req.body.min_students;
+    let max_students = req.body.max_students;
+    let area_id_exists
+    if(area_id!=undefined){
+        area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
+        if(!area_id_exists){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('resource not found: learning area');
+            return;
+        }
+    }
+    let growth_area_id
+    if(growth_id!=undefined){
+        growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
+        if(!growth_id_exists){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('resource not found: growth area');
+            return;
+        }
+    }
+    if(ita_title!=undefined && eng_title!=undefined && credits != undefined && area_id != undefined && min_students != undefined && max_students != undefined){
+        if(course_exist.italian_title != ita_title || course_exist.english_title != eng_title || course_exist.credits != credits || course_exist.learning_area_id != area_id || course_exist.min_students != min_students || course_exist.max_students != max_students){
+            res.status(400).json({status: "error", description: MSG.changedUniqueInformation});
+            console.log('course update: changed some important information');
+            return;
+        }
+    }
+    let block_id = req.body.block_id;
+    let block_id_exists = await blockSchema.read(block_id); // Is learning block present in the database
+    if(!block_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: learning block');
+        return;
+    }
+    let access_object = req.body.access_object;
+    let teaching_list = req.body.teaching_list;
+    let ita_class_name = req.body.italian_class_name;
+    let eng_class_name = req.body.english_class_name;
+    let class_group = req.body.class_group;
+    let num_section = req.body.num_section;
+    let teacher_list = req.body.teacher_list;
+    let starting_date = block_id_exists.start
+    let today = new Date()
+    let _10days = today.setDate(today.getDate() + 10)
+    if (starting_date < today){
+        res.status(400).json({status: "error", description: MSG.pastBlock});
+        console.log('course update: the block is a past block. The data of the project class were not updated');
+        return;
+    }
+    // If block is imminent or current or is the first future block (the one where the students are choosing the courses) you cannot change the class group
+    if(starting_date == today || starting_date <= _10days) {
+        class_group = undefined
+    } else {
+        let past_block = await blockSchema.read(block_id-1)
+        if(past_block){
+            let past_starting_date = new Date(past_block.start)
+            if(past_starting_date <= today || past_starting_date <= _10days){
+                class_group = undefined
+            }
+        }
+    }
+    let wrong_context, wrong_ord_class, wrong_teacher, wrong_teaching
+    let new_classes, new_teachings, new_teacher = false
+    let context_exist, already_present, teacher_exist, teacher_present, teaching_present, teaching_exist
+    if(access_object!=undefined){
+        for(var context in access_object){
+            context_exist = await contextSchema.read(context)
+            if(!context_exist){ // The learning context exists?
+                console.log(`The context with id ${context} does not exists. Removing it from the access_object`)
+                wrong_context = true
+                delete access_object[context]
+                continue         
+            }
+            for(let index=0;index<access_object[context].length;index++){
+                study_year = access_object[context][index].study_year;
+                let study_year_exist = await ordClassSchema.check_study_year(study_year)
+                if(!study_year_exist){
+                    console.log(`The study year ${study_year} does not exists. Removing class from the list of classes for a learning context`)
+                    wrong_ord_class = true
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+                study_address = access_object[context][index].study_address;
+                let study_address_exists = await ordClassSchema.check_study_address(study_address)
+                if(!study_address_exists){
+                    console.log(`The study address ${study_address_exists} does not exists. Removing class from the list of classes for a learning context`)
+                    wrong_ord_class = true
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+                let study_address_max_num = study_address_exists.num_classes
+                if(study_year>study_address_max_num){
+                    console.log(`The class ${study_year} ${study_address} does not exists. Removing it from the list of classes for a learning context`)
+                    wrong_ord_class = true
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+            }
+            if(access_object[context].length == 0){
+                // If all classes where invalid, delete the context from the object
+                console.log(`All the classes for context ${context} does not exist. Removing it from the object`)
+                wrong_context = true
+                delete access_object[context]
+            }
+        }
+    }
+    if(access_object!=undefined){
+        for(var context in access_object){
+            // Loop through all valid classes in a context
+            for(let index=0;index<access_object[context].length;index++){
+                study_year = access_object[context][index].study_year; 
+                study_address = access_object[context][index].study_address;
+                already_present = await opentoSchema.is_present(course_id, context, study_year, study_address) // The class exists for this school year
+                if(!already_present){ // If a class is not present, it means we have a new value -> add new course
+                    access_object[context].splice(index, 1)
+                    index = index-1
+                    new_classes = true
+                }
+            }
+            if(access_object[context].length == 0){
+                // If all classes where invalid, delete the context from the object
+                console.log(`All the classes for context ${context} are new. Removing it from the object`)
+                new_classes = true
+                delete access_object[context]
+            }
+        }
+    }
+    if(teaching_list != undefined){
+        // Remove non valid teachings in order to have right values in case of insertion
+        for(let i = 0; i<teaching_list.length;i++){
+            if(i>=3){
+                console.log(`Teaching ${teaching_list[i]} is more. There should be at most 3 teachings per course proposal. Removing it from the list of teachings`)
+                wrong_teaching = true // Set variable to true
+                teaching_list.splice(i,1)
+                i = i - 1
+            } else {
+                teaching_exist = await teachingSchema.read(teaching_list[i])
+                if(!teaching_exist){ // The teaching exists in the database
+                    console.log(`Teaching ${teaching_list[i]} does not exists. Removing it from the list of teachings`)
+                    wrong_teaching = true // Set variable to true
+                    teaching_list.splice(i, 1) // Remove wrong teaching from list
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                }
+            } 
+        }
+        for(let i = 0; i<teaching_list.length; i++){
+            teaching_present = await teachingCourseSchema.is_present(course_id, teaching_list[i])
+            if(!teaching_present){ // If a teaching is not present, it means we have a new value -> add new course
+                new_teachings = true // If a context is new, it means we add new classes, so its the same
+                teaching_list.splice(i,1)
+                i = i - 1
+            }
+        }
+        if(teaching_list.length == 0){
+            new_teachings = true
+        }
+    }
+    let course_update = await courseSchema.update_course(course_id, ita_title, eng_title, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
+    let access_update = await opentoSchema.update(course_id, access_object)
+    let new_project_class = false;
+    let proj_class_exists = await projectclassSchema.read(course_id, block_id)
+    if(!proj_class_exists){
+        new_project_class = true
+    }
+    let project_class_update, teacher_update = false
+    if(!new_project_class){
+        project_class_update = await projectclassSchema.update(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section)
+        let possible_sections = await projectclassSchema.get_section_number(course_id, block_id)
+        possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
+        if(teacher_list!=undefined){
+            for(let i=0;i<teacher_list.length;i++){
+                let t_id = teacher_list[i]["teacher_id"]
+                let sections = teacher_list[i]["sections"]
+                teacher_exist = await teacherSchema.read_id(t_id)
+                if(!teacher_exist){
+                    console.log(`Teacher with id ${t_id} does not exists. Removing it from the list of associated teachers`)
+                    wrong_teacher = true
+                    teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                } else {
+                    for(let j=0;j<sections.length;j++){
+                        if(sections[j].toUpperCase()>String.fromCharCode(65+possible_sections)){
+                            console.log(`Requested add new class for teacher ${t_id} with section ${sections[j]}, but it is not available. Removing it from the list of the sections of the teachers`)
+                            sections.splice(j,1)
+                            j = j-1
+                        }
+                    }
+                    if(sections.length==0){
+                        console.log(`No more sections for teacher ${t_id}. Removing it from the list of associated teachers`)
+                        wrong_teacher = true
+                        teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
+                        i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                    }
+                }
+                
+            }
+        }
+        
+        if(teacher_list!=undefined){
+            for(let i=0;i<teacher_list.length;i++){
+                let t_id = teacher_list[i]["teacher_id"]
+                let main_teacher = teacher_list[i]["main"]
+                let sections = teacher_list[i]["sections"]
+                for(let j=0;j<sections.length;j++){
+                    teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j].toUpperCase(), t_id, main_teacher);
+                    if(!teacher_present){
+                        new_teacher = true
+                        sections.splice(j,1)
+                        j = j-1
+                    }
+                }
+                if(sections.length==0){
+                    console.log(`No more sections for teacher ${t_id}. Removing it from the list of associated teachers`)
+                    new_teacher = true
+                    teacher_list.splice(i,1) // Without throwing an error, we simply remove the teacher that does not exists 
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                }
+                //console.log(i)
+            }
+        }
+        teacher_update = await teacherClassSchema.update(course_id, block_id, teacher_list)
+    }
+    if(course_update == false && access_update == false && project_class_update == false && teacher_update == false){
+        res.status(200).json({
+            status: "error", 
+            description: "Update failed. No information to be updated.", 
+            wrong_context: wrong_context, 
+            wrong_ord_class: wrong_ord_class,
+            wrong_teacher: wrong_teacher, 
+            wrong_teaching: wrong_teaching,
+            new_classes: new_classes, 
+            new_teachings: new_teachings, 
+            new_teacher: new_teacher
+        })
+    }
+    res.status(200).json({
+        status: "updated",
+        description: "Course and class updated successfully",
+        wrong_context: wrong_context, 
+        wrong_ord_class: wrong_ord_class,
+        wrong_teacher: wrong_teacher, 
+        wrong_teaching: wrong_teaching,
+        new_classes: new_classes, 
+        new_teachings: new_teachings, 
+        new_teacher: new_teacher
+    })
 }
 
 /*courseSchema.list(1, undefined, 7)

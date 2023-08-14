@@ -135,6 +135,50 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async check_study_year(study_year){
+        try{
+            conn = await pool.getConnection()
+            if(!study_year){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT id FROM study_year WHERE id = ?'
+            let values = [study_year]
+            const rows = await conn.query(sql,values)
+            conn.release()
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async check_study_address(study_address){
+        try{
+            conn = await pool.getConnection()
+            if(!study_address){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT * FROM study_address WHERE id = ?'
+            let values = [study_address]
+            const rows = await conn.query(sql,values)
+            conn.release()
+            if(rows.length==1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };
 

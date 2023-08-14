@@ -1015,7 +1015,7 @@ module.exports.update_course = async (req, res) => {
         teacher_update = await teacherClassSchema.update(course_id, block_id, teacher_list)
     }
     if(course_update == false && access_update == false && project_class_update == false && teacher_update == false){
-        res.status(200).json({
+        res.status(400).json({
             status: "error", 
             description: "Update failed. No information to be updated.", 
             wrong_context: wrong_context, 

@@ -365,6 +365,33 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    put:
+      description: Update the course and related infortations specified
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/header_token'
+      summary: Update course
+      tags:
+        - courses
+        - v1
+      requestBody:
+        description: Data to be modified
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_update_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/CourseUpdate'
+        '400':
+          $ref: '#/components/responses/CourseUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
     delete:
       description: Delete the course in course_id
       parameters:
@@ -2588,6 +2615,38 @@ components:
               num_inserted:
                 type: integer
                 description: "Tells how many learning blocks were inserted in the database"
+    CourseUpdate:
+      description: Course update response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              wrong_context:
+                type: boolean
+                description: "Tells if some values of the contexts tried to update were non valid and consequently not updated"
+              wrong_ord_class:
+                type: boolean
+                description: "Tells if some values of the ordinary classes tried to update were non valid and consequently not updated"
+              wrong_teacher:
+                type: boolean
+                description: "Tells if some values of the teachers tried to update were non valid and consequently not updated"
+              wrong_teaching:
+                type: boolean
+                description: "Tells if some values of the teachings tried to update were non valid and consequently not updated"
+              new_classes:
+                type: boolean
+                description: "Tells if some values of the ordinary classes tried to update were new and consequently not updated"
+              new_teachings:
+                type: boolean
+                description: "Tells if some values of the teachings tried to update were new and consequently not updated"
+              new_teacher:
+                type: boolean
+                description: "Tells if some values of the teachers tried to update were new and consequently not updated"
   schemas:
     learning_block_data:
       type: object
@@ -3883,6 +3942,83 @@ components:
               type: string
               description: "Section of the project class where you want to move the student to"
           description: "Information of the project class you want to move the student from"
+    course_update_data:
+      type: object
+      required:
+        - block_id
+      properties:
+        italian_title:
+          type: string
+          description: "Italian title of the course if specified"
+        english_title:
+          type: string
+          description: "English title of the course if specified"
+        italian_descr:
+          type: string
+          description: "New italian description of the course"
+        english_descr:
+          type: string
+          description: "New english description of the course"
+        up_hours:
+          type: integer
+          description: "New up hours planned for the course"
+        credits:
+          type: integer
+          description: "Number of credits planned for the course if specified"
+        italian_exp_l:
+          type: string
+          description: "New italian description of the expected learning results of the course"
+        english_exp_l:
+          type: string
+          description: "New english description of the expected learning results of the course"
+        italian_cri:
+          type: string
+          description: "New italian description of the criterions of the course"
+        english_cri:
+          type: string
+          description: "New english description of the criterions of the course"
+        italian_act:
+          type: string
+          description: "New italian description of the learning activities of the course"
+        english_act:
+          type: string
+          description: "New english description of the learning activities of the course"
+        area_id:
+          type: string
+          description: "Id of the learning area which the course belongs if specific"
+        growth_id:
+          type: integer
+          description: "New id of the growth area related to the course if specified"
+        min_students:
+          type: integer
+          description: "Min number of student of the course if specified"
+        max_students:
+          type: integer
+          description: "Max number of student of the course if specified"
+        block_id:
+          type: integer
+          description: "Learning block in which the teacher wants to hold the course"
+        access_object:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/context_property"
+            description: "Refers to the context you want to open the course for some class. The label of the object is the id of the context"
+        teaching_list:
+          type: array
+          items:
+            type: string
+            description: "Id of the teaching"
+        class_group:
+          type: integer
+          description: "New group of the project class proposed if specified. It will not be changed if the class is in an imminent, current or the first future block."
+        num_section:
+          type: integer
+          description: "New max number of section expected for the project class proposed"
+        teacher_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/teacher_list_property'
+            description: "Refers to the teachers you want to associate with the course, specifying teacher, sections in which he teaches and if he is the coordinator"
   parameters:
     query_school_year:
       name: school_year

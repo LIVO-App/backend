@@ -20,6 +20,8 @@ let MSG = {
     classToBeModified: "The project class has still to be modified. Please change it before confirm it",
     student_not_enrolled: "The student is not enrolled to the starting project class.",
     student_already_enrolled: "The student is already enrolled to the arrival project class.",
+    minStudents: "The class will not have anymore the min number of students required. Please, try again.",
+    maxStudents: "Too many students. You can not move the student to the destination class.",
     classNotAccessible: "The class you want to move the student is not accessible to him or is not accessible for the specific learning context of the original class you want to move him from. Please choose another class.",
     notCredits: "The destination course has not the same number of credits of the start course. The student will not respect anymore the constraints you created. Please, choose another destination course."
 }
@@ -597,7 +599,7 @@ module.exports.move_class_component = async (req, res) => {
     }
     // Check if destination is already full
     let arrival_components = await projectClassesSchema.classComponents(arrival_course_id, arrival_block_id, arrival_class_section)
-    if(arrival_components.length==arrival_course_exist.max_students){
+    if(arrival_components.length>=arrival_course_exist.max_students){
         res.status(400).json({status: "error", description: MSG.minStudents});
         console.log('project course update components: project class has max students required');
         return;

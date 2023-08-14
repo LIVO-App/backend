@@ -37,6 +37,8 @@ tags:
     description: Teachings methods
   - name: constraints
     description: Credit constraints methods
+  - name: study addresses
+    description: Study addresses methods
 paths:
   /v1/learning_blocks:
     get:
@@ -2392,6 +2394,39 @@ paths:
           $ref: '#/components/responses/Forbidden' 
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/study_addresses:
+    get:
+      description: List of study addresses of the school
+      summary: Get of study addresses
+      tags:
+        - v1
+        - study addresses
+      responses:
+        '200':
+          description: "Collection of study addresses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/addresses_data'
+                    description: "Data return from the api"
 components:
   responses:
     NotFound:
@@ -4019,6 +4054,27 @@ components:
           items:
             $ref: '#/components/schemas/teacher_list_property'
             description: "Refers to the teachers you want to associate with the course, specifying teacher, sections in which he teaches and if he is the coordinator"
+    addresses_data:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the address"
+        italian_title:
+          type: string
+          description: "Italian title of the address"
+        english_title:
+          type: string
+          description: "English title of the address"
+        italian_description:
+          type: string
+          description: "Italian description of the address"
+        english_description:
+          type: string
+          description: "English description of the address"
+        max_classes:
+          type: integer
+          description: "Max number of classes the address can have"
   parameters:
     query_school_year:
       name: school_year

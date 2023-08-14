@@ -197,7 +197,7 @@ module.exports.get_project_class_components = async (req, res) => {
     }
     let course_id = req.params.course;
     let block_id = req.params.block;
-    let section = req.query.section;
+    let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
     query["section"] = section;
     let associated_class = req.query.assoc_class;
     query["assoc_class"] = associated_class

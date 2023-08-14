@@ -9,6 +9,8 @@ let tokenStudent2 = jwt.sign({_id: 2, username: "Student2", role: "student"}, pr
 let invalidToken = jwt.sign({_id: 5}, "wrongsecret", {expiresIn: 86400});
 let teacherToken = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let nonvalideacherToken = jwt.sign({_id: 0, username: "Teacher0", role: "teacher"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let adminToken = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
+let nonvalidadminToken = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
 
 describe('/api/v1/students', () => {
@@ -218,6 +220,68 @@ describe('/api/v1/students', () => {
                     console.log(msg);
                 });
 
+            })
+        })
+    })
+
+    describe('PUT methods', () => {
+        describe('PUT /api/v1/students/:student_id/move_class', () => {
+            // No token
+            test('PUT /api/v1/students/:student_id/move_class without token should respond with status 401', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .expect(401)
+            })
+
+            // Invalid token
+            test('PUT /api/v1/students/:student_id/move_class with invalid token should respond with status 403', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .set('x-access-token', invalidToken)
+                    .expect(403)
+            })
+
+            // Non valid admin
+            test('PUT /api/v1/students/:student_id/move_class with non existing admin token should respond with status 401', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .set('x-access-token', nonvalidadminToken)
+                    .expect(401)
+            })
+
+            // Non valid student
+            test('PUT /api/v1/students/:student_id/move_class with non existing student and valid token should respond with status 404', async () =>{
+                return request(app)
+                    .put('/api/v1/students/0/move_class')
+                    .set('x-access-token', adminToken)
+                    .expect(404)
+            })
+
+            // Non valid start course
+            test('PUT /api/v1/students/:student_id/move_class with non existing starting course id and valid token should respond with status 404', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .send({from: {course_id: 0, block_id: 7}, to: {course_id: 5, block_id: 7, section: "A"}})
+                    .set('x-access-token', adminToken)
+                    .expect(404)
+            })
+
+            // Non valid start block
+            test('PUT /api/v1/students/:student_id/move_class with non existing starting block id and valid token should respond with status 404', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .send({from: {course_id: 5, block_id: 0}, to: {course_id: 5, block_id: 7, section: "A"}})
+                    .set('x-access-token', adminToken)
+                    .expect(404)
+            })
+
+            // Non existing start class
+            test('PUT /api/v1/students/:student_id/move_class with non existing starting project class and valid token should respond with status 404', async () =>{
+                return request(app)
+                    .put('/api/v1/students/1/move_class')
+                    .send({from: {course_id: 1, block_id: 7}, to: {course_id: 5, block_id: 7, section: "A"}})
+                    .set('x-access-token', adminToken)
+                    .expect(404)
             })
         })
     })

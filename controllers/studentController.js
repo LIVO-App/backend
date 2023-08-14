@@ -496,6 +496,12 @@ module.exports.move_class_component = async (req, res) => {
         return;
     }
     let student_id = req.params.student_id
+    let student_esist = await studentModel.read_id(student_id);
+    if(!student_esist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class update components: student does not exists');
+        return;
+    }
     let start_class = req.body.from
     let start_course_id = start_class.course_id;
     let course_exist = await courseSchema.read(start_course_id, true);
@@ -558,7 +564,7 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project class update components: block does not exists');
         return;
     }
-    let arrival_class_section = arrival_class.section
+    let arrival_class_section = arrival_class.section != undefined ? arrival_class.section.toUpperCase() : undefined
     let arrival_project_class_exist = await projectClassesSchema.read(arrival_course_id, arrival_block_id);
     if(!arrival_project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});

@@ -345,6 +345,67 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async update_course(course_id, italian_description, english_description, up_hours, ita_ex_l_r, eng_ex_l_r, ita_cri, eng_cri, ita_ac, eng_ac){
+        // italian_activities=?, =? WHERE id = ?
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || (italian_description == undefined && english_description == undefined && up_hours == undefined && ita_ex_l_r == undefined && eng_ex_l_r == undefined && ita_cri == undefined && eng_cri == undefined && ita_ac == undefined && eng_ac == undefined)){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE course SET'
+            let values = []
+            if(italian_description!=undefined){
+                sql += ' italian_description = ?,'
+                values.push(italian_description)
+            }
+            if(english_description!=undefined){
+                sql += ' english_description = ?,'
+                values.push(english_description)
+            }
+            if(up_hours!=undefined){
+                sql += ' up_hours = ?,'
+                values.push(up_hours)
+            }
+            if(ita_ex_l_r!=undefined){
+                sql += ' up_hours = ?,'
+                values.push(italian_expected_learning_results)
+            }
+            if(eng_ex_l_r!=undefined){
+                sql += ' english_expected_learning_results = ?,'
+                values.push(eng_ex_l_r)
+            }
+            if(ita_cri!=undefined){
+                sql += ' italian_criterions = ?,'
+                values.push(ita_cri)
+            }
+            if(eng_cri!=undefined){
+                sql += ' english_criterions = ?,'
+                values.push(eng_cri)
+            }
+            if(ita_ac!=undefined){
+                sql += ' italian_activities = ?,'
+                values.push(ita_ac)
+            }
+            if(eng_ac!=undefined){
+                sql += ' english_activities = ?'
+                values.push(eng_ac)
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1);
+            }
+            sql += ' WHERE id = ?'
+            values.push(course_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+
     }
 };
 

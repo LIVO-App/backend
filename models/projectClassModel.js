@@ -329,5 +329,44 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async update(course_id, block_id, ita_name, eng_name, group, num_section){
+        try {   
+            conn = await pool.getConnection()
+            if(!course_id || !block_id || (ita_name == undefined && eng_name == undefined && group == undefined && num_section == undefined)){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE project_class SET'
+            let values = []
+            if(ita_name != undefined){
+                sql += ' italian_displayed_name=?,'
+                values.push(ita_name)
+            }
+            if(eng_name != undefined){
+                sql += ' english_displayed_name=?,'
+                values.push(eng_name)
+            }
+            if(group != undefined){
+                sql += ' group=?,'
+                values.push(group)
+            }
+            if(num_section != undefined){
+                sql += ' num_section=?'
+                values.push(num_section)
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1);
+            }
+            sql += ' WHERE course_id = ? AND learning_block_id = ?'
+            values.push(course_id, block_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 }

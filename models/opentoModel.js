@@ -149,5 +149,54 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async update(course_id, access_object){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || access_object == undefined || Object.keys(access_object).length == 0){
+                conn.release()
+                return false
+            }
+            let sql = ''
+            let values = []
+            // 'UPDATE `accessible` SET presidium = ?, main_study_year=? WHERE course_id = ? AND learning_context_id = ? AND study_year_id = ? AND study_address_id = ?'
+            let context_id, study_year, study_address, presidium, main_study_year;
+            for(let context in access_object){
+                if(access_object[context].length==0){
+                    conn.release()
+                    return false
+                }
+                for(let index=0;index<access_object[context].length;index++){
+                    if(Object.keys(access_object[context][index]).length==0){
+                        conn.release()
+                        return false
+                    }
+                    if(access_object[context][index].study_year==undefined || access_object[context][index].study_address==undefined || access_object[context][index].presidium==undefined || access_object[context][index].main_study_year==undefined){
+                        conn.release()
+                        return false
+                    }
+                    context_id = context
+                    study_year = access_object[context][index].study_year;
+                    study_address = access_object[context][index].study_address;
+                    presidium = access_object[context][index].presidium > 0 ? 1 : 0;
+                    main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
+                    sql += 'UPDATE `accessible` SET presidium = ?, main_study_year=? WHERE course_id = ? AND learning_context_id = ? AND study_year_id = ? AND study_address_id = ?'
+                    values.push(presidium, main_study_year, course_id, context_id, study_year, study_address)
+                    if(index<access_object[context].length-1){
+                        sql += '; ';
+                    }
+                }
+                if(context!=Object.keys(access_object)[Object.keys(access_object).length-1]){
+                    sql += '; ';
+                }
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

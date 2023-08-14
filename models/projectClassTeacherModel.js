@@ -22,5 +22,5 @@ module.exports = {
         } finally {
             conn.release();
         }
-    },
+    }
 }

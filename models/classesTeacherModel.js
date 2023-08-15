@@ -169,5 +169,70 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async add_single_project_teach(course_id, block_id, teacher_id, sections, main){
+        try {
+            conn = await pool.getConnection();
+            if(!course_id || !block_id || !teacher_id || main == undefined || sections.length == 0){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO project_teach (teacher_id, project_class_course_id, project_class_block, section, main) VALUES ';
+            let values = []
+            let class_ins = []
+            for(let i=0;i<sections.length;i++){
+                let finded_class = false
+                for(let j=0;j<class_ins.length;j=j+3){
+                    if(class_ins[j]==course_id && class_ins[j+1] == block_id && class_ins[j+2] == sections[i]){
+                        finded_class = true
+                    }
+                }
+                if(!finded_class){
+                    sql += ' (?,?,?,?,?)';
+                    values.push(teacher_id, course_id, block_id, sections[i].toUpperCase(), main)    
+                    class_ins.push(course_id, block_id, sections[i])
+                }
+                if(i<sections.length-1){
+                    sql+=','
+                }
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1) // Remove the comma if the last teachers inserted are the ones that are replicated
+            }
+            const rows = await conn.query(sql, values)
+            conn.release();
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async delete_single(course_id, block_id, teacher_id, sections){
+        try{
+            conn = await pool.getConnection();
+            if(!course_id || !block_id || !teacher_id || sections.length==0){
+                conn.release()
+                return false
+            }
+            let sql = 'DELETE FROM project_teach WHERE project_class_course_id=? AND project_class_block=? AND teacher_id = ? AND (';
+            let values = [course_id, block_id, teacher_id]
+            for(let i=0;i<sections.length;i++){
+                sql += 'section = ? '
+                values.push(sections[i])
+                if(i<sections.length-1){
+                    sql += 'OR '
+                } else {
+                    sql += ')'
+                }
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

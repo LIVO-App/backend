@@ -5,13 +5,22 @@ const ord_classSchema = require('../models/ordinaryclassModel');
 const teacherSchema = require('../models/teacherModel');
 const adminModel = require('../models/adminModel');
 const crypto = require('../utils/cipher');
+const courseSchema = require('../models/coursesModel')
+const blockSchema = require('../models/learning_blocksModel')
+const projectClassSchema = require('../models/projectClassModel');
+const projectClassTeacherModel = require('../models/projectClassTeacherModel');
 
 let MSG = {
     notFound: "Resource not found",
     updateFailed: "Failed to save",
     missingParameter: "Missing required information",
     notAuthorized: "Not authorized request",
-    teacherNotEmployed: "The teacher was not employed in that school_year"
+    teacherNotEmployed: "The teacher was not employed in that school_year",
+    maxTeachers: "The class you wanted to add to the teacher has already three teachers.",
+    wrongSection: "Some sections you specified for the teacher does not exists. Please check the data and try again.",
+    noMoreTeachers: "The class you want to remove the teacher from will not have any teacher.",
+    itemAlreadyInserted: "The teacher is already teaching in all the classes you specified.",
+    teacherDoNotTeachPC: "The teacher specified does not teach in the project class specified"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -400,6 +409,188 @@ module.exports.update_password = async (req, res) => {
     res.status(200).json({status: "updated", description: "Password updated successfully"})
 }
 
+module.exports.add_teacher_to_project_class = async (req, res) => {
+    if(req.loggedUser.role == "admin"){
+        let user_id = req.loggedUser._id
+        let user_exist = await adminModel.read_id(user_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('new project class for teacher: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('new project class for teacher: unauthorized access');
+        return;
+    }
+    // Teacher exists
+    let teacher_id = req.params.teacher_id;
+    let teacher_esist = await teacherSchema.read_id(teacher_id)
+    if(!teacher_esist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("new project class for teacher: resource not found");
+        return; 
+    }
+    // Check course id
+    let course_id = req.body.course_id;
+    let block_id = req.body.block_id;
+    let sections = req.body.sections;
+    let main = req.body.main;
+    main = main == "true" ? true : false
+    let course_exists = await courseSchema.read(course_id)
+    if(!course_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("new project class for teacher: resource not found");
+        return; 
+    }
+    // Check block id
+    let block_exists = await blockSchema.read(block_id)
+    if(!block_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("new project class for teacher: resource not found");
+        return; 
+    }
+    // Check project class
+    let class_exist = await projectClassSchema.read(course_id, block_id)
+    if(!class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("new project class for teacher: resource not found");
+        return; 
+    }
+    // Check if we already have 3 teachers. If yes -> abort insert
+    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, block_id)
+    if(!get_teachers){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("new project class for teacher: missing parameters");
+        return; 
+    }
+    if(get_teachers.length === 3){
+        res.status(400).json({status: "error", description: MSG.maxTeachers});
+        console.log("new project class for teacher: max teachers reached");
+        return; 
+    }
+    let dup_entries;
+    // Check if teacher is already present and for all the sections
+    for(let i in get_teachers){
+        let t_id = get_teachers[i].id;
+        if(t_id == teacher_id){
+            for(let j=0;j<sections.length;j++){
+                if(get_teachers[i].section == sections[j]){
+                    console.log("Teacher already teaching in a project class specified. Remove section from array of sections")
+                    dup_entries = true
+                    sections.splice(j, 1)
+                    j = j - 1
+                }
+            }
+        }
+    }
+    // Check if all the sections can exists (data in sections)
+    let num_section = class_exist.num_section
+    let wrong_sections;
+    for(let i=0;i<sections.length;i++){
+        if(sections[i].toUpperCase()>String.fromCharCode(65+num_section-1)){
+            console.log("new project class for teacher: a section you specified does not exists. Removing section from array of sections");
+            wrong_sections = true
+            sections.splice(i, 1)
+            i = i-1
+        }
+    }
+    // Insert data
+    let insert_teacher = await classesSchema.add_single_project_teach(course_id, block_id, teacher_id, sections, main);
+    if(!insert_teacher){
+        if(dup_entries){
+            res.status(409).json({status: "error", description: MSG.itemAlreadyInserted});
+            console.log("new project class for teacher: duplicate information");
+            return; 
+        } else {
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log("new project class for teacher: missing parameters");
+            return; 
+        }
+        
+    }
+    res.status(201).json({status: "accepted", description: "Added teacher to project classes specified", dup_entries: dup_entries, wrong_sections: wrong_sections})
+}
+
+module.exports.remove_teacher_from_project_class = async (req, res) => {
+    if(req.loggedUser.role == "admin"){
+        let user_id = req.loggedUser._id
+        let user_exist = await adminModel.read_id(user_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('remove project class for teacher: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('remove project class for teacher: unauthorized access');
+        return;
+    }
+    // Teacher exists
+    let teacher_id = req.params.teacher_id;
+    let teacher_esist = await teacherSchema.read_id(teacher_id)
+    if(!teacher_esist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("remove project class for teacher: resource not found");
+        return; 
+    }
+    // Check course id
+    let course_id = req.body.course_id;
+    let block_id = req.body.block_id;
+    let sections = req.body.sections;
+    let course_exists = await courseSchema.read(course_id)
+    if(!course_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("remove project class for teacher: resource not found");
+        return; 
+    }
+    // Check block id
+    let block_exists = await blockSchema.read(block_id)
+    if(!block_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("remove project class for teacher: resource not found");
+        return; 
+    }
+    // Check project class
+    let class_exist = await projectClassSchema.read(course_id, block_id)
+    if(!class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log("remove project class for teacher: resource not found");
+        return; 
+    }
+    // Check if we already have only 1 teachers. If yes -> abort insert
+    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, block_id)
+    if(!get_teachers){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("remove project class for teacher: missing parameters");
+        return; 
+    }
+    let is_present = false
+    for(let i in get_teachers){
+        let t_id = get_teachers[i].id;
+        if(t_id == teacher_id){
+            is_present = true
+        }
+    }
+    if(!is_present){
+        res.status(400).json({status: "error", description: MSG.teacherDoNotTeachPC});
+        console.log("remove project class for teacher: teacher does not teach in the project class specified");
+        return; 
+    }
+    if(get_teachers.length === 1){
+        res.status(400).json({status: "error", description: MSG.noMoreTeachers});
+        console.log("remove project class for teacher: max teachers reached");
+        return; 
+    }
+    // Insert data
+    let delete_teacher = await classesSchema.delete_single(course_id, block_id, teacher_id, sections);
+    if(!delete_teacher){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("new project class for teacher: missing parameters");
+        return; 
+    }
+    res.status(200).json({status: "accepted", description: "Remove teacher from project classes specified"})
+}
 /*classesSchema.read_project_classes_associated(3,7).then(msg => {
     for(var i=0;i<msg.length;i++){
         console.log("classes "+i);

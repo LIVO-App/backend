@@ -2427,6 +2427,63 @@ paths:
                     items:
                       $ref: '#/components/schemas/addresses_data'
                     description: "Data return from the api"
+  /v1/teachers/{teacher_id}/project_class:
+    post:
+      description: Insertion of a teacher to some project classes
+      summary: Insertion of teachers to classes
+      tags:
+        - teachers
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      requestBody:
+        description: Object to be inserted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teacher_interaction_with_project_class'
+      responses:
+        '201':
+          $ref: '#/components/responses/TeacherProjectClassInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      description: Delete of a teacher from some project classes
+      summary: Delete of teachers from classes
+      tags:
+        - teachers
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      requestBody:
+        description: Object to be deleted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teacher_interaction_with_project_class'
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -2682,6 +2739,23 @@ components:
               new_teacher:
                 type: boolean
                 description: "Tells if some values of the teachers tried to update were new and consequently not updated"
+    TeacherProjectClassInsert:
+      description: Teacher insertion to project class response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              dup_entries:
+                type: boolean
+                description: "Tells if some sections that were tried to be added to the teacher were already present and consequently not insert"
+              wrong_sections:
+                type: boolean
+                description: "Tells if some sections that were tried to be added to the teacher were non valid and consequently not insert"
   schemas:
     learning_block_data:
       type: object
@@ -4075,6 +4149,28 @@ components:
         max_classes:
           type: integer
           description: "Max number of classes the address can have"
+    teacher_interaction_with_project_class:
+      type: object
+      required:
+        - course_id
+        - block_id
+        - sections
+      properties:
+        course_id:
+          type: integer
+          description: "Course id of the project class you want to add/remove the teacher to/from"
+        block_id:
+          type: integer
+          description: "Learning block id of the project class you want to add/remove the teacher to/from"
+        sections:
+          type: array
+          items:
+            type: string
+            description: "Single section you want to add/delete the teacher to/from"
+          description: "List of sections of the project class specified you want to add/delete the teacher to/from"
+        main:
+          type: boolean
+          description: "Tells if the teacher will be the coordinator of the course you want to add him to"
   parameters:
     query_school_year:
       name: school_year

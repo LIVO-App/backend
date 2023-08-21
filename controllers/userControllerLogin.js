@@ -15,6 +15,14 @@ let MSG = {
     errorAuth: "Authentication failed"
 }
 
+process.env.TZ = 'Etc/Universal';
+let expirationTime = 86400
+
+function addSeconds(date, seconds) {
+    date.setSeconds(date.getSeconds() + seconds);
+    return date;
+  }
+
 let generateToken = (user, role) => {
     let payload = {
         _id: user.id,
@@ -22,7 +30,7 @@ let generateToken = (user, role) => {
         role: role
     }
     let option = {
-        expiresIn: 86400 //expires in 24 hours
+        expiresIn: expirationTime //expires in 24 hours
     }
     return jwt.sign(payload, process.env.SUPER_SECRET, option);
 }
@@ -36,22 +44,24 @@ module.exports.student_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"student");
     //console.log(user);
     if(user === null){
-        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
         //console.log(user);
         var token = generateToken(user, "student");
+        let expirationDate = addSeconds(new Date(), expirationTime)
         res.status(200).json({
             success: true,
             message: 'Authentication OK',
             user: "student",
             token: token,
             username: user.username,
-            id: user.id
+            id: user.id,
+            expirationDate: expirationDate
         });
     } else {
-        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }
@@ -65,12 +75,13 @@ module.exports.teacher_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"teacher");
     //console.log(user);
     if(user === null){
-        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
         //console.log(user);
         var token = generateToken(user, "teacher");
+        let expirationDate = addSeconds(new Date(), expirationTime)
         res.status(200).json({
             success: true,
             message: 'Authentication OK',
@@ -80,7 +91,7 @@ module.exports.teacher_login = async (req, res) => {
             id: user.id
         });
     } else {
-        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }
@@ -94,11 +105,12 @@ module.exports.admin_login = async (req, res) => {
     let user = await userSchema.areValidCredentials(username, psw,"admin");
     //console.log(user);
     if(user === null){
-        res.status(401).json({ success: false, username: false, message:'Authentication failed. User not found.'});
+        res.status(401).json({ success: false, message:'Authentication failed. User not found.'});
         return;
     }
     if(user){
         var token = generateToken(user, "admin");
+        let expirationDate = addSeconds(new Date(), expirationTime)
         res.status(200).json({
             success: true,
             message: 'Authentication OK',
@@ -108,7 +120,7 @@ module.exports.admin_login = async (req, res) => {
             id: user.id
         });
     } else {
-        res.status(401).json({ success: false, username: true, password: false, message: 'Authentication failed. Wrong password.' });
+        res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });
         return;
     }
 }

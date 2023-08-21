@@ -191,9 +191,6 @@ module.exports = {
             }
             if(recent_models){ // I want to have the last 3 models available
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
-                if(teacher_id != undefined){
-                    sql += ` AND c.proposer_teacher_id = ${teacher_id}`
-                }
             } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
                 if(teacher_id!=undefined && not_confirmed){
                     sql += ` WHERE c.proposer_teacher_id = ${teacher_id} AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
@@ -253,14 +250,14 @@ module.exports = {
             conn.release()
         }
     },
-    async read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id){
+    async read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students){
         try{
             conn = await pool.getConnection()
-            if(!ita_title || !eng_title || up_hours==undefined || credits==undefined || !area_id || !growth_id || min_students==undefined || max_students==undefined || !teacher_id){
+            if(!ita_title || !eng_title || up_hours==undefined || credits==undefined || !area_id || !growth_id || min_students==undefined || max_students==undefined){
                 conn.release()
                 return false
             }
-            let sql = 'SELECT * FROM course WHERE italian_title = ? AND english_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND growth_area_id = ? AND min_students = ? AND max_students = ? AND proposer_teacher_id = ?'
+            let sql = 'SELECT * FROM course WHERE italian_title = ? AND english_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND growth_area_id = ? AND min_students = ? AND max_students = ?'
             let values = [ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()

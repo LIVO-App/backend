@@ -370,7 +370,7 @@ module.exports.add_proposition = async (req, res) => {
             return;
         }
     }
-    course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id)
+    course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students)
     if(course_exist){
         course_id = course_exist
     } else {
@@ -533,8 +533,7 @@ module.exports.add_proposition = async (req, res) => {
     }
     // The teachers in teacher_list exists?
     let teacher_exists
-    let possible_sections = await projectclassSchema.get_section_number(course_id, block_id)
-    possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
+    let possible_sections = num_section != undefined ? num_section : 0
     // Teacher list is structure in this way: [{teacher_id, main, sections:[]}]
     if(teacher_list!=undefined){
         for(let i=0;i<teacher_list.length;i++){

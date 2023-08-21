@@ -3837,6 +3837,9 @@ components:
     teacher_data:
       type: object
       properties:
+        id:
+          type: integer
+          description: "Id of the teacher"
         cf:
           type: string
           description: "Fiscal code of the teacher. The value is crypted"

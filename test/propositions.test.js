@@ -343,7 +343,7 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but valid information should respond with status 204', () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: course_id_1, block_id: block_id_1})
+                    .query({course_id: course_id_2, block_id: block_id_2})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
             })
@@ -351,7 +351,7 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but valid information and not confirmed should respond with status 204', () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: course_id_1, block_id: block_id_1, approved: "false"})
+                    .query({course_id: course_id_2, block_id: block_id_2, approved: "false"})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
             })
@@ -598,12 +598,12 @@ describe('/api/v1/propositions', () => {
         })
 
         // Done only to clear the database from the data of the added by the post
-        test('DELETE /api/v1/courses/:course_id with valid token and valid conditions should respond with status 200', async () => {
+        /*test('DELETE /api/v1/courses/:course_id with valid token and valid conditions should respond with status 200', async () => {
             return request(app)
                 .delete("/api/v1/courses/"+course_id_2)
                 .set('x-access-token', validTokenAdmin)
                 .expect(200)
-        })
+        })*/
     })
 
     /*afterAll(async ()=> {

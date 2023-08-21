@@ -2945,6 +2945,9 @@ components:
         english_activities:
           type: string
           description: "English activities that will be carried out during the course"
+        learning_area_ref: 
+          $ref: "#/components/schemas/learning_area_ref"
+          description: "Reference to the learning area associated to the course"
         italian_learning_area:
           type: string
           description: "Italian name of the learning area associated with the course"

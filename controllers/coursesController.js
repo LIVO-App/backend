@@ -167,6 +167,14 @@ module.exports.get_course = async (req, res) => {
             id: course.certifying_admin_id
         }
     };
+    let learning_area_ref = {
+        path: "/api/v1/learning_areas",
+        single: true,
+        query: {},
+        data: {
+            id: course.learning_area_id
+        }
+    }
     let data_course = {
         id: course.id,
         italian_title: course.italian_title,
@@ -182,6 +190,7 @@ module.exports.get_course = async (req, res) => {
         english_criterions: course.english_criterions,
         italian_activities: course.italian_activities,
         english_activities: course.english_activities,
+        learning_area_ref: learning_area_ref,
         italian_learning_area: course.learning_area_ita,
         english_learning_area: course.learning_area_eng,
         italian_growth_area: course.growth_area_ita,

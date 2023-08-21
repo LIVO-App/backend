@@ -53,6 +53,7 @@ module.exports.get_teachers = async (req, res) => {
         let birth_date = crypto.decipher(teacher.birth_date.toString())
         let address = crypto.decipher(teacher.address.toString())
         return {
+            id: teacher.id,
             cf: cf,
             username: teacher.username,
             name: teacher.name,

@@ -1951,7 +1951,7 @@ paths:
           $ref: '#/components/responses/CourseInsertion'
   /v1/propositions/approval:
     put:
-      description: Confirmation of course proposals
+      description: Confirmation of course proposals. If the approved parameter is true, it will approve the course. If it is false, it will delete the project class from the database. If the course of reference has no other classes, it will delete the course completely.
       summary: Course confirmation
       tags:
         - courses

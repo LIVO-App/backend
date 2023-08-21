@@ -24,6 +24,7 @@ let MSG = {
     itemAlreadyExists: "The student is already inscribe to this project class",
     pastBlock: "Block already expired or imminent",
     notAuthorized: "Not authorized request",
+    courseConfirmed: "The proposition you want to reject was already confirmed. In fact some students are already present",
     changedUniqueInformation: "Some information you wanted to change must remain the same. If you want to change them, please, create a new course model."
 }
 
@@ -747,6 +748,12 @@ module.exports.approve_proposals = async (req, res) => {
         }
         res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
     } else {
+        let students_in = await projectclassSchema.classComponents(course_id, block_id)
+        if(students_in.length>0){
+            res.status(400).json({status: "error", description: MSG.courseConfirmed})
+            console.log('The course you tried to reject was already been approved')
+            return
+        }
         await teacherClassSchema.delete(course_id, block_id)
         await projectclassSchema.delete(course_id, block_id)
         let get_class_blocks = await projectclassSchema.get_blocks(course_id)

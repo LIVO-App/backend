@@ -13,7 +13,8 @@ const teacherSchema = require('../models/teacherModel');
 const ordClassSchema = require('../models/ordinaryclassModel');
 const teachingSchema = require('../models/teachingModel'); // To check if teaching exists
 const adminSchema = require('../models/adminModel')
-const studentSchema = require('../models/studentModel')
+const studentSchema = require('../models/studentModel');
+const courseteachingModel = require('../models/courseteachingModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -737,13 +738,27 @@ module.exports.approve_proposals = async (req, res) => {
     }
     let approved = req.query.approved;
     approved = approved === "false" ? 0 : 1;
-    let course_approval = await courseSchema.approve_proposal(course_id, block_id, admin_id, approved)
-    if(!course_approval){
-        res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: course approval');
-        return
+    if(approved){
+        let course_approval = await courseSchema.approve_proposal(course_id, block_id, admin_id, approved)
+        if(!course_approval){
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing required information: course approval');
+            return
+        }
+        res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
+    } else {
+        await teacherClassSchema.delete(course_id, block_id)
+        await projectclassSchema.delete(course_id, block_id)
+        let get_class_blocks = await projectclassSchema.get_blocks(course_id)
+        if(!get_class_blocks){
+            await courseteachingModel.delete(course_id)
+            await opentoSchema.delete(course_id)
+            await courseSchema.deleteProposal(course_id)
+        }
+        res.status(200).json({status: "deleted", description: "Course deleted since it was not approved"})
     }
-    res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
+    
+    
 }
 
 module.exports.delete_course = async (req, res) => {

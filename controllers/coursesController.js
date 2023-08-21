@@ -219,6 +219,7 @@ module.exports.get_course = async (req, res) => {
 
 module.exports.get_courses_model = async (req, res) => {
     let teacher_id = req.query.teacher_id;
+    let is_admin = true;
     if (req.loggedUser.role == "teacher"){
         if(teacher_id != undefined){
             if(req.loggedUser._id != teacher_id){
@@ -229,6 +230,7 @@ module.exports.get_courses_model = async (req, res) => {
         } else {
             teacher_id = req.loggedUser._id
         }
+        is_admin = false
     } else if (req.loggedUser.role != "admin"){
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('get_courses_v2: unauthorized access');
@@ -242,7 +244,7 @@ module.exports.get_courses_model = async (req, res) => {
     if (not_confirmed!=undefined){
         not_confirmed = not_confirmed === "true" ? true : false
     }
-    let models = await courseSchema.get_models(teacher_id, recent_models, not_confirmed);
+    let models = await courseSchema.get_models(teacher_id, recent_models, not_confirmed, is_admin);
     let data_models = models.map((model) => {
         let course_ref = {
             path: "/api/v1/courses",
@@ -252,6 +254,28 @@ module.exports.get_courses_model = async (req, res) => {
                 id: model.id
             }
         }
+        let proposer_teacher_ref
+        if(model.proposer_teacher_id!=undefined){
+            proposer_teacher_ref = {
+                path: "/api/v1/teacher", 
+                single: true, 
+                query: {},
+                data: {
+                    id: model.proposer_teacher_id
+                }
+            }; 
+        }
+        let certifying_admin_ref
+        if(model.certifying_admin_id!=undefined){
+            certifying_admin_ref = {
+                path: "/api/v1/admin", 
+                single: true, 
+                query: {},
+                data: {
+                    id: model.certifying_admin_id
+                }
+            };
+        }
         return{
             course_ref: course_ref,
             italian_title: model.italian_title,
@@ -260,7 +284,13 @@ module.exports.get_courses_model = async (req, res) => {
             project_class_confirmation_date: model.project_class_confirmation_date,
             project_class_to_be_modified: model.project_class_to_be_modified,
             course_confirmation_date: model.course_confirmation_date,
-            course_to_be_modified: model.course_to_be_modified
+            course_to_be_modified: model.course_to_be_modified,
+            certifying_admin_ref: certifying_admin_ref,
+            admin_name: model.admin_name,
+            admin_surname: model.admin_surname,
+            proposer_teacher_ref: proposer_teacher_ref,
+            teacher_name: model.teacher_name,
+            teacher_surname: model.teacher_surname
         }
     })
     let response = {

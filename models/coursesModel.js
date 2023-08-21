@@ -176,7 +176,7 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id, recent_models, not_confirmed = false){
+    async get_models(teacher_id, recent_models, not_confirmed = false, admin = true){
         try {
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
@@ -185,9 +185,19 @@ module.exports = {
             } else {
                 sql += `, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified'`
             }
-            sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified' FROM course AS c`
+            sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified'`
             if(!recent_models){
-                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id`
+                sql += `, c.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname' `
+                if(admin){
+                    sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                }
+            }
+            sql += ` FROM course AS c`
+            if(!recent_models){
+                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = c.certifying_admin_id `
+                if(admin){
+                    sql += ` JOIN teacher AS t ON t.id = c.proposer_teacher_id `
+                }
             }
             if(recent_models){ // I want to have the last 3 models available
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`

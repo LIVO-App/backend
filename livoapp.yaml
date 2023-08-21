@@ -3035,6 +3035,24 @@ components:
         course_to_be_modified:
           type: boolean
           description: "Is at true if the course has to be modified"
+        certifying_admin_ref:
+          $ref: '#/components/schemas/certifying_admin_ref'
+          description: "Refers to the admin that confirms the proposition. Not present if the user wants only the recent models"
+        admin_name:
+          type: string
+          description: "Name of the certifying admin of the proposition"
+        admin_surname:
+          type: string
+          description: "Surname of the certifying admin of the proposition"
+        proposer_teacher_ref:
+          $ref: '#/components/schemas/proposer_teacher_ref'
+          description: "Refers to the proposer teacher of a proposition. Not present if the user is a teacher or it displays the recent models"
+        teacher_name:
+          type: string
+          description: "Name of the proposer teacher of the proposition"
+        teacher_surname:
+          type: string
+          description: "Surname of the proposer teacher of the proposition"
     annual_credits_ref:
       type: object
       properties:

@@ -2509,10 +2509,6 @@ components:
             properties:
               success:
                 type: boolean
-              username:
-                type: boolean
-              password:
-                type: boolean
               message:
                 type: string
           example:
@@ -3305,6 +3301,10 @@ components:
         id:
           type: string
           description: "ID of the user who has logged in"
+        expirationDate:
+          type: string
+          format: date
+          description: "Date of expiration of the token"
     curriculum_data:
       type: object
       properties:

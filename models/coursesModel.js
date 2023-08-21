@@ -268,7 +268,7 @@ module.exports = {
                 return false
             }
             let sql = 'SELECT * FROM course WHERE italian_title = ? AND english_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND growth_area_id = ? AND min_students = ? AND max_students = ?'
-            let values = [ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students, teacher_id]
+            let values = [ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students]
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){

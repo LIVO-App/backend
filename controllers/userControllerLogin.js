@@ -88,7 +88,8 @@ module.exports.teacher_login = async (req, res) => {
             user: "teacher",
             token: token,
             username: user.username,
-            id: user.id
+            id: user.id,
+            expirationDate: expirationDate
         });
     } else {
         res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });
@@ -117,7 +118,8 @@ module.exports.admin_login = async (req, res) => {
             user: "admin",
             token: token,
             username: user.username,
-            id: user.id
+            id: user.id,
+            expirationDate: expirationDate
         });
     } else {
         res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });

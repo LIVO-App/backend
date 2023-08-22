@@ -158,16 +158,35 @@ describe('/api/v1/courses', () => {
 
         describe('GET /api/v1/courses/:course_id/teachings', () => {
             // GET resources with non valid course ID (teachings)
-            test('GET /api/v1/courses/:id/teachings with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/teachings with non valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/nonValidID/teachings')
                     .expect(404)
             });
 
             // GET resources with valid course ID (teachings)
-            test('GET /api/v1/courses/:course_id/teachings with non valid ID', async () => {
+            test('GET /api/v1/courses/:course_id/teachings with valid ID', async () => {
                 return request(app)
                     .get('/api/v1/courses/2/teachings')
+                    .expect(200)
+                    .then((response) => {
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(1);
+                    });
+            });
+        })
+
+        describe('GET /api/v1/courses/:course_id/growth_areas', () => {
+            // GET resources with non valid course ID (teachings)
+            test('GET /api/v1/courses/:course_id/growth_areas with non valid ID', async () => {
+                return request(app)
+                    .get('/api/v1/courses/nonValidID/growth_areas')
+                    .expect(404)
+            });
+
+            // GET resources with valid course ID (teachings)
+            test('GET /api/v1/courses/:course_id/growth_areas with valid ID', async () => {
+                return request(app)
+                    .get('/api/v1/courses/2/growth_areas')
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.length).toBeGreaterThanOrEqual(1);

@@ -488,6 +488,43 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/courses/{course_id}/growth_areas:
+    get:
+      description: Get all the growth areas that characterize the course
+      parameters:
+        - $ref: '#/components/parameters/path_course_id'
+      summary: Collection of growth areas of the course
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          description: "Collection of growth areas"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/growth_area_related_data'
+                    description: "Data return from the api"
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/learning_contexts:
     get:
       description: Get all the learning contexts in the system
@@ -2645,6 +2682,9 @@ components:
               wrong_teacher: 
                 type: boolean 
                 description: "Tells if some values of the teachers tried to insert were non valid and consequently not inserted"
+              wrong_growth_area:
+                type: boolean
+                description: "Tells if some values of the growth areas tried to insert were non valid and consequently not inserted"
               new_teacher:
                 type: boolean
                 description: "If result of insertion is a duplicate, tells if there are new teachers the user tried to insert"
@@ -3206,6 +3246,41 @@ components:
         english_title:
           type: string
           description: "English title of the teaching"
+    growth_area_related_data:
+      type: object
+      properties:
+        growth_area_ref:
+          $ref: '#/components/schemas/growth_area_ref'
+        italian_title:
+          type: string
+          description: "Italian title of the growth area"
+        english_title:
+          type: string
+          description: "English title of the growth area"
+        italian_description:
+          type: string
+          description: "Italian description of the growth area"
+        english_description:
+          type: string
+          description: "English description of the growth area"
+    growth_area_ref:
+      type: object
+      properties:
+        path:
+          type: string
+          description: "Link of the API that returns this data"
+        single:
+          type: boolean
+          description: "Tells if the data are referring to the API in origin or not"
+        query:
+          type: object
+          description: "List of eventual parameters for the API"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: "Id of the growth area associated to the reference"
     learning_context_ref:
       type: object
       properties:
@@ -3688,7 +3763,7 @@ components:
         - italian_act
         - english_act
         - area_id
-        - growth_id
+        - growth_list
         - min_students
         - max_students
         - session_id
@@ -3740,9 +3815,12 @@ components:
         area_id:
           type: string
           description: "Id of the learning area which the course belongs"
-        growth_id:
-          type: integer
-          description: "Id of the growth area related to the course"
+        growth_list:
+          type: array
+          items:
+            type: integer
+            description: "Id of one growth area related to the course"
+          description: "List of ids of the growth area related to the course"
         min_students:
           type: integer
           description: "Min number of student of the course"
@@ -4127,9 +4205,12 @@ components:
         area_id:
           type: string
           description: "Id of the learning area which the course belongs if specific"
-        growth_id:
-          type: integer
-          description: "New id of the growth area related to the course if specified"
+        growth_list:
+          type: array
+          items:
+            type: integer
+            description: "Id of one growth area related to the course"
+          description: "List of ids of the growth area related to the course"
         min_students:
           type: integer
           description: "Min number of student of the course if specified"

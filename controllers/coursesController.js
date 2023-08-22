@@ -15,6 +15,8 @@ const teachingSchema = require('../models/teachingModel'); // To check if teachi
 const adminSchema = require('../models/adminModel')
 const studentSchema = require('../models/studentModel');
 const courseteachingModel = require('../models/courseteachingModel');
+const courseGrowthAreaModel = require('../models/courseGrowthAreaModel');
+const growthAreaModel = require('../models/growthAreaModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -341,7 +343,7 @@ module.exports.add_proposition = async (req, res) => {
     let ita_act = req.body.italian_act;
     let eng_act = req.body.english_act;
     let area_id = req.body.area_id;
-    let growth_ids = req.body.growth_ids; //Its an array like teaching_list
+    let growth_list = req.body.growth_list; //Its an array like teaching_list
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
     let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
@@ -421,7 +423,7 @@ module.exports.add_proposition = async (req, res) => {
     // Let's now check if there is any new value in the other objects. If there are new ordinary classes or contexts or new teachings, add new course
     let new_classes, new_teachings, new_growth_area = false
     // Check information about classes that can access the new course
-    let context_exist, class_exist, already_present, study_year, study_address, growth_exist;
+    let context_exist, class_exist, already_present, study_year, study_address, growth_exist, growth_area_present;
     // Remove non valid contexts and classes
     if(access_object!=undefined){
         for(var context in access_object){
@@ -507,7 +509,33 @@ module.exports.add_proposition = async (req, res) => {
             }
         }
     }
-    if((new_teachings || new_classes) && !same_year){
+    // Check growth areas
+    if(growth_list!=undefined){
+        // Remove non valid teachings in order to have right values in case of insertion
+        for(let i = 0; i<growth_list.length;i++){
+            if(i>=3){
+                console.log(`Teaching ${growth_list[i]} is more. There should be at most 3 teachings per course proposal. Removing it from the list of teachings`)
+                wrong_growth_area = true // Set variable to true
+                growth_list.splice(i,1)
+                i = i - 1
+            } else {
+                growth_exist = await growthAreaModel.read(growth_list[i])
+                if(!growth_exist){ // The teaching exists in the database
+                    console.log(`Teaching ${growth_list[i]} does not exists. Removing it from the list of teachings`)
+                    wrong_growth_area = true // Set variable to true
+                    growth_list.splice(i, 1) // Remove wrong teaching from list
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                }
+            } 
+        }
+        for(let i = 0; i<growth_list.length; i++){
+            growth_area_present = await courseGrowthAreaModel.is_present(course_id, growth_list[i])
+            if(!growth_area_present){ // If a teaching is not present, it means we have a new value -> add new course
+                new_growth_area = true // If a context is new, it means we add new classes, so its the same
+            }
+        }
+    }
+    if((new_teachings || new_classes || new_growth_area) && !same_year){
         course_exist = false
     }
     // If course_id in request body is not undefined and all the other values related only to the course already exist,
@@ -558,9 +586,23 @@ module.exports.add_proposition = async (req, res) => {
                 return 
             } 
         }
+        let growth_area_ins = await courseGrowthAreaModel.add(course_id, growth_list)
+        if(!growth_area_ins){
+            if(new_course_id){
+                if(course_exist){
+                    course_exist = true
+                }
+                res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
+                console.log('missing required information: new course proposal addition. Growth area');
+                await teachingCourseSchema.delete(course_id)
+                await opentoSchema.delete(course_id)
+                await courseSchema.deleteProposal(course_id)
+                return 
+            }
+        }
     }
     let course_wrong_value = false
-    if((wrong_context || wrong_ord_class || wrong_teaching) && new_course_id) {
+    if((wrong_context || wrong_ord_class || wrong_teaching || wrong_growth_area) && new_course_id) {
         await courseSchema.add_to_be_modified(course_id)
         course_wrong_value = true
     }
@@ -643,8 +685,9 @@ module.exports.add_proposition = async (req, res) => {
     let proj_class_ins = await projectclassSchema.add(course_id, session_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
             console.log('missing required information: new course proposal addition. Project class');
+            await courseGrowthAreaModel.delete(course_id)
             await teachingCourseSchema.delete(course_id)
             await opentoSchema.delete(course_id)
             await courseSchema.deleteProposal(course_id)
@@ -661,9 +704,10 @@ module.exports.add_proposition = async (req, res) => {
     let teachers_ins = await teacherClassSchema.add_project_teach(course_id, session_id, teacher_list);
     if(!teachers_ins){
         if(!course_exist){
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})
+            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
             console.log('missing required information: new course proposal addition. Project class');
             await projectclassSchema.delete(course_id, session_id)
+            await courseGrowthAreaModel.delete(course_id)
             await teachingCourseSchema.delete(course_id)
             await opentoSchema.delete(course_id)
             await courseSchema.deleteProposal(course_id)
@@ -693,7 +737,8 @@ module.exports.add_proposition = async (req, res) => {
         wrong_ord_class: wrong_ord_class, 
         wrong_context: wrong_context, 
         wrong_teaching: wrong_teaching, 
-        wrong_teacher: wrong_teacher
+        wrong_teacher: wrong_teacher,
+        wrong_growth_area: wrong_growth_area
     });
 }
 
@@ -758,6 +803,7 @@ module.exports.approve_proposals = async (req, res) => {
         await projectclassSchema.delete(course_id, session_id)
         let get_class_sessions = await projectclassSchema.get_sessions(course_id)
         if(!get_class_sessions){
+            await courseGrowthAreaModel.delete(course_id)
             await courseteachingModel.delete(course_id)
             await opentoSchema.delete(course_id)
             await courseSchema.deleteProposal(course_id)
@@ -808,6 +854,7 @@ module.exports.delete_course = async (req, res) => {
         await teacherClassSchema.delete(course_id, sessions[i].learning_session_id)
         await projectclassSchema.delete(course_id, sessions[i].learning_session_id)
     }
+    await courseGrowthAreaModel.delete(course_id)
     await opentoSchema.delete(course_id)
     await teachingCourseSchema.delete(course_id)
     await courseSchema.deleteProposal(course_id)
@@ -848,7 +895,7 @@ module.exports.update_course = async (req, res) => {
     let ita_act = req.body.italian_act;
     let eng_act = req.body.english_act;
     let area_id = req.body.area_id;
-    let growth_ids = req.body.growth_ids;
+    let growth_list = req.body.growth_list;
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
     let area_id_exists
@@ -910,9 +957,9 @@ module.exports.update_course = async (req, res) => {
             }
         }
     }
-    let wrong_context, wrong_ord_class, wrong_teacher, wrong_teaching
-    let new_classes, new_teachings, new_teacher = false
-    let context_exist, already_present, teacher_exist, teacher_present, teaching_present, teaching_exist
+    let wrong_context, wrong_ord_class, wrong_teacher, wrong_teaching, wrong_growth_area
+    let new_classes, new_teachings, new_teacher, new_growth_area = false
+    let context_exist, already_present, teacher_exist, teacher_present, teaching_present, teaching_exist, growth_area_exist, growth_area_present
     let study_year, study_address
     if(access_object!=undefined){
         for(var context in access_object){
@@ -1010,6 +1057,36 @@ module.exports.update_course = async (req, res) => {
             new_teachings = true
         }
     }
+    if(growth_list != undefined){
+        // Remove non valid teachings in order to have right values in case of insertion
+        for(let i = 0; i<growth_list.length;i++){
+            if(i>=3){
+                console.log(`Teaching ${growth_list[i]} is more. There should be at most 3 teachings per course proposal. Removing it from the list of teachings`)
+                wrong_growth_area = true // Set variable to true
+                growth_list.splice(i,1)
+                i = i - 1
+            } else {
+                growth_area_exist = await growthAreaModel.read(growth_list[i])
+                if(!growth_area_exist){ // The teaching exists in the database
+                    console.log(`Teaching ${growth_list[i]} does not exists. Removing it from the list of teachings`)
+                    wrong_growth_area = true // Set variable to true
+                    growth_list.splice(i, 1) // Remove wrong teaching from list
+                    i = i-1 // It's needed since splice does also a reindexing. Meaning we will skip the control of 1 index
+                }
+            } 
+        }
+        for(let i = 0; i<growth_list.length; i++){
+            growth_area_present = await courseGrowthAreaModel.is_present(course_id, growth_list[i])
+            if(!growth_area_present){ // If a teaching is not present, it means we have a new value -> add new course
+                new_growth_area = true // If a context is new, it means we add new classes, so its the same
+                growth_list.splice(i,1)
+                i = i - 1
+            }
+        }
+        if(growth_list.length == 0){
+            new_teachings = true
+        }
+    }
     let course_update = await courseSchema.update_course(course_id, ita_title, eng_title, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
     let access_update = await opentoSchema.update(course_id, access_object)
     let new_project_class;
@@ -1084,9 +1161,11 @@ module.exports.update_course = async (req, res) => {
             wrong_ord_class: wrong_ord_class,
             wrong_teacher: wrong_teacher, 
             wrong_teaching: wrong_teaching,
+            wrong_growth_area: wrong_growth_area,
             new_classes: new_classes, 
             new_teachings: new_teachings, 
-            new_teacher: new_teacher
+            new_teacher: new_teacher,
+            new_growth_area: new_growth_area
         })
         return
     }
@@ -1097,9 +1176,11 @@ module.exports.update_course = async (req, res) => {
         wrong_ord_class: wrong_ord_class,
         wrong_teacher: wrong_teacher, 
         wrong_teaching: wrong_teaching,
+        wrong_growth_area: wrong_growth_area,
         new_classes: new_classes, 
         new_teachings: new_teachings, 
-        new_teacher: new_teacher
+        new_teacher: new_teacher,
+        new_growth_area: new_growth_area
     })
 }
 

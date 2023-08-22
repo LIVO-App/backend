@@ -230,26 +230,26 @@ describe('/api/v1/ordinary_classes', () => {
 
         })
 
-        describe('GET /api/v1/ordinary_classes/:student/:block', () => {
-            test('GET /api/v1/ordinary_classes/:student/:block with wrong student id should respond with status 404', async () => {
+        describe('GET /api/v1/ordinary_classes/:student/:session', () => {
+            test('GET /api/v1/ordinary_classes/:student/:session with wrong student id should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/ordinary_classes/0/7')
                     .expect(404);
             })
 
-            test('GET /api/v1/ordinary_classes/:student/:block with wrong block id should respond with status 404', async () => {
+            test('GET /api/v1/ordinary_classes/:student/:session with wrong session id should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/ordinary_classes/4/0')
                     .expect(404);
             })
 
-            test('GET /api/v1/ordinary_classes/:student/:block with valid parameters but wrong combination of student-block (student was not in the school at that time) should respond with status 404', async () => {
+            test('GET /api/v1/ordinary_classes/:student/:session with valid parameters but wrong combination of student-session (student was not in the school at that time) should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/ordinary_classes/1/1')
                     .expect(404);
             })
 
-            test('GET /api/v1/ordinary_classes/:student/:block with valid parameters should respond with status 200', async () => {
+            test('GET /api/v1/ordinary_classes/:student/:session with valid parameters should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/ordinary_classes/4/7')
                     .expect(200);

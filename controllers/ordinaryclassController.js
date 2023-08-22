@@ -3,6 +3,7 @@
 const courseSchema = require('../models/ordinaryclassModel');
 const ordinaryclassModel = require('../models/ordinaryclassModel');
 const teacherModel = require('../models/teacherModel');
+const adminSchema = require('../models/adminModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -79,13 +80,14 @@ module.exports.get_components = async (req, res) => {
     let study_year = req.params.study_year;
     let address = req.params.address;
     let school_year = req.query.school_year;
-    let section = req.query.section;
+    let section = req.query.section!=undefined ? req.query.section.toUpperCase() : undefined;
+    let admin_user = false
     if(req.loggedUser.role == "teacher"){
         let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
         //console.log(teach);
         if(teach==null){
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log("ordinary_class components: missing parameters");
+            console.log("ordinary_class components: missing parameters teacher");
             return;
         }
         if(!teach){
@@ -93,12 +95,20 @@ module.exports.get_components = async (req, res) => {
             console.log('my_ordinary_class: unauthorized access. Not my class');
             return;
         }
+    } else if (req.loggedUser.role == "admin") {
+        let adminexists = await adminSchema.read_id(req.loggedUser._id)
+        if(!adminexists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('my_ordinary_class: unauthorized access.');
+            return;
+        }
+        admin_user = true
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('my_ordinary_class: unauthorized access');
         return;
     }
-    let cmps = await ordinaryclassModel.components(study_year, address, school_year, section);
+    let cmps = await ordinaryclassModel.components(study_year, address, school_year, section, admin_user);
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("ordinary class components: missing parameters");
@@ -108,7 +118,8 @@ module.exports.get_components = async (req, res) => {
         return {
             id: cmp.id,
             name: cmp.name,
-            surname: cmp.surname
+            surname: cmp.surname,
+            orientation_credits: cmp.orientation_credits
         }
     });
     let path = "/api/v1/ordinary_classes/"+study_year+"/"+address+"/components"
@@ -124,8 +135,8 @@ module.exports.get_components = async (req, res) => {
 
 module.exports.get_student_class = async (req, res) => {
     let student_id = req.params.student;
-    let block_id = req.params.block;
-    let cl = await ordinaryclassModel.read_from_student_and_block(student_id, block_id);
+    let session_id = req.params.session;
+    let cl = await ordinaryclassModel.read_from_student_and_session(student_id, session_id);
     if(cl == null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("student ordinary clas: missing parameters");
@@ -141,7 +152,7 @@ module.exports.get_student_class = async (req, res) => {
         address: cl.ordinary_class_address,
         section: cl.section
     }
-    let path = "/api/v1/ordinary_classes/"+student_id+"/"+block_id+"/"
+    let path = "/api/v1/ordinary_classes/"+student_id+"/"+session_id+"/"
     let response = {
         path: path,
         single: false,

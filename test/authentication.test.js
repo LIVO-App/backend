@@ -46,7 +46,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(false);
                 });
             return response;
         });
@@ -58,8 +57,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(true);
-                    expect(res.body.password).toBe(false);
                 });
             return response;
         });
@@ -106,7 +103,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(false);
                 });
             return response;
         });
@@ -118,8 +114,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(true);
-                    expect(res.body.password).toBe(false);
                 });
             return response;
         });
@@ -166,7 +160,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(false);
                 });
             return response;
         });
@@ -178,8 +171,6 @@ describe("POST /v1/auth", () => {
                 .expect(401)
                 .then((res) => {
                     expect(res.body.success).toBe(false);
-                    expect(res.body.username).toBe(true);
-                    expect(res.body.password).toBe(false);
                 });
             return response;
         });

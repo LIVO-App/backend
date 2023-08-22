@@ -12,7 +12,7 @@ describe('/api/v1/learning_areas', () => {
                     .get('/api/v1/learning_areas')
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
                     });
                 return response;
@@ -38,12 +38,12 @@ describe('/api/v1/learning_areas', () => {
             })
         })
 
-        describe('GET /api/v1/learning_areas?block_id', () => {
-            // GET all the resources from a learning block (all_data=false)
-            test('GET /api/v1/learning_areas?block_id without all the data', async () => {
+        describe('GET /api/v1/learning_areas?session_id', () => {
+            // GET all the resources from a learning session (all_data=false)
+            test('GET /api/v1/learning_areas?session_id without all the data', async () => {
                 return request(app)
                     .get('/api/v1/learning_areas')
-                    .query({block_id: 7})
+                    .query({session_id: 7})
                     .expect(200)
                     .then((response) => {
                         let data = Object.keys(response.body.data[0]);
@@ -52,11 +52,11 @@ describe('/api/v1/learning_areas', () => {
                     })
             })
 
-            // GET all the resources from a learning block (all_data)
-            test('GET /api/v1/learning_areas?block_id with all the data', async () => {
+            // GET all the resources from a learning session (all_data)
+            test('GET /api/v1/learning_areas?session_id with all the data', async () => {
                 return request(app)
                     .get('/api/v1/learning_areas')
-                    .query({block_id: 7, all_data: true})
+                    .query({session_id: 7, all_data: true})
                     .expect(200)
                     .then((response) => {
                         let data = Object.keys(response.body.data[0]);

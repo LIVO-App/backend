@@ -30,6 +30,7 @@ const pool = mariadb.createPool({
     database: process.env.DB_DATABASE,
     trace: true,
     acquireTimeout: 100000,
+    multipleStatements: true,
 });
 
 /*async function main(){

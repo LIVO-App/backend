@@ -11,8 +11,8 @@ process.env.TZ = 'Etc/Universal';
 
 module.exports.get_contexts = async (req, res) => {
     let student_id = req.query.student_id;
-    let block_id = req.query.block_id;
-    let contexts = await learningContextModel.list(student_id, block_id);
+    let session_id = req.query.session_id;
+    let contexts = await learningContextModel.list(student_id, session_id);
     let data_contexts = contexts.map((context) => {
         return {
             id: context.id,
@@ -35,12 +35,12 @@ module.exports.get_contexts = async (req, res) => {
 
 module.exports.get_contexts_from_courses = async (req, res) => {
     let student_id = req.query.student_id;
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let courses = req.body.courses;
-    let contexts = await learningContextModel.list_from_list_of_courses(student_id, block_id, courses);
+    let contexts = await learningContextModel.list_from_list_of_courses(student_id, session_id, courses);
     if(contexts==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('list of block: missing list of courses');
+        console.log('list of session: missing list of courses');
         return;
     }
     let data_contexts = contexts.map( (context) => {
@@ -54,7 +54,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
         single: true,
         query: {
             student_id: student_id,
-            block_id: block_id
+            session_id: session_id
         },
         date: new Date(),
         data: data_contexts

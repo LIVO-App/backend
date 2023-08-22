@@ -68,20 +68,20 @@ module.exports = {
             conn.release();
         }
     },
-    async retrieve_credits(student_id, block_id, area_id, context_id){
+    async retrieve_credits(student_id, session_id, area_id, context_id){
         try {
             conn = await pool.getConnection();
-            if(!student_id || !block_id || !area_id || !context_id){
+            if(!student_id || !session_id || !area_id || !context_id){
                 conn.release();
                 return false;
             }
-            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id}`
+            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ${student_id}`
             if(context_id=='PER'){
-                sql += ` AND ins.learning_context_id=\'${context_id}\'`;
+                sql += ` AND subs.learning_context_id=\'${context_id}\'`;
             } else {
-                sql += ` AND c.learning_area_id=\'${area_id}\' AND ins.learning_context_id=\'${context_id}\'`;
+                sql += ` AND c.learning_area_id=\'${area_id}\' AND subs.learning_context_id=\'${context_id}\'`;
             }
-            sql += ` AND pc.learning_block_id = ${block_id} AND ins.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_block_id = ${block_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
+            sql += ` AND pc.learning_session_id = ${session_id} AND subs.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ${session_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
             if(context_id=='PER'){
                 sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=\'${context_id}\'`;
             } else {
@@ -98,15 +98,15 @@ module.exports = {
         }
 
     },
-    async retrieve_project_classes(student_id, block_id){
+    async retrieve_project_classes(student_id, session_id){
         try {
             conn = await pool.getConnection();
-            if(!student_id || !block_id){
+            if(!student_id || !session_id){
                 conn.release();
                 return false;
             }
-            let sql = 'SELECT pc.course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_title", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_title", ins.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id WHERE ins.student_id = ? AND ins.project_class_block = ?';
-            let values = [student_id, block_id];
+            let sql = 'SELECT pc.course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_title", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_title", subs.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN subscribed AS subs ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id WHERE subs.student_id = ? AND subs.project_class_session = ?';
+            let values = [student_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
             return rows;
@@ -116,15 +116,15 @@ module.exports = {
             conn.release();
         }
     },
-    async retrieve_section_from_project_class(student_id, course_id, block_id){
+    async retrieve_section_from_project_class(student_id, course_id, session_id){
         try {
             conn = await pool.getConnection()
-            if (!course_id || !block_id){
+            if (!course_id || !session_id){
                 conn.release()
                 return null
             }
-            let sql = 'SELECT ins.section FROM inscribed AS ins WHERE ins.student_id = ? AND ins.project_class_course_id = ? AND ins.project_class_block = ?'
-            let values = [student_id, course_id, block_id]
+            let sql = 'SELECT subs.section FROM subscribed AS subs WHERE subs.student_id = ? AND subs.project_class_course_id = ? AND subs.project_class_session = ?'
+            let values = [student_id, course_id, session_id]
             const rows = await conn.query(sql, values)
             conn.release();
             if (rows.length == 1){
@@ -153,22 +153,22 @@ module.exports = {
             let sql = ``;
             let values = [];
             for(let i=0;i<area_id.length;i++){
-                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_block = pc.learning_block_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ? AND pc.learning_block_id IN (SELECT lb.id FROM learning_block AS lb WHERE lb.school_year=?)`
+                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ? AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year=?)`
                 values.push(student_id, school_year)
                 if(context_id[i]=='PER'){
-                    sql += ` AND ins.learning_context_id = ?`;
+                    sql += ` AND subs.learning_context_id = ?`;
                     values.push(context_id[i])
                 } else {
-                    sql += ` AND c.learning_area_id = ? AND ins.learning_context_id = ?`;
+                    sql += ` AND c.learning_area_id = ? AND subs.learning_context_id = ?`;
                     values.push(area_id[i], context_id[i])
                 }
-                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT cst.credits FROM \`constraints\` AS cst WHERE cst.annual_credits_definition_year = ? AND cst.annual_credits_study_year = att.ordinary_class_study_year AND cst.annual_credits_address = att.ordinary_class_address `
+                sql += ` AND subs.pending IS NULL) AS credits, IFNULL((SELECT SUM(l.credits) AS total_credits FROM limited AS l WHERE l.ordinary_class_school_year = ? AND l.ordinary_class_study_year = att.ordinary_class_study_year AND l.ordinary_class_address = att.ordinary_class_address `
                 values.push(school_year)
                 if(context_id[i]=='PER'){
-                    sql += ` AND cst.learning_area_id IS NULL AND cst.learning_context_id = ?`;
+                    sql += ` AND l.learning_area_id IS NULL AND l.learning_context_id = ?`;
                     values.push(context_id[i])
                 } else {
-                    sql += ` AND cst.learning_area_id = ? AND cst.learning_context_id = ?`;
+                    sql += ` AND l.learning_area_id = ? AND l.learning_context_id = ?`;
                     values.push(area_id[i], context_id[i])
                 }
                 sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?`
@@ -186,5 +186,87 @@ module.exports = {
             conn.release();
         }
 
+    },
+    async update(student_id, infos){
+        try {
+            conn = await pool.getConnection()
+            if(student_id == undefined || infos == undefined || Object.keys(infos).length == 0){
+                conn.release()
+                return false
+            }
+            let sql = 'UPDATE student SET'
+            let values = []
+            let name = infos.name
+            let surname = infos.surname
+            let gender = infos.gender
+            let birth_date = infos.birth_date
+            let address = infos.address
+            if(name == "" && surname == "" && gender == "" && birth_date == "" && address == ""){
+                conn.release()
+                return false
+            }
+            if(name!=undefined && name!=""){
+                sql += ' name = ?,'
+                values.push(name)
+            }
+            if(surname!=undefined && surname!=""){
+                sql += ' surname = ?,'
+                values.push(surname)
+            }
+            if(gender!=undefined && gender!=""){
+                sql += ' gender = ?,'
+                values.push(crypto.cipher(gender.toString()).toString())
+            }
+            if(birth_date!=undefined && birth_date!=""){
+                sql += ' birth_date = ?,'
+                values.push(crypto.cipher(birth_date.toString()).toString())
+            }
+            if(address!=undefined && address!=""){
+                sql += ' address = ?'
+                values.push(crypto.cipher(address.toString()).toString())
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1);
+            }
+            sql += ' WHERE id = ?'
+            values.push(student_id)
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async change_psw(student_id, psw){
+        try {
+            conn = await pool.getConnection()
+            if(student_id == undefined || psw == undefined){
+                conn.release()
+                return null
+            }
+            let new_psw = crypto.encrypt_password(psw).toString()
+            let sql = 'SELECT password FROM student WHERE id = ?'
+            let rows = await conn.query(sql, student_id)
+            if(rows.length==1){
+                if(rows[0].password.toString() === new_psw){
+                    conn.release()
+                    return false
+                }
+            } else {
+                conn.release()
+                return null
+            }
+            sql = 'UPDATE student SET password = ? WHERE id = ?'
+            let values = [new_psw, student_id]
+            rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

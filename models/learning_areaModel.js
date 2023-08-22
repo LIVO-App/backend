@@ -35,10 +35,10 @@ module.exports = {
     },
     /**
      * 
-     * @param {String} block_id If not provided it will return all the learning areas
+     * @param {String} session_id If not provided it will return all the learning areas
      * @param {Boolean} all_data If true, all data of learning_areas are provided, otherwise only the id will be
      */
-    async read_from_blocks(block_id,all_data = false,credits = false) {
+    async read_from_sessions(session_id,all_data = false,credits = false) {
         try {
             conn = await pool.getConnection();
             sql = "SELECT la.id";
@@ -48,8 +48,8 @@ module.exports = {
             if (credits) {
                 sql += ", l.credits";
             }
-            sql += " FROM limited AS l INNER JOIN learning_area AS la ON l.learning_area_id = la.id WHERE learning_block_id= ? GROUP BY la.id";
-            const rows = await conn.query(sql, block_id);
+            sql += " FROM limited AS l INNER JOIN learning_area AS la ON l.learning_area_id = la.id WHERE learning_session_id= ? GROUP BY la.id";
+            const rows = await conn.query(sql, session_id);
             conn.release();
             return rows;
         } catch (err) {

@@ -57,7 +57,7 @@ module.exports = {
                     presidium = access_object[context][index].presidium > 0 ? 1 : 0;
                     main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
                     let finded_year, finded_address
-                    for(let j=0;j<classes_per_context.length;j+2){
+                    for(let j=0;j<classes_per_context.length;j=j+2){
                         if(classes_per_context[j]==study_year){
                             finded_year = true
                         }
@@ -81,6 +81,9 @@ module.exports = {
                 if(context!=Object.keys(access_object)[Object.keys(access_object).length-1]){
                     sql += ',';
                 }
+            }
+            if(sql[sql.length-1]==","){
+                sql = sql.slice(0,-1) // Remove the comma if the last classes inserted are the ones that are replicated
             }
             const rows = await conn.query(sql, values)
             conn.release()
@@ -119,6 +122,77 @@ module.exports = {
             } else {
                 return false
             }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async is_course_accessible(student_id, course_id, session_id, context_id){
+        try {
+            conn = await pool.getConnection()
+            if(!student_id || !course_id || !session_id || !context_id){
+                conn.release()
+                return null
+            }
+            let sql = 'SELECT * FROM `accessible` AS acc WHERE acc.course_id = ? AND acc.learning_context_id = ? AND acc.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)) AND acc.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?))'
+            let values = [course_id, context_id, student_id, session_id, student_id, session_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length == 1){
+                return true
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async update(course_id, access_object){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || access_object == undefined || Object.keys(access_object).length == 0){
+                conn.release()
+                return false
+            }
+            let sql = ''
+            let values = []
+            // 'UPDATE `accessible` SET presidium = ?, main_study_year=? WHERE course_id = ? AND learning_context_id = ? AND study_year_id = ? AND study_address_id = ?'
+            let context_id, study_year, study_address, presidium, main_study_year;
+            for(let context in access_object){
+                if(access_object[context].length==0){
+                    conn.release()
+                    return false
+                }
+                for(let index=0;index<access_object[context].length;index++){
+                    if(Object.keys(access_object[context][index]).length==0){
+                        conn.release()
+                        return false
+                    }
+                    if(access_object[context][index].study_year==undefined || access_object[context][index].study_address==undefined || access_object[context][index].presidium==undefined || access_object[context][index].main_study_year==undefined){
+                        conn.release()
+                        return false
+                    }
+                    context_id = context
+                    study_year = access_object[context][index].study_year;
+                    study_address = access_object[context][index].study_address;
+                    presidium = access_object[context][index].presidium > 0 ? 1 : 0;
+                    main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
+                    sql += 'UPDATE `accessible` SET presidium = ?, main_study_year=? WHERE course_id = ? AND learning_context_id = ? AND study_year_id = ? AND study_address_id = ?'
+                    values.push(presidium, main_study_year, course_id, context_id, study_year, study_address)
+                    if(index<access_object[context].length-1){
+                        sql += '; ';
+                    }
+                }
+                if(context!=Object.keys(access_object)[Object.keys(access_object).length-1]){
+                    sql += '; ';
+                }
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
         } catch (err) {
             console.log(err)
         } finally {

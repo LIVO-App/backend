@@ -21,7 +21,7 @@ describe('/api/v1/propositions', () => {
         let invalid_proposal = {}
         let invalid_proposal_course = {
             area_id: "SM",
-            growth_id: 1,
+            growth_list: 1,
             session_id: 7,
             access_object: {
                 SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
@@ -43,7 +43,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -67,7 +67,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -92,7 +92,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -117,7 +117,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -143,7 +143,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -170,7 +170,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_ids: [1,4],
+            growth_list: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -364,7 +364,7 @@ describe('/api/v1/propositions', () => {
                 credits: 4,
                 up_hours: 10,
                 area_id: "SM",
-                growth_id: 1,
+                growth_list: [1],
                 min_students: 10,
                 max_students: 25,
                 access_object: {

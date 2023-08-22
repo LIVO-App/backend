@@ -58,7 +58,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = "SELECT * FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?";
+            sql = "SELECT * FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?";
             let values = [student_id, course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -80,7 +80,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = "SELECT section, learning_context_id FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND pending IS NULL";
+            sql = "SELECT section, learning_context_id FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND pending IS NULL";
             let values = [student_id, course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -102,7 +102,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = 'SELECT s.id, s.name, s.surname, ins.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN inscribed AS ins on ins.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE ins.project_class_course_id = ? AND ins.project_class_session = ? AND ins.section = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
             let values = [course_id, session_id, section, session_id];
             if(associated_class){
                 if(!teacher_id){
@@ -150,7 +150,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT DISTINCT ins.section FROM inscribed AS ins WHERE ins.project_class_course_id = ? AND ins.project_class_session = ?';
+            let sql = 'SELECT DISTINCT subs.section FROM subscribed AS subs WHERE subs.project_class_course_id = ? AND subs.project_class_session = ?';
             let values = [course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();

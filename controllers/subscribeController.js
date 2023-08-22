@@ -1,6 +1,6 @@
 'use strict';
 
-const inscribe_schema = require('../models/inscribeModel');
+const subscribe_schema = require('../models/subscribeModel');
 const studentModel = require('../models/studentModel');
 const pcModel = require('../models/projectClassModel');
 const courseSchema = require('../models/coursesModel');
@@ -8,7 +8,7 @@ const courseSchema = require('../models/coursesModel');
 let MSG = {
     notFound: "Resource not found",
     missing_params: "Bad input. Missing required information",
-    itemAlreadyExists: "The student is already inscribe to this project class",
+    itemAlreadyExists: "The student is already subscribed to this project class",
     studentNotExist: "The student does not exist",
     maxCreditsLimit: "The student has passed the maximum number of credits for this learning area",
     notAuthorized: "Not authorized request",
@@ -17,14 +17,14 @@ let MSG = {
 
 process.env.TZ = 'Etc/Universal';
 
-module.exports.inscribe_project_class = async (req, res) => {
+module.exports.subscribe_project_class = async (req, res) => {
     let student_id = req.params.student_id;
     let course_id = req.query.course_id;
     let session_id = req.query.session_id;
     let section = req.query.section ?? "A";
     let context_id = req.query.context_id;
     let pen_val = undefined;
-    let pending = await inscribe_schema.isClassFull(course_id, session_id);
+    let pending = await subscribe_schema.isClassFull(course_id, session_id);
     if(!pending){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: full class');
@@ -39,7 +39,7 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await inscribe_schema.read(student_id, course_id, session_id, context_id, section);
+    const subscriptionExists = await subscribe_schema.read(student_id, course_id, session_id, context_id, section);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -70,7 +70,7 @@ module.exports.inscribe_project_class = async (req, res) => {
         console.log('max credits limit reached');
         return;
     }
-    let subscribe = await inscribe_schema.add(student_id, course_id, session_id, section, context_id, pen_val);
+    let subscribe = await subscribe_schema.add(student_id, course_id, session_id, section, context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: subscribe');
@@ -98,10 +98,10 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: unscribe');
+        console.log('resource not found: unsubscribe');
         return;
     }
-    let unsubscribe = await inscribe_schema.remove(student_id, course_id, session_id, context_id);
+    let unsubscribe = await subscribe_schema.remove(student_id, course_id, session_id, context_id);
     let res_des = "Deleted " + unsubscribe.affectedRows + " rows";
     let response = {
         status: "deleted", 
@@ -110,17 +110,17 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     res.status(200).json(response);
 }
 
-module.exports.inscribe_project_class_v2 = async (req, res) => {
+module.exports.subscribe_project_class_v2 = async (req, res) => {
     let student_id = req.params.student_id;
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('inscribe: unauthorized access');
+            console.log('subscribe: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('inscribe: unauthorized access');
+        console.log('subscribe: unauthorized access');
         return;
     }
     let course_id = req.query.course_id;
@@ -132,7 +132,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await inscribe_schema.read(student_id, course_id, session_id, context_id);
+    const subscriptionExists = await subscribe_schema.read(student_id, course_id, session_id, context_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -163,14 +163,14 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
         console.log('max credits limit reached');
         return;
     }
-    let notSameGroup = await inscribe_schema.not_same_group(course_id, session_id, student_id, cour.learning_area_id);
+    let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, student_id, cour.learning_area_id);
     if(!notSameGroup){
         res.status(403).json({status: "error", description: MSG.sameGroup})
         console.log('group already selected')
         return;
     }
     let pen_val = undefined;
-    let section = await inscribe_schema.getAvailableSection(course_id, session_id);
+    let section = await subscribe_schema.getAvailableSection(course_id, session_id);
     if(section == null){
         res.status(400).json({status: "error", description: MSG.missing_params});
         console.log('mising required information: section');
@@ -179,7 +179,7 @@ module.exports.inscribe_project_class_v2 = async (req, res) => {
     if (section === ""){
         pen_val = true
     }
-    let subscribe = await inscribe_schema.add(student_id, course_id, session_id, section.toUpperCase(), context_id, pen_val);
+    let subscribe = await subscribe_schema.add(student_id, course_id, session_id, section.toUpperCase(), context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: subscribe');
@@ -199,12 +199,12 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('unscribe: unauthorized access');
+            console.log('unsubscribe: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('unscribe: unauthorized access');
+        console.log('unsubscribe: unauthorized access');
         return;
     }
     let course_id = req.query.course_id;
@@ -218,10 +218,10 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: unscribe');
+        console.log('resource not found: unsubscribe');
         return;
     }
-    let unsubscribe = await inscribe_schema.remove(student_id, course_id, session_id, context_id);
+    let unsubscribe = await subscribe_schema.remove(student_id, course_id, session_id, context_id);
     let res_des = "Deleted " + unsubscribe.affectedRows + " rows";
     let response = {
         status: "deleted", 
@@ -229,9 +229,9 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     };
     res.status(200).json(response);
 }
-/*inscribe_schema.isClassFull(3,7)
+/*subscribe_schema.isClassFull(3,7)
     .then((msg) => {
         console.log(msg.full);
     });*/
-//inscribe_schema.add(3,3,7,"A",true);
-//inscribe_schema.remove(3,3,7);
+//subscribe_schema.add(3,3,7,"A",true);
+//subscribe_schema.remove(3,3,7);

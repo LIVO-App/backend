@@ -32,45 +32,45 @@ module.exports = {
             conn = await pool.getConnection();
             let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group`;
             if(student_id != undefined){
-                sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_session_id = ins.project_class_session WHERE `;
+                sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session WHERE `;
                 if(learn_area_id != undefined && session_id != undefined && context_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (learn_area_id != undefined && context_id != undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (session_id != undefined && context_id != undefined) {
-                    sql += `learning_session_id = ${session_id} AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ${session_id} AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (context_id != undefined){
-                    sql += `ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (session_id != undefined){
                     sql += `learning_session_id = ${session_id} AND `
                 }
-                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE  ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_session = pc.learning_session_id `;
+                sql += `subs.student_id = ${student_id}) AND (SELECT subs.pending FROM subscribed AS subs WHERE  subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id `;
                 if(context_id != undefined){
-                    sql += ` AND ins.learning_context_id=\'${context_id}\'`;
+                    sql += ` AND subs.learning_context_id=\'${context_id}\'`;
                 }
-                sql += `) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_session_id = ins.project_class_session WHERE `;
+                sql += `) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session WHERE `;
                 if(learn_area_id != undefined && session_id != undefined && context_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (learn_area_id != undefined && context_id != undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (session_id != undefined && context_id != undefined) {
-                    sql += `learning_session_id = ${session_id} AND ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ${session_id} AND subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (context_id != undefined){
-                    sql += `ins.learning_context_id=\'${context_id}\' AND `;
+                    sql += `subs.learning_context_id=\'${context_id}\' AND `;
                 } else if (session_id != undefined){
                     sql += `learning_session_id = ${session_id} AND `
                 }
-                sql += `ins.student_id = ${student_id}) AND (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_session = pc.learning_session_id `;
+                sql += `subs.student_id = ${student_id}) AND (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id `;
                 if(context_id != undefined){
-                    sql += ` AND ins.learning_context_id=\'${context_id}\'`
+                    sql += ` AND subs.learning_context_id=\'${context_id}\'`
                 }
-                sql += `) IS NOT NULL THEN (SELECT ins.pending FROM inscribed AS ins WHERE ins.project_class_course_id = c.id AND ins.student_id = ${student_id} AND ins.project_class_session = pc.learning_session_id`
+                sql += `) IS NOT NULL THEN (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id`
                 if(context_id != undefined){
-                    sql += ` AND ins.learning_context_id=\'${context_id}\'`
+                    sql += ` AND subs.learning_context_id=\'${context_id}\'`
                 }
-                sql += `) ELSE \"false\" end AS inscribed`;
+                sql += `) ELSE \"false\" end AS subscribed`;
                 if (session_id!=undefined) {
-                    sql += `, (SELECT section FROM inscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_session = ${session_id}`
+                    sql += `, (SELECT section FROM subscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_session = ${session_id}`
                     if(context_id!=undefined){
                         sql += ` AND learning_context_id=\'${context_id}\'`;
                     }
@@ -142,12 +142,12 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = `SELECT DISTINCT c.id AS course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', i.section, c.credits, c.learning_area_id, i.learning_context_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ${student_id} AND g.project_class_course_id = pc.course_id AND g.project_class_session = pc.learning_session_id AND g.final = 1) AS final_grade, CASE WHEN pc.learning_session_id IN (SELECT ls1.id FROM learning_session AS ls1 WHERE ls1.start>CURRENT_DATE()) THEN 1 ELSE 0 END AS future_course FROM student AS s JOIN inscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id JOIN learning_session AS ls ON pc.learning_session_id = ls.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_session_id = g.project_class_session WHERE s.id = ${student_id} AND ls.school_year=${school_year} AND i.pending IS NULL`
+            sql = `SELECT DISTINCT c.id AS course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', i.section, c.credits, c.learning_area_id, i.learning_context_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ${student_id} AND g.project_class_course_id = pc.course_id AND g.project_class_session = pc.learning_session_id AND g.final = 1) AS final_grade, CASE WHEN pc.learning_session_id IN (SELECT ls1.id FROM learning_session AS ls1 WHERE ls1.start>CURRENT_DATE()) THEN 1 ELSE 0 END AS future_course FROM student AS s JOIN subscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id JOIN learning_session AS ls ON pc.learning_session_id = ls.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_session_id = g.project_class_session WHERE s.id = ${student_id} AND ls.school_year=${school_year} AND i.pending IS NULL`
             if(context_id!=undefined){
                 sql += ` AND i.learning_context_id = \'${context_id}\'`;
             }
             if(teacher_id!=undefined){
-                sql += ` AND c.id IN (SELECT DISTINCT c.id FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON pc.course_id = ins.project_class_course_id AND pc.learning_session_id = ins.project_class_session JOIN associated AS ass ON c.id = ass.course_id WHERE ins.student_id IN (SELECT s.id FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id})) AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}) AND ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) UNION SELECT c.id FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ${teacher_id} AND pt.project_class_session IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}))`;
+                sql += ` AND c.id IN (SELECT DISTINCT c.id FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session JOIN associated AS ass ON c.id = ass.course_id WHERE subs.student_id IN (SELECT s.id FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id})) AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}) AND ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) UNION SELECT c.id FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ${teacher_id} AND pt.project_class_session IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}))`;
             }
             const rows = await conn.query(sql);
             conn.release();
@@ -442,53 +442,53 @@ module.exports = {
         c.admin_confirmation,
         pc.italian_displayed_name,
         pc.english_displayed_name,
-        ins.section,
+        subs.section,
         CASE
             WHEN c.id IN (SELECT c.id
                         FROM   course AS c
                                 LEFT JOIN project_class AS pc
                                         ON c.id = pc.course_id
-                                LEFT JOIN inscribed AS ins
+                                LEFT JOIN subscribed AS subs
                                         ON pc.course_id =
-                                            ins.project_class_course_id
+                                            subs.project_class_course_id
                                             AND pc.learning_session_id =
-                                                ins.project_class_session
+                                                subs.project_class_session
                         WHERE  learning_session_id = 7
                                 AND c.learning_area_id = "sm"
-                                AND ins.student_id = 1)
-                AND (SELECT ins.pending
-                    FROM   inscribed AS ins
-                    WHERE  ins.project_class_course_id = c.id
-                            AND ins.student_id = 1
-                            AND ins.project_class_session = pc.learning_session_id) IS
+                                AND subs.student_id = 1)
+                AND (SELECT subs.pending
+                    FROM   subscribed AS subs
+                    WHERE  subs.project_class_course_id = c.id
+                            AND subs.student_id = 1
+                            AND subs.project_class_session = pc.learning_session_id) IS
                     NULL
         THEN "true"
             WHEN c.id IN (SELECT c.id
                         FROM   course AS c
                                 LEFT JOIN project_class AS pc
                                         ON c.id = pc.course_id
-                                LEFT JOIN inscribed AS ins
+                                LEFT JOIN subscribed AS subs
                                         ON pc.course_id =
-                                            ins.project_class_course_id
+                                            subs.project_class_course_id
                                             AND pc.learning_session_id =
-                                                ins.project_class_session
+                                                subs.project_class_session
                         WHERE  learning_session_id = 7
                                 AND c.learning_area_id = "sm"
-                                AND ins.student_id = 1)
-                AND (SELECT ins.pending
-                    FROM   inscribed AS ins
-                    WHERE  ins.project_class_course_id = c.id
-                            AND ins.student_id = 1
-                            AND ins.project_class_session = pc.learning_session_id) IS
+                                AND subs.student_id = 1)
+                AND (SELECT subs.pending
+                    FROM   subscribed AS subs
+                    WHERE  subs.project_class_course_id = c.id
+                            AND subs.student_id = 1
+                            AND subs.project_class_session = pc.learning_session_id) IS
                     NOT
-                    NULL THEN (SELECT ins.pending
-                                FROM   inscribed AS ins
-                                WHERE  ins.project_class_course_id = c.id
-                                        AND ins.student_id = 1
+                    NULL THEN (SELECT subs.pending
+                                FROM   subscribed AS subs
+                                WHERE  subs.project_class_course_id = c.id
+                                        AND subs.student_id = 1
                                         AND
-                                ins.project_class_session = pc.learning_session_id)
+                                subs.project_class_session = pc.learning_session_id)
             ELSE "false"
-        end               AS inscribed
+        end               AS subscribed
     FROM   course AS c
         JOIN project_class AS pc
             ON c.id = pc.course_id

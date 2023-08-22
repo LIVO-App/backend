@@ -18,7 +18,7 @@ module.exports = {
                 actualSection = section;
                 pen_val =  null;
             }
-            let sql = `INSERT INTO inscribed (student_id, project_class_course_id, project_class_session, section, learning_context_id, pending) VALUES (?,?,?,?,?,?)`;
+            let sql = `INSERT INTO subscribed (student_id, project_class_course_id, project_class_session, section, learning_context_id, pending) VALUES (?,?,?,?,?,?)`;
             
             values = [student_id, course_id, session_id, actualSection, context_id, pen_val]
             const rows = await conn.query(sql, values);
@@ -42,7 +42,7 @@ module.exports = {
                 conn.release();
                 return false;
             }*/
-            let sql = 'DELETE FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
+            let sql = 'DELETE FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
             values = [student_id, course_id, session_id, context_id]
             const rows = await conn.query(sql, values);
             conn.release();
@@ -61,7 +61,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM inscribed WHERE project_class_course_id=? AND project_class_session=?)>course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
+            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM subscribed WHERE project_class_course_id=? AND project_class_session=?)>course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
             //console.log(sql);
             let values = [course_id, session_id, course_id]
             const rows = await conn.query(sql, values);
@@ -94,7 +94,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT section,COUNT(*) AS students FROM inscribed WHERE project_class_course_id = ? AND project_class_session = ? GROUP BY section ORDER BY section;'
+            sql = 'SELECT section,COUNT(*) AS students FROM subscribed WHERE project_class_course_id = ? AND project_class_session = ? GROUP BY section ORDER BY section;'
             values.push(session_id);
             rows = await conn.query(sql, values);
             for (const section of rows) {
@@ -128,7 +128,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_session, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
+            sql = 'SELECT student_id, project_class_course_id, project_class_session, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
             values = [student_id, course_id, session_id, context_id];
             if (section != undefined) {
                 sql += ' AND section = ?';
@@ -150,7 +150,7 @@ module.exports = {
     async not_same_group(course_id, session_id, student_id, area_id){
         try {
             conn = await pool.getConnection()
-            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_session_id = ? AND pc.group IN (SELECT pc1.group FROM inscribed AS ins JOIN project_class AS pc1 ON pc1.course_id = ins.project_class_course_id AND pc1.learning_session_id = ins.project_class_session JOIN course AS c ON c.id = pc1.course_id WHERE ins.student_id = ? AND c.learning_area_id = ?)'
+            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_session_id = ? AND pc.group IN (SELECT pc1.group FROM subscribed AS subs JOIN project_class AS pc1 ON pc1.course_id = subs.project_class_course_id AND pc1.learning_session_id = subs.project_class_session JOIN course AS c ON c.id = pc1.course_id WHERE subs.student_id = ? AND c.learning_area_id = ?)'
             let values = [course_id, session_id, student_id, area_id]
             const rows = await conn.query(sql, values);
             conn.release()

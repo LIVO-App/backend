@@ -10,7 +10,7 @@ const adminModel = require('../models/adminModel');
 const opentoSchema = require('../models/opentoModel');
 const crypto = require('../utils/cipher');
 const constraintModel = require('../models/constraintModel');
-const inscribeModel = require('../models/inscribeModel');
+const subscribeModel = require('../models/subscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -604,11 +604,11 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project course update components: project class has max students required');
         return;
     }
-    let unscribeStudent = await inscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
-    let inscribeStudent = await inscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
-    if(!inscribeStudent){
+    let unscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
+    let subscribeStudent = await subscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
+    if(!subscribeStudent){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('project class update components: missing parameters. Inscribe to destination')
+        console.log('project class update components: missing parameters. Subscribe to destination')
         return
     }
     res.status(201).json({status: "accepted", description: "Student moved successfully"})

@@ -330,10 +330,10 @@ INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `pro
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `inscribed`
+-- Struttura della tabella `subscribed`
 --
 
-CREATE TABLE `inscribed` (
+CREATE TABLE `subscribed` (
   `student_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
   `project_class_session` int(11) NOT NULL,
@@ -343,10 +343,10 @@ CREATE TABLE `inscribed` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `inscribed`
+-- Dump dei dati per la tabella `subscribed`
 --
 
-INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_session`, `section`, `learning_context_id`, `pending`) VALUES
+INSERT INTO `subscribed` (`student_id`, `project_class_course_id`, `project_class_session`, `section`, `learning_context_id`, `pending`) VALUES
 (1, 3, 7, 'A', 'SPE', NULL),
 (1, 4, 6, 'A', 'SPE', NULL),
 (1, 5, 7, 'A', 'PER', NULL),
@@ -861,9 +861,9 @@ ALTER TABLE `grade`
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
--- Indici per le tabelle `inscribed`
+-- Indici per le tabelle `subscribed`
 --
-ALTER TABLE `inscribed`
+ALTER TABLE `subscribed`
   ADD PRIMARY KEY (`student_id`,`project_class_course_id`,`project_class_session`,`section`),
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
@@ -1099,12 +1099,12 @@ ALTER TABLE `grade`
   ADD CONSTRAINT `grade_ibfk_3` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`);
 
 --
--- Limiti per la tabella `inscribed`
+-- Limiti per la tabella `subscribed`
 --
-ALTER TABLE `inscribed`
-  ADD CONSTRAINT `inscribed_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
-  ADD CONSTRAINT `inscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`),
-  ADD CONSTRAINT `inscribed_ibfk_3` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
+ALTER TABLE `subscribed`
+  ADD CONSTRAINT `subscribed_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
+  ADD CONSTRAINT `subscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`),
+  ADD CONSTRAINT `subscribed_ibfk_3` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
 
 --
 -- Limiti per la tabella `limited`

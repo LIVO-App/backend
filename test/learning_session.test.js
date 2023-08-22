@@ -138,7 +138,7 @@ describe('/api/v1/learning_sessions', () => {
                     .send(json)
                     .expect(200)
                     .then((response) => {
-                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not subscribed to anything
                     });
             })
 
@@ -150,7 +150,7 @@ describe('/api/v1/learning_sessions', () => {
                     .send(json)
                     .expect(200)
                     .then((response) => {
-                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not inscribed to anything
+                        expect(response.body.data.length).toBeGreaterThanOrEqual(0) //Student has just arrived and is not subscribed to anything
                     });
             })
         })

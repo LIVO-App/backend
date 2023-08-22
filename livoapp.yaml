@@ -681,7 +681,7 @@ paths:
     get:
       description: |
         Get all the courses in the curriculum of a student for a certain school year. 
-        If the user is a student, it will show all the courses he is inscribed in that school year. 
+        If the user is a student, it will show all the courses he is subscribed in that school year. 
         If the user logged in is a teacher, the api will return only the courses related to the teacher:
           - the ones that he teaches in (his project classes)
           - the ones associated to him through his teachings
@@ -833,7 +833,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/{student_id}/inscribe:
+  /v1/students/{student_id}/subscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -857,7 +857,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v2/students/{student_id}/inscribe:
+  /v2/students/{student_id}/subscribe:
     post:
       description: Subscription to a project class by a student
       summary: Subscription to a course
@@ -884,7 +884,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
-  /v1/students/{student_id}/unscribe:
+  /v1/students/{student_id}/unsubscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -903,7 +903,7 @@ paths:
           $ref: '#/components/responses/BadInputs'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v2/students/{student_id}/unscribe:
+  /v2/students/{student_id}/unsubscribe:
     post:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
@@ -2543,7 +2543,7 @@ components:
                 type: string
           example:
             status: "error"
-            description: "The student is already inscribe to this project class"
+            description: "The student is already subscribe to this project class"
     AcceptInsert:
       description: Insert record into the database
       content:
@@ -2860,10 +2860,10 @@ components:
           description: "Specifies in which group a certain course belongs. If two courses have the same group, they are concurrent. (Only for v2)"
         pending:
           type: boolean
-          description: "Is the student already inscribed to this course? Or is he waiting for a response?"
+          description: "Is the student already subscribed to this course? Or is he waiting for a response?"
         section:
           type: string
-          description: "Section of the project class in case the student is inscribed to it"
+          description: "Section of the project class in case the student is subscribed to it"
     proposer_teacher_ref:
       type: object
       properties:

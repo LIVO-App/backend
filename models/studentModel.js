@@ -75,13 +75,13 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ${student_id}`
+            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ${student_id}`
             if(context_id=='PER'){
-                sql += ` AND ins.learning_context_id=\'${context_id}\'`;
+                sql += ` AND subs.learning_context_id=\'${context_id}\'`;
             } else {
-                sql += ` AND c.learning_area_id=\'${area_id}\' AND ins.learning_context_id=\'${context_id}\'`;
+                sql += ` AND c.learning_area_id=\'${area_id}\' AND subs.learning_context_id=\'${context_id}\'`;
             }
-            sql += ` AND pc.learning_session_id = ${session_id} AND ins.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ${session_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
+            sql += ` AND pc.learning_session_id = ${session_id} AND subs.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ${session_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
             if(context_id=='PER'){
                 sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=\'${context_id}\'`;
             } else {
@@ -105,7 +105,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            let sql = 'SELECT pc.course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_title", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_title", ins.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN inscribed AS ins ON ins.project_class_course_id = pc.course_id AND ins.project_class_session = pc.learning_session_id WHERE ins.student_id = ? AND ins.project_class_session = ?';
+            let sql = 'SELECT pc.course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS "italian_title", CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS "english_title", subs.section FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN subscribed AS subs ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id WHERE subs.student_id = ? AND subs.project_class_session = ?';
             let values = [student_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -123,7 +123,7 @@ module.exports = {
                 conn.release()
                 return null
             }
-            let sql = 'SELECT ins.section FROM inscribed AS ins WHERE ins.student_id = ? AND ins.project_class_course_id = ? AND ins.project_class_session = ?'
+            let sql = 'SELECT subs.section FROM subscribed AS subs WHERE subs.student_id = ? AND subs.project_class_course_id = ? AND subs.project_class_session = ?'
             let values = [student_id, course_id, session_id]
             const rows = await conn.query(sql, values)
             conn.release();
@@ -153,16 +153,16 @@ module.exports = {
             let sql = ``;
             let values = [];
             for(let i=0;i<area_id.length;i++){
-                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON ins.project_class_course_id = pc.course_id AND ins.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE ins.student_id = ? AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year=?)`
+                sql += `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ? AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year=?)`
                 values.push(student_id, school_year)
                 if(context_id[i]=='PER'){
-                    sql += ` AND ins.learning_context_id = ?`;
+                    sql += ` AND subs.learning_context_id = ?`;
                     values.push(context_id[i])
                 } else {
-                    sql += ` AND c.learning_area_id = ? AND ins.learning_context_id = ?`;
+                    sql += ` AND c.learning_area_id = ? AND subs.learning_context_id = ?`;
                     values.push(area_id[i], context_id[i])
                 }
-                sql += ` AND ins.pending IS NULL) AS credits, IFNULL((SELECT SUM(l.credits) AS total_credits FROM limited AS l WHERE l.ordinary_class_school_year = ? AND l.ordinary_class_study_year = att.ordinary_class_study_year AND l.ordinary_class_address = att.ordinary_class_address `
+                sql += ` AND subs.pending IS NULL) AS credits, IFNULL((SELECT SUM(l.credits) AS total_credits FROM limited AS l WHERE l.ordinary_class_school_year = ? AND l.ordinary_class_study_year = att.ordinary_class_study_year AND l.ordinary_class_address = att.ordinary_class_address `
                 values.push(school_year)
                 if(context_id[i]=='PER'){
                     sql += ` AND l.learning_area_id IS NULL AND l.learning_context_id = ?`;

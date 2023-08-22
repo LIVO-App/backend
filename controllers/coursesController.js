@@ -21,7 +21,7 @@ let MSG = {
     updateFailed: "Failed to save",
     missing_params: "Bad input. Missing required information",
     already_confirmed: "There are project classes for this course that are already confirmed. Deletion abort",
-    itemAlreadyExists: "The student is already inscribe to this project class",
+    itemAlreadyExists: "The student is already subscribe to this project class",
     pastSession: "Session already expired or imminent",
     notAuthorized: "Not authorized request",
     courseConfirmed: "The proposition you want to reject was already confirmed. In fact some students are already present",
@@ -58,7 +58,7 @@ module.exports.get_courses = async (req, res) => {
             credits: course.credits,
             learning_area_ref: learning_area_ref,
             section: course.section,
-            pending: course.inscribed
+            pending: course.subscribed
         };
     });
     let response = {
@@ -124,7 +124,7 @@ module.exports.get_courses_v2 = async (req, res) => {
             credits: course.credits,
             learning_area_ref: learning_area_ref,
             group: course.group,
-            pending: course.inscribed,
+            pending: course.subscribed,
             section: course.section
         };
     });

@@ -69,13 +69,13 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT ins.project_class_course_id AS course, ls.id AS session FROM learning_session AS ls JOIN inscribed AS ins ON ins.project_class_session = ls.id WHERE ins.student_id = ?';
+            let sql = 'SELECT subs.project_class_course_id AS course, ls.id AS session FROM learning_session AS ls JOIN subscribed AS subs ON subs.project_class_session = ls.id WHERE subs.student_id = ?';
             let values = [student_id];
             for(let i=0; i<courses.length; i++){
                 if(i==0){
                     sql += ' AND (';
                 }
-                sql += 'ins.project_class_course_id = ?';
+                sql += 'subs.project_class_course_id = ?';
                 values.push(courses[i]);
                 if(i<courses.length-1){
                     sql += ' OR ';

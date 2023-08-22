@@ -233,10 +233,14 @@ module.exports.add_sessions = async (req, res) => {
                     res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
                     console.log('learning sessions addition: the sessions you wanted to add are overlapping with each others. Please try again');
                     return;
-                }
-                // Fill also the date of open_day parameter if they are undefined
-                if(open_day == undefined){
+                }               
+            }
+            // Fill also the date of open_day parameter if they are undefined
+            if(open_day == undefined){
+                if(i!=0){
                     sessions_list[i].open_day = sessions_list[i-1].start_date
+                } else {
+                    sessions_list[i].open_day = future_sessions_existing[0].start
                 }
             }
             dates_session.push(start_date, end_date);

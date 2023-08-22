@@ -9,7 +9,7 @@ const projectClassTeacherSchema = require('../models/projectClassTeacherModel');
 const courseSchema = require('../models/coursesModel')
 const learning_sessionsModel = require('../models/learning_sessionsModel');
 const classesTeacherModel = require('../models/classesTeacherModel');
-const inscribeSchema = require('../models/inscribeModel');
+const subscribeSchema = require('../models/subscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -490,7 +490,7 @@ module.exports.delete_project_class = async (req, res) => {
         components = await projectClassesSchema.classComponents(course_id, session_id, String.fromCharCode(65+i))
         if(components){
             for(let j in components){
-                await inscribeSchema.remove(components[j].id, course_id, session_id, components[j].learning_context_id)
+                await subscribeSchema.remove(components[j].id, course_id, session_id, components[j].learning_context_id)
             }
         }
     }

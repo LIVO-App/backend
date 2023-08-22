@@ -38,51 +38,51 @@ describe('/api/v1/students', () => {
     })
 
     describe('POST methods', () => {
-        describe('POST /api/v1/students/:student_id/inscribe', () => {
-            // api/v1/students/:id/inscribe
+        describe('POST /api/v1/students/:student_id/subscribe', () => {
+            // api/v1/students/:id/subscribe
             // Add student to a class with non valid ID
-            test('POST /api/v1/students/:student_id/inscribe with non valid ID should respond 404', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with non valid ID should respond 404', async () => {
                 return request(app)
-                    .post('/api/v1/students/NonValidID/inscribe')
+                    .post('/api/v1/students/NonValidID/subscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(400);
             })
 
             // Add student to a class with missing params
-            test('POST /api/v1/students/:student_id/inscribe with missing params should respond 404', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with missing params should respond 404', async () => {
                 return request(app)
-                    .post('/api/v1/students/3/inscribe')
+                    .post('/api/v1/students/3/subscribe')
                     .expect(404);
             })
 
             // Add student to a class with non existing class
-            test('POST /api/v1/students/:student_id/inscribe with non existing class should respond 404', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with non existing class should respond 404', async () => {
                 return request(app)
-                    .post('/api/v1/students/3/inscribe')
+                    .post('/api/v1/students/3/subscribe')
                     .query({course_id: wrongProjectClass.course, session_id: wrongProjectClass.session, section: wrongProjectClass.section, context_id: 'SPE'})
                     .expect(404);
             })
 
             // Add a student to a class where he has all the credits for that area
-            test('POST /api/v1/students/:student_id/inscribe with valid ID but have max number of credits for that area should respond 200', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with valid ID but have max number of credits for that area should respond 200', async () => {
                 return request(app)
-                    .post('/api/v1/students/3/inscribe')
+                    .post('/api/v1/students/3/subscribe')
                     .query({course_id: projectClassForMaxCredits.course, session_id: projectClassForMaxCredits.session, section: projectClassForMaxCredits.section, context_id: 'SPE'})
                     .expect(403);
             })
 
             // Add student to a class
-            test('POST /api/v1/students/:student_id/inscribe with valid ID should respond 200', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with valid ID should respond 200', async () => {
                 return request(app)
-                    .post('/api/v1/students/3/inscribe')
+                    .post('/api/v1/students/3/subscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(201);
             })
 
             // Add student to a class where he is currently enrolled in
-            test('POST /api/v1/students/:student_id/inscribe with already enrolled student should respond 409', async () => {
+            test('POST /api/v1/students/:student_id/subscribe with already enrolled student should respond 409', async () => {
                 return request(app)
-                    .post('/api/v1/students/3/inscribe')
+                    .post('/api/v1/students/3/subscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(409);
             })
@@ -525,7 +525,7 @@ describe('/api/v1/students', () => {
 
     describe('DELETE methods', () => {
         describe('DELETE /api/v1/students/:student_id/unscribe', () => {
-            // api/v1/students/:id/inscribe
+            // api/v1/students/:id/subscribe
             // Delete subscription with non valid student ID
             test('DELETE /api/v1/students/:student_id/unscribe with non valid ID should respond with status 200', async () => {
                 return request(app)
@@ -589,91 +589,91 @@ describe('/api/v2/students', () => {
     })
 
     describe('POST methods', () => {
-        describe('POST /api/v2/students/:student_id/inscribe', () => {
-            // api/v1/students/:id/inscribe
+        describe('POST /api/v2/students/:student_id/subscribe', () => {
+            // api/v1/students/:id/subscribe
             // Add student to a class with non valid ID with valid token
-            test('POST /api/v2/students/:student_id/inscribe with non valid ID and valid token should respond 404', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with non valid ID and valid token should respond 404', async () => {
                 return request(app)
-                    .post('/api/v2/students/NonValidID/inscribe')
+                    .post('/api/v2/students/NonValidID/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Add student to a class with missing params with valid token
-            test('POST /api/v2/students/:student_id/inscribe with missing params and valid token should respond 404', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with missing params and valid token should respond 404', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .expect(400);
             })
 
             // Add student to a class with non existing class with valid token
-            test('POST /api/v2/students/:student_id/inscribe with non existing class and valid token should respond 404', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with non existing class and valid token should respond 404', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: wrongProjectClass.course, session_id: wrongProjectClass.session, section: wrongProjectClass.section, context_id: 'SPE'})
                     .expect(404);
             })
 
             // Add a student to a class where he has all the credits for that area with valid token
-            test('POST /api/v2/students/:student_id/inscribe with valid ID but have max number of credits for that area and valid token should respond 200', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID but have max number of credits for that area and valid token should respond 200', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClassForMaxCredits.course, session_id: projectClassForMaxCredits.session, section: projectClassForMaxCredits.section, context_id: 'SPE'})
                     .expect(403);
             })
 
             // Add student to a class without token
-            test('POST /api/v2/students/:student_id/inscribe with valid ID without token should respond with status 401', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID without token should respond with status 401', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Add student to a class with invalid token
-            test('POST /api/v2/students/:student_id/inscribe with valid ID with invalid token should respond 403', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID with invalid token should respond 403', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', invalidToken)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(403);
             })
 
             // Add student to a class with wrong user token
-            test('POST /api/v2/students/:student_id/inscribe with valid ID with wrong user token should respond 401', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID with wrong user token should respond 401', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', wrongUserToken)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Add student to a class with valid token but information of another student
-            test('POST /api/v2/students/:student_id/inscribe with valid ID and valid token but of another user should respond 401', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID and valid token but of another user should respond 401', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent2)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Add student to a class with valid token
-            test('POST /api/v2/students/:student_id/inscribe with valid ID and valid token should respond 200', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with valid ID and valid token should respond 200', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(201);
             })
 
             // Add student to a class where he is currently enrolled in with valid token
-            test('POST /api/v2/students/:student_id/inscribe with already enrolled student and valid token should respond 409', async () => {
+            test('POST /api/v2/students/:student_id/subscribe with already enrolled student and valid token should respond 409', async () => {
                 return request(app)
-                    .post('/api/v2/students/3/inscribe')
+                    .post('/api/v2/students/3/subscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClass.course, session_id: projectClass.session, section: projectClass.section, context_id: 'SPE'})
                     .expect(409);
@@ -828,7 +828,7 @@ describe('/api/v2/students', () => {
 
     describe('DELETE methods', () => {
         describe('DELETE /api/v2/students/:student_id/unscribe', () => {
-            // api/v1/students/:id/inscribe
+            // api/v1/students/:id/subscribe
             // Delete subscription with non valid student ID with valid token
             test('DELETE /api/v2/students/:student_id/unscribe with non valid ID and valid token should respond with status 200', async () => {
                 return request(app)

@@ -11,7 +11,7 @@ let MSG = {
     notAuthorized: "Not authorized request",
     missing_params: "Bad input. Missing required information",
     studentNotExist: "The student does not exist",
-    studentNotEnrolled: "The student isn't inscribe to this class",
+    studentNotEnrolled: "The student isn't subscribe to this class",
     finalGradeAlreadyInserted: "The final grade of this course for the student selected has already been inserted"
 }
 
@@ -138,8 +138,8 @@ module.exports.insert_grade = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    let studentInscribe = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
-    if (!studentInscribe){
+    let studentSubscribe = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
+    if (!studentSubscribe){
         res.status(400).json({status: "error", description: MSG.studentNotEnrolled})
         console.log('student is not enrolled');
         return;

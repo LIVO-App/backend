@@ -7,7 +7,7 @@ const adminModel = require('../models/adminModel');
 const teacherModel = require('../models/teacherModel')
 const projectClassTeacherSchema = require('../models/projectClassTeacherModel');
 const courseSchema = require('../models/coursesModel')
-const learning_blocksModel = require('../models/learning_blocksModel');
+const learning_sessionsModel = require('../models/learning_sessionsModel');
 const classesTeacherModel = require('../models/classesTeacherModel');
 const inscribeSchema = require('../models/inscribeModel');
 
@@ -38,12 +38,12 @@ module.exports.get_classes = async (req, res) => {
         console.log('project_class list: unauthorized access');
         return;
     }
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let year = req.query.year;
-    let cls = await projectClassesSchema.list(block_id, year);
+    let cls = await projectClassesSchema.list(session_id, year);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class: missing parameters. Specified year but not learning block to use");
+        console.log("project class: missing parameters. Specified year but not learning session to use");
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -65,7 +65,7 @@ module.exports.get_classes = async (req, res) => {
         }
         return {
             course_id: cl.course_id,
-            learning_block: cl.learning_block_id,
+            learning_session: cl.learning_session_id,
             italian_title: cl.italian_title,
             english_title: cl.english_title,
             group: cl.group,
@@ -82,7 +82,7 @@ module.exports.get_classes = async (req, res) => {
     let response = {
         path: path,
         single: true,
-        query: {block_id: block_id, year: year},
+        query: {session_id: session_id, year: year},
         date: new Date(),
         data: data_classes
     };
@@ -117,8 +117,8 @@ module.exports.get_class = async (req, res) => {
         return;
     }
     let course_id = req.params.course
-    let block_id = req.params.block;
-    let cl = await projectClassesSchema.read(course_id, block_id);
+    let session_id = req.params.session;
+    let cl = await projectClassesSchema.read(course_id, session_id);
     if(cl==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class: missing parameters");
@@ -147,7 +147,7 @@ module.exports.get_class = async (req, res) => {
     }
     let data_class ={
         course_id: cl.course_id,
-        learning_block: cl.learning_block_id,
+        learning_session: cl.learning_session_id,
         italian_title: cl.italian_title,
         english_title: cl.english_title,
         group: cl.group,
@@ -159,7 +159,7 @@ module.exports.get_class = async (req, res) => {
         admin_surname: cl.admin_surname,
         to_be_modified: cl.to_be_modified
     }
-    let path = "/api/v1/project_classes/"+course_id+"/"+block_id
+    let path = "/api/v1/project_classes/"+course_id+"/"+session_id
     let response = {
         path: path,
         single: true,
@@ -196,16 +196,16 @@ module.exports.get_project_class_components = async (req, res) => {
         return;
     }
     let course_id = req.params.course;
-    let block_id = req.params.block;
+    let session_id = req.params.session;
     let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
     query["section"] = section;
     let associated_class = req.query.assoc_class;
     query["assoc_class"] = associated_class
     let cmps;
     if(req.loggedUser.role=="admin"){
-        cmps = await projectClassesSchema.classComponents(course_id, block_id, section);
+        cmps = await projectClassesSchema.classComponents(course_id, session_id, section);
     } else {
-        cmps = await projectClassesSchema.classComponents(course_id, block_id, section, teacher_id, associated_class);
+        cmps = await projectClassesSchema.classComponents(course_id, session_id, section, teacher_id, associated_class);
     }
     
     if (!cmps) {
@@ -232,7 +232,7 @@ module.exports.get_project_class_components = async (req, res) => {
             ord_class_section: cmp.section
         }
     });
-    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/components"
+    let path = "/api/v1/project_classes/"+course_id+"/"+session_id+"/components"
     let response = {
         path: path,
         single: false,
@@ -250,8 +250,8 @@ module.exports.get_project_class_sections = async (req,res) => {
         return;
     }
     let course_id = req.params.course;
-    let block_id = req.params.block;
-    let sections = await projectClassesSchema.read_section_from_course_and_block(course_id, block_id);
+    let session_id = req.params.session;
+    let sections = await projectClassesSchema.read_section_from_course_and_session(course_id, session_id);
     if(sections == null) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class sections: missing parameters");
@@ -267,7 +267,7 @@ module.exports.get_project_class_sections = async (req,res) => {
             section: section.section
         }
     })
-    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/sections";
+    let path = "/api/v1/project_classes/"+course_id+"/"+session_id+"/sections";
     let response = {
         path: path,
         single: false,
@@ -318,7 +318,7 @@ module.exports.get_announcments = async (req, res) => {
         }
     }
     let course_id = req.params.course;
-    let block_id = req.params.block;
+    let session_id = req.params.session;
     let section = req.query.section;
     let is_student = false
     if(req.loggedUser.role === "student"){
@@ -329,7 +329,7 @@ module.exports.get_announcments = async (req, res) => {
             console.log('get_courses_v2: unauthorized access');
             return;
         }
-        let student_section = await studentModel.retrieve_section_from_project_class(student_id, course_id, block_id)
+        let student_section = await studentModel.retrieve_section_from_project_class(student_id, course_id, session_id)
         if(student_section == null){
             res.status(400).json({status: "error", description: MSG.missingParameter})
             console.log('project class announcements: missing required information')
@@ -344,7 +344,7 @@ module.exports.get_announcments = async (req, res) => {
         is_student = true
     }
     query["section"] = section;
-    let announcements = await courseAnnouncementSchema.list(course_id, block_id, section, publisher_id, is_admin, is_student);
+    let announcements = await courseAnnouncementSchema.list(course_id, session_id, section, publisher_id, is_admin, is_student);
     if(!announcements){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("project class announcments: missing parameters");
@@ -358,7 +358,7 @@ module.exports.get_announcments = async (req, res) => {
             publishment: announcement.publishment
         }
     });
-    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/announcements";
+    let path = "/api/v1/project_classes/"+course_id+"/"+session_id+"/announcements";
     let response = {
         path: path,
         single: false,
@@ -397,8 +397,8 @@ module.exports.get_teachers = async (req, res) => {
         return;
     }
     let course_id = req.params.course;
-    let block_id = req.params.block;
-    let cls = await projectClassTeacherSchema.read_from_project_class(course_id, block_id);
+    let session_id = req.params.session;
+    let cls = await projectClassTeacherSchema.read_from_project_class(course_id, session_id);
     if(cls===null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('missing parameters for project class teachers');
@@ -426,7 +426,7 @@ module.exports.get_teachers = async (req, res) => {
             main_teacher: cl.main
         };
     });
-    let path = "/api/v1/project_classes/"+course_id+"/"+block_id+"/teachers"
+    let path = "/api/v1/project_classes/"+course_id+"/"+session_id+"/teachers"
     let response = {
         path: path,
         single: false,
@@ -458,28 +458,28 @@ module.exports.delete_project_class = async (req, res) => {
         console.log('project_class deletion: course does not exists');
         return;
     }
-    let block_id = req.params.block;
-    let block_exist = await learning_blocksModel.read(block_id)
-    if(!block_exist){
+    let session_id = req.params.session;
+    let session_exist = await learning_sessionsModel.read(session_id)
+    if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project_class deletion: block does not exists');
+        console.log('project_class deletion: session does not exists');
         return;
     }
-    let starting_date = new Date(block_exist.start)
+    let starting_date = new Date(session_exist.start)
     let today = new Date()
     if (starting_date <= today){
-        res.status(400).json({status: "error", description: MSG.pastBlock});
-        console.log('project class deletion: tried to delete a project class helded in a block already started');
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('project class deletion: tried to delete a project class helded in a session already started');
         return;
     }
-    let project_class_exist = await projectClassesSchema.read(course_id, block_id);
+    let project_class_exist = await projectClassesSchema.read(course_id, session_id);
     if(!project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('project_class deletion: project class does not exists');
         return;
     }
     let num_section = project_class_exist.num_section;
-    let existing_grades = await projectClassesSchema.grades_present(course_id, block_id)
+    let existing_grades = await projectClassesSchema.grades_present(course_id, session_id)
     if(existing_grades){
         res.status(400).json({status: "error", description: MSG.has_grades});
         console.log('project class deletion: project classes already has grades');
@@ -487,15 +487,15 @@ module.exports.delete_project_class = async (req, res) => {
     }
     let components;
     for(let i=0;i<num_section;i++){
-        components = await projectClassesSchema.classComponents(course_id, block_id, String.fromCharCode(65+i))
+        components = await projectClassesSchema.classComponents(course_id, session_id, String.fromCharCode(65+i))
         if(components){
             for(let j in components){
-                await inscribeSchema.remove(components[j].id, course_id, block_id, components[j].learning_context_id)
+                await inscribeSchema.remove(components[j].id, course_id, session_id, components[j].learning_context_id)
             }
         }
     }
-    await classesTeacherModel.delete(course_id, block_id)
-    await projectClassesSchema.delete(course_id, block_id)
+    await classesTeacherModel.delete(course_id, session_id)
+    await projectClassesSchema.delete(course_id, session_id)
     res.status(200).json({status: "deleted", description: "Project class deleted successfully"});
 }
 
@@ -520,14 +520,14 @@ module.exports.final_confirmation = async (req, res) => {
         console.log('project course final confirmation: course does not exists');
         return;
     }
-    let block_id = req.params.block;
-    let block_exist = await learning_blocksModel.read(block_id)
-    if(!block_exist){
+    let session_id = req.params.session;
+    let session_exist = await learning_sessionsModel.read(session_id)
+    if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project course final confirmation: block does not exists');
+        console.log('project course final confirmation: session does not exists');
         return;
     }
-    let project_class_exist = await projectClassesSchema.read(course_id, block_id);
+    let project_class_exist = await projectClassesSchema.read(course_id, session_id);
     if(!project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('project course final confirmation: project class does not exists');
@@ -548,7 +548,7 @@ module.exports.final_confirmation = async (req, res) => {
     let num_section = project_class_exist.num_section;
     // Check that the components are at least min_students and at most max_students for all the classes
     for(let i=0;i<num_section;i++){
-        let components = await projectClassesSchema.classComponents(course_id, block_id, String.fromCharCode(65+i))
+        let components = await projectClassesSchema.classComponents(course_id, session_id, String.fromCharCode(65+i))
         if(components.length<min_students){
             res.status(400).json({status: "error", description: MSG.minStudents});
             console.log('project course final confirmation: project class does not have min students required');
@@ -561,7 +561,7 @@ module.exports.final_confirmation = async (req, res) => {
         }
     }
     // If all goes right: update with final confirmation and add new announcement for start of course.
-    let final_confirmation = await projectClassesSchema.final_confirmation(course_id, block_id, true)
+    let final_confirmation = await projectClassesSchema.final_confirmation(course_id, session_id, true)
     if(!final_confirmation){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('project course final confirmation: missing parameters');
@@ -571,15 +571,15 @@ module.exports.final_confirmation = async (req, res) => {
     let english_title = req.body.english_title
     let italian_message = req.body.italian_message
     let english_message = req.body.english_message
-    let starting_date = block_exist.start
+    let starting_date = session_exist.start
     italian_title = italian_title == undefined ? "Inizio del corso" : italian_title;
     english_title = english_title == undefined ? "Start of the course" : english_title;
     italian_message = italian_message == undefined ? "Il corso inizierà oggi "+starting_date+". Recati nell'aula predisposta." : italian_message
     english_message = english_message == undefined ? "The course will start today "+starting_date+". Please, go to the arranged class." : english_message
     for(let i=0;i<num_section;i++){
-        let first_announcement = await courseAnnouncementSchema.add(user_id, true, course_id, block_id, String.fromCharCode(65+i), italian_title, english_title, italian_message, english_message, starting_date)
+        let first_announcement = await courseAnnouncementSchema.add(user_id, true, course_id, session_id, String.fromCharCode(65+i), italian_title, english_title, italian_message, english_message, starting_date)
         if(!first_announcement){
-            await projectClassesSchema.final_confirmation(course_id, block_id)
+            await projectClassesSchema.final_confirmation(course_id, session_id)
             res.status(400).json({status: "error", description: MSG.missingParameter});
             console.log('project course final confirmation: final message parameters');
             return;

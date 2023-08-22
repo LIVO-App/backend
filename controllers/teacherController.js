@@ -6,7 +6,7 @@ const teacherSchema = require('../models/teacherModel');
 const adminModel = require('../models/adminModel');
 const crypto = require('../utils/cipher');
 const courseSchema = require('../models/coursesModel')
-const blockSchema = require('../models/learning_blocksModel')
+const sessionSchema = require('../models/learning_sessionsModel')
 const projectClassSchema = require('../models/projectClassModel');
 const projectClassTeacherModel = require('../models/projectClassTeacherModel');
 
@@ -77,8 +77,8 @@ module.exports.get_teachers = async (req, res) => {
 
 module.exports.get_my_project_classes = async (req, res) => {
     let teacher_id = req.params.teacher_id;
-    let block_id = req.query.block_id;
-    let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id);
+    let session_id = req.query.session_id;
+    let cls = await classesSchema.read_project_classes_teach(teacher_id, session_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -106,7 +106,7 @@ module.exports.get_my_project_classes = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id},
+        query: {session_id: session_id},
         date: new Date(),
         data: data_classes
     };
@@ -115,8 +115,8 @@ module.exports.get_my_project_classes = async (req, res) => {
 
 module.exports.get_associated_project_classes = async (req, res) => {
     let teacher_id = req.params.teacher_id;
-    let block_id = req.query.block_id;
-    let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id);
+    let session_id = req.query.session_id;
+    let cls = await classesSchema.read_project_classes_associated(teacher_id, session_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -143,7 +143,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id},
+        query: {session_id: session_id},
         date: new Date(),
         data: data_classes
     }
@@ -169,9 +169,9 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
         console.log('my_project_classes: unauthorized access');
         return;
     }
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let course_id = req.query.course_id;
-    let cls = await classesSchema.read_project_classes_teach(teacher_id, block_id, course_id);
+    let cls = await classesSchema.read_project_classes_teach(teacher_id, session_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -199,7 +199,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id, course_id: course_id},
+        query: {session_id: session_id, course_id: course_id},
         date: new Date(),
         data: data_classes
     };
@@ -225,9 +225,9 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
         console.log('associated_project_classes: unauthorized access');
         return;
     }
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let course_id = req.query.course_id;
-    let cls = await classesSchema.read_project_classes_associated(teacher_id, block_id, course_id);
+    let cls = await classesSchema.read_project_classes_associated(teacher_id, session_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher project class: missing parameters");
@@ -254,7 +254,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
     let response = {
         path: path,
         single: false,
-        query: {block_id: block_id, course_id: course_id},
+        query: {session_id: session_id, course_id: course_id},
         date: new Date(),
         data: data_classes
     }
@@ -434,7 +434,7 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
     }
     // Check course id
     let course_id = req.body.course_id;
-    let block_id = req.body.block_id;
+    let session_id = req.body.session_id;
     let sections = req.body.sections;
     let main = req.body.main;
     main = main == "true" ? true : false
@@ -444,22 +444,22 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
         console.log("new project class for teacher: resource not found");
         return; 
     }
-    // Check block id
-    let block_exists = await blockSchema.read(block_id)
-    if(!block_exists){
+    // Check session id
+    let session_exists = await sessionSchema.read(session_id)
+    if(!session_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("new project class for teacher: resource not found");
         return; 
     }
     // Check project class
-    let class_exist = await projectClassSchema.read(course_id, block_id)
+    let class_exist = await projectClassSchema.read(course_id, session_id)
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("new project class for teacher: resource not found");
         return; 
     }
     // Check if we already have 3 teachers. If yes -> abort insert
-    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, block_id)
+    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, session_id)
     if(!get_teachers){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("new project class for teacher: missing parameters");
@@ -497,7 +497,7 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
         }
     }
     // Insert data
-    let insert_teacher = await classesSchema.add_single_project_teach(course_id, block_id, teacher_id, sections, main);
+    let insert_teacher = await classesSchema.add_single_project_teach(course_id, session_id, teacher_id, sections, main);
     if(!insert_teacher){
         if(dup_entries){
             res.status(409).json({status: "error", description: MSG.itemAlreadyInserted});
@@ -537,7 +537,7 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
     }
     // Check course id
     let course_id = req.body.course_id;
-    let block_id = req.body.block_id;
+    let session_id = req.body.session_id;
     let sections = req.body.sections;
     let course_exists = await courseSchema.read(course_id)
     if(!course_exists){
@@ -545,22 +545,22 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
         console.log("remove project class for teacher: resource not found");
         return; 
     }
-    // Check block id
-    let block_exists = await blockSchema.read(block_id)
-    if(!block_exists){
+    // Check session id
+    let session_exists = await sessionSchema.read(session_id)
+    if(!session_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("remove project class for teacher: resource not found");
         return; 
     }
     // Check project class
-    let class_exist = await projectClassSchema.read(course_id, block_id)
+    let class_exist = await projectClassSchema.read(course_id, session_id)
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log("remove project class for teacher: resource not found");
         return; 
     }
     // Check if we already have only 1 teachers. If yes -> abort insert
-    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, block_id)
+    let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, session_id)
     if(!get_teachers){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("remove project class for teacher: missing parameters");
@@ -584,7 +584,7 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
         return; 
     }
     // Insert data
-    let delete_teacher = await classesSchema.delete_single(course_id, block_id, teacher_id, sections);
+    let delete_teacher = await classesSchema.delete_single(course_id, session_id, teacher_id, sections);
     if(!delete_teacher){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("new project class for teacher: missing parameters");

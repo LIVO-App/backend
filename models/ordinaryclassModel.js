@@ -79,7 +79,7 @@ module.exports = {
             // Growth area id is fixed to 4 since we need only the credits for orientation courses, which have growth_area_id = 4
             let sql = 'SELECT s.id, s.name, s.surname'
             if(admin_user){
-                sql += ', (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON pc.course_id = ins.project_class_course_id AND pc.learning_block_id = ins.project_class_block JOIN course AS c ON c.id = pc.course_id WHERE c.growth_area_id = 4 AND ins.student_id = att.student_id) AS orientation_credits';
+                sql += ', (SELECT IFNULL(SUM(c.credits),0) FROM inscribed AS ins JOIN project_class AS pc ON pc.course_id = ins.project_class_course_id AND pc.learning_session_id = ins.project_class_session JOIN course AS c ON c.id = pc.course_id WHERE c.growth_area_id = 4 AND ins.student_id = att.student_id) AS orientation_credits';
             }
             sql += ' FROM attend AS att JOIN student AS s ON att.student_id = s.id WHERE att.ordinary_class_study_year = ? AND att.ordinary_class_address = ? AND att.ordinary_class_school_year = ? AND att.section = ?'
             let values = [study_year, address, school_year, section];
@@ -92,15 +92,15 @@ module.exports = {
             conn.release();
         }
     },
-    async read_from_student_and_block(student_id, block_id) {
+    async read_from_student_and_session(student_id, session_id) {
         try {
             conn = await pool.getConnection();
-            if(!student_id || !block_id){
+            if(!student_id || !session_id){
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)';
-            let values = [student_id, block_id];
+            let sql = 'SELECT att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+            let values = [student_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
             if(rows.length == 1){
@@ -114,15 +114,15 @@ module.exports = {
             conn.release();
         }
     },
-    async read(study_year, study_address, block_id){
+    async read(study_year, study_address, session_id){
         try {
             conn = await pool.getConnection()
-            if(!study_year || !study_address || !block_id){
+            if(!study_year || !study_address || !session_id){
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT * FROM ordinary_class AS oc WHERE oc.study_year_id = ? AND oc.study_address_id = ? AND oc.school_year IN (SELECT lb.school_year FROM learning_block AS lb WHERE lb.id = ?)';
-            let values = [study_year, study_address, block_id]
+            let sql = 'SELECT * FROM ordinary_class AS oc WHERE oc.study_year_id = ? AND oc.study_address_id = ? AND oc.school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+            let values = [study_year, study_address, session_id]
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length==1){

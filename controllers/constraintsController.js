@@ -2,7 +2,7 @@
 
 const constraintSchema = require('../models/constraintModel');
 const adminSchema = require('../models/adminModel');
-const learning_blocksModel = require('../models/learning_blocksModel');
+const learning_sessionsModel = require('../models/learning_sessionsModel');
 const learning_areaModel = require('../models/learning_areaModel');
 const learningContextsModel = require('../models/learningContextsModel');
 const ordinaryclassModel = require('../models/ordinaryclassModel');
@@ -12,8 +12,8 @@ let MSG = {
     updateFailed: "Failed to save",
     notAuthorized: "Not authorized request",
     itemAlreadyExists: "The constraints are all already presents",
-    pastBlock: "Block already expired or imminent. You can't change the constraints",
-    firstFutureBlock: "First future block. The students are choosing their courses right now. You can't change the constraints",
+    pastSession: "Session already expired or imminent. You can't change the constraints",
+    firstFutureSession: "First future session. The students are choosing their courses right now. You can't change the constraints",
     missingParameters: "Missing required information"
 }
 
@@ -33,17 +33,17 @@ module.exports.get_constraints = async (req, res) => {
         console.log('get constraints: unauthorized access');
         return;
     }
-    let block_id = req.query.block_id
+    let session_id = req.query.session_id
     let year_of = req.query.year_of === "true" ? true : false
     let context_id = req.query.context_id;
     let area_id = req.query.area_id;
     let study_year = req.query.study_year;
     let study_address = req.query.study_address;
-    if(block_id!=undefined){
-        let block_exists = await learning_blocksModel.read(block_id)
-        if(!block_exists){
+    if(session_id!=undefined){
+        let session_exists = await learning_sessionsModel.read(session_id)
+        if(!session_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('get constraints block_id: resource not found');
+            console.log('get constraints session_id: resource not found');
             return;
         }
     }
@@ -64,7 +64,7 @@ module.exports.get_constraints = async (req, res) => {
         }
     }
     if(study_address!=undefined && study_year!=undefined){
-        let ord_class_exists = await ordinaryclassModel.read(study_year, study_address, block_id)
+        let ord_class_exists = await ordinaryclassModel.read(study_year, study_address, session_id)
         if(!ord_class_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
             console.log('get constraints ordinary_class: resource not found');
@@ -72,19 +72,19 @@ module.exports.get_constraints = async (req, res) => {
         }
     }
     
-    let constraints = await constraintSchema.get_constraints(block_id,year_of,context_id, area_id, study_year, study_address);
+    let constraints = await constraintSchema.get_constraints(session_id,year_of,context_id, area_id, study_year, study_address);
     if(!constraints){
         res.status(400).json({status: "error", description: MSG.missingParameters});
         console.log('get constraints: missing parameters');
         return;
     }
     let data_constraints = constraints.map((constraint) => {
-        let block_ref = {
-            path: "/api/v1/learning_blocks",
+        let session_ref = {
+            path: "/api/v1/learning_sessions",
             single: true,
             query: {},
             data: {
-                id: constraint.learning_block_id
+                id: constraint.learning_session_id
             }
         }
         let ord_class_ref = {
@@ -114,7 +114,7 @@ module.exports.get_constraints = async (req, res) => {
         }
         return {
             id: constraint.id,
-            learning_block_ref: block_ref,
+            learning_session_ref: session_ref,
             ordinary_class_ref: ord_class_ref,
             ordinary_class_school_year: constraint.ordinary_class_school_year,
             learning_area_ref: area_ref,
@@ -126,7 +126,7 @@ module.exports.get_constraints = async (req, res) => {
         path: "/api/v1/constraints",
         single: true,
         query: {
-            block_id: block_id,
+            session_id: session_id,
             year_of: year_of,
             context_id: context_id,
             area_id: area_id,
@@ -154,72 +154,72 @@ module.exports.insert_constraints = async (req, res) => {
         return;
     }
     let constraints_object = req.body.constraints_object;
-    let block_exists, context_exists, area_exists, class_exist, study_year, study_address, context_id, area_id, credits;
-    let wrong_block, wrong_context, wrong_area, wrong_class, constraint_present = undefined;
+    let session_exists, context_exists, area_exists, class_exist, study_year, study_address, context_id, area_id, credits;
+    let wrong_session, wrong_context, wrong_area, wrong_class, constraint_present = undefined;
     if(constraints_object!=undefined){
-        for(var block in constraints_object){
-            block_exists = await learning_blocksModel.read(block);
-            if(!block_exists){
-                console.log(`The block with id ${block} does not exist. Removing it from constraints_object`);
-                wrong_block = true;
-                delete constraints_object[block];
+        for(var session in constraints_object){
+            session_exists = await learning_sessionsModel.read(session);
+            if(!session_exists){
+                console.log(`The session with id ${session} does not exist. Removing it from constraints_object`);
+                wrong_session = true;
+                delete constraints_object[session];
                 continue;
             }
-            // Check the block is not past, current, imminent or the first one that is immimediatly future (the one where the students are choosing new courses)
-            let starting_date = new Date(block_exists.start)
+            // Check the session is not past, current, imminent or the first one that is immimediatly future (the one where the students are choosing new courses)
+            let starting_date = new Date(session_exists.start)
             let today = new Date()
             let _10days = today.setDate(today.getDate() + 10)
             if (starting_date <= today || starting_date <= _10days){
-                console.log(`The block with id ${block} is a past, current or imminent. Removing it from constraints_object`);
-                wrong_block = true;
-                delete constraints_object[block];
+                console.log(`The session with id ${session} is a past, current or imminent. Removing it from constraints_object`);
+                wrong_session = true;
+                delete constraints_object[session];
                 continue;
             } else {
-                let past_block = await learning_blocksModel.read(block-1)
-                if(past_block){
-                    let past_starting_date = new Date(past_block.start)
+                let past_session = await learning_sessionsModel.read(session-1)
+                if(past_session){
+                    let past_starting_date = new Date(past_session.start)
                     if(past_starting_date <= today || past_starting_date <= _10days){
-                        console.log(`The block with id ${block} is the first future block where students are choosing new constraints. Removing it from constraints_object`);
-                        wrong_block = true;
-                        delete constraints_object[block];
+                        console.log(`The session with id ${session} is the first future session where students are choosing new constraints. Removing it from constraints_object`);
+                        wrong_session = true;
+                        delete constraints_object[session];
                         continue;
                     }
                 }
             }
-            for(let index=0;index<constraints_object[block].length;index++){
-                context_id = constraints_object[block][index].context_id;
+            for(let index=0;index<constraints_object[session].length;index++){
+                context_id = constraints_object[session][index].context_id;
                 context_exists = await learningContextsModel.read(context_id);
                 if(!context_exists){
-                    console.log(`The context with id ${context_id} does not exist. Removing the constraint from the block array`);
+                    console.log(`The context with id ${context_id} does not exist. Removing the constraint from the session array`);
                     wrong_context = true;
-                    constraints_object[block].splice(index, 1);
+                    constraints_object[session].splice(index, 1);
                     index = index-1;
                     continue;
                 }
-                area_id = constraints_object[block][index].area_id;
+                area_id = constraints_object[session][index].area_id;
                 if(area_id!=undefined){
                     area_exists = await learning_areaModel.read(area_id);
                     if(!area_exists){
-                        console.log(`The learning area with id ${area_id} does not exist. Removing the constraint from the block array`);
+                        console.log(`The learning area with id ${area_id} does not exist. Removing the constraint from the session array`);
                         wrong_area = true;
-                        constraints_object[block].splice(index, 1);
+                        constraints_object[session].splice(index, 1);
                         index = index-1;
                         continue;
                     }
                 }
-                credits = constraints_object[block][index].credits;
-                let classes = constraints_object[block][index].classes;
+                credits = constraints_object[session][index].credits;
+                let classes = constraints_object[session][index].classes;
                 for(let j=0;j<classes.length;j++){
                     study_year = classes[j].study_year;
                     study_address = classes[j].study_address;
-                    class_exist = await ordinaryclassModel.read(study_year, study_address, block);
+                    class_exist = await ordinaryclassModel.read(study_year, study_address, session);
                     if(!class_exist){
                         console.log(`Ordinary class ${study_year} ${study_address} does not exist. Removing it from the list of classes of a certain constraint`);
                         wrong_class = true
                         classes.splice(j, 1);
                         j = j-1;
                     } else {
-                        constraint_present = await constraintSchema.is_present(context_id, study_year, study_address, area_id, block)
+                        constraint_present = await constraintSchema.is_present(context_id, study_year, study_address, area_id, session)
                         if(constraint_present){
                             console.log(`The constraint is already present for this class in the period inserted. Removing the class from the list of classes`)
                             constraint_present = true
@@ -229,50 +229,50 @@ module.exports.insert_constraints = async (req, res) => {
                     }
                 }
                 if(classes.length == 0){
-                    console.log(`All classes inserted for the constraint were wrong or already present. Removing element from block array`)
+                    console.log(`All classes inserted for the constraint were wrong or already present. Removing element from session array`)
                     wrong_class = true
-                    constraints_object[block].splice(index, 1);
+                    constraints_object[session].splice(index, 1);
                     index = index-1;
                     continue;
                 }
-                if(constraints_object[block].length == 0){
-                    console.log(`All constraints inserted for a learning block are wrong or already present. Removing learning block key`)
-                    wrong_block = true
-                    delete constraints_object[block]
+                if(constraints_object[session].length == 0){
+                    console.log(`All constraints inserted for a learning session are wrong or already present. Removing learning session key`)
+                    wrong_session = true
+                    delete constraints_object[session]
                 }
             }
         }
     }
     let num_constraints_inserted = 0
-    let constraints_insert = await constraintSchema.add_block_constraints(constraints_object);
+    let constraints_insert = await constraintSchema.add_session_constraints(constraints_object);
     if(!constraints_insert){
         if(!constraint_present){
-            res.status(400).json({status: "error", description: MSG.missingParameters, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
-            console.log('missing required information: new block constraints addition');
+            res.status(400).json({status: "error", description: MSG.missingParameters, wrong_session: wrong_session, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
+            console.log('missing required information: new session constraints addition');
             return;
         } else {
-            res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_block: wrong_block, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
-            console.log('duplicated information: new block constraints addition');
+            res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_session: wrong_session, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
+            console.log('duplicated information: new session constraints addition');
             return;
         }
     }
     num_constraints_inserted = constraints_insert.affectedRows;
     /*let years_to_check = []
     let num_updated, num_annual_constraints_inserted = 0
-    // Get sum of all constraints for each year of the block_id and insert this sum in the constraints table.
+    // Get sum of all constraints for each year of the session_id and insert this sum in the constraints table.
     // If already present do an update. Else simply insert it
     if(constraints_object!=undefined){
-        // In this cicle, get school_year of a block and then check if it is already present. If no, then check if constraints exists.
-        // Else, do nothing and check the following block.
-        for(let block in constraints_object){
-            let block_exists = await learning_blocksModel.read(block)
-            if (!block_exists) {
-                console.log(`The block with id ${block} does not exist. Removing it from constraints_object`);
-                wrong_block = true;
-                delete constraints_object[block];
+        // In this cicle, get school_year of a session and then check if it is already present. If no, then check if constraints exists.
+        // Else, do nothing and check the following session.
+        for(let session in constraints_object){
+            let session_exists = await learning_sessionsModel.read(session)
+            if (!session_exists) {
+                console.log(`The session with id ${session} does not exist. Removing it from constraints_object`);
+                wrong_session = true;
+                delete constraints_object[session];
                 continue;
             }
-            let year_of = block_exists.school_year
+            let year_of = session_exists.school_year
             if(years_to_check.find((element) => element == year_of) == undefined){
                 let possible_annual_constraints = await constraintSchema.get_constraint_sum(school_year);
                 for(let row in possible_annual_constraints){
@@ -309,7 +309,7 @@ module.exports.insert_constraints = async (req, res) => {
     res.status(201).json({
         status: "accepted",
         description: "Constraints inserted", 
-        wrong_block: wrong_block,
+        wrong_session: wrong_session,
         wrong_area: wrong_area,
         wrong_class: wrong_class,
         wrong_context: wrong_context,
@@ -343,22 +343,22 @@ module.exports.delete_constraint = async (req, res) => {
         console.log('constraint deletion: resource not found');
         return;
     }
-    let block_id = constr_exist.learning_block_id
-    let block_exists = await learning_blocksModel.read(block_id)
-    let starting_date = new Date(block_exists.start)
+    let session_id = constr_exist.learning_session_id
+    let session_exists = await learning_sessionsModel.read(session_id)
+    let starting_date = new Date(session_exists.start)
     let today = new Date()
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
-        res.status(400).json({status: "error", description: MSG.pastBlock});
-        console.log('constraint deletion: the block is a past, current or imminent block. Abort delete');
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('constraint deletion: the session is a past, current or imminent session. Abort delete');
         return;
     } else {
-        let past_block = await learning_blocksModel.read(block_id-1)
-        if(past_block){
-            let past_starting_date = new Date(past_block.start)
+        let past_session = await learning_sessionsModel.read(session_id-1)
+        if(past_session){
+            let past_starting_date = new Date(past_session.start)
             if(past_starting_date <= today || past_starting_date <= _10days){
-                res.status(400).json({status: "error", description: MSG.firstFutureBlock});
-                console.log('constraint deletion: the block is the first future block, where the students are choosing the next courses. You can\'t change the constraints. Abort delete');
+                res.status(400).json({status: "error", description: MSG.firstFutureSession});
+                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort delete');
                 return;
             }
         }
@@ -388,22 +388,22 @@ module.exports.update_constraints = async (req, res) => {
         console.log('constraint update: resource not found');
         return;
     }
-    let block_id = constr_exist.learning_block_id
-    let block_exists = await learning_blocksModel.read(block_id)
-    let starting_date = new Date(block_exists.start)
+    let session_id = constr_exist.learning_session_id
+    let session_exists = await learning_sessionsModel.read(session_id)
+    let starting_date = new Date(session_exists.start)
     let today = new Date()
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
-        res.status(400).json({status: "error", description: MSG.pastBlock});
-        console.log('constraint deletion: the block is a past, current or imminent block. Abort update');
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('constraint deletion: the session is a past, current or imminent session. Abort update');
         return;
     } else {
-        let past_block = await learning_blocksModel.read(block_id-1)
-        if(past_block){
-            let past_starting_date = new Date(past_block.start)
+        let past_session = await learning_sessionsModel.read(session_id-1)
+        if(past_session){
+            let past_starting_date = new Date(past_session.start)
             if(past_starting_date <= today || past_starting_date <= _10days){
-                res.status(400).json({status: "error", description: MSG.firstFutureBlock});
-                console.log('constraint deletion: the block is the first future block, where the students are choosing the next courses. You can\'t change the constraints. Abort update');
+                res.status(400).json({status: "error", description: MSG.firstFutureSession});
+                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort update');
                 return;
             }
         }

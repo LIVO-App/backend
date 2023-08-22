@@ -12,7 +12,6 @@ describe('/api/v1/growth_areas', () => {
                     .get('/api/v1/growth_areas')
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
                     });
                 return response;

@@ -13,7 +13,7 @@ let validTokenTeacher = jwt.sign({_id: 1, username: "Teacher1", role: "teacher"}
 let validTokenAdmin = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let invalidTokenAdmin = jwt.sign({_id: 0, username: "Admin0", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 let course_id_1, course_id_2;
-let block_id_1, block_id_2;
+let session_id_1, session_id_2;
 var valid_proposal, valid_proposal2;
 
 describe('/api/v1/propositions', () => {
@@ -22,7 +22,7 @@ describe('/api/v1/propositions', () => {
         let invalid_proposal_course = {
             area_id: "SM",
             growth_id: 1,
-            block_id: 7,
+            session_id: 7,
             access_object: {
                 SPE: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}],
                 PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
@@ -43,7 +43,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -51,7 +51,7 @@ describe('/api/v1/propositions', () => {
                 PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
-            block_id: 7
+            session_id: 7
         }
         let invalid_proposal_context = {
             italian_title: "ProvaInvalidContext",
@@ -67,14 +67,14 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
                 AAA: [{study_year: 1, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
-            block_id: 7,
+            session_id: 7,
             class_group: 1,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
@@ -92,14 +92,14 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
                 SPE: [{study_year: 1, study_address: "ECO", presidium: 0, main_study_year: 1}, {study_year: 2, study_address: "ECO", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
-            block_id: 7,
+            session_id: 7,
             class_group: 1,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
@@ -117,7 +117,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -125,7 +125,7 @@ describe('/api/v1/propositions', () => {
                 PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: [],
-            block_id: 7,
+            session_id: 7,
             class_group: 1,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
         }
@@ -143,7 +143,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -151,7 +151,7 @@ describe('/api/v1/propositions', () => {
                 PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
-            block_id: 7,
+            session_id: 7,
             class_group: 1,
             num_section: 2,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
@@ -170,7 +170,7 @@ describe('/api/v1/propositions', () => {
             italian_act: "asw",
             english_act: "asw",
             area_id: "SM",
-            growth_id: 1,
+            growth_ids: [1,4],
             min_students: 15,
             max_students: 25,
             access_object: {
@@ -178,7 +178,7 @@ describe('/api/v1/propositions', () => {
                 PER: [{study_year: 3, study_address: "BIO", presidium: 0, main_study_year: 1}, {study_year: 4, study_address: "ATS", presidium: 1, main_study_year: 0}]
             },
             teaching_list: ["AT", "CAS"],
-            block_id: 7,
+            session_id: 7,
             class_group: 1,
             num_section: 2,
             teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
@@ -203,7 +203,7 @@ describe('/api/v1/propositions', () => {
                 .expect(401)
         })
 
-        test('POST /api/v1/propositions with valid token but non valid references (learning_area_id, growth_area_id, learning_block_id) should respond with status 404', async () => {
+        test('POST /api/v1/propositions with valid token but non valid references (learning_area_id, growth_area_id, learning_session_id) should respond with status 404', async () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(invalid_proposal)
@@ -211,7 +211,7 @@ describe('/api/v1/propositions', () => {
                 .expect(404)
         })
 
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) but missing course informations should respond with status 400', async () => {
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_session_id) but missing course informations should respond with status 400', async () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(invalid_proposal_course)
@@ -243,7 +243,7 @@ describe('/api/v1/propositions', () => {
                 .expect(400)
         }, 20000)
 
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) but missing project class informations should respond with status 400', async () => {
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_session_id) but missing project class informations should respond with status 400', async () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(invalid_proposal_p_class)
@@ -251,7 +251,7 @@ describe('/api/v1/propositions', () => {
                 .expect(400)
         }, 20000)
 
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_session_id) and valid informations should respond with status 201', async () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(valid_proposal)
@@ -259,13 +259,13 @@ describe('/api/v1/propositions', () => {
                 .expect(201)
                 .then((response) => {
                     course_id_1 = response.body.course_id
-                    block_id_1 = valid_proposal.block_id
+                    session_id_1 = valid_proposal.session_id
                     /*course_id.push(response.body.course_id)
-                    block_id.push(valid_proposal.block_id)*/
+                    session_id.push(valid_proposal.session_id)*/
                 });
             }, 20000)            
 
-        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations should respond with status 201', async () => {
+        test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_session_id) and valid informations should respond with status 201', async () => {
             return request(app)
                 .post('/api/v1/propositions')
                 .send(valid_proposal2)
@@ -273,9 +273,9 @@ describe('/api/v1/propositions', () => {
                 .expect(201)
                 .then((response) => {
                     course_id_2 = response.body.course_id
-                    block_id_2 = valid_proposal2.block_id
+                    session_id_2 = valid_proposal2.session_id
                     /*course_id.push(response.body.course_id)
-                    block_id.push(valid_proposal2.block_id)*/
+                    session_id.push(valid_proposal2.session_id)*/
                 });
         }, 20000)
     })
@@ -319,15 +319,15 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but non existing course should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: 0, block_id: 7})
+                    .query({course_id: 0, session_id: 7})
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
     
-            test('PUT /api/v1/propositions/approval with valid token but non existing block should respond with status 404', async () => {
+            test('PUT /api/v1/propositions/approval with valid token but non existing session should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: 1, block_id: 0})
+                    .query({course_id: 1, session_id: 0})
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
@@ -335,7 +335,7 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but non existing project class should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: 1, block_id: 7})
+                    .query({course_id: 1, session_id: 7})
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
@@ -343,7 +343,7 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but valid information should respond with status 204', () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: course_id_2, block_id: block_id_2})
+                    .query({course_id: course_id_2, session_id: session_id_2})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
             })
@@ -351,7 +351,7 @@ describe('/api/v1/propositions', () => {
             test('PUT /api/v1/propositions/approval with valid token but valid information and not confirmed should respond with status 204', () => {
                 return request(app)
                     .put('/api/v1/propositions/approval')
-                    .query({course_id: course_id_2, block_id: block_id_2, approved: "false"})
+                    .query({course_id: course_id_2, session_id: session_id_2, approved: "false"})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
             })
@@ -370,7 +370,7 @@ describe('/api/v1/propositions', () => {
                 access_object: {
                     SPE: [{study_year: 1, study_address: "BIO", presidium: 1, main_study_year: 0}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
                 },
-                block_id: 7,
+                session_id: 7,
                 class_group: 1,
                 num_section: 2,
                 teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 1, sections:["A"]}]
@@ -380,7 +380,7 @@ describe('/api/v1/propositions', () => {
                     access_object: {
                         SPE: [{study_year: 1, study_address: "BIO", presidium: 1, main_study_year: 0}, {study_year: 2, study_address: "BIO", presidium: 1, main_study_year: 0}]
                     },
-                    block_id: 7,
+                    session_id: 7,
                     class_group: 1,
                     num_section: 2,
                     teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 1, sections:["A"]}]
@@ -420,21 +420,21 @@ describe('/api/v1/propositions', () => {
                     .expect(404)
             }, 20000)
 
-            // Non existing block
+            // Non existing session
             test('PUT /api/v1/courses/:course_id with valid token but non existing course should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/courses/0')
                     .set('x-access-token', validTokenAdmin)
-                    .send({block_id: 0})
+                    .send({session_id: 0})
                     .expect(404)
             }, 20000)
 
-            // Past block
+            // Past session
             test('PUT /api/v1/courses/:course_id with valid token but non existing course should respond with status 400', async () => {
                 return request(app)
                     .put('/api/v1/courses/'+course_id_1)
                     .set('x-access-token', validTokenAdmin)
-                    .send({block_id: 1})
+                    .send({session_id: 1})
                     .expect(400)
             }, 20000)
 
@@ -443,7 +443,7 @@ describe('/api/v1/propositions', () => {
                 return request(app)
                     .put('/api/v1/courses/'+course_id_1)
                     .set('x-access-token', validTokenAdmin)
-                    .send({block_id: 7})
+                    .send({session_id: 7})
                     .expect(400)
             }, 20000)
 
@@ -608,8 +608,8 @@ describe('/api/v1/propositions', () => {
 
     /*afterAll(async ()=> {
         for(let i=0;i<course_id.length;i++){
-            await teacherClassSchema.delete(course_id[i],valid_proposal.block_id)
-            await projectclassSchema.delete(course_id[i], valid_proposal.block_id)
+            await teacherClassSchema.delete(course_id[i],valid_proposal.session_id)
+            await projectclassSchema.delete(course_id[i], valid_proposal.session_id)
             await teachingCourseSchema.delete(course_id[i])
             await opentoSchema.delete(course_id[i])
             await courseSchema.deleteProposal(course_id[i])

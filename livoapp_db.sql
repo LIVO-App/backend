@@ -123,7 +123,7 @@ CREATE TABLE `announcement` (
   `publisher_id` int(11) NOT NULL,
   `is_admin` tinyint(1) DEFAULT 0,
   `project_class_course_id` int(11) NOT NULL,
-  `project_class_block` int(11) NOT NULL,
+  `project_class_session` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `publishment` date NOT NULL,
   `italian_title` varchar(200) NOT NULL,
@@ -136,7 +136,7 @@ CREATE TABLE `announcement` (
 -- Dump dei dati per la tabella `announcement`
 --
 
-INSERT INTO `announcement` (`id`, `publisher_id`, `is_admin`, `project_class_course_id`, `project_class_block`, `section`, `publishment`, `italian_title`, `english_title` , `italian_message`, `english_message`) VALUES
+INSERT INTO `announcement` (`id`, `publisher_id`, `is_admin`, `project_class_course_id`, `project_class_session`, `section`, `publishment`, `italian_title`, `english_title` , `italian_message`, `english_message`) VALUES
 (1, 2, 0, 5, 6, 'A', '2023-03-25', 'Avviso di fine corso', 'End of the course announcement', 'Attenzione, il corso sta per finire', 'Attention, the course is about to end');
 
 -- --------------------------------------------------------
@@ -201,6 +201,36 @@ INSERT INTO `attend` (`student_id`, `ordinary_class_study_year`, `ordinary_class
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `characterize`
+--
+
+CREATE TABLE `characterize` (
+  `course_id` int(11) NOT NULL,
+  `growth_area_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dump dei dati per la tabella `characterize`
+--
+
+INSERT INTO `characterize` (`course_id`, `growth_area_id`) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 2),
+(2, 5),
+(3, 2),
+(3, 5),
+(4, 1),
+(4, 4),
+(5, 1),
+(5, 5),
+(6, 1),
+(6, 4);
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `citizenship_report`
 --
 
@@ -246,7 +276,6 @@ CREATE TABLE `course` (
   `italian_activities` varchar(1000) NOT NULL,
   `english_activities` varchar(1000) NOT NULL,
   `learning_area_id` varchar(5) NOT NULL,
-  `growth_area_id` int(11) NOT NULL,
   `min_students` int(11) NOT NULL,
   `max_students` int(11) NOT NULL,
   `proposer_teacher_id` int(11) NOT NULL,
@@ -259,13 +288,13 @@ CREATE TABLE `course` (
 -- Dump dei dati per la tabella `course`
 --
 
-INSERT INTO `course` (`id`, `italian_title`, `english_title`, `creation_school_year`, `italian_description`, `english_description`, `up_hours`, `credits`, `italian_expected_learning_results`, `english_expected_learning_results`, `italian_criterions`, `english_criterions`, `italian_activities`, `english_activities`, `learning_area_id`, `growth_area_id`, `min_students`, `max_students`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
-(1, 'Gestire il cambiamento', 'Managing change', '2022-08-25', '<p>\nL’unica costante nella nostra vita è il cambiamento. A volte siamo noi a decidere consapevolmente di dare una svolta alla nostra vita (ad es. quando cambiamo sport, scuola, amici); altre volte è il contesto che cambia attorno a noi e ci costringe ad adeguarci alle nuove condizioni. Quanti cambiamenti hai già affrontato nella tua vita? Li hai accolti come un’opportunità o ti sei sentito in difficoltà?\n</p>', '<p>\r\nThe one constant in our lives is change. Sometimes it is we who consciously decide to turn our lives around (e.g. when we change sport, school, friends); other times it is the context that changes around us and forces us to adapt to the new conditions. How many changes have you already faced in your life? Did you welcome them as an opportunity or did you feel challenged?\r\n</p>', 12, 4, '<ul>\r\n<li><b>Riconoscere</b> e <b>descrivere</b> le principali dinamiche legate ai singoli momenti di un cambiamento, sia personale che professionale;</li>\r\n<li><b>Affrontare</b> con maggiore consapevolezza e sicurezza interiore processi di cambiamento;</li>\r\n<li><b>Applicare</b> diverse strategie per lavorare in modo costruttivo in situazioni inaspettate e imprevedibili;</li>\r\n<li><b>Interagire</b> con gli altri in modo appropriato al contesto e alle aspettative sociali</li>\r\n</ul>', '<ul>\r\n<li><b>Recognize</b> and <b>describe</b> the main dynamics associated with individual moments of change, both personal and professional;</li>\r\n<li><b>Deal</b> with greater awareness and inner confidence in change processes;</li>\r\n<li><b>Apply</b> different strategies to work constructively in unexpected and unpredictable situations;</li>\r\n<li><b>Interact</b> with others in ways appropriate to the context and social expectations</li>\r\n</ul>', '<p>\r\nIl corso presenta diverse domande in itinere, alcune sotto forma di quiz, altre proposte unicamente per stimolare la tua riflessione personale. Queste domande non verranno valutate ai fini del superamento del corso. Verranno invece valutati i quiz che faremo al termine di ogni \"\"capitolo\"\".<br />\r\nInoltre <b>sarà valutata la partecipazione</b> alle attività di riflessione e di Role Play\r\n</p>', '<p>\r\nThe course has several on-going questions, some in the form of quizzes, others offered solely to stimulate your personal reflection. These questions will not be evaluated for the purpose of passing the course. Instead, the quizzes we will take at the end of each \"\"chapter\"\" will be evaluated.<br />\r\nIn addition, <b>participation</b> in the reflection and Role Play activities will be <b>evaluated</b>\r\n</p>', '<p>\r\nDurante il corso sono proposti strumenti e attività pratiche per avviare un processo di riflessione sul proprio modo di porsi nei confronti del cambiamento. Le attività affronteranno 5 temi:\r\n</p>\r\n<ul>\r\n<li>Riconoscere il cambiamento e trarne il meglio</li>\r\n<li>Il processo di cambiamento</li>\r\n<li>Gestione del cambiamento in classe</li>\r\n<li>Gestione del cambiamento in famiglia e nel mio ambiente sociale</li>\r\n<li>Competenze necessarie per il cambiamento</li>\r\n</ul>', '<p>\r\nDuring the course, practical tools and activities are offered to initiate a process of reflection on one\'s attitude toward change. Activities will address 5 themes:\r\n</p>\r\n<ul>\r\n<li>Recognizing change and making the best of it</li>\r\n<li>The process of change</li>\r\n<li>Change management in the classroom</li>\r\n<li>Managing change in the family and in my social environment</li>\r\n<li>Skills needed for change</li>\r\n</ul>', 'COM', 1, 10, 15, 1, NULL, NULL),
-(2, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2021-08-25', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\n</p>', 'SM', 2, 10, 15, 1, 1, '2021-09-13'),
-(3, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2022-09-08', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\r\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\r\n</p>', 'SM', 2, 1, 25, 2, 2, '2022-09-09'),
-(4, 'La magia dell\'acqua 💧🧊', 'The magic of water 💧🧊', '2022-08-25', '<p>\r\n“Se vi è una magia su questo pianeta, è contenuta nell’acqua (L. Eiseley)”.<br />\r\nUn percorso alla scoperta della sostanza che rende speciale il nostro Pianeta, dalle caratteristiche molecolari agli effetti sull’uomo e sull’ambiente.\r\n</p>', '<p>\r\n\"If there is any magic on this planet, it is contained in water (L. Eiseley)\".<br />\r\nA journey to discover the substance that makes our Planet special, from molecular characteristics to effects on humans and the environment.\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> le proprietà fisico-chimiche dell\'acqua e <b>riconoscerne</b> l\'importanza per la vita.</li>\r\n<li><b>Individuare</b> il ruolo dell\'acqua nelle cellule e negli organismi <b>riflettendo</b> sulle strategie di conservazione.\r\n<li><b>Riconoscere</b> rischi e risorse degli ambienti acquatici e le alterazioni antropiche</li>\r\n</ul>', '<ul>\r\n<li><b>Understand</b> the physicochemical properties of water and <b>recognize</b> its importance to life.</li>\r\n<li><b>Identify</b> the role of water in cells and organisms by <b>reflecting</b> on conservation strategies.</li>\r\n<li><b>Recognize</b> risks and resources of aquatic environments and anthropogenic alterations</li>\r\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva della relazione di laboratorio e della scheda di osservazione di campo</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation of the laboratory report and field observation form</li>\r\n</ul>', '<p>\r\nIl corso si propone di offrire una panoramica sull’elemento più caratterizzante della Terra, analizzandone peculiarità e ruolo fondamentale per i viventi. Le caratteristiche chimiche dell’acqua verranno indagate anche attraverso semplici esperimenti, mentre gli aspetti più legati alla fisiologia, alla patologia e all’igiene nell’uomo saranno esplorati per mezzo di attività guidate individuali e a piccoli gruppi e avvalendosi di supporti multimediali. Gli aspetti naturalistici e ambientali verranno indagati con delle uscite sul territorio progettate ad hoc (qualità delle acque, rischio idrogeologico, ecc.)\r\n</p>', '<p>\r\nThe course aims to provide an overview of the Earth\'s most defining element, analyzing its peculiarities and fundamental role for living things. The chemical characteristics of water will also be investigated through simple experiments, while aspects more related to physiology, pathology and hygiene in humans will be explored by means of individual and small-group guided activities and making use of multimedia supports. Naturalistic and environmental aspects will be investigated with specially designed field trips (water quality, hydrogeological risk, etc.).\r\n</p>', 'SM', 1, 15, 20, 2, 1, '2021-09-13'),
-(5, 'A qualcuno piace caldo🥵', 'Some people like it hot🥵', '2021-08-25', '<b>\r\nCorso dove gli studenti studieranno il cambiamento climatico\r\n</b>', '<b>\r\nCourse where students will study climate change\r\n</b>', 2, 4, '<ul>\r\n<li><b>Comprendere</b> le cause del cambiamento climatico in corso <b>evidenziando</b> quali attività antropiche ne sono responsabili.</li>\r\n<li><b>Distinguere</b> cause ed effetti del cambiamenti climatici <b>mettendole in relazione</b> fra loro.</li>\r\n<li><b>Riflettere</b> sull\'impatto dei propri comportamenti e delle proprie scelte ragionando su possibili alternative.</li>\r\n</ul>', '<ul>\r\n<li><b>Understand</b> the causes of current climate change by <b>highlighting</b> which anthropogenic activities are responsible for it.</li>\r\n<li><b>Distinguish</b> causes and effects of climate change by <b>relating them</b> to each other.</li>\r\n<li><b>Reflect</b> on the impact of their own behaviors and choices by reasoning about possible alternatives.</li>\r\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n</ul>', '<p>\r\nIl corso parte dalle esperienze degli studenti sui cambiamenti climatici per riorganizzarli in una cornice di rigore scientifico e dare loro gli strumenti per partecipare attivamente al dibattito pubblico e di riflettere sui propri comportamenti e le ricadute che essi hanno sull\'ambiente. Ci si concentrerà sulle relazioni di causa-effetto e sulla complessità che caratterizza questi sistemi. Si metteranno in evidenza le cnseguenze di questo fenomeno negli ambiti ambientale, sanitario, economico.\r\n</p>', '<p>\r\nThe course starts with students\' experiences of climate change to reorganize them into a framework of scientific rigor and give them the tools to actively participate in public debate and to reflect on their own behaviors and the effects they have on the environment. There will be a focus on cause-and-effect relationships and the complexity that characterizes these systems. The cnseguences of this phenomenon in the environmental, health, and economic spheres will be highlighted.\r\n</p>', 'SM', 1, 15, 25, 2, 1, '2021-09-13'),
-(6, 'Dieci minuti scritti. Sperimentazioni di scrittura', 'Ten minutes written. Experiments in writing', '2022-08-25', '<p>\r\nScrivere può essere un piacere o un peso, ma prima di tutto è frutto di esercizio. Scrivere è una ginnastica per le idee, un metodo per sviluppare il proprio pensiero creativo e cercare idee e rapporti nuovi e originali con ciò che ci circonda. La scrittura creativa è questo: provare, scoprendo risorse, creatività e invenzione che, forse, non si sapeva di avere.\r\n</p>', '<p>\r\nWriting can be a pleasure or a burden, but first and foremost it is the result of exercise. Writing is a gymnastics for ideas, a method of developing one\'s creative thinking and seeking new and original ideas and relationships with what surrounds us. Creative writing is this: trying, discovering resources, creativity and invention that, perhaps, you did not know you had.\r\n</p>', 0, 2, '<ul>\r\n<li><b>Comprendere</b> le caratteristiche di vari tipi di testo e i rudimenti del processo creativo su cui si basa la scrittura</li>\r\n<li><b>Applicare</b>: le principali regole di scrittura, utilizzare i diversi registri in base ai testi e le griglie di autocorrezione</li>\r\n<li><b>Produrre</b>: microtesti di varie tipologie, facendo riferimento agli esercizi base della scrittura creativa</li>\r\n<ul>', '<ul>\r\n<li><b>Understand</b> the characteristics of various types of text and the rudiments of the creative process on which writing is based</li>\r\n<li><b>Apply</b>: the main rules of writing, use different registers according to texts and self-correction grids</li>\r\n<li><b>Produce</b>: microtexts of various types, referring to the basic exercises of creative writing</li>\r\n<ul>', '<ul>\r\n<li>L\'impegno nelle esercitaizoni e l\'attenzione a seguire indicazioni e consigli per evitare il ripetersi di errori, oltre alla costanza nella produzione delle esercizi assegnati, concorreranno alla valutazione finale, che consisterà nella stesura di un minitesto di tipologia a scelta fra quelle affrontate, la cui correttezzia è determinata dai parametri stessi del testo precedentemente presentati agli studenti.</li>\r\n<li>Presenza almeno 60% ore</li>\r\n</ul>', '<ul>\r\n<li>Commitment to the exercises and attention to following directions and advice to avoid the repetition of errors, as well as consistency in the production of the assigned exercises, will contribute to the final assessment, which will consist of the writing of a mini-text of a type chosen from those addressed, the correctness of which is determined by the very parameters of the text previously presented to the students.</li>\r\n<li>Attendance at least 60% hours</li>\r\n</ul>', '<p>\r\nIl corso ha carattere laboratoriale e prevede la stesura di microtesti di varia natura oltre ad attività pratiche di scrittura creativa, sviluppando un approccio originale alle tematiche proposte\r\n</p>', '<p>\r\nThe course is workshop-based in nature and involves the writing of microtexts of various kinds as well as practical creative writing activities, developing an original approach to the proposed topics\r\n</p>', 'COM', 1, 10, 20, 1, 2, '2022-09-08');
+INSERT INTO `course` (`id`, `italian_title`, `english_title`, `creation_school_year`, `italian_description`, `english_description`, `up_hours`, `credits`, `italian_expected_learning_results`, `english_expected_learning_results`, `italian_criterions`, `english_criterions`, `italian_activities`, `english_activities`, `learning_area_id`, `min_students`, `max_students`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`) VALUES
+(1, 'Gestire il cambiamento', 'Managing change', '2022-08-25', '<p>\nL’unica costante nella nostra vita è il cambiamento. A volte siamo noi a decidere consapevolmente di dare una svolta alla nostra vita (ad es. quando cambiamo sport, scuola, amici); altre volte è il contesto che cambia attorno a noi e ci costringe ad adeguarci alle nuove condizioni. Quanti cambiamenti hai già affrontato nella tua vita? Li hai accolti come un’opportunità o ti sei sentito in difficoltà?\n</p>', '<p>\r\nThe one constant in our lives is change. Sometimes it is we who consciously decide to turn our lives around (e.g. when we change sport, school, friends); other times it is the context that changes around us and forces us to adapt to the new conditions. How many changes have you already faced in your life? Did you welcome them as an opportunity or did you feel challenged?\r\n</p>', 12, 4, '<ul>\r\n<li><b>Riconoscere</b> e <b>descrivere</b> le principali dinamiche legate ai singoli momenti di un cambiamento, sia personale che professionale;</li>\r\n<li><b>Affrontare</b> con maggiore consapevolezza e sicurezza interiore processi di cambiamento;</li>\r\n<li><b>Applicare</b> diverse strategie per lavorare in modo costruttivo in situazioni inaspettate e imprevedibili;</li>\r\n<li><b>Interagire</b> con gli altri in modo appropriato al contesto e alle aspettative sociali</li>\r\n</ul>', '<ul>\r\n<li><b>Recognize</b> and <b>describe</b> the main dynamics associated with individual moments of change, both personal and professional;</li>\r\n<li><b>Deal</b> with greater awareness and inner confidence in change processes;</li>\r\n<li><b>Apply</b> different strategies to work constructively in unexpected and unpredictable situations;</li>\r\n<li><b>Interact</b> with others in ways appropriate to the context and social expectations</li>\r\n</ul>', '<p>\r\nIl corso presenta diverse domande in itinere, alcune sotto forma di quiz, altre proposte unicamente per stimolare la tua riflessione personale. Queste domande non verranno valutate ai fini del superamento del corso. Verranno invece valutati i quiz che faremo al termine di ogni \"\"capitolo\"\".<br />\r\nInoltre <b>sarà valutata la partecipazione</b> alle attività di riflessione e di Role Play\r\n</p>', '<p>\r\nThe course has several on-going questions, some in the form of quizzes, others offered solely to stimulate your personal reflection. These questions will not be evaluated for the purpose of passing the course. Instead, the quizzes we will take at the end of each \"\"chapter\"\" will be evaluated.<br />\r\nIn addition, <b>participation</b> in the reflection and Role Play activities will be <b>evaluated</b>\r\n</p>', '<p>\r\nDurante il corso sono proposti strumenti e attività pratiche per avviare un processo di riflessione sul proprio modo di porsi nei confronti del cambiamento. Le attività affronteranno 5 temi:\r\n</p>\r\n<ul>\r\n<li>Riconoscere il cambiamento e trarne il meglio</li>\r\n<li>Il processo di cambiamento</li>\r\n<li>Gestione del cambiamento in classe</li>\r\n<li>Gestione del cambiamento in famiglia e nel mio ambiente sociale</li>\r\n<li>Competenze necessarie per il cambiamento</li>\r\n</ul>', '<p>\r\nDuring the course, practical tools and activities are offered to initiate a process of reflection on one\'s attitude toward change. Activities will address 5 themes:\r\n</p>\r\n<ul>\r\n<li>Recognizing change and making the best of it</li>\r\n<li>The process of change</li>\r\n<li>Change management in the classroom</li>\r\n<li>Managing change in the family and in my social environment</li>\r\n<li>Skills needed for change</li>\r\n</ul>', 'COM', 10, 15, 1, NULL, NULL),
+(2, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2021-08-25', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\n</p>', 'SM', 10, 15, 1, 1, '2021-09-13'),
+(3, 'Green Power🌳🌵🪷: come le piante dominano il mondo', 'Green Power🌳🌵🪷: how plants rule the world', '2022-09-08', '<p>\r\nSiamo sicuri di essere i padroni del mondo o esiste una \"nazione delle piante\"? Dov\'è il segreto del loro successo? Perchè da loro dipende la nostra vita e perchè potrebbero essere loro a salvarci?\r\n</p>', '<p>\r\nAre we sure we are the masters of the world or is there a \"plant nation\"? Where is the secret of their success? Why do our lives depend on them and why could they be the ones to save us?\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> i molteplici ruoli svolti dalle piante e <b>metterli in relazione</b> con lo sfruttamento delle risorse, la difesa dai rischi naturali e la riduzione dei problemi ambientali.</li>\r\n<li><b>Progettare e realizzare</b> un esperimento scientifico per rispondere ad una domanda, formulando un\'ipotesi, raccogliendo dei dati ed elaborandoli.</li>\r\n</ul>', '<ul>\n<li><b>Understand</b> the multiple roles played by plants and <b>relate them</b> to resource exploitation, defense against natural hazards and reduction of environmental problems</li>\n<li>Design and carry out a scientific experiment to answer a question by formulating a hypothesis, collecting data and processing it</li>\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva project work</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation project work</li>\r\n</ul>', '<p>\r\nIl corso offre una panoramica sulla distribuzione delle piante e la biodiversità vegetale, utilizzando immagini,video e campioni e facendo uso di esempi della nostra realtà quotidiana. Passerà in rassegna quindi gli aspetti legati a cibo, farmaci, fotosintesi, clima, adattamenti all\'ambiente. A ciò si affiancherà una parte pratica in cui, lavorando a gruppi, gli studenti dovranno realizzare un esperimento scientifico per mostrare un aspetto specifico legato al mondo vegetale\r\n</p>', '<p>\r\nThe course provides an overview of plant distribution and plant biodiversity, using images,videos and samples and making use of examples from our everyday reality. It will then review aspects related to food, drugs, photosynthesis, climate, and adaptations to the environment. This will be accompanied by a practical part in which, working in groups, students will have to carry out a scientific experiment to show a specific aspect related to the plant world\r\n</p>', 'SM', 1, 25, 2, 2, '2022-09-09'),
+(4, 'La magia dell\'acqua 💧🧊', 'The magic of water 💧🧊', '2022-08-25', '<p>\r\n“Se vi è una magia su questo pianeta, è contenuta nell’acqua (L. Eiseley)”.<br />\r\nUn percorso alla scoperta della sostanza che rende speciale il nostro Pianeta, dalle caratteristiche molecolari agli effetti sull’uomo e sull’ambiente.\r\n</p>', '<p>\r\n\"If there is any magic on this planet, it is contained in water (L. Eiseley)\".<br />\r\nA journey to discover the substance that makes our Planet special, from molecular characteristics to effects on humans and the environment.\r\n</p>', 0, 4, '<ul>\r\n<li><b>Comprendere</b> le proprietà fisico-chimiche dell\'acqua e <b>riconoscerne</b> l\'importanza per la vita.</li>\r\n<li><b>Individuare</b> il ruolo dell\'acqua nelle cellule e negli organismi <b>riflettendo</b> sulle strategie di conservazione.\r\n<li><b>Riconoscere</b> rischi e risorse degli ambienti acquatici e le alterazioni antropiche</li>\r\n</ul>', '<ul>\r\n<li><b>Understand</b> the physicochemical properties of water and <b>recognize</b> its importance to life.</li>\r\n<li><b>Identify</b> the role of water in cells and organisms by <b>reflecting</b> on conservation strategies.</li>\r\n<li><b>Recognize</b> risks and resources of aquatic environments and anthropogenic alterations</li>\r\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n<li>Valutazione positiva della relazione di laboratorio e della scheda di osservazione di campo</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n<li>Positive evaluation of the laboratory report and field observation form</li>\r\n</ul>', '<p>\r\nIl corso si propone di offrire una panoramica sull’elemento più caratterizzante della Terra, analizzandone peculiarità e ruolo fondamentale per i viventi. Le caratteristiche chimiche dell’acqua verranno indagate anche attraverso semplici esperimenti, mentre gli aspetti più legati alla fisiologia, alla patologia e all’igiene nell’uomo saranno esplorati per mezzo di attività guidate individuali e a piccoli gruppi e avvalendosi di supporti multimediali. Gli aspetti naturalistici e ambientali verranno indagati con delle uscite sul territorio progettate ad hoc (qualità delle acque, rischio idrogeologico, ecc.)\r\n</p>', '<p>\r\nThe course aims to provide an overview of the Earth\'s most defining element, analyzing its peculiarities and fundamental role for living things. The chemical characteristics of water will also be investigated through simple experiments, while aspects more related to physiology, pathology and hygiene in humans will be explored by means of individual and small-group guided activities and making use of multimedia supports. Naturalistic and environmental aspects will be investigated with specially designed field trips (water quality, hydrogeological risk, etc.).\r\n</p>', 'SM', 15, 20, 2, 1, '2021-09-13'),
+(5, 'A qualcuno piace caldo🥵', 'Some people like it hot🥵', '2021-08-25', '<b>\r\nCorso dove gli studenti studieranno il cambiamento climatico\r\n</b>', '<b>\r\nCourse where students will study climate change\r\n</b>', 2, 4, '<ul>\r\n<li><b>Comprendere</b> le cause del cambiamento climatico in corso <b>evidenziando</b> quali attività antropiche ne sono responsabili.</li>\r\n<li><b>Distinguere</b> cause ed effetti del cambiamenti climatici <b>mettendole in relazione</b> fra loro.</li>\r\n<li><b>Riflettere</b> sull\'impatto dei propri comportamenti e delle proprie scelte ragionando su possibili alternative.</li>\r\n</ul>', '<ul>\r\n<li><b>Understand</b> the causes of current climate change by <b>highlighting</b> which anthropogenic activities are responsible for it.</li>\r\n<li><b>Distinguish</b> causes and effects of climate change by <b>relating them</b> to each other.</li>\r\n<li><b>Reflect</b> on the impact of their own behaviors and choices by reasoning about possible alternatives.</li>\r\n</ul>', '<ul>\r\n<li>presenza almeno 60% ore</li>\r\n<li>superamento delle verifiche di merito</li>\r\n</ul>', '<ul>\r\n<li>attendance at least 60% hours</li>\r\n<li>passing merit tests</li>\r\n</ul>', '<p>\r\nIl corso parte dalle esperienze degli studenti sui cambiamenti climatici per riorganizzarli in una cornice di rigore scientifico e dare loro gli strumenti per partecipare attivamente al dibattito pubblico e di riflettere sui propri comportamenti e le ricadute che essi hanno sull\'ambiente. Ci si concentrerà sulle relazioni di causa-effetto e sulla complessità che caratterizza questi sistemi. Si metteranno in evidenza le cnseguenze di questo fenomeno negli ambiti ambientale, sanitario, economico.\r\n</p>', '<p>\r\nThe course starts with students\' experiences of climate change to reorganize them into a framework of scientific rigor and give them the tools to actively participate in public debate and to reflect on their own behaviors and the effects they have on the environment. There will be a focus on cause-and-effect relationships and the complexity that characterizes these systems. The cnseguences of this phenomenon in the environmental, health, and economic spheres will be highlighted.\r\n</p>', 'SM', 15, 25, 2, 1, '2021-09-13'),
+(6, 'Dieci minuti scritti. Sperimentazioni di scrittura', 'Ten minutes written. Experiments in writing', '2022-08-25', '<p>\r\nScrivere può essere un piacere o un peso, ma prima di tutto è frutto di esercizio. Scrivere è una ginnastica per le idee, un metodo per sviluppare il proprio pensiero creativo e cercare idee e rapporti nuovi e originali con ciò che ci circonda. La scrittura creativa è questo: provare, scoprendo risorse, creatività e invenzione che, forse, non si sapeva di avere.\r\n</p>', '<p>\r\nWriting can be a pleasure or a burden, but first and foremost it is the result of exercise. Writing is a gymnastics for ideas, a method of developing one\'s creative thinking and seeking new and original ideas and relationships with what surrounds us. Creative writing is this: trying, discovering resources, creativity and invention that, perhaps, you did not know you had.\r\n</p>', 0, 2, '<ul>\r\n<li><b>Comprendere</b> le caratteristiche di vari tipi di testo e i rudimenti del processo creativo su cui si basa la scrittura</li>\r\n<li><b>Applicare</b>: le principali regole di scrittura, utilizzare i diversi registri in base ai testi e le griglie di autocorrezione</li>\r\n<li><b>Produrre</b>: microtesti di varie tipologie, facendo riferimento agli esercizi base della scrittura creativa</li>\r\n<ul>', '<ul>\r\n<li><b>Understand</b> the characteristics of various types of text and the rudiments of the creative process on which writing is based</li>\r\n<li><b>Apply</b>: the main rules of writing, use different registers according to texts and self-correction grids</li>\r\n<li><b>Produce</b>: microtexts of various types, referring to the basic exercises of creative writing</li>\r\n<ul>', '<ul>\r\n<li>L\'impegno nelle esercitaizoni e l\'attenzione a seguire indicazioni e consigli per evitare il ripetersi di errori, oltre alla costanza nella produzione delle esercizi assegnati, concorreranno alla valutazione finale, che consisterà nella stesura di un minitesto di tipologia a scelta fra quelle affrontate, la cui correttezzia è determinata dai parametri stessi del testo precedentemente presentati agli studenti.</li>\r\n<li>Presenza almeno 60% ore</li>\r\n</ul>', '<ul>\r\n<li>Commitment to the exercises and attention to following directions and advice to avoid the repetition of errors, as well as consistency in the production of the assigned exercises, will contribute to the final assessment, which will consist of the writing of a mini-text of a type chosen from those addressed, the correctness of which is determined by the very parameters of the text previously presented to the students.</li>\r\n<li>Attendance at least 60% hours</li>\r\n</ul>', '<p>\r\nIl corso ha carattere laboratoriale e prevede la stesura di microtesti di varia natura oltre ad attività pratiche di scrittura creativa, sviluppando un approccio originale alle tematiche proposte\r\n</p>', '<p>\r\nThe course is workshop-based in nature and involves the writing of microtexts of various kinds as well as practical creative writing activities, developing an original approach to the proposed topics\r\n</p>', 'COM', 10, 20, 1, 2, '2022-09-08');
 
 -- --------------------------------------------------------
 
@@ -277,7 +306,7 @@ CREATE TABLE `grade` (
   `student_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
-  `project_class_block` int(11) NOT NULL,
+  `project_class_session` int(11) NOT NULL,
   `italian_description` varchar(1000) NOT NULL,
   `english_description` varchar(1000) NOT NULL,
   `publication` datetime NOT NULL,
@@ -289,7 +318,7 @@ CREATE TABLE `grade` (
 -- Dump dei dati per la tabella `grade`
 --
 
-INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `project_class_block`, `italian_description`, `english_description`, `publication`, `grade`, `final`) VALUES
+INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `project_class_session`, `italian_description`, `english_description`, `publication`, `grade`, `final`) VALUES
 (1, 3, 4, 6, 'Compito di Chimica', 'Chemisrty test', '2023-04-01 09:10:15', 9, 0),
 (1, 3, 4, 6, 'Interrogazione su organismi acquatici', 'Oral exam on aquatic organisms', '2023-04-02 10:10:15', 8, 0),
 (1, 3, 4, 6, 'Compito finale', 'Final test', '2023-04-03 15:10:15', 9, 0),
@@ -307,7 +336,7 @@ INSERT INTO `grade` (`student_id`, `teacher_id`, `project_class_course_id`, `pro
 CREATE TABLE `inscribed` (
   `student_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
-  `project_class_block` int(11) NOT NULL,
+  `project_class_session` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT '',
   `learning_context_id` varchar(5) NOT NULL,
   `pending` date DEFAULT NULL
@@ -317,7 +346,7 @@ CREATE TABLE `inscribed` (
 -- Dump dei dati per la tabella `inscribed`
 --
 
-INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_block`, `section`, `learning_context_id`, `pending`) VALUES
+INSERT INTO `inscribed` (`student_id`, `project_class_course_id`, `project_class_session`, `section`, `learning_context_id`, `pending`) VALUES
 (1, 3, 7, 'A', 'SPE', NULL),
 (1, 4, 6, 'A', 'SPE', NULL),
 (1, 5, 7, 'A', 'PER', NULL),
@@ -359,30 +388,31 @@ INSERT INTO `learning_area` (`id`, `italian_title`, `english_title`, `italian_de
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `learning_block`
+-- Struttura della tabella `learning_session`
 --
 
-CREATE TABLE `learning_block` (
+CREATE TABLE `learning_session` (
   `id` int(11) NOT NULL,
   `number` int(11) NOT NULL,
   `school_year` int(11) NOT NULL,
   `start` date NOT NULL,
   `end` date NOT NULL,
-  `num_groups` int(11) NOT NULL
+  `num_groups` int(11) NOT NULL,
+  `open_day` date
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `learning_block`
+-- Dump dei dati per la tabella `learning_session`
 --
 
-INSERT INTO `learning_block` (`id`, `number`, `school_year`, `start`, `end`, `num_groups`) VALUES
-(1, 5, 2021, '2022-04-27', '2022-06-08', 2),
-(2, 1, 2022, '2022-10-26', '2022-12-06', 1),
-(3, 2, 2022, '2022-09-14', '2022-10-26', 1),
-(4, 3, 2022, '2023-01-07', '2023-02-18', 1),
-(5, 4, 2022, '2023-02-18', '2023-04-01', 1),
-(6, 5, 2022, '2023-06-01', '2023-08-30', 2),
-(7, 6, 2022, '2023-08-31', '2023-09-30', 2);
+INSERT INTO `learning_session` (`id`, `number`, `school_year`, `start`, `end`, `num_groups`, `open_day`) VALUES
+(1, 5, 2021, '2022-04-27', '2022-06-08', 2, '2022-03-30'),
+(2, 2, 2022, '2022-10-26', '2022-12-06', 1, '2022-09-26'),
+(3, 1, 2022, '2022-09-14', '2022-10-26', 1, '2022-09-01'),
+(4, 3, 2022, '2023-01-07', '2023-02-18', 1, '2022-12-18'),
+(5, 4, 2022, '2023-02-18', '2023-04-01', 1, '2023-01-31'),
+(6, 5, 2022, '2023-06-01', '2023-08-30', 2, '2023-05-10'),
+(7, 6, 2022, '2023-08-31', '2023-09-30', 2, '2023-08-10');
 
 -- --------------------------------------------------------
 
@@ -415,7 +445,7 @@ INSERT INTO `learning_context` (`id`, `italian_title`, `english_title`, `italian
 
 CREATE TABLE `limited` (
   `id` int(11) NOT NULL,
-  `learning_block_id` int(11) NOT NULL,
+  `learning_session_id` int(11) NOT NULL,
   `ordinary_class_study_year` int(11) NOT NULL,
   `ordinary_class_address` varchar(5) NOT NULL,
   `ordinary_class_school_year` int(11) NOT NULL,
@@ -428,7 +458,7 @@ CREATE TABLE `limited` (
 -- Dump dei dati per la tabella `limited`
 --
 
-INSERT INTO `limited` (`id`, `learning_block_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
+INSERT INTO `limited` (`id`, `learning_session_id`, `ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `learning_area_id`, `learning_context_id`, `credits`) VALUES
 (1, 6, 1, 'BIO', 2022, 'SM', 'SPE', 4),
 (2, 6, 4, 'ODO', 2022, 'COM', 'SPE', 2),
 (3, 6, 5, 'BIO', 2022, 'SM', 'SPE', 4),
@@ -528,7 +558,8 @@ INSERT INTO `personal_growth_area` (`id`, `italian_title`, `english_title`, `ita
 (1, 'Benessere personale', 'Personal well-being', NULL, NULL),
 (2, 'Prospettive di crescita', 'Growth prospects', '<p>Area in cui uno studente può effettuare corsi che gli permettono di crescere e migliorare le sue competenze</p>', '<p>Area in which a student can take courses that enable him/her to grow and improve his/her skills</p>'),
 (3, 'Imprenditività', 'Entrepreneurship', NULL, NULL),
-(4, 'Orientamento', 'Orientation', NULL, NULL);
+(4, 'Orientamento', 'Orientation', NULL, NULL),
+(5, 'CLIL', 'CLIL', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -538,7 +569,7 @@ INSERT INTO `personal_growth_area` (`id`, `italian_title`, `english_title`, `ita
 
 CREATE TABLE `project_class` (
   `course_id` int(11) NOT NULL,
-  `learning_block_id` int(11) NOT NULL,
+  `learning_session_id` int(11) NOT NULL,
   `italian_displayed_name` varchar(250) DEFAULT NULL,
   `english_displayed_name` varchar(250) DEFAULT NULL,
   `group` int(11) NOT NULL DEFAULT 1,
@@ -554,7 +585,7 @@ CREATE TABLE `project_class` (
 -- Dump dei dati per la tabella `project_class`
 --
 
-INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
+INSERT INTO `project_class` (`course_id`, `learning_session_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
 (2, 6, NULL, NULL, 1, 1, 1, 1, '2022-09-09', NULL, '2022-10-01'),
 (3, 7, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
 (4, 6, NULL, NULL, 1, 1, 2, 2, '2022-09-09', NULL, '2022-10-01'),
@@ -573,7 +604,7 @@ INSERT INTO `project_class` (`course_id`, `learning_block_id`, `italian_displaye
 CREATE TABLE `project_teach` (
   `teacher_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
-  `project_class_block` int(11) NOT NULL,
+  `project_class_session` int(11) NOT NULL,
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `main` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -582,7 +613,7 @@ CREATE TABLE `project_teach` (
 -- Dump dei dati per la tabella `project_teach`
 --
 
-INSERT INTO `project_teach` (`teacher_id`, `project_class_course_id`, `project_class_block`, `section`, `main`) VALUES
+INSERT INTO `project_teach` (`teacher_id`, `project_class_course_id`, `project_class_session`, `section`, `main`) VALUES
 (1, 6, 6, 'A', 1),
 (1, 6, 7, 'A', 1),
 (2, 3, 7, 'A', 1),
@@ -777,7 +808,7 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `announcement`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
+  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
 -- Indici per le tabelle `associated`
@@ -796,6 +827,14 @@ ALTER TABLE `attend`
   ADD KEY `ordinary_class_study_year` (`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`);
 
 --
+-- Indici per le tabelle `characterize`
+--
+ALTER TABLE `characterize`
+  ADD PRIMARY KEY (`course_id`, `growth_area_id`),
+  ADD KEY `course_id` (`course_id`),
+  ADD KEY `growth_area_id` (`growth_area_id`);
+
+--
 -- Indici per le tabelle `citizenship_report`
 --
 ALTER TABLE `citizenship_report`
@@ -810,7 +849,6 @@ ALTER TABLE `course`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `course` (`italian_title`,`english_title`,`creation_school_year`),
   ADD KEY `learning_area_id` (`learning_area_id`),
-  ADD KEY `growth_area_id` (`growth_area_id`),
   ADD KEY `course_ibfk_3` (`proposer_teacher_id`),
   ADD KEY `course_ibfk_4` (`certifying_admin_id`);
 
@@ -818,16 +856,16 @@ ALTER TABLE `course`
 -- Indici per le tabelle `grade`
 --
 ALTER TABLE `grade`
-  ADD PRIMARY KEY (`student_id`,`teacher_id`,`project_class_course_id`,`project_class_block`,`publication`),
+  ADD PRIMARY KEY (`student_id`,`teacher_id`,`project_class_course_id`,`project_class_session`,`publication`),
   ADD KEY `teacher_id` (`teacher_id`),
-  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
+  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
 -- Indici per le tabelle `inscribed`
 --
 ALTER TABLE `inscribed`
-  ADD PRIMARY KEY (`student_id`,`project_class_course_id`,`project_class_block`,`section`),
-  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
+  ADD PRIMARY KEY (`student_id`,`project_class_course_id`,`project_class_session`,`section`),
+  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
 -- Indici per le tabelle `learning_area`
@@ -838,9 +876,9 @@ ALTER TABLE `learning_area`
   ADD UNIQUE KEY `english_title` (`english_title`);
 
 --
--- Indici per le tabelle `learning_block`
+-- Indici per le tabelle `learning_session`
 --
-ALTER TABLE `learning_block`
+ALTER TABLE `learning_session`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `number` (`number`,`school_year`);
 
@@ -888,9 +926,9 @@ ALTER TABLE `personal_growth_area`
 -- Indici per le tabelle `project_class`
 --
 ALTER TABLE `project_class`
-  ADD PRIMARY KEY (`course_id`,`learning_block_id`),
+  ADD PRIMARY KEY (`course_id`,`learning_session_id`),
   ADD KEY `course_id` (`course_id`),
-  ADD KEY `learning_block_id` (`learning_block_id`),
+  ADD KEY `learning_session_id` (`learning_session_id`),
   ADD KEY `project_class_ibfk_3` (`proposer_teacher_id`),
   ADD KEY `project_class_ibfk_4` (`certifying_admin_id`);
 
@@ -898,8 +936,8 @@ ALTER TABLE `project_class`
 -- Indici per le tabelle `project_teach`
 --
 ALTER TABLE `project_teach`
-  ADD PRIMARY KEY (`teacher_id`,`project_class_course_id`,`project_class_block`,`section`),
-  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_block`);
+  ADD PRIMARY KEY (`teacher_id`,`project_class_course_id`,`project_class_session`,`section`),
+  ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
 -- Indici per le tabelle `student`
@@ -968,9 +1006,9 @@ ALTER TABLE `course`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT per la tabella `learning_block`
+-- AUTO_INCREMENT per la tabella `learning_session`
 --
-ALTER TABLE `learning_block`
+ALTER TABLE `learning_session`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
@@ -1014,7 +1052,7 @@ ALTER TABLE `accessible`
 -- Limiti per la tabella `announcement`
 --
 ALTER TABLE `announcement`
-  ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
+  ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`);
 
 --
 -- Limiti per la tabella `associated`
@@ -1031,6 +1069,13 @@ ALTER TABLE `attend`
   ADD CONSTRAINT `attend_ibfk_2` FOREIGN KEY (`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`) REFERENCES `ordinary_class` (`study_year_id`, `study_address_id`, `school_year`);
 
 --
+-- Limiti per la tabella `characterize`
+--
+ALTER TABLE `characterize`
+  ADD CONSTRAINT `characterize_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
+  ADD CONSTRAINT `characterize_ibfk_2` FOREIGN KEY (`growth_area_id`) REFERENCES `personal_growth_area` (`id`);
+
+--
 -- Limiti per la tabella `citizenship_report`
 --
 ALTER TABLE `citizenship_report`
@@ -1042,9 +1087,8 @@ ALTER TABLE `citizenship_report`
 --
 ALTER TABLE `course`
   ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`),
-  ADD CONSTRAINT `course_ibfk_2` FOREIGN KEY (`growth_area_id`) REFERENCES `personal_growth_area` (`id`),
-  ADD CONSTRAINT `course_ibfk_3` FOREIGN KEY (`proposer_teacher_id`) REFERENCES `teacher` (`id`),
-  ADD CONSTRAINT `course_ibfk_4` FOREIGN KEY (`certifying_admin_id`) REFERENCES `admin` (`id`);
+  ADD CONSTRAINT `course_ibfk_2` FOREIGN KEY (`proposer_teacher_id`) REFERENCES `teacher` (`id`),
+  ADD CONSTRAINT `course_ibfk_3` FOREIGN KEY (`certifying_admin_id`) REFERENCES `admin` (`id`);
 
 --
 -- Limiti per la tabella `grade`
@@ -1052,25 +1096,25 @@ ALTER TABLE `course`
 ALTER TABLE `grade`
   ADD CONSTRAINT `grade_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
   ADD CONSTRAINT `grade_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`),
-  ADD CONSTRAINT `grade_ibfk_3` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
+  ADD CONSTRAINT `grade_ibfk_3` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`);
 
 --
 -- Limiti per la tabella `inscribed`
 --
 ALTER TABLE `inscribed`
   ADD CONSTRAINT `inscribed_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
-  ADD CONSTRAINT `inscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`),
+  ADD CONSTRAINT `inscribed_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`),
   ADD CONSTRAINT `inscribed_ibfk_3` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`);
 
 --
 -- Limiti per la tabella `limited`
 --
 ALTER TABLE `limited`
-  ADD CONSTRAINT `limited_ibfk_1` FOREIGN KEY (`learning_block_id`) REFERENCES `learning_block` (`id`),
+  ADD CONSTRAINT `limited_ibfk_1` FOREIGN KEY (`learning_session_id`) REFERENCES `learning_session` (`id`),
   ADD CONSTRAINT `limited_ibfk_2` FOREIGN KEY (`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`) REFERENCES `ordinary_class` (`study_year_id`, `study_address_id`, `school_year`),
   ADD CONSTRAINT `limited_ibfk_3` FOREIGN KEY (`learning_area_id`) REFERENCES `learning_area` (`id`),
   ADD CONSTRAINT `limited_ibfk_4` FOREIGN KEY (`learning_context_id`) REFERENCES `learning_context` (`id`),
-  ADD CONSTRAINT `limited_ibunique_1` UNIQUE (`learning_block_id`,`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`,`learning_area_id`,`learning_context_id`);
+  ADD CONSTRAINT `limited_ibunique_1` UNIQUE (`learning_session_id`,`ordinary_class_study_year`,`ordinary_class_address`,`ordinary_class_school_year`,`learning_area_id`,`learning_context_id`);
 
 --
 -- Limiti per la tabella `ordinary_class`
@@ -1092,7 +1136,7 @@ ALTER TABLE `ordinary_teach`
 --
 ALTER TABLE `project_class`
   ADD CONSTRAINT `project_class_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
-  ADD CONSTRAINT `project_class_ibfk_2` FOREIGN KEY (`learning_block_id`) REFERENCES `learning_block` (`id`),
+  ADD CONSTRAINT `project_class_ibfk_2` FOREIGN KEY (`learning_session_id`) REFERENCES `learning_session` (`id`),
   ADD CONSTRAINT `project_class_ibfk_3` FOREIGN KEY (`proposer_teacher_id`) REFERENCES `teacher` (`id`),
   ADD CONSTRAINT `project_class_ibfk_4` FOREIGN KEY (`certifying_admin_id`) REFERENCES `admin` (`id`);
 
@@ -1101,7 +1145,7 @@ ALTER TABLE `project_class`
 --
 ALTER TABLE `project_teach`
   ADD CONSTRAINT `project_teach_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`),
-  ADD CONSTRAINT `project_teach_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_block`) REFERENCES `project_class` (`course_id`, `learning_block_id`);
+  ADD CONSTRAINT `project_teach_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -28,17 +28,17 @@ describe('/api/v1/project_classes', () => {
                 italian_act: "asw",
                 english_act: "asw",
                 area_id: "SM",
-                growth_id: 2,
+                growth_ids: [2],
                 min_students: 10,
                 max_students: 15,
-                block_id: 7,
+                session_id: 7,
                 class_group: 1,
                 num_section: 1,
                 teacher_list: [{teacher_id: 2, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}, {teacher_id: 3, main: 0, sections:["A"]}]
             }
 
             // Only test for valid insertion since its the same controls we have in propositions.test.js
-            test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_block_id) and valid informations for project class should respond with status 201', async () => {
+            test('POST /api/v1/propositions with valid token, valid references (learning_area_id, growth_area_id, learning_session_id) and valid informations for project class should respond with status 201', async () => {
                 return request(app)
                     .post('/api/v1/propositions')
                     .send(valid_proposal)
@@ -49,16 +49,16 @@ describe('/api/v1/project_classes', () => {
     })
 
     describe('PUT methods tests', () => {
-        describe('PUT /api/v1/project_classes/:course/:block/final_confirmation', () => {
+        describe('PUT /api/v1/project_classes/:course/:session/final_confirmation', () => {
             // No token
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation without token should respond with status 401', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation without token should respond with status 401', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/7/final_confirmation')
                     .expect(401)
             })
 
             // Invalid token
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with invalid token should respond with status 403', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with invalid token should respond with status 403', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/7/final_confirmation')
                     .set('x-access-token', invalidToken)
@@ -66,35 +66,35 @@ describe('/api/v1/project_classes', () => {
             })
 
             // Wrong admin token
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with non existing admin token should respond with status 401', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with non existing admin token should respond with status 401', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/7/final_confirmation')
                     .set('x-access-token', wrongTokenAdmin)
                     .expect(401)
             })
 
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing course should respond with status 404', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with valid token but non existing course should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/0/7/final_confirmation')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
 
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing block should respond with status 404', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with valid token but non existing session should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/0/final_confirmation')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
 
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but non existing project class should respond with status 404', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with valid token but non existing project class should respond with status 404', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/1/7/final_confirmation')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
 
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but already confirmed project class should respond with status 400', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with valid token but already confirmed project class should respond with status 400', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/6/final_confirmation')
                     .set('x-access-token', validTokenAdmin)
@@ -102,7 +102,7 @@ describe('/api/v1/project_classes', () => {
             })
 
             // Valid token but no students
-            test('PUT /api/v1/project_classes/:course/:block/final_confirmation with valid token but no students in the class should respond with status 400', async () => {
+            test('PUT /api/v1/project_classes/:course/:session/final_confirmation with valid token but no students in the class should respond with status 400', async () => {
                 return request(app)
                     .put('/api/v1/project_classes/2/7/final_confirmation')
                     .set('x-access-token', validTokenAdmin)
@@ -144,10 +144,10 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes with valid token and block_id should respond with status 200', async () => {
+            test('GET /api/v1/project_classes with valid token and session_id should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes')
-                    .query({block_id:7})
+                    .query({session_id:7})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
                     .then((response) => {
@@ -158,7 +158,7 @@ describe('/api/v1/project_classes', () => {
             test('GET /api/v1/project_classes with valid token and year parameter should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes')
-                    .query({block_id:7, year: true})
+                    .query({session_id:7, year: true})
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
                     .then((response) => {
@@ -166,7 +166,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes with valid token and year parameter but no block_id should respond with status 404', async () => {
+            test('GET /api/v1/project_classes with valid token and year parameter but no session_id should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes')
                     .query({year: true})
@@ -175,49 +175,49 @@ describe('/api/v1/project_classes', () => {
             })
         })
 
-        describe('GET /api/v1/project_classes/:course/:block', () => {
-            test('GET /api/v1/project_classes/:course/:block without token should respond with status 401', async () => {
+        describe('GET /api/v1/project_classes/:course/:session', () => {
+            test('GET /api/v1/project_classes/:course/:session without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7')
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block with invalid token should respond with status 403', async () => {
+            test('GET /api/v1/project_classes/:course/:session with invalid token should respond with status 403', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7')
                     .set('x-access-token', invalidToken)
                     .expect(403);
             })
 
-            test('GET /api/v1/project_classes/:course/:block with valid token but wrong user type should respond with status 401', async () => {
+            test('GET /api/v1/project_classes/:course/:session with valid token but wrong user type should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7')
                     .set('x-access-token', wrongTokenAdmin)
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block with valid token and wrong values should respond with status 404', async () => {
+            test('GET /api/v1/project_classes/:course/:session with valid token and wrong values should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/1')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404);
             })
 
-            test('GET /api/v1/project_classes/:course/:block with valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session with valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7')
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
                     .then((response) => {
                         expect(response.body.data.course_id).toBe(5)
-                        expect(response.body.data.learning_block).toBe(7)
+                        expect(response.body.data.learning_session).toBe(7)
                     });
             })
         })
 
-        describe('GET /api/v1/project_classes/:course/:block/components', () => {
+        describe('GET /api/v1/project_classes/:course/:session/components', () => {
             // missing token
-            test('GET /api/v1/project_classes/:course/:block/components with all parameters and missing token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with all parameters and missing token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 1, assoc_class: true})
@@ -225,7 +225,7 @@ describe('/api/v1/project_classes', () => {
             })
 
             // invalid token
-            test('GET /api/v1/project_classes/:course/:block/components with all parameters and invalid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with all parameters and invalid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 1, assoc_class: true})
@@ -234,7 +234,7 @@ describe('/api/v1/project_classes', () => {
             })
 
             // wrong user token
-            test('GET /api/v1/project_classes/:course/:block/components with all parameters and wrong user token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with all parameters and wrong user token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 1, assoc_class: true})
@@ -243,7 +243,7 @@ describe('/api/v1/project_classes', () => {
             })
 
             // valid token but wrong user id
-            test('GET /api/v1/project_classes/:course/:block/components with all parameters and valid token but of the wrong teacher should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with all parameters and valid token but of the wrong teacher should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 3, assoc_class: true})
@@ -252,14 +252,14 @@ describe('/api/v1/project_classes', () => {
             })
 
             // GET all resources with no parameters and valid token
-            test('GET /api/v1/project_classes/:course/:block/components without parameters and valid token should respond with status 400', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components without parameters and valid token should respond with status 400', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .set('x-access-token', validToken)
                     .expect(400);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components with invalid course id and valid params and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with invalid course id and valid params and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/0/7/components')
                     .set('x-access-token', validToken)
@@ -270,7 +270,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components with invalid block id and valid params and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with invalid session id and valid params and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/0/components')
                     .set('x-access-token', validToken)
@@ -281,7 +281,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components with only section parameters and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with only section parameters and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .set('x-access-token', validToken)
@@ -292,7 +292,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components with only section and teacher_id parameters and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with only section and teacher_id parameters and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .set('x-access-token', validToken)
@@ -303,7 +303,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components without teacher parameter but with assoc_class parameter and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components without teacher parameter but with assoc_class parameter and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .set('x-access-token', validToken)
@@ -314,7 +314,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/components with all parameters and valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/components with all parameters and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/components')
                     .query({section: "A", teacher_id: 1, assoc_class: true})
@@ -326,51 +326,51 @@ describe('/api/v1/project_classes', () => {
             })
         })
         
-        describe('GET /api/v1/project_classes/:course/:block/sections', () => {
+        describe('GET /api/v1/project_classes/:course/:session/sections', () => {
             let validAdminToken = jwt.sign({_id: 1, username: "Admin1", role: "admin"}, process.env.SUPER_SECRET, {expiresIn: 86400});
 
-            test('GET /api/v1/project_classes/:course/:block/sections without token should respond with status 401', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/sections')
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with invalid token should respond with status 401', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with invalid token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/sections')
                     .set('x-access-token', invalidToken)
                     .expect(403);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with wrong user token should respond with status 401', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with wrong user token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/sections')
                     .set('x-access-token', wrongUserToken)
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with wrong course id and valid token should respond with status 404', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with wrong course id and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/0/7/sections')
                     .set('x-access-token', validAdminToken)
                     .expect(404);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with wrong block id and valid token should respond with status 404', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with wrong session id and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/0/sections')
                     .set('x-access-token', validAdminToken)
                     .expect(404);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters but the class does not exist in that learning block and valid token should respond with status 404', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with valid parameters but the class does not exist in that learning session and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/1/sections')
                     .set('x-access-token', validAdminToken)
                     .expect(404);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/sections with valid parameters and token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/sections with valid parameters and token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/sections')
                     .set('x-access-token', validAdminToken)
@@ -383,22 +383,22 @@ describe('/api/v1/project_classes', () => {
 
         })
 
-        describe('GET /api/v1/project_classes/:course/:block/announcements', () => {
-            test('GET /api/v1/project_classes/:course/:block/announcements without token should respond with status 401', async () => {
+        describe('GET /api/v1/project_classes/:course/:session/announcements', () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/announcements')
                     .query({section: 'A'})
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with invalid token should respond with status 403', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with invalid token should respond with status 403', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/announcements')
                     .set('x-access-token', invalidToken)
                     .expect(403);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but wrong user id should respond with status 401', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with valid token but wrong user id should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/announcements')
                     .query({section: 'A', publisher_id: 2})
@@ -406,14 +406,14 @@ describe('/api/v1/project_classes', () => {
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but missing parameters should respond with status 400', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with valid token but missing parameters should respond with status 400', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/announcements')
                     .set('x-access-token', validToken)
                     .expect(400);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with valid token but missing teacher id should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with valid token but missing teacher id should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/6/7/announcements')
                     .query({section: 'A'})
@@ -424,7 +424,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with valid student token but missing teacher id should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with valid student token but missing teacher id should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/announcements')
                     .query({section: 'A'})
@@ -435,7 +435,7 @@ describe('/api/v1/project_classes', () => {
                     });
             })
 
-            test('GET /api/v1/project_classes/:course/:block/announcements with valid token and parameters should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/announcements with valid token and parameters should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/7/announcements')
                     .query({section: 'A', publisher_id: 2})
@@ -447,28 +447,28 @@ describe('/api/v1/project_classes', () => {
             })
         })
 
-        describe('GET /api/v1/project_classes/:course/:block/teachers', () => {
-            test('GET /api/v1/project_classes/:course/:block/teachers without token should respond with status 401', async () => {
+        describe('GET /api/v1/project_classes/:course/:session/teachers', () => {
+            test('GET /api/v1/project_classes/:course/:session/teachers without token should respond with status 401', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/teachers')
                     .expect(401);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/teachers with invalid token should respond with status 403', async () => {
+            test('GET /api/v1/project_classes/:course/:session/teachers with invalid token should respond with status 403', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/5/6/teachers')
                     .set('x-access-token', invalidToken)
                     .expect(403);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/teachers with valid token but wrong class should respond with status 404', async () => {
+            test('GET /api/v1/project_classes/:course/:session/teachers with valid token but wrong class should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/1/6/teachers')
                     .set('x-access-token', validToken)
                     .expect(404);
             })
 
-            test('GET /api/v1/project_classes/:course/:block/teachers with valid token should respond with status 200', async () => {
+            test('GET /api/v1/project_classes/:course/:session/teachers with valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/project_classes/6/7/teachers')
                     .set('x-access-token', validToken)
@@ -481,56 +481,56 @@ describe('/api/v1/project_classes', () => {
     })
 
     describe('DELETE methods tests', () => {
-        describe('DELETE /api/v1/project_classes/:course/:block', () => {
-            test('DELETE /api/v1/project_classes/:course/:block without token should respond with statut 401', async () => {
+        describe('DELETE /api/v1/project_classes/:course/:session', () => {
+            test('DELETE /api/v1/project_classes/:course/:session without token should respond with statut 401', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/7')
                     .expect(401)
             })
             
-            test('DELETE /api/v1/project_classes/:course/:block with invalid token should respond with statut 403', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with invalid token should respond with statut 403', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/7')
                     .set('x-access-token', invalidToken)
                     .expect(403)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with non existing admin token should respond with statut 401', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with non existing admin token should respond with statut 401', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/7')
                     .set('x-access-token', wrongTokenAdmin)
                     .expect(401)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with valid token but non existing course should respond with statut 404', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with valid token but non existing course should respond with statut 404', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/0/7')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with valid token but non existing block should respond with statut 404', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with valid token but non existing session should respond with statut 404', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/0')
                     .set('x-access-token', validTokenAdmin)
                     .expect(404)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with valid token but past block should respond with statut 400', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with valid token but past session should respond with statut 400', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/6')
                     .set('x-access-token', validTokenAdmin)
                     .expect(400)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with valid token but grades have already been added to it should respond with statut 400', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with valid token but grades have already been added to it should respond with statut 400', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/4/6')
                     .set('x-access-token', validTokenAdmin)
                     .expect(400)
             })
 
-            test('DELETE /api/v1/project_classes/:course/:block with valid token and parameters should respond with statut 200', async () => {
+            test('DELETE /api/v1/project_classes/:course/:session with valid token and parameters should respond with statut 200', async () => {
                 return request(app)
                     .delete('/api/v1/project_classes/2/7')
                     .set('x-access-token', validTokenAdmin)

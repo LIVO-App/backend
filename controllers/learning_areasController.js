@@ -10,13 +10,13 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_areas = async (req, res) => {
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let all_data = req.query.all_data;
     all_data = all_data === "true" ? true : false;
     let credits = req.query.credits;
     let areas;
-    if (block_id != undefined) {
-        areas = await learningAreaSchema.read_from_blocks(block_id,all_data,credits);
+    if (session_id != undefined) {
+        areas = await learningAreaSchema.read_from_sessions(session_id,all_data,credits);
     } else {
         areas = await learningAreaSchema.list();
     }
@@ -34,7 +34,7 @@ module.exports.get_areas = async (req, res) => {
         path: "/api/v1/learning_areas/",
         single: true,
         query: {
-            block_id: block_id,
+            session_id: session_id,
             all_data: all_data
         },
         date: new Date(),
@@ -88,9 +88,9 @@ learningAreaSchema.read("COM")
         }
     });
 
-learningAreaSchema.read_from_blocks("6")
+learningAreaSchema.read_from_sessions("6")
     .then(async msg => {
-        console.log("=====================\nLearning areas from learning block 6");
+        console.log("=====================\nLearning areas from learning session 6");
         if(msg){
             //console.log(msg[0].learning_area_id);
             for(var i=0;i<msg.length;i++){

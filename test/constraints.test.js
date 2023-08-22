@@ -12,7 +12,7 @@ describe('/api/v1/constraints', () => {
     describe('POST methods tests', () => {
         describe('POST /api/v1/constraints', () => {
             let invalid_const = {constraints_object: {}}
-            let only_wrong_blocks = {
+            let only_wrong_sessions = {
                 constraints_object: {
                     0: [{context_id: "SPE",area_id: "SGET",credits: 4, classes: [{study_year: 1, study_address: "BIO"},{study_year: 2, study_address: "BIO"}]}],
                 }
@@ -58,14 +58,14 @@ describe('/api/v1/constraints', () => {
                     .expect(400)
             })
 
-            test('POST /api/v1/constraints with valid token but wrong block in the object should respond with status 400', async () => {
+            test('POST /api/v1/constraints with valid token but wrong session in the object should respond with status 400', async () => {
                 return request(app)
                     .post('/api/v1/constraints')
-                    .send(only_wrong_blocks)
+                    .send(only_wrong_sessions)
                     .set('x-access-token', validTokenAdmin)
                     .expect(400)
                     .then((response) =>{
-                        expect(response.body.wrong_block).toBe(true)
+                        expect(response.body.wrong_session).toBe(true)
                     })
             })
 
@@ -148,8 +148,8 @@ describe('/api/v1/constraints', () => {
                     .expect(404)
             })
 
-            // Valid token but past block
-            test('PUT /api/v1/constraints/:constr_id with valid token but constraint of past block should respond with status 400', async () => {
+            // Valid token but past session
+            test('PUT /api/v1/constraints/:constr_id with valid token but constraint of past session should respond with status 400', async () => {
                 return request(app)
                     .put('/api/v1/constraints/1')
                     .set('x-access-token', validTokenAdmin)
@@ -188,99 +188,99 @@ describe('/api/v1/constraints', () => {
                     .set('x-access-token', validTokenAdmin)
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
                     });
             });
 
-            test('GET /api/v1/constraints?block_id with non existing block_id and valid token should respond with status 404', async () => {
+            test('GET /api/v1/constraints?session_id with non existing session_id and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 0})
+                    .query({session_id: 0})
                     .expect(404);
             });
 
-            test('GET /api/v1/constraints?block_id with existing block_id and valid token should respond with status 200', async () => {
+            test('GET /api/v1/constraints?session_id with existing session_id and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 7})
+                    .query({session_id: 7})
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             });
 
-            test('GET /api/v1/constraints?block_id with existing block_id and year_of and valid token should respond with status 200', async () => {
+            test('GET /api/v1/constraints?session_id with existing session_id and year_of and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 7, year_of: "true"})
+                    .query({session_id: 7, year_of: "true"})
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             });
 
-            test('GET /api/v1/constraints?block_id&area_id with non existing area_id and valid token should respond with status 404', async () => {
+            test('GET /api/v1/constraints?session_id&area_id with non existing area_id and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 0, area_id: 'AA'})
+                    .query({session_id: 0, area_id: 'AA'})
                     .expect(404);
             });
 
-            test('GET /api/v1/constraints?block_id&area_id with existing block_id and area_id and valid token should respond with status 200', async () => {
+            test('GET /api/v1/constraints?session_id&area_id with existing session_id and area_id and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 7, area_id: 'SM'})
+                    .query({session_id: 7, area_id: 'SM'})
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             });
 
-            test('GET /api/v1/constraints?block_id&area_id&context_id with non existing context_id and valid token should respond with status 404', async () => {
+            test('GET /api/v1/constraints?session_id&area_id&context_id with non existing context_id and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 0, area_id: 'SM', context_id: 'AAA'})
+                    .query({session_id: 0, area_id: 'SM', context_id: 'AAA'})
                     .expect(404);
             });
 
-            test('GET /api/v1/constraints?block_id&area_id&context_id with existing block_id and area_id and context_id and valid token should respond with status 200', async () => {
+            test('GET /api/v1/constraints?session_id&area_id&context_id with existing session_id and area_id and context_id and valid token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 7, area_id: 'SM', context_id: 'SPE'})
+                    .query({session_id: 7, area_id: 'SM', context_id: 'SPE'})
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             });
 
-            test('GET /api/v1/constraints?block_id&area_id&context_id&study_year&study_address with non existing ordinary_class and valid token should respond with status 404', async () => {
+            test('GET /api/v1/constraints?session_id&area_id&context_id&study_year&study_address with non existing ordinary_class and valid token should respond with status 404', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 0, area_id: 'SM', context_id: 'SPE', study_year: 6, study_address: 'BIO'})
+                    .query({session_id: 0, area_id: 'SM', context_id: 'SPE', study_year: 6, study_address: 'BIO'})
                     .expect(404);
             });
 
-            test('GET /api/v1/constraints?block_id&area_id&context_id&study_year&study_address with valid parameters and token should respond with status 200', async () => {
+            test('GET /api/v1/constraints?session_id&area_id&context_id&study_year&study_address with valid parameters and token should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/constraints')
                     .set('x-access-token', validTokenAdmin)
-                    .query({block_id: 7, area_id: 'SM', context_id: 'SPE', study_year: 1, study_address: 'BIO'})
+                    .query({session_id: 7, area_id: 'SM', context_id: 'SPE', study_year: 1, study_address: 'BIO'})
                     .expect(200)
                     .then((res) => {
-                        //For now we have at least 1 learning block in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
+                        //For now we have at least 1 learning session in our db. After implementation of POST method, we can work with this expect() w.r.t. the tests of the POST methods
                         expect(res.body.data.length).toBeGreaterThanOrEqual(0);
                     });
             });
@@ -316,7 +316,7 @@ describe('/api/v1/constraints', () => {
                     .expect(404)
             })
 
-            test('DELETE /api/v1/constraints/:constr_id with valid token but constraint of past block should respond with status 400', async () => {
+            test('DELETE /api/v1/constraints/:constr_id with valid token but constraint of past session should respond with status 400', async () => {
                 return request(app)
                     .delete('/api/v1/constraints/1')
                     .set('x-access-token', validTokenAdmin)

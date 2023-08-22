@@ -27,19 +27,19 @@ describe('/api/v1/courses', () => {
                     .get('/api/v1/courses')
                     .query({
                         student_id: '\"nonValidID\"',
-                        block_id: 7,
+                        session_id: 7,
                         area_id: 'SM',
                         context_id: 'SPE'
                     })
                     .expect(404);
             }, 20000);
 
-            // GET all resources with only block_id
-            test('GET /api/v1/courses with only block_id as param should respond with status 200', async () => {
+            // GET all resources with only session_id
+            test('GET /api/v1/courses with only session_id as param should respond with status 200', async () => {
                 return request(app)
                     .get('/api/v1/courses')
                     .query({
-                        block_id: 7
+                        session_id: 7
                     })
                     .expect(200)
                     .then((response) => {
@@ -92,7 +92,7 @@ describe('/api/v1/courses', () => {
                     .get('/api/v1/courses')
                     .query({
                         student_id: 1,
-                        block_id: 7,
+                        session_id: 7,
                         area_id: 'SM',
                         context_id: 'SPE'
                     })
@@ -186,7 +186,7 @@ describe('/api/v2/courses', () => {
                 .get('/api/v2/courses')
                 .query({
                     student_id: 1,
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })
@@ -200,7 +200,7 @@ describe('/api/v2/courses', () => {
                 .set('x-access-token', invalidToken)
                 .query({
                     student_id: 1,
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })
@@ -214,7 +214,7 @@ describe('/api/v2/courses', () => {
                 .set('x-access-token', wrongUserToken)
                 .query({
                     student_id: 1,
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })
@@ -228,7 +228,7 @@ describe('/api/v2/courses', () => {
                 .set('x-access-token', validToken)
                 .query({
                     student_id: 2,
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })
@@ -253,20 +253,20 @@ describe('/api/v2/courses', () => {
                 .set('x-access-token', validToken)
                 .query({
                     student_id: '\"nonValidID\"',
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })
                 .expect(401);
         }, 20000);
 
-        // GET all resources with only block_id and token
-        test('GET /api/v2/courses with only block_id as param should respond with status 200', async () => {
+        // GET all resources with only session_id and token
+        test('GET /api/v2/courses with only session_id as param should respond with status 200', async () => {
             return request(app)
                 .get('/api/v2/courses')
                 .set('x-access-token', validToken)
                 .query({
-                    block_id: 7
+                    session_id: 7
                 })
                 .expect(200)
                 .then((response) => {
@@ -323,7 +323,7 @@ describe('/api/v2/courses', () => {
                 .set('x-access-token', validToken)
                 .query({
                     student_id: 1,
-                    block_id: 7,
+                    session_id: 7,
                     area_id: 'SM',
                     context_id: 'SPE'
                 })

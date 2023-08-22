@@ -16,7 +16,7 @@ describe('/api/v1/announcements', () => {
             beforeAll(async () => {
                 validMessage = {
                     course_id: 6,
-                    block_id: 7,
+                    session_id: 7,
                     sections: ["A"],
                     italian_title: "AAA",
                     english_title: "AAA",
@@ -31,7 +31,7 @@ describe('/api/v1/announcements', () => {
                     .post('/api/v1/announcements')
                     .send({
                         course_id: validMessage.course_id,
-                        block_id: validMessage.block_id,
+                        session_id: validMessage.session_id,
                         sections: validMessage.sections,
                         italian_title: validMessage.italian_title,
                         english_title: validMessage.english_title,
@@ -48,7 +48,7 @@ describe('/api/v1/announcements', () => {
                     .set('x-access-token', invalidToken)
                     .send({
                         course_id: validMessage.course_id,
-                        block_id: validMessage.block_id,
+                        session_id: validMessage.session_id,
                         sections: validMessage.sections,
                         italian_title: validMessage.italian_title,
                         english_title: validMessage.english_title,
@@ -63,7 +63,7 @@ describe('/api/v1/announcements', () => {
                 return request(app)
                     .post('/api/v1/announcements')
                     .set('x-access-token', validToken3)
-                    .query({course_id: validMessage.course_id,block_id: validMessage.block_id})
+                    .query({course_id: validMessage.course_id,session_id: validMessage.session_id})
                     .send({
                         sections: validMessage.sections,
                         italian_title: validMessage.italian_title,
@@ -79,7 +79,7 @@ describe('/api/v1/announcements', () => {
                 return request(app)
                     .post('/api/v1/announcements')
                     .set('x-access-token', validToken2)
-                    .query({course_id: validMessage.course_id,block_id: 2})
+                    .query({course_id: validMessage.course_id,session_id: 2})
                     .send({
                         sections: validMessage.sections,
                         italian_title: validMessage.italian_title,
@@ -95,7 +95,7 @@ describe('/api/v1/announcements', () => {
                 return request(app)
                     .post('/api/v1/announcements')
                     .set('x-access-token', validToken2)
-                    .query({course_id: validMessage.course_id,block_id: validMessage.block_id})
+                    .query({course_id: validMessage.course_id,session_id: validMessage.session_id})
                     .send({
                         sections: validMessage.sections,
                         english_title: validMessage.english_title,
@@ -109,7 +109,7 @@ describe('/api/v1/announcements', () => {
                 return request(app)
                     .post('/api/v1/announcements')
                     .set('x-access-token', validToken2)
-                    .query({course_id: validMessage.course_id,block_id: validMessage.block_id})
+                    .query({course_id: validMessage.course_id,session_id: validMessage.session_id})
                     .send({
                         sections: validMessage.sections,
                         italian_title: validMessage.italian_title,
@@ -122,7 +122,7 @@ describe('/api/v1/announcements', () => {
 
             afterAll(async () => {
                 //Delete all the grades posted
-                await announcementModel.remove(1, false, validMessage.course_id, validMessage.block_id, validMessage.sections[0], validMessage.italian_title, validMessage.english_title, validMessage.italian_message, validMessage.english_message)
+                await announcementModel.remove(1, false, validMessage.course_id, validMessage.session_id, validMessage.sections[0], validMessage.italian_title, validMessage.english_title, validMessage.italian_message, validMessage.english_message)
             })      
         })
     })

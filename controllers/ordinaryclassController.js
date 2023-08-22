@@ -135,8 +135,8 @@ module.exports.get_components = async (req, res) => {
 
 module.exports.get_student_class = async (req, res) => {
     let student_id = req.params.student;
-    let block_id = req.params.block;
-    let cl = await ordinaryclassModel.read_from_student_and_block(student_id, block_id);
+    let session_id = req.params.session;
+    let cl = await ordinaryclassModel.read_from_student_and_session(student_id, session_id);
     if(cl == null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("student ordinary clas: missing parameters");
@@ -152,7 +152,7 @@ module.exports.get_student_class = async (req, res) => {
         address: cl.ordinary_class_address,
         section: cl.section
     }
-    let path = "/api/v1/ordinary_classes/"+student_id+"/"+block_id+"/"
+    let path = "/api/v1/ordinary_classes/"+student_id+"/"+session_id+"/"
     let response = {
         path: path,
         single: false,

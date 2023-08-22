@@ -20,14 +20,14 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_grades = async (req, res) => {
     let student_id = req.params.student_id;
     let course_id = req.query.course_id;
-    let block_id = req.query.block_id;
-    let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
+    let session_id = req.query.session_id;
+    let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
     if(!classControl){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('class grades: resource not found');
         return;
     }
-    let grades = await gradesSchema.list(student_id, course_id, block_id);
+    let grades = await gradesSchema.list(student_id, course_id, session_id);
     let data_grade = grades.map((grade) => {
         return {
             italian_description: grade.italian_description,
@@ -41,7 +41,7 @@ module.exports.get_grades = async (req, res) => {
     let response = {
         path: path,
         single: true,
-        query: {course_id: course_id, block_id: block_id},
+        query: {course_id: course_id, session_id: session_id},
         date: new Date(),
         data: data_grade
     }
@@ -68,15 +68,15 @@ module.exports.get_grades_v2 = async (req, res) => {
         return;
     }
     let course_id = req.query.course_id;
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     // TODO: Check if student project class relation exists before searching for the grades
-    let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
+    let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
     if(!classControl){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('class grades: resource not found');
         return;
     }
-    let grades = await gradesSchema.list(student_id, course_id, block_id);
+    let grades = await gradesSchema.list(student_id, course_id, session_id);
     let data_grade = grades.map((grade) => {
         return {
             italian_description: grade.italian_description,
@@ -90,7 +90,7 @@ module.exports.get_grades_v2 = async (req, res) => {
     let response = {
         path: path,
         single: true,
-        query: {course_id: course_id, block_id: block_id},
+        query: {course_id: course_id, session_id: session_id},
         date: new Date(),
         data: data_grade
     }
@@ -100,7 +100,7 @@ module.exports.get_grades_v2 = async (req, res) => {
 module.exports.insert_grade = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let course_id = req.query.course_id;
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let teacher_exists = await teacherModel.read_id(teacher_id)
     if(!teacher_exists){
         res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -114,8 +114,8 @@ module.exports.insert_grade = async (req, res) => {
             return;
         }
         // I'm the correct teacher and I'm authenticated. Check if this class I'm trying to add a vote is my class
-        // project_class model con un read partendo da teacher_id, course_id e block_id
-        let isMyClass = await project_classSchema.isTeacherClass(teacher_id, course_id, block_id);
+        // project_class model con un read partendo da teacher_id, course_id e session_id
+        let isMyClass = await project_classSchema.isTeacherClass(teacher_id, course_id, session_id);
         if(!isMyClass){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('insert_grade: unauthorized access');
@@ -138,14 +138,14 @@ module.exports.insert_grade = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    let studentInscribe = await project_classSchema.isStudentEnrolled(student_id, course_id, block_id);
+    let studentInscribe = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
     if (!studentInscribe){
         res.status(400).json({status: "error", description: MSG.studentNotEnrolled})
         console.log('student is not enrolled');
         return;
     }
     // Needed to check if I already added a final grade to this student. I cannot add new votes after adding the final vote of a course
-    let concluded = await gradesSchema.final_grade(student_id, course_id, block_id);
+    let concluded = await gradesSchema.final_grade(student_id, course_id, session_id);
     if(concluded==null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('course concluded: missing parameters');
@@ -157,7 +157,7 @@ module.exports.insert_grade = async (req, res) => {
         return;
     }
     // Launch the insertion into the database
-    let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, block_id, ita_descr, eng_descr, grade, final);
+    let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, final);
     if(!ins_grade.rows){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: grade insertion');

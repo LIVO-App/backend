@@ -11,8 +11,8 @@ tags:
     description: Refers to the version 1 of that api
   - name: v2
     description: Refers to the version 2 of that api
-  - name: learning blocks
-    description: Everything about learning blocks
+  - name: learning sessions
+    description: Everything about learning sessions
   - name: learning areas
     description: Everything about learning areas
   - name: courses
@@ -40,20 +40,20 @@ tags:
   - name: study addresses
     description: Study addresses methods
 paths:
-  /v1/learning_blocks:
+  /v1/learning_sessions:
     get:
-      description: Get all the learning blocks in the system.
+      description: Get all the learning sessions in the system.
       parameters:
         - $ref: '#/components/parameters/query_school_year'
         - $ref: '#/components/parameters/query_year_of'
-        - $ref: '#/components/parameters/query_future_block'
-      summary: View of all the learning blocks.
+        - $ref: '#/components/parameters/query_future_session'
+      summary: View of all the learning sessions.
       tags:
-        - learning blocks
+        - learning sessions
         - v1
       responses:
         '200':
-          description: "Collection of learning blocks."
+          description: "Collection of learning sessions."
           content:
             application/json:
               schema:
@@ -75,13 +75,13 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/learning_block_data'
+                      $ref: '#/components/schemas/learning_session_data'
                     description: "Data return from the api"
     post:
-      description: Insertion of learning block
-      summary: Insertion of learning block
+      description: Insertion of learning session
+      summary: Insertion of learning session
       tags:
-        - learning blocks
+        - learning sessions
         - v1
       parameters:
         - $ref: '#/components/parameters/header_token'
@@ -91,12 +91,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/block_object_insertion'
+              $ref: '#/components/schemas/session_object_insertion'
       responses:
         '201':
-          $ref: '#/components/responses/BlockInsertion'
+          $ref: '#/components/responses/SessionInsertion'
         '400':
-          $ref: '#/components/responses/BlockInsertion'
+          $ref: '#/components/responses/SessionInsertion'
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -104,20 +104,20 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
         '409':
-          $ref: '#/components/responses/BlockInsertion'
-  /v1/learning_blocks/{block_id}:
+          $ref: '#/components/responses/SessionInsertion'
+  /v1/learning_sessions/{session_id}:
     get:
-      description: Get specific learning block from its ID.
+      description: Get specific learning session from its ID.
       parameters:
-        - $ref: '#/components/parameters/path_block_id'
+        - $ref: '#/components/parameters/path_session_id'
         - $ref: '#/components/parameters/query_school_year'
-      summary: View a specific learning block.
+      summary: View a specific learning session.
       tags:
-        - learning blocks
+        - learning sessions
         - v1
       responses:
         '200':
-          description: "View of a single learning block."
+          description: "View of a single learning session."
           content:
             application/json:
               schema:
@@ -138,14 +138,14 @@ paths:
                     description: "Date of the current call to the API"
                   data:
                     type: object
-                    $ref: '#/components/schemas/learning_block_data'
+                    $ref: '#/components/schemas/learning_session_data'
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      description: Update the learning block specified by changing some data like starting and ending date or the max number of groups
+      description: Update the learning session specified by changing some data like starting and ending date or the max number of groups
       parameters:
-        - $ref: '#/components/parameters/path_block_id'
+        - $ref: '#/components/parameters/path_session_id'
         - $ref: '#/components/parameters/header_token'
       summary: Delete course
       tags:
@@ -157,7 +157,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_block_data'
+              $ref: '#/components/schemas/update_session_data'
       responses:
         '200':
           $ref: '#/components/responses/AcceptUpdate'
@@ -173,7 +173,7 @@ paths:
     get:
       description: Get all learning areas in the system.
       parameters:
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_all_data'
         - $ref: '#/components/parameters/query_credits'
       summary: View of all the learning areas.
@@ -246,7 +246,7 @@ paths:
     get:
       description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
       parameters:
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
         - $ref: '#/components/parameters/query_context_id'
@@ -288,7 +288,7 @@ paths:
       description: Get all the courses in the system, with basic information and the eventual name provided for their project classes
       parameters:
         - $ref: '#/components/parameters/header_token'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_student_id'
         - $ref: '#/components/parameters/query_area_id'
         - $ref: '#/components/parameters/query_context_id'
@@ -493,7 +493,7 @@ paths:
       description: Get all the learning contexts in the system
       parameters:
         - $ref: '#/components/parameters/query_student_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Collection of learning contexts
       tags:
         - learning contexts
@@ -732,7 +732,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Get grades of a student for a course
       tags:
         - students
@@ -771,7 +771,7 @@ paths:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_teacher_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_ita_descr'
         - $ref: '#/components/parameters/query_eng_descr'
         - $ref: '#/components/parameters/query_grade'
@@ -796,7 +796,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Get grades of a student for a course
       tags:
         - students
@@ -843,7 +843,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_section'
         - $ref: '#/components/parameters/query_context_id'
       responses:
@@ -868,7 +868,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_section'
         - $ref: '#/components/parameters/query_context_id'
       responses:
@@ -894,7 +894,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
@@ -914,7 +914,7 @@ paths:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_context_id'
       responses:
         '200':
@@ -929,10 +929,10 @@ paths:
           $ref: '#/components/responses/NotFound'
   /v1/teachers/{teacher_id}/my_project_classes:
     get:
-      description: Get all the project classes in which the teacher teaches in a certain learning block
+      description: Get all the project classes in which the teacher teaches in a certain learning session
       parameters:
         - $ref: '#/components/parameters/path_teacher_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Get all teacher project classes
       tags:
         - teachers
@@ -967,11 +967,11 @@ paths:
           $ref: "#/components/responses/BadInputs"
   /v2/teachers/{teacher_id}/my_project_classes:
     get:
-      description: Get all the project classes in which the teacher teaches in a certain learning block
+      description: Get all the project classes in which the teacher teaches in a certain learning session
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_teacher_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_course_id'
       summary: Get all teacher project classes
       tags:
@@ -1014,7 +1014,7 @@ paths:
       description: Get all the project classes in which the teacher is associated through its teachings
       parameters:
         - $ref: '#/components/parameters/path_teacher_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Get all teacher associated project classes
       tags:
         - teachers
@@ -1053,7 +1053,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_teacher_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_course_id'
       summary: Get all teacher associated project classes
       tags:
@@ -1141,7 +1141,7 @@ paths:
       description: Get all project classes of the school
       parameters:
         - $ref: '#/components/parameters/header_token'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_year'
       summary: Get project classes
       tags:
@@ -1179,13 +1179,13 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/project_classes/{course}/{block}:
+  /v1/project_classes/{course}/{session}:
     get:
       description: Get specific project class of the school
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/path_learning_session_id'
       summary: Get project class
       tags:
         - project classes
@@ -1222,10 +1222,10 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     delete:
-      description: Delete the project class specified if it is in a non current block and it has no grades yet
+      description: Delete the project class specified if it is in a non current session and it has no grades yet
       parameters:
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/path_learning_session_id'
         - $ref: '#/components/parameters/header_token'
       summary: Delete course
       tags:
@@ -1242,12 +1242,12 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404': 
           $ref: '#/components/responses/NotFound'
-  /v1/project_classes/{course}/{block}/final_confirmation:
+  /v1/project_classes/{course}/{session}/final_confirmation:
     put:
       description: Update the project class specified by setting the final confirmation field to true
       parameters:
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/path_learning_session_id'
         - $ref: '#/components/parameters/header_token'
       summary: Delete course
       tags:
@@ -1271,13 +1271,13 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404': 
           $ref: '#/components/responses/NotFound'
-  /v1/project_classes/{course}/{block}/components:
+  /v1/project_classes/{course}/{session}/components:
     get:
       description: Get all components of a specific project class
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/path_learning_session_id'
         - $ref: '#/components/parameters/query_teacher_id'
         - $ref: '#/components/parameters/query_section'
         - $ref: '#/components/parameters/query_associated_class'
@@ -1362,13 +1362,13 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/learning_blocks/correspondence:
+  /v1/learning_sessions/correspondence:
     post:
       parameters:
         - $ref: '#/components/parameters/query_student_id'
-      summary: Search for learning blocks of a list of courses
+      summary: Search for learning sessions of a list of courses
       tags:
-        - learning blocks
+        - learning sessions
         - v1
       requestBody:
         description: Array of courses to search
@@ -1381,7 +1381,7 @@ paths:
                 type: string
       responses:
         '200':
-          description: "Learning blocks with courses"
+          description: "Learning sessions with courses"
           content:
             application/json:
               schema:
@@ -1403,7 +1403,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/learning_blocks_courses_data'
+                      $ref: '#/components/schemas/learning_sessions_courses_data'
                     description: "Data return from the api"
         '400':
           $ref: '#/components/responses/BadInputs'
@@ -1411,7 +1411,7 @@ paths:
     post:
       parameters:
         - $ref: '#/components/parameters/query_student_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Search for learning contexts of a list of courses
       tags:
         - learning contexts
@@ -1599,14 +1599,14 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'  
-  /v1/project_classes/{course}/{block}/sections:
+  /v1/project_classes/{course}/{session}/sections:
     get:
       description: Get all sections of a specific project class
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
-      summary: Get project classes sections in a certain learning block
+        - $ref: '#/components/parameters/path_learning_session_id'
+      summary: Get project classes sections in a certain learning session
       tags:
         - project classes
         - v1
@@ -1640,14 +1640,14 @@ paths:
           $ref: "#/components/responses/BadInputs"
         '404':
           $ref: '#/components/responses/NotFound'  
-  /v1/project_classes/{course}/{block}/teachers:
+  /v1/project_classes/{course}/{session}/teachers:
     get:
       description: Get all teachers of a specific project class
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
-      summary: Get project classes teachers in a certain learning block
+        - $ref: '#/components/parameters/path_learning_session_id'
+      summary: Get project classes teachers in a certain learning session
       tags:
         - project classes
         - v1
@@ -1681,13 +1681,13 @@ paths:
           $ref: "#/components/responses/BadInputs"
         '404':
           $ref: '#/components/responses/NotFound'  
-  /v1/ordinary_classes/{student}/{block}:
+  /v1/ordinary_classes/{student}/{session}:
     get:
-      description: Get ordinary class of a student in a specific learning block
+      description: Get ordinary class of a student in a specific learning session
       parameters:
         - $ref: '#/components/parameters/path_student_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
-      summary: Get ordinary class of a student in a learning block
+        - $ref: '#/components/parameters/path_learning_session_id'
+      summary: Get ordinary class of a student in a learning session
       tags:
         - ordinary classes
         - v1
@@ -1721,12 +1721,12 @@ paths:
           $ref: '#/components/responses/NotFound'
   /v1/students/{student_id}/project_classes:
     get:
-      description: Get project classes of a student in a specific learning block
+      description: Get project classes of a student in a specific learning session
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
-        - $ref: '#/components/parameters/query_block_id'
-      summary: Get project classes of a student in a learning block
+        - $ref: '#/components/parameters/query_session_id'
+      summary: Get project classes of a student in a learning session
       tags:
         - students
         - v1
@@ -1762,13 +1762,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-  /v1/project_classes/{course}/{block}/announcements:
+  /v1/project_classes/{course}/{session}/announcements:
     get:
       description: Get all the announcements of a specific project class
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_course_id_param'
-        - $ref: '#/components/parameters/path_learning_block_id'
+        - $ref: '#/components/parameters/path_learning_session_id'
         - $ref: '#/components/parameters/query_publisher_id'
         - $ref: '#/components/parameters/query_is_admin'
       summary: Get project class announcements
@@ -1856,7 +1856,7 @@ paths:
         - $ref: '#/components/parameters/query_publisher_id'
         - $ref: '#/components/parameters/query_is_admin'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
       summary: Publication of announcements
       tags:
         - announcements
@@ -1960,7 +1960,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_course_id'
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_approved'
       responses:
         '200':
@@ -2247,7 +2247,7 @@ paths:
     get:
       description: Get all the constraints in the system
       parameters:
-        - $ref: '#/components/parameters/query_block_id'
+        - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_year_of_constr'
         - $ref: '#/components/parameters/query_area_id'
         - $ref: '#/components/parameters/query_context_id'
@@ -2292,7 +2292,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     post:
-      description: Insertion of credit constraints for some blocks
+      description: Insertion of credit constraints for some sessions
       summary: Insertion of credit constraints
       tags:
         - constraints
@@ -2319,7 +2319,7 @@ paths:
           $ref: '#/components/responses/ConstraintsInsertion'
   /v1/constraints/{constr_id}:
     put:
-      description: Update of credit constraints for a certain block
+      description: Update of credit constraints for a certain session
       summary: Update of credit constraints
       tags:
         - constraints
@@ -2659,9 +2659,9 @@ components:
                 type: string
               description: 
                 type: string
-              wrong_block:
+              wrong_session:
                 type: boolean
-                description: "Tells if there is a block that is not valid or not existing"
+                description: "Tells if there is a session that is not valid or not existing"
               wrong_area:
                 type: boolean
                 description: "Tells if there is an area that is not valid or not existing"
@@ -2680,8 +2680,8 @@ components:
               num_constraints_inserted:
                 type: integer
                 description: "Tells how many constraints were inserted in the database"
-    BlockInsertion:
-      description: Learning block insertion response
+    SessionInsertion:
+      description: Learning session insertion response
       content:
         application/json:
           schema:
@@ -2691,18 +2691,18 @@ components:
                 type: string
               description: 
                 type: string
-              wrong_block:
+              wrong_session:
                 type: boolean
-                description: "Tells if there is a block that has ending date smaller than starting date"
-              existing_block:
+                description: "Tells if there is a session that has ending date smaller than starting date"
+              existing_session:
                 type: boolean
-                description: "Tells if there is a block that was already inserted (a combination of number + school_year)"
+                description: "Tells if there is a session that was already inserted (a combination of number + school_year)"
               first_inserted_id:
                 type: string
-                description: "First id of the learning blocks that were inserted"
+                description: "First id of the learning sessions that were inserted"
               num_inserted:
                 type: integer
-                description: "Tells how many learning blocks were inserted in the database"
+                description: "Tells how many learning sessions were inserted in the database"
     CourseUpdate:
       description: Course update response
       content:
@@ -2753,29 +2753,33 @@ components:
                 type: boolean
                 description: "Tells if some sections that were tried to be added to the teacher were non valid and consequently not insert"
   schemas:
-    learning_block_data:
+    learning_session_data:
       type: object
       properties:
         id:
           type: integer
-          description: "Id of the learning block"
+          description: "Id of the learning session"
         number:
           type: integer
-          description: "Number of the learning block inside a certain school year"
+          description: "Number of the learning session inside a certain school year"
         school_year:
           type: integer
-          description: "School year in which the learning block takes place"
+          description: "School year in which the learning session takes place"
         start:
           type: string
           format: date
-          description: "Starting date of the learning block"
+          description: "Starting date of the learning session"
         end:
           type: string
           format: date
-          description: "Ending date of the learning block"
+          description: "Ending date of the learning session"
         num_groups:
           type: integer
-          description: "Max number of group for a certain learning block"
+          description: "Max number of group for a certain learning session"
+        open_day:
+          type: string
+          format: date
+          description: "Date of the open day where the teachers are going to illustrate to the students the details of the courses they can choose in the session. From there the students can start choosing their courses to add to the curriculum. The default one is the start of the previous learning session"
     learning_area_data:
       type: object
       properties:
@@ -2796,7 +2800,7 @@ components:
           description: "English description of the learning area"
         credits:
           type: boolean
-          description: "Number of credits for that specific learning area in that specific block"
+          description: "Number of credits for that specific learning area in that specific session"
     growth_area_data:
       type: object
       properties:
@@ -3361,7 +3365,7 @@ components:
           description: "Final grade of a certain course. It could be not present if the course is not over yet or has to start."
         future_course:
           type: boolean
-          description: "Tells if the course that is displaying in the curriculum is a course that will be hold in the imminent or a future learning block"
+          description: "Tells if the course that is displaying in the curriculum is a course that will be hold in the imminent or a future learning session"
     grade_data:
       type: object
       properties:
@@ -3477,7 +3481,7 @@ components:
         course_id: 
           type: integer
           description: Id of the course the project class refers to
-        learning_block:
+        learning_session:
           type: integer
           description: Id of the course the project class refers to
         italian_title:
@@ -3525,15 +3529,15 @@ components:
         orientation_credits:
           type: integer
           description: Number of credits of orientation courses of the student. Can only be seen by and admin user.
-    learning_blocks_courses_data:
+    learning_sessions_courses_data:
       type: object
       properties:
         course_id:
           type: integer
           description: Course Id
-        block_id:
+        session_id:
           type: integer
-          description: Block Id where a student has taken that course
+          description: Session Id where a student has taken that course
     learning_contexts_courses_data:
       type: object
       properties:
@@ -3562,7 +3566,7 @@ components:
       properties:
         section:
           type: string
-          description: "Section of the project class in a given learning block"
+          description: "Section of the project class in a given learning session"
     ordinary_class_ref:
       type: object
       properties:
@@ -3687,7 +3691,7 @@ components:
         - growth_id
         - min_students
         - max_students
-        - block_id
+        - session_id
         - access_object
         - teaching_list
         - class_group
@@ -3745,9 +3749,9 @@ components:
         max_students:
           type: integer
           description: "Max number of student of the course"
-        block_id:
+        session_id:
           type: integer
-          description: "Learning block in which the teacher wants to hold the course"
+          description: "Learning session in which the teacher wants to hold the course"
         access_object:
           type: object
           additionalProperties:
@@ -3865,7 +3869,7 @@ components:
         email:
           type: string
           description: "Email of the teacher"
-    learning_block_ref:
+    learning_session_ref:
       type: object
       properties:
         path:
@@ -3882,16 +3886,16 @@ components:
           properties:
             id:
               type: integer
-              description: "Id of the learning block associated to the reference"
+              description: "Id of the learning session associated to the reference"
     constraints_data:
       type: object
       properties:
         id:
           type: integer
           description: "Id of the constraint"
-        learning_block_ref:
-          $ref: '#/components/schemas/learning_block_ref'
-          description: "Refers to the learning block"
+        learning_session_ref:
+          $ref: '#/components/schemas/learning_session_ref'
+          description: "Refers to the learning session"
         ordinary_class_ref:
           $ref: '#/components/schemas/ordinary_class_ref'
           description: "Refers to the ordinary class"
@@ -3911,9 +3915,9 @@ components:
       type: object
       properties:
         additionalProperties:
-            $ref: "#/components/schemas/block_property"
-            description: "Refers to the block id you want to add new constraints to"
-    block_property:
+            $ref: "#/components/schemas/session_property"
+            description: "Refers to the session id you want to add new constraints to"
+    session_property:
       type: array
       items:
         type: object
@@ -3941,15 +3945,15 @@ components:
         study_address: 
           type: string
           description: "Study address of the ordinary class that will have the constraint"
-    block_object_insertion:
+    session_object_insertion:
       type: object
       properties:
-        blocks_list:
+        sessions_list:
           type: array
           items:
-            $ref: '#/components/schemas/single_block_obj'
-          description: "List of learning blocks to add"
-    single_block_obj:
+            $ref: '#/components/schemas/single_session_obj'
+          description: "List of learning sessions to add"
+    single_session_obj:
       type: object
       required:
         - number
@@ -3960,21 +3964,25 @@ components:
       properties:
         number:
           type: integer
-          description: "Number of the block to be add"
+          description: "Number of the session to be add"
         school_year:
           type: integer
-          description: "School year of the block to be add. It is only the first year of the school year of reference (e.g. school year 2022/2023 => school_year = 2022)"
+          description: "School year of the session to be add. It is only the first year of the school year of reference (e.g. school year 2022/2023 => school_year = 2022)"
         start_date:
           type: string
           format: date
-          description: "Starting date of the block to be add"
+          description: "Starting date of the session to be add"
         end_date:
           type: string
           format: date
-          description: "Ending date of the block to be add"
+          description: "Ending date of the session to be add"
         num_groups:
           type: integer
-          description: "Maximum number of groups of the block to be add"
+          description: "Maximum number of groups of the session to be add"
+        open_day:
+          type: string
+          format: date
+          description: "Open day date for the session to be add"
     update_user_info_data:
       type: object
       properties:
@@ -4035,7 +4043,7 @@ components:
         english_message:
           type: string
           description: "English content of the announcement"
-    update_block_data:
+    update_session_data:
       type: object
       properties:
         start_date:
@@ -4058,9 +4066,9 @@ components:
             course_id:
               type: integer
               description: "Id of the course of the project class from where you want to move the student from"
-            block_id:
+            session_id:
               type: integer
-              description: "Id of the block of the project class from where you want to move the student from"
+              description: "Id of the session of the project class from where you want to move the student from"
           description: "Information of the project class you want to move the student from"
         to:
           type: object
@@ -4068,9 +4076,9 @@ components:
             course_id:
               type: integer
               description: "Id of the course of the project class where you want to move the student to"
-            block_id:
+            session_id:
               type: integer
-              description: "Id of the block of the project class where you want to move the student to"
+              description: "Id of the session of the project class where you want to move the student to"
             section:
               type: string
               description: "Section of the project class where you want to move the student to"
@@ -4078,7 +4086,7 @@ components:
     course_update_data:
       type: object
       required:
-        - block_id
+        - session_id
       properties:
         italian_title:
           type: string
@@ -4128,9 +4136,9 @@ components:
         max_students:
           type: integer
           description: "Max number of student of the course if specified"
-        block_id:
+        session_id:
           type: integer
-          description: "Learning block in which the teacher wants to hold the course"
+          description: "Learning session in which the teacher wants to hold the course"
         access_object:
           type: object
           additionalProperties:
@@ -4143,7 +4151,7 @@ components:
             description: "Id of the teaching"
         class_group:
           type: integer
-          description: "New group of the project class proposed if specified. It will not be changed if the class is in an imminent, current or the first future block."
+          description: "New group of the project class proposed if specified. It will not be changed if the class is in an imminent, current or the first future session."
         num_section:
           type: integer
           description: "New max number of section expected for the project class proposed"
@@ -4177,15 +4185,15 @@ components:
       type: object
       required:
         - course_id
-        - block_id
+        - session_id
         - sections
       properties:
         course_id:
           type: integer
           description: "Course id of the project class you want to add/remove the teacher to/from"
-        block_id:
+        session_id:
           type: integer
-          description: "Learning block id of the project class you want to add/remove the teacher to/from"
+          description: "Learning session id of the project class you want to add/remove the teacher to/from"
         sections:
           type: array
           items:
@@ -4202,10 +4210,10 @@ components:
       description: Specifies the school year of the resource you want to extract
       schema:
         type: integer
-    query_block_id:
-      name: block_id
+    query_session_id:
+      name: session_id
       in: query
-      description: Specifies the learning block id for the resources you want to extract
+      description: Specifies the learning session id for the resources you want to extract
       schema:
         type: integer
     query_course_id:
@@ -4265,7 +4273,7 @@ components:
     query_year_of:
       name: year_of
       in: query
-      description: Specifies the id of the learning block which we want to know the year
+      description: Specifies the id of the learning session which we want to know the year
       schema:
         type: integer
     query_teacher_id:
@@ -4280,17 +4288,17 @@ components:
       description: Specifies if the project class is associated to the teacher through its teaching
       schema:
         type: boolean
-    path_block_id:
-      name: block_id
+    path_session_id:
+      name: session_id
       in: path
-      description: Id of the learning block specified
+      description: Id of the learning session specified
       schema:
         type: integer
       required: true
-    path_learning_block_id:
-      name: block
+    path_learning_session_id:
+      name: session
       in: path
-      description: Id of the learning block specified
+      description: Id of the learning session specified
       schema:
         type: integer
       required: true
@@ -4435,7 +4443,7 @@ components:
     query_year:
       name: year
       in: query
-      description: Specifies if the learning block is used to get the school year or it is simply used
+      description: Specifies if the learning session is used to get the school year or it is simply used
       schema:
         type: boolean
     query_publisher_id:
@@ -4457,16 +4465,16 @@ components:
       schema:
         type: string
       required: true
-    query_future_block:
-      name: future_block
+    query_future_session:
+      name: future_session
       in: query
-      description: Specifies if the blocks we want to see are only the future ones (no past, current and imminent blocks)
+      description: Specifies if the sessions we want to see are only the future ones (no past, current and imminent sessions)
       schema:
         type: boolean
     query_year_of_constr:
       name: year_of
       in: query
-      description: Specifies if it should consider simply the learning block id or search for the learning blocks with the same school year as the one passed
+      description: Specifies if it should consider simply the learning session id or search for the learning sessions with the same school year as the one passed
       schema:
         type: boolean
     query_study_year:

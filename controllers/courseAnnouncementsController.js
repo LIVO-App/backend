@@ -75,11 +75,11 @@ module.exports.publish_announcement = async (req, res) => {
         return;
     }
     let course_id = req.query.course_id;
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let sections = req.body.sections;
     if(publisher_id!=undefined && !is_admin){
         for(let i=0;i<sections.length;i++){
-            let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, block_id, sections[i].toUpperCase());
+            let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, session_id, sections[i].toUpperCase());
             if(teacherTeach==null){
                 res.status(400).json({status: "error", description: MSG.missing_params})
                 console.log('missing required information: teacher teach in project class');
@@ -97,7 +97,7 @@ module.exports.publish_announcement = async (req, res) => {
     let italian_message = req.body.italian_message;
     let english_message = req.body.english_message;
     let publish_date = req.body.publish_date;
-    let publish = await announcementSchema.add(publisher_id, is_admin, course_id, block_id, sections, italian_title, english_title, italian_message, english_message, publish_date);
+    let publish = await announcementSchema.add(publisher_id, is_admin, course_id, session_id, sections, italian_title, english_title, italian_message, english_message, publish_date);
     if(publish==null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('no sections: announcement publishing');

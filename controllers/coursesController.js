@@ -8,7 +8,7 @@ const opentoSchema = require('../models/opentoModel');
 const areaSchema = require('../models/learning_areaModel');
 const contextSchema = require('../models/learningContextsModel');
 const growthareaSchema = require('../models/growthAreaModel');
-const blockSchema = require('../models/learning_blocksModel');
+const sessionSchema = require('../models/learning_sessionsModel');
 const teacherSchema = require('../models/teacherModel');
 const ordClassSchema = require('../models/ordinaryclassModel');
 const teachingSchema = require('../models/teachingModel'); // To check if teaching exists
@@ -22,7 +22,7 @@ let MSG = {
     missing_params: "Bad input. Missing required information",
     already_confirmed: "There are project classes for this course that are already confirmed. Deletion abort",
     itemAlreadyExists: "The student is already inscribe to this project class",
-    pastBlock: "Block already expired or imminent",
+    pastSession: "Session already expired or imminent",
     notAuthorized: "Not authorized request",
     courseConfirmed: "The proposition you want to reject was already confirmed. In fact some students are already present",
     changedUniqueInformation: "Some information you wanted to change must remain the same. If you want to change them, please, create a new course model."
@@ -31,12 +31,12 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_courses = async (req, res) => {
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let student_id = req.query.student_id;
     let area_id = req.query.area_id;
     let context_id = req.query.context_id;
     let alone = req.query.alone;
-    let courses = await courseSchema.list(student_id, area_id, block_id, context_id, alone);
+    let courses = await courseSchema.list(student_id, area_id, session_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('courses: resource not found');
@@ -67,7 +67,7 @@ module.exports.get_courses = async (req, res) => {
         query: {
             student_id: student_id,
             area_id: area_id,
-            block_id: block_id,
+            session_id: session_id,
             context_id: context_id,
             alone: alone
         },
@@ -78,7 +78,7 @@ module.exports.get_courses = async (req, res) => {
 }
 
 module.exports.get_courses_v2 = async (req, res) => {
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let student_id = req.query.student_id;
     if(student_id!=undefined){
         let student_exist = await studentSchema.read_id(student_id)
@@ -102,7 +102,7 @@ module.exports.get_courses_v2 = async (req, res) => {
     let area_id = req.query.area_id;
     let context_id = req.query.context_id;
     let alone = req.query.alone;
-    let courses = await courseSchema.list(student_id, area_id, block_id, context_id, alone);
+    let courses = await courseSchema.list(student_id, area_id, session_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('courses: resource not found');
@@ -134,7 +134,7 @@ module.exports.get_courses_v2 = async (req, res) => {
         query: {
             student_id: student_id,
             area_id: area_id,
-            block_id: block_id,
+            session_id: session_id,
             context_id: context_id,
             alone: alone
         },
@@ -310,7 +310,7 @@ module.exports.get_courses_model = async (req, res) => {
 }
 
 module.exports.add_proposition = async (req, res) => {
-    let wrong_context, wrong_ord_class, wrong_teaching, wrong_teacher = undefined; //Variables to identify if there are some values that are not valid in insertion
+    let wrong_context, wrong_ord_class, wrong_teaching, wrong_teacher, wrong_growth_area = undefined; //Variables to identify if there are some values that are not valid in insertion
     let teacher_id = req.query.teacher_id;
     if(req.loggedUser.role == "teacher"){
         if(teacher_id == undefined){
@@ -341,7 +341,7 @@ module.exports.add_proposition = async (req, res) => {
     let ita_act = req.body.italian_act;
     let eng_act = req.body.english_act;
     let area_id = req.body.area_id;
-    let growth_id = req.body.growth_id;
+    let growth_ids = req.body.growth_ids; //Its an array like teaching_list
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
     let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
@@ -350,27 +350,27 @@ module.exports.add_proposition = async (req, res) => {
         console.log('resource not found: learning area');
         return;
     }
-    let growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
+    /*let growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
     if(!growth_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: growth area');
         return;
-    }
-    let block_id = req.body.block_id;
-    let block_id_exists = await blockSchema.read(block_id); // Is learning block present in the database
-    if(!block_id_exists){
+    }*/
+    let session_id = req.body.session_id;
+    let session_id_exists = await sessionSchema.read(session_id); // Is learning session present in the database
+    if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning block');
+        console.log('resource not found: learning session');
         return;
     }
-    let block_year = block_id_exists.school_year
-    //Check if block starting date is ahead in time of at least 10 days
-    let starting_date = new Date(block_id_exists.start)
+    let session_year = session_id_exists.school_year
+    //Check if session starting date is ahead in time of at least 10 days
+    let starting_date = new Date(session_id_exists.start)
     let today = new Date()
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
-        res.status(400).json({status: "error", description: MSG.pastBlock});
-        console.log('course proposition insertion: tried to add a proposition for a block already started');
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('course proposition insertion: tried to add a proposition for a session already started');
         return;
     }
     // Add new classes
@@ -404,14 +404,14 @@ module.exports.add_proposition = async (req, res) => {
             }
         }
     } else {
-        same_year = await courseSchema.already_inserted_year(ita_title, eng_title, block_year)
+        same_year = await courseSchema.already_inserted_year(ita_title, eng_title, session_year)
         if(same_year == null){
             res.status(400).json({status: "error", description: MSG.missing_params, course_exist: false})
             console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');
             return;
         }
     }
-    course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, growth_id, min_students, max_students)
+    course_exist = await courseSchema.read_complete(ita_title, eng_title, up_hours, credits, area_id, min_students, max_students)
     if(course_exist){
         course_id = course_exist
     } else {
@@ -419,9 +419,9 @@ module.exports.add_proposition = async (req, res) => {
     }
     //console.log(course_id)
     // Let's now check if there is any new value in the other objects. If there are new ordinary classes or contexts or new teachings, add new course
-    let new_classes, new_teachings = false
+    let new_classes, new_teachings, new_growth_area = false
     // Check information about classes that can access the new course
-    let context_exist, class_exist, already_present, study_year, study_address;
+    let context_exist, class_exist, already_present, study_year, study_address, growth_exist;
     // Remove non valid contexts and classes
     if(access_object!=undefined){
         for(var context in access_object){
@@ -511,13 +511,13 @@ module.exports.add_proposition = async (req, res) => {
         course_exist = false
     }
     // If course_id in request body is not undefined and all the other values related only to the course already exist,
-    // we are using a previous proposal and simply use it in another learning_block
+    // we are using a previous proposal and simply use it in another learning_session
     // Else, if even one value is new, we are adding the course again as a new model
     if(!course_exist && !same_year){
         // Set new_course_id to true if it was not already done since we created a new course by modifying an existing model
         new_course_id = true
         //If the course does not exist, add new course to course table
-        let new_course = await courseSchema.add_proposition(ita_title, eng_title, block_year, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, growth_id, min_students, max_students, teacher_id);
+        let new_course = await courseSchema.add_proposition(ita_title, eng_title, session_year, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, min_students, max_students, teacher_id);
         if(!new_course){
             if(course_exist){
                 course_exist = true
@@ -564,7 +564,7 @@ module.exports.add_proposition = async (req, res) => {
         await courseSchema.add_to_be_modified(course_id)
         course_wrong_value = true
     }
-    let proj_class_exists = await projectclassSchema.read(course_id, block_id)
+    let proj_class_exists = await projectclassSchema.read(course_id, session_id)
     if(proj_class_exists && course_exist){
         course_exist = true
         proj_class_exists = true
@@ -631,7 +631,7 @@ module.exports.add_proposition = async (req, res) => {
             let main_teacher = teacher_list[i]["main"]
             let sections = teacher_list[i]["sections"]
             for(let j=0;j<sections.length;j++){
-                teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j].toUpperCase(), t_id, main_teacher);
+                teacher_present = await teacherClassSchema.is_present(course_id, session_id, sections[j].toUpperCase(), t_id, main_teacher);
                 if(!teacher_present){
                     new_teacher = true
                 }
@@ -640,7 +640,7 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     //console.log(course_id)
-    let proj_class_ins = await projectclassSchema.add(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
+    let proj_class_ins = await projectclassSchema.add(course_id, session_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})
@@ -658,12 +658,12 @@ module.exports.add_proposition = async (req, res) => {
             return
         }
     }
-    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, block_id, teacher_list);
+    let teachers_ins = await teacherClassSchema.add_project_teach(course_id, session_id, teacher_list);
     if(!teachers_ins){
         if(!course_exist){
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, course_exist: course_exist})
             console.log('missing required information: new course proposal addition. Project class');
-            await projectclassSchema.delete(course_id, block_id)
+            await projectclassSchema.delete(course_id, session_id)
             await teachingCourseSchema.delete(course_id)
             await opentoSchema.delete(course_id)
             await courseSchema.deleteProposal(course_id)
@@ -671,7 +671,7 @@ module.exports.add_proposition = async (req, res) => {
         } else {
             if(!proj_class_exists){
                 course_exist = true
-                await projectclassSchema.delete(course_id, block_id)
+                await projectclassSchema.delete(course_id, session_id)
                 res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
                 console.log('missing required information: new course proposal addition. Project teach insertion');
                 return
@@ -679,7 +679,7 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     if((wrong_teacher || course_wrong_value) && !proj_class_exists){
-        await projectclassSchema.add_to_be_modified(course_id, block_id)
+        await projectclassSchema.add_to_be_modified(course_id, session_id)
     }
     if(course_exist){
         course_exist = true
@@ -713,20 +713,20 @@ module.exports.approve_proposals = async (req, res) => {
         return;
     }
     let course_id = req.query.course_id;
-    let block_id = req.query.block_id;
+    let session_id = req.query.session_id;
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
         console.log('resource not found: course approval course_id');
         return
     }
-    let block_exist = await blockSchema.read(block_id)
-    if(!block_exist){
+    let session_exist = await sessionSchema.read(session_id)
+    if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('resource not found: block course approval');
+        console.log('resource not found: session course approval');
         return
     }
-    let class_exist = await projectclassSchema.read(course_id, block_id)
+    let class_exist = await projectclassSchema.read(course_id, session_id)
     if(class_exist == null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing parameters: project class course approval');
@@ -740,7 +740,7 @@ module.exports.approve_proposals = async (req, res) => {
     let approved = req.query.approved;
     approved = approved === "false" ? 0 : 1;
     if(approved){
-        let course_approval = await courseSchema.approve_proposal(course_id, block_id, admin_id, approved)
+        let course_approval = await courseSchema.approve_proposal(course_id, session_id, admin_id, approved)
         if(!course_approval){
             res.status(400).json({status: "error", description: MSG.missing_params})
             console.log('missing required information: course approval');
@@ -748,16 +748,16 @@ module.exports.approve_proposals = async (req, res) => {
         }
         res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
     } else {
-        let students_in = await projectclassSchema.classComponents(course_id, block_id)
+        let students_in = await projectclassSchema.classComponents(course_id, session_id)
         if(students_in.length>0){
             res.status(400).json({status: "error", description: MSG.courseConfirmed})
             console.log('The course you tried to reject was already been approved')
             return
         }
-        await teacherClassSchema.delete(course_id, block_id)
-        await projectclassSchema.delete(course_id, block_id)
-        let get_class_blocks = await projectclassSchema.get_blocks(course_id)
-        if(!get_class_blocks){
+        await teacherClassSchema.delete(course_id, session_id)
+        await projectclassSchema.delete(course_id, session_id)
+        let get_class_sessions = await projectclassSchema.get_sessions(course_id)
+        if(!get_class_sessions){
             await courseteachingModel.delete(course_id)
             await opentoSchema.delete(course_id)
             await courseSchema.deleteProposal(course_id)
@@ -789,24 +789,24 @@ module.exports.delete_course = async (req, res) => {
         console.log('course deletion: course does not exists');
         return;
     }
-    let blocks = await projectclassSchema.get_blocks(course_id)
-    if(!blocks){
+    let sessions = await projectclassSchema.get_sessions(course_id)
+    if(!sessions){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('course deletion: course does not exists');
         return;
     }
     let project_class_confirmed;
-    for(let i in blocks){
-        project_class_confirmed = await projectclassSchema.class_confirmed_exists(course_id, blocks[i].learning_block_id)
+    for(let i in sessions){
+        project_class_confirmed = await projectclassSchema.class_confirmed_exists(course_id, sessions[i].learning_session_id)
         if(project_class_confirmed){
             res.status(400).json({status: "error", description: MSG.already_confirmed});
             console.log('course deletion: project classes already confirmed');
             return;
         }
     }
-    for(let i in blocks){
-        await teacherClassSchema.delete(course_id, blocks[i].learning_block_id)
-        await projectclassSchema.delete(course_id, blocks[i].learning_block_id)
+    for(let i in sessions){
+        await teacherClassSchema.delete(course_id, sessions[i].learning_session_id)
+        await projectclassSchema.delete(course_id, sessions[i].learning_session_id)
     }
     await opentoSchema.delete(course_id)
     await teachingCourseSchema.delete(course_id)
@@ -848,7 +848,7 @@ module.exports.update_course = async (req, res) => {
     let ita_act = req.body.italian_act;
     let eng_act = req.body.english_act;
     let area_id = req.body.area_id;
-    let growth_id = req.body.growth_id;
+    let growth_ids = req.body.growth_ids;
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
     let area_id_exists
@@ -860,7 +860,7 @@ module.exports.update_course = async (req, res) => {
             return;
         }
     }
-    let growth_id_exists
+    /*let growth_id_exists
     if(growth_id!=undefined){
         growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
         if(!growth_id_exists){
@@ -868,7 +868,7 @@ module.exports.update_course = async (req, res) => {
             console.log('resource not found: growth area');
             return;
         }
-    }
+    }*/
     if(ita_title!=undefined && eng_title!=undefined && credits != undefined && area_id != undefined && min_students != undefined && max_students != undefined){
         if(course_exist.italian_title != ita_title || course_exist.english_title != eng_title || course_exist.credits != credits || course_exist.learning_area_id != area_id || course_exist.min_students != min_students || course_exist.max_students != max_students){
             res.status(400).json({status: "error", description: MSG.changedUniqueInformation});
@@ -876,11 +876,11 @@ module.exports.update_course = async (req, res) => {
             return;
         }
     }
-    let block_id = req.body.block_id;
-    let block_id_exists = await blockSchema.read(block_id); // Is learning block present in the database
-    if(!block_id_exists){
+    let session_id = req.body.session_id;
+    let session_id_exists = await sessionSchema.read(session_id); // Is learning session present in the database
+    if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning block');
+        console.log('resource not found: learning session');
         return;
     }
     let access_object = req.body.access_object;
@@ -890,21 +890,21 @@ module.exports.update_course = async (req, res) => {
     let class_group = req.body.class_group;
     let num_section = req.body.num_section;
     let teacher_list = req.body.teacher_list;
-    let starting_date = block_id_exists.start
+    let starting_date = session_id_exists.start
     let today = new Date()
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date < today){
-        res.status(400).json({status: "error", description: MSG.pastBlock});
-        console.log('course update: the block is a past block. The data of the project class were not updated');
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('course update: the session is a past session. The data of the project class were not updated');
         return;
     }
-    // If block is imminent or current or is the first future block (the one where the students are choosing the courses) you cannot change the class group
+    // If session is imminent or current or is the first future session (the one where the students are choosing the courses) you cannot change the class group
     if(starting_date == today || starting_date <= _10days) {
         class_group = undefined
     } else {
-        let past_block = await blockSchema.read(block_id-1)
-        if(past_block){
-            let past_starting_date = new Date(past_block.start)
+        let past_session = await sessionSchema.read(session_id-1)
+        if(past_session){
+            let past_starting_date = new Date(past_session.start)
             if(past_starting_date <= today || past_starting_date <= _10days){
                 class_group = undefined
             }
@@ -1013,15 +1013,15 @@ module.exports.update_course = async (req, res) => {
     let course_update = await courseSchema.update_course(course_id, ita_title, eng_title, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
     let access_update = await opentoSchema.update(course_id, access_object)
     let new_project_class;
-    let proj_class_exists = await projectclassSchema.read(course_id, block_id)
+    let proj_class_exists = await projectclassSchema.read(course_id, session_id)
     if(!proj_class_exists){
         new_project_class = true
     }
     let project_class_update = false
     let teacher_update
     if(!new_project_class || new_project_class == undefined){
-        project_class_update = await projectclassSchema.update(course_id, block_id, ita_class_name, eng_class_name, class_group, num_section)
-        let possible_sections = await projectclassSchema.get_section_number(course_id, block_id)
+        project_class_update = await projectclassSchema.update(course_id, session_id, ita_class_name, eng_class_name, class_group, num_section)
+        let possible_sections = await projectclassSchema.get_section_number(course_id, session_id)
         possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
         if(teacher_list!=undefined){
             for(let i=0;i<teacher_list.length;i++){
@@ -1058,7 +1058,7 @@ module.exports.update_course = async (req, res) => {
                 let main_teacher = teacher_list[i]["main"]
                 let sections = teacher_list[i]["sections"]
                 for(let j=0;j<sections.length;j++){
-                    teacher_present = await teacherClassSchema.is_present(course_id, block_id, sections[j].toUpperCase(), t_id, main_teacher);
+                    teacher_present = await teacherClassSchema.is_present(course_id, session_id, sections[j].toUpperCase(), t_id, main_teacher);
                     if(!teacher_present){
                         new_teacher = true
                         sections.splice(j,1)
@@ -1074,7 +1074,7 @@ module.exports.update_course = async (req, res) => {
                 //console.log(i)
             }
         }
-        teacher_update = await teacherClassSchema.update(course_id, block_id, teacher_list)
+        teacher_update = await teacherClassSchema.update(course_id, session_id, teacher_list)
     }
     if(course_update == false && access_update == false && project_class_update == false && teacher_update == false){
         res.status(400).json({

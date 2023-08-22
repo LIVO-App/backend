@@ -1,11 +1,11 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async add(student_id, course_id, block_id, section, context_id, pending=false){
+    async add(student_id, course_id, session_id, section, context_id, pending=false){
         let actualSection;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !block_id || !context_id){
+            if(!student_id || !course_id || !session_id || !context_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return false;
@@ -18,9 +18,9 @@ module.exports = {
                 actualSection = section;
                 pen_val =  null;
             }
-            let sql = `INSERT INTO inscribed (student_id, project_class_course_id, project_class_block, section, learning_context_id, pending) VALUES (?,?,?,?,?,?)`;
+            let sql = `INSERT INTO inscribed (student_id, project_class_course_id, project_class_session, section, learning_context_id, pending) VALUES (?,?,?,?,?,?)`;
             
-            values = [student_id, course_id, block_id, actualSection, context_id, pen_val]
+            values = [student_id, course_id, session_id, actualSection, context_id, pen_val]
             const rows = await conn.query(sql, values);
             conn.release();
             //console.log("Inserted "+rows.insertedId+" rows.");
@@ -34,16 +34,16 @@ module.exports = {
             conn.release();
         }
     },
-    async remove(student_id, course_id, block_id, context_id){
+    async remove(student_id, course_id, session_id, context_id){
         try{
             conn = await pool.getConnection();
-            /*if(!student_id || !course_id || !block_id){
+            /*if(!student_id || !course_id || !session_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return false;
             }*/
-            let sql = 'DELETE FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND learning_context_id = ?';
-            values = [student_id, course_id, block_id, context_id]
+            let sql = 'DELETE FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
+            values = [student_id, course_id, session_id, context_id]
             const rows = await conn.query(sql, values);
             conn.release();
             //console.log("Deleted "+rows.affectedRows+" rows.");
@@ -54,16 +54,16 @@ module.exports = {
             conn.release();
         }
     },
-    async isClassFull(course_id, block_id){
+    async isClassFull(course_id, session_id){
         try{
             conn = await pool.getConnection()
-            if(!course_id || !block_id){
+            if(!course_id || !session_id){
                 conn.release();
                 return null;
             }
-            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM inscribed WHERE project_class_course_id=? AND project_class_block=?)>course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
+            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM inscribed WHERE project_class_course_id=? AND project_class_session=?)>course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
             //console.log(sql);
-            let values = [course_id, block_id, course_id]
+            let values = [course_id, session_id, course_id]
             const rows = await conn.query(sql, values);
             conn.release();
             if(rows.length>0){
@@ -77,11 +77,11 @@ module.exports = {
             conn.release();
         }
     },
-    async getAvailableSection(course_id, block_id){
+    async getAvailableSection(course_id, session_id){
         let max_students,rows;
         try{
             conn = await pool.getConnection()
-            if(!course_id || !block_id){
+            if(!course_id || !session_id){
                 conn.release();
                 return null;
             }
@@ -94,8 +94,8 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT section,COUNT(*) AS students FROM inscribed WHERE project_class_course_id = ? AND project_class_block = ? GROUP BY section ORDER BY section;'
-            values.push(block_id);
+            sql = 'SELECT section,COUNT(*) AS students FROM inscribed WHERE project_class_course_id = ? AND project_class_session = ? GROUP BY section ORDER BY section;'
+            values.push(session_id);
             rows = await conn.query(sql, values);
             for (const section of rows) {
                 if (Number(section.students) < max_students) {
@@ -103,7 +103,7 @@ module.exports = {
                 }
             }
             num_section_already_on = rows.length;
-            sql = 'SELECT num_section FROM project_class WHERE course_id = ? AND learning_block_id = ?'
+            sql = 'SELECT num_section FROM project_class WHERE course_id = ? AND learning_session_id = ?'
             rows = await conn.query(sql, values)
             conn.release();
             if(rows[0].num_section > num_section_already_on){
@@ -119,17 +119,17 @@ module.exports = {
             conn.release();
         }
     },
-    async read(student_id, course_id, block_id, context_id, section){
+    async read(student_id, course_id, session_id, context_id, section){
         let values, rows;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !block_id || !context_id){
+            if(!student_id || !course_id || !session_id || !context_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_block, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_block = ? AND learning_context_id = ?';
-            values = [student_id, course_id, block_id, context_id];
+            sql = 'SELECT student_id, project_class_course_id, project_class_session, section, pending FROM inscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
+            values = [student_id, course_id, session_id, context_id];
             if (section != undefined) {
                 sql += ' AND section = ?';
                 values.push(section.toUpperCase());
@@ -147,11 +147,11 @@ module.exports = {
             conn.release();
         }
     },
-    async not_same_group(course_id, block_id, student_id, area_id){
+    async not_same_group(course_id, session_id, student_id, area_id){
         try {
             conn = await pool.getConnection()
-            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_block_id = ? AND pc.group IN (SELECT pc1.group FROM inscribed AS ins JOIN project_class AS pc1 ON pc1.course_id = ins.project_class_course_id AND pc1.learning_block_id = ins.project_class_block JOIN course AS c ON c.id = pc1.course_id WHERE ins.student_id = ? AND c.learning_area_id = ?)'
-            let values = [course_id, block_id, student_id, area_id]
+            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_session_id = ? AND pc.group IN (SELECT pc1.group FROM inscribed AS ins JOIN project_class AS pc1 ON pc1.course_id = ins.project_class_course_id AND pc1.learning_session_id = ins.project_class_session JOIN course AS c ON c.id = pc1.course_id WHERE ins.student_id = ? AND c.learning_area_id = ?)'
+            let values = [course_id, session_id, student_id, area_id]
             const rows = await conn.query(sql, values);
             conn.release()
             if(rows.length == 0){

@@ -105,6 +105,41 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/SessionInsertion'
+  /v1/learning_sessions/school_years:
+    get:
+      description: Get all the school years defined in the learning sessions in the system.
+      summary: Collection of school years
+      tags:
+        - learning sessions
+        - v1
+      responses:
+        '200':
+          description: "Collection of school years"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    properties:
+                      school_year:
+                        type: integer
+                        description: "School year"
+                    description: "Data return from the api"
   /v1/learning_sessions/{session_id}:
     get:
       description: Get specific learning session from its ID.

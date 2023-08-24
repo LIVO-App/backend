@@ -192,6 +192,62 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async add_ordinary_class(study_year, study_address, school_year, italian_displayed_name, english_displayed_name){
+        try {
+            conn = await pool.getConnection()
+            if(!study_year || !study_address || !school_year){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO ordinary_class (study_year_id, study_address_id, school_year, italian_displayed_name, english_displayed_name) VALUES (?,?,?,?,?)'
+            italian_displayed_name = italian_displayed_name!=undefined ? italian_displayed_name : null
+            english_displayed_name = english_displayed_name!=undefined ? english_displayed_name : null
+            let values = [study_year, study_address, school_year, italian_displayed_name, english_displayed_name]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log()
+        } finally {
+            conn.release()
+        }
+    },
+    async add_student_to_class(student_id, study_year, study_address, school_year, section = "A"){
+        try {
+            conn = await pool.getConnection()
+            if(!student_id || !study_year || !study_address || !school_year){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO attend (student_id, ordinary_class_study_year, ordinary_class_address, ordinary_class_school_year, section) VALUES (?,?,?,?,?)'
+            let values = [student_id, study_year, study_address, school_year, section]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log()
+        } finally {
+            conn.release()
+        }
+    },
+    async add_teacher_to_class(teacher_id, study_year, study_address, school_year, section = "A", teaching_id, coordinator=false){
+        try {
+            conn = await pool.getConnection()
+            if(!student_id || !study_year || !study_address || !school_year || !teaching_id){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO ordinary_teach (ordinary_class_study_year, ordinary_class_address, ordinary_class_school_year, section, teaching_id, teacher_id, coordinator) VALUES (?,?,?,?,?,?,?)'
+            let values = [study_year, study_address, school_year, section, teaching_id, teacher_id, coordinator]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log()
+        } finally {
+            conn.release()
+        }
     }
 };
 

@@ -3,7 +3,9 @@
 const courseSchema = require('../models/ordinaryclassModel');
 const ordinaryclassModel = require('../models/ordinaryclassModel');
 const teacherModel = require('../models/teacherModel');
-const adminSchema = require('../models/adminModel')
+const adminSchema = require('../models/adminModel');
+const learningSessionModel = require('../models/learning_sessionsModel');
+const constraint_schema = require('../models/constraintModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -128,6 +130,81 @@ module.exports.get_components = async (req, res) => {
         path: path,
         single: false,
         query: {school_year: school_year, section: section},
+        date: new Date(),
+        data: data_cmps
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_not_in_order_components = async (req, res) => {
+    let study_year = req.params.study_year;
+    let address = req.params.address;
+    let session_id = req.query.session_id;
+    let session_exist = await learningSessionModel.read(session_id)
+    if(!session_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('not in order students: session not found');
+        return;
+    }
+    let section = req.query.section!=undefined ? req.query.section.toUpperCase() : undefined;
+    if(req.loggedUser.role == "teacher"){
+        let school_year = session_exist.school_year
+        let teach = await teacherModel.isTeacherTeaching(req.loggedUser._id, study_year, address, school_year, section);
+        //console.log(teach);
+        if(teach==null){
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log("ordinary_class components: missing parameters teacher");
+            return;
+        }
+        if(!teach){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('my_ordinary_class: unauthorized access. Not my class');
+            return;
+        }
+    } else if (req.loggedUser.role == "admin") {
+        let adminexists = await adminSchema.read_id(req.loggedUser._id)
+        if(!adminexists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('my_ordinary_class: unauthorized access.');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('my_ordinary_class: unauthorized access');
+        return;
+    }
+    let constraints_exist = await constraint_schema.get_constraints(session_id, false, undefined, undefined, study_year, address)
+    if(!constraints_exist){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("constraints for ordinary class: missing parameters");
+        return;
+    }
+    let constraints_list = constraints_exist.map((constraint) => {
+        return {
+            learning_area_id: constraint.learning_area_id,
+            learning_context_id: constraint.learning_context_id
+        }
+    })
+    let cmps = await ordinaryclassModel.not_in_order_students(study_year, address, session_id, section, constraints_list);
+    if (!cmps) {
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("ordinary class components not in order: missing parameters");
+        return;
+    }
+    let data_cmps = cmps.map((cmp) => {
+        return {
+            id: cmp.id,
+            name: cmp.name,
+            surname: cmp.surname,
+            orientation_credits: cmp.orientation_credits,
+            clil_credits: cmp.clil_credits
+        }
+    });
+    let path = "/api/v1/ordinary_classes/"+study_year+"/"+address+"/non_compliant"
+    let response = {
+        path: path,
+        single: false,
+        query: {session_id: session_id, section: section},
         date: new Date(),
         data: data_cmps
     };

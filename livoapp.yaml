@@ -3639,6 +3639,9 @@ components:
         orientation_credits:
           type: integer
           description: Number of credits of orientation courses of the student. Can only be seen by and admin user.
+        clil_credits:
+          type: integer
+          description: Number of credits of clil courses of the student. Can only be seen by and admin user.
     learning_sessions_courses_data:
       type: object
       properties:

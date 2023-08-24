@@ -119,7 +119,8 @@ module.exports.get_components = async (req, res) => {
             id: cmp.id,
             name: cmp.name,
             surname: cmp.surname,
-            orientation_credits: cmp.orientation_credits
+            orientation_credits: cmp.orientation_credits,
+            clil_credits: cmp.clil_credits
         }
     });
     let path = "/api/v1/ordinary_classes/"+study_year+"/"+address+"/components"

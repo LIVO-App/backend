@@ -524,12 +524,12 @@ describe('/api/v1/students', () => {
     })
 
     describe('DELETE methods', () => {
-        describe('DELETE /api/v1/students/:student_id/unscribe', () => {
+        describe('DELETE /api/v1/students/:student_id/unsubscribe', () => {
             // api/v1/students/:id/subscribe
             // Delete subscription with non valid student ID
-            test('DELETE /api/v1/students/:student_id/unscribe with non valid ID should respond with status 200', async () => {
+            test('DELETE /api/v1/students/:student_id/unsubscribe with non valid ID should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v1/students/NonValidID/unscribe')
+                    .delete('/api/v1/students/NonValidID/unsubscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(200)
                     .then((response) => {
@@ -538,24 +538,24 @@ describe('/api/v1/students', () => {
             })
 
             // Delete subscription with missing parameters
-            test('DELETE /api/v1/students/:student_id/unscribe with missing parameters should respond with status 400', async () => {
+            test('DELETE /api/v1/students/:student_id/unsubscribe with missing parameters should respond with status 400', async () => {
                 return request(app)
-                    .delete('/api/v1/students/3/unscribe')
+                    .delete('/api/v1/students/3/unsubscribe')
                     .expect(400);
             })
 
             // Delete subscription with non existing class parameters
-            test('DELETE /api/v1/students/:student_id/unscribe should respond with status 200', async () => {
+            test('DELETE /api/v1/students/:student_id/unsubscribe should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v1/students/3/unscribe')
+                    .delete('/api/v1/students/3/unsubscribe')
                     .query({course_id: wrongProjectClass.course, session_id: wrongProjectClass.session, context_id: 'SPE'})
                     .expect(404);
             })
 
             // Delete student from a class (the one added at the start of the test)
-            test('DELETE /api/v1/students/:student_id/unscribe should respond with status 200', async () => {
+            test('DELETE /api/v1/students/:student_id/unsubscribe should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v1/students/3/unscribe')
+                    .delete('/api/v1/students/3/unsubscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(200);
             })
@@ -827,73 +827,73 @@ describe('/api/v2/students', () => {
     })
 
     describe('DELETE methods', () => {
-        describe('DELETE /api/v2/students/:student_id/unscribe', () => {
+        describe('DELETE /api/v2/students/:student_id/unsubscribe', () => {
             // api/v1/students/:id/subscribe
             // Delete subscription with non valid student ID with valid token
-            test('DELETE /api/v2/students/:student_id/unscribe with non valid ID and valid token should respond with status 200', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe with non valid ID and valid token should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v2/students/NonValidID/unscribe')
+                    .delete('/api/v2/students/NonValidID/unsubscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Delete subscription with missing parameters with valid token
-            test('DELETE /api/v2/students/:student_id/unscribe with missing parameters and valid token should respond with status 400', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe with missing parameters and valid token should respond with status 400', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', tokenStudent3)
                     .expect(400);
             })
 
             // Delete subscription with non existing class parameters with valid token
-            test('DELETE /api/v2/students/:student_id/unscribe and valid token should respond with status 200', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe and valid token should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: wrongProjectClass.course, session_id: wrongProjectClass.session, context_id: 'SPE'})
                     .expect(404);
             })
             
             // Delete student from a class (the one added at the start of the test) without token
-            test('DELETE /api/v2/students/:student_id/unscribe without token should respond with status 401', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe without token should respond with status 401', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Delete student from a class (the one added at the start of the test) with invalid token
-            test('DELETE /api/v2/students/:student_id/unscribe with invalid token should respond with status 403', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe with invalid token should respond with status 403', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', invalidToken)
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(403);
             })
 
             // Delete student from a class (the one added at the start of the test) with wrong user token
-            test('DELETE /api/v2/students/:student_id/unscribe should respond with status 401', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe should respond with status 401', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', wrongUserToken)
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Delete student from a class (the one added at the start of the test) with valid token but information of another user
-            test('DELETE /api/v2/students/:student_id/unscribe and valid token but different user id should respond with status 401', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe and valid token but different user id should respond with status 401', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', tokenStudent2)
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(401);
             })
 
             // Delete student from a class (the one added at the start of the test) with valid token
-            test('DELETE /api/v2/students/:student_id/unscribe and valid token should respond with status 200', async () => {
+            test('DELETE /api/v2/students/:student_id/unsubscribe and valid token should respond with status 200', async () => {
                 return request(app)
-                    .delete('/api/v2/students/3/unscribe')
+                    .delete('/api/v2/students/3/unsubscribe')
                     .set('x-access-token', tokenStudent3)
                     .query({course_id: projectClass.course, session_id: projectClass.session, context_id: 'SPE'})
                     .expect(200);

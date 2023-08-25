@@ -604,7 +604,7 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project course update components: project class has max students required');
         return;
     }
-    let unscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
+    let unsubscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
     let subscribeStudent = await subscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
     if(!subscribeStudent){
         res.status(400).json({status: "error", description: MSG.missingParameters});

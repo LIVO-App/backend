@@ -92,25 +92,26 @@ INSERT INTO `accessible` (`course_id`, `study_year_id`, `study_address_id`, `pre
 
 CREATE TABLE `admin` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(64),
   `username` varchar(50) NOT NULL,
   `email` varchar(320) NOT NULL,
   `password` varbinary(64) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL,
-  `google` tinyint(1) NOT NULL
+  `gender` varbinary(44),
+  `birth_date` varbinary(44),
+  `address` varbinary(384),
+  `google` tinyint(1) NOT NULL,
+  `first_access` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `admin`
 --
 
-INSERT INTO `admin` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`) VALUES
-(1, 'U2FsdGVkX1+tSsB3z29Ij1wJ3p7TMS4HN8Yh/9i+qUea7PY8P/s5r4fkwPMYVjwJ', 'Admin1', 'admin1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Stefano', 'Arcibaldi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1+C1GnsrPdN1uhPEd0wp8QNjHT205eDZ4c=', 'U2FsdGVkX19lYHyte9dZB/cLtERcde42yfP6EPpu+nAHLSkadqu30XbvOtugDxZp', 0),
-(2, 'U2FsdGVkX18/+kbgR7n+/fHVBBxIqirpM1jz9mg1oUlsTYnBDbKwF5RBlRyryKGQ', 'Admin2', 'admin2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Federica', 'Nizza', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/HuS6hXB6trH7aXzWY7O630h0QvQRCna8=', 'U2FsdGVkX1/uWxYKeAPjuUNCUU7HolRaItvrXw1UD0NmuGP+1B6tCAYt4mU0juvP', 0);
+INSERT INTO `admin` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
+(1, 'U2FsdGVkX1+tSsB3z29Ij1wJ3p7TMS4HN8Yh/9i+qUea7PY8P/s5r4fkwPMYVjwJ', 'Admin1', 'admin1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Stefano', 'Arcibaldi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1+C1GnsrPdN1uhPEd0wp8QNjHT205eDZ4c=', 'U2FsdGVkX19lYHyte9dZB/cLtERcde42yfP6EPpu+nAHLSkadqu30XbvOtugDxZp', 0, 0),
+(2, 'U2FsdGVkX18/+kbgR7n+/fHVBBxIqirpM1jz9mg1oUlsTYnBDbKwF5RBlRyryKGQ', 'Admin2', 'admin2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Federica', 'Nizza', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/HuS6hXB6trH7aXzWY7O630h0QvQRCna8=', 'U2FsdGVkX1/uWxYKeAPjuUNCUU7HolRaItvrXw1UD0NmuGP+1B6tCAYt4mU0juvP', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -632,27 +633,28 @@ INSERT INTO `project_teach` (`teacher_id`, `project_class_course_id`, `project_c
 
 CREATE TABLE `student` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(64),
   `username` varchar(50) NOT NULL,
   `email` varchar(320) NOT NULL,
   `password` varbinary(64) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL,
-  `google` tinyint(1) NOT NULL
+  `gender` varbinary(44),
+  `birth_date` varbinary(44),
+  `address` varbinary(384),
+  `google` tinyint(1) NOT NULL,
+  `first_access` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `student`
 --
 
-INSERT INTO `student` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`) VALUES
-(1, 'U2FsdGVkX19ocoZH/Qb3aHrH7rZ2VEIc2I0o3rgtyFu3kvCxnawsGL0Mh6SG7eGR', 'Student1', 'student1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Simone', 'Fronza', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/2PBGMe+CdoLxjV62cm5Y7bx1kEr6Ri28=', 'U2FsdGVkX18NK9HzW60oTz7mKU+3tBzZtpv6U6Hxxj7/t0koY2KtgkJBUf3f1XkXBV7yfzIsfuFyf6MqJ4PPew==', 0),
-(2, 'U2FsdGVkX18YKCy8ONJqLm3DF3he/VudEwcxKORIHQR1RFau1rMzv4Dp5/yD9pOg', 'Student2', 'student2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Pietro', 'Compri', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/XT7AtfadfPbOS/1mKDZmPrvqZLATS1PM=', 'U2FsdGVkX1/5RDEhuyvYc44ZBZxqI7MvuULEtNbnhgBcmldMg3mkC9R2CAi2zxdL99TDhd6F/P2BCr4r7Hn+Bg==', 0),
-(3, 'U2FsdGVkX18kGEZpOUK5eW1CEmk1EBOrJJrqNqQ/c5c3D1rq6ZeA/SEyTcWnD2Zw', 'Student3', 'student3@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Giovanni', 'Paoli', 'U2FsdGVkX1+go4QttyMN2vMbI/n1elpRt6Lae8oRo6o=', 'U2FsdGVkX1+59zNNxJdlJ6OOIwhquZbw74a6tFcuixo=', 'U2FsdGVkX19W1QK7SbwyD6MgYB1NQe9+CHoWxRQlPPUbwcxpr07nSpB+wMCHGobA', 0),
-(4, 'U2FsdGVkX19L21id+geyNA1iFCLp7kMKV3tCkpqzE0vLb6mBuZ+zuI6F1XbOmTk2', 'Student4', 'student4@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Sara', 'Azzoni', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX18ijo+OzeWuQ41WDdKRJEXy9IjCcGWDVrs=', 'U2FsdGVkX1/HA1V6Ke3lrKeimigSFfWhoLDyS5la5FYjfSCnYEShtoTyf1VaUOjG', 0);
+INSERT INTO `student` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
+(1, 'U2FsdGVkX19ocoZH/Qb3aHrH7rZ2VEIc2I0o3rgtyFu3kvCxnawsGL0Mh6SG7eGR', 'Student1', 'student1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Simone', 'Fronza', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/2PBGMe+CdoLxjV62cm5Y7bx1kEr6Ri28=', 'U2FsdGVkX18NK9HzW60oTz7mKU+3tBzZtpv6U6Hxxj7/t0koY2KtgkJBUf3f1XkXBV7yfzIsfuFyf6MqJ4PPew==', 0, 0),
+(2, 'U2FsdGVkX18YKCy8ONJqLm3DF3he/VudEwcxKORIHQR1RFau1rMzv4Dp5/yD9pOg', 'Student2', 'student2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Pietro', 'Compri', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX1/XT7AtfadfPbOS/1mKDZmPrvqZLATS1PM=', 'U2FsdGVkX1/5RDEhuyvYc44ZBZxqI7MvuULEtNbnhgBcmldMg3mkC9R2CAi2zxdL99TDhd6F/P2BCr4r7Hn+Bg==', 0, 0),
+(3, 'U2FsdGVkX18kGEZpOUK5eW1CEmk1EBOrJJrqNqQ/c5c3D1rq6ZeA/SEyTcWnD2Zw', 'Student3', 'student3@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Giovanni', 'Paoli', 'U2FsdGVkX1+go4QttyMN2vMbI/n1elpRt6Lae8oRo6o=', 'U2FsdGVkX1+59zNNxJdlJ6OOIwhquZbw74a6tFcuixo=', 'U2FsdGVkX19W1QK7SbwyD6MgYB1NQe9+CHoWxRQlPPUbwcxpr07nSpB+wMCHGobA', 0, 0),
+(4, 'U2FsdGVkX19L21id+geyNA1iFCLp7kMKV3tCkpqzE0vLb6mBuZ+zuI6F1XbOmTk2', 'Student4', 'student4@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Sara', 'Azzoni', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX18ijo+OzeWuQ41WDdKRJEXy9IjCcGWDVrs=', 'U2FsdGVkX1/HA1V6Ke3lrKeimigSFfWhoLDyS5la5FYjfSCnYEShtoTyf1VaUOjG', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -708,26 +710,27 @@ INSERT INTO `study_year` (`id`) VALUES
 
 CREATE TABLE `teacher` (
   `id` int(11) NOT NULL,
-  `cf` varbinary(64) NOT NULL,
+  `cf` varbinary(64),
   `username` varchar(50) NOT NULL,
   `email` varchar(320) NOT NULL,
   `password` varbinary(64) NOT NULL,
   `name` varchar(75) NOT NULL,
   `surname` varchar(75) NOT NULL,
-  `gender` varbinary(44) NOT NULL,
-  `birth_date` varbinary(44) NOT NULL,
-  `address` varbinary(384) NOT NULL,
-  `google` tinyint(1) NOT NULL
+  `gender` varbinary(44),
+  `birth_date` varbinary(44),
+  `address` varbinary(384),
+  `google` tinyint(1) NOT NULL,
+  `first_access` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `teacher`
 --
 
-INSERT INTO `teacher` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`) VALUES
-(1, 'U2FsdGVkX18tZtTcMyTGY8FcT5BuOEeSWPwj+f0q2LBuCgEzqw0XLK3J6r0jwcWi', 'Teacher1', 'teacher1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Francesco', 'Bianchi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX18Ga0SI9mVf5jEodnBSJbn6cXhPlNhgA0g=', 'U2FsdGVkX1/3yGRkyjyq7eSuDiycBBA5JKFhDmans/lPLd+hD3cHjVUbIiT9V4ye', 0),
-(2, 'U2FsdGVkX19ftz7Uvteyh3c/oB6Mf8pDYSbKqU2eMcjMd5aIVKVkF0VE4L4aKuC5', 'Teacher2', 'teacher2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Anna', 'Mazzari', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/qk+TeOnfoouaXTtuk2laJF5GaD1eJh8w=', 'U2FsdGVkX18SNMYIxPO0rkIvDqnjVoRH2fTBzFZ4RpVuy9fT24/tnfPa36B6GmCj', 0),
-(3, 'U2FsdGVkX19+i+4+n+ge/4fQih4HaYxP2n1rODhtKpeoj0WO9Qm3oDLk0Okb9l0a', 'Teacher3', 'teacher3@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Martina', 'Adami', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/iIKJ/NoP5eHSHhEMq95MjA0Ttwbvk6iU=', 'U2FsdGVkX18+bkapPbdjeRbPXR/ZaanVnJP98zUrhGrphIAyA0vDy6WX7/keE2Z4', 0);
+INSERT INTO `teacher` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
+(1, 'U2FsdGVkX18tZtTcMyTGY8FcT5BuOEeSWPwj+f0q2LBuCgEzqw0XLK3J6r0jwcWi', 'Teacher1', 'teacher1@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Francesco', 'Bianchi', 'U2FsdGVkX1/5J9UEhi4PvesX2LFK6MseVhnvFYrPr+A=', 'U2FsdGVkX18Ga0SI9mVf5jEodnBSJbn6cXhPlNhgA0g=', 'U2FsdGVkX1/3yGRkyjyq7eSuDiycBBA5JKFhDmans/lPLd+hD3cHjVUbIiT9V4ye', 0, 0),
+(2, 'U2FsdGVkX19ftz7Uvteyh3c/oB6Mf8pDYSbKqU2eMcjMd5aIVKVkF0VE4L4aKuC5', 'Teacher2', 'teacher2@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Anna', 'Mazzari', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/qk+TeOnfoouaXTtuk2laJF5GaD1eJh8w=', 'U2FsdGVkX18SNMYIxPO0rkIvDqnjVoRH2fTBzFZ4RpVuy9fT24/tnfPa36B6GmCj', 0, 0),
+(3, 'U2FsdGVkX19+i+4+n+ge/4fQih4HaYxP2n1rODhtKpeoj0WO9Qm3oDLk0Okb9l0a', 'Teacher3', 'teacher3@mail.com', 'e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a', 'Martina', 'Adami', 'U2FsdGVkX1+HXPsNgOc9KEm6A2YI2PGPZB7BGUvs6U8=', 'U2FsdGVkX1/iIKJ/NoP5eHSHhEMq95MjA0Ttwbvk6iU=', 'U2FsdGVkX18+bkapPbdjeRbPXR/ZaanVnJP98zUrhGrphIAyA0vDy6WX7/keE2Z4', 0, 1);
 
 -- --------------------------------------------------------
 

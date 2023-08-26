@@ -1662,7 +1662,65 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
-          $ref: '#/components/responses/NotFound'  
+          $ref: '#/components/responses/NotFound'
+  /v1/admins:
+    post:
+      description: Add new admins to the system
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      summary: Add new admin
+      tags:
+        - admins
+        - v1
+      requestBody:
+        description: Array of admin user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                $ref: '#/components/schemas/admin_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/AdminInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/AdminInsert'
+  /v1/students:
+    post:
+      description: Add new students to the system
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      summary: Add new student
+      tags:
+        - students
+        - v1
+      requestBody:
+        description: Array of student user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                $ref: '#/components/schemas/student_insert_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/StudentInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/StudentInsert'
   /v1/admins/{admin_id}:
     put:
       description: Update of information of the admin
@@ -2360,6 +2418,34 @@ paths:
                     items:
                       $ref: '#/components/schemas/teacher_data'
                     description: "Data return from the api"
+    post:
+      description: Add new teachers to the system
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      summary: Add new teacher
+      tags:
+        - teachers
+        - v1
+      requestBody:
+        description: Array of teacher user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                $ref: '#/components/schemas/teacher_insert_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/TeacherInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/TeacherInsert'
   /v1/constraints:
     get:
       description: Get all the constraints in the system
@@ -2872,6 +2958,57 @@ components:
               wrong_sections:
                 type: boolean
                 description: "Tells if some sections that were tried to be added to the teacher were non valid and consequently not insert"
+    AdminInsert:
+      description: Admin insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_admin:
+                type: boolean
+                description: "Tells if an admin the user tried to add was already present"
+              wrong_admin:
+                type: boolean
+                description: "Tells if an admin the user tried to add was not correct and consequently not added"
+    TeacherInsert:
+      description: Teacher insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_teacher:
+                type: boolean
+                description: "Tells if a teacher the user tried to add was already present"
+              wrong_teacher:
+                type: boolean
+                description: "Tells if a teacher the user tried to add was not correct and consequently not added"
+    StudentInsert:
+      description: Student insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_student:
+                type: boolean
+                description: "Tells if a student the user tried to add was already present"
+              wrong_student:
+                type: boolean
+                description: "Tells if a student the user tried to add was not correct and consequently not added"
   schemas:
     learning_session_data:
       type: object
@@ -3774,6 +3911,12 @@ components:
         email:
           type: string
           description: "Email of the student"
+        google:
+          type: boolean
+          description: "Tells if the student has already access with a google account"
+        first_access:
+          type: boolean
+          description: "Tells if the student has not done a first access to the application yet."
         ordinary_class_ref:
           $ref: '#/components/schemas/ordinary_class_ref'
           description: Current ordinary class of the student.
@@ -4379,6 +4522,90 @@ components:
         main:
           type: boolean
           description: "Tells if the teacher will be the coordinator of the course you want to add him to"
+    admin_data:
+      type: object
+      required:
+        - name
+        - surname
+      properties:
+        cf:
+          type: string
+          description: "Fiscal code of the admin. "
+        name:
+          type: string
+          description: "Name of the admin"
+        surname:
+          type: string
+          description: "Surname of the admin"
+        gender:
+          type: string
+          description: "Gender of the admin. It may be crypted"
+        birth_date:
+          type: string
+          format: date
+          description: "Birth date of the admin. It may be crypted"
+        address:
+          type: string
+          description: "Address of the admin. It may be crypted"
+        email:
+          type: string
+          description: "Email of the admin"
+    teacher_insert_data:
+      type: object
+      required:
+        - name
+        - surname
+      properties:
+        cf:
+          type: string
+          description: "Fiscal code of the teacher. "
+        name:
+          type: string
+          description: "Name of the teacher"
+        surname:
+          type: string
+          description: "Surname of the teacher"
+        gender:
+          type: string
+          description: "Gender of the teacher. It may be crypted"
+        birth_date:
+          type: string
+          format: date
+          description: "Birth date of the teacher. It may be crypted"
+        address:
+          type: string
+          description: "Address of the teacher. It may be crypted"
+        email:
+          type: string
+          description: "Email of the teacher"
+    student_insert_data:
+      type: object
+      required:
+        - name
+        - surname
+      properties:
+        cf:
+          type: string
+          description: "Fiscal code of the student. "
+        name:
+          type: string
+          description: "Name of the student"
+        surname:
+          type: string
+          description: "Surname of the student"
+        gender:
+          type: string
+          description: "Gender of the student. It may be crypted"
+        birth_date:
+          type: string
+          format: date
+          description: "Birth date of the student. It may be crypted"
+        address:
+          type: string
+          description: "Address of the student. It may be crypted"
+        email:
+          type: string
+          description: "Email of the student"
   parameters:
     query_school_year:
       name: school_year

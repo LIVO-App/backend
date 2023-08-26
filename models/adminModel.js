@@ -153,11 +153,6 @@ module.exports = {
     async add_admin(cf, username, email, psw, name, surname, gender, birth_date, address, google = false){
         try {
             conn = await pool.getConnection()
-            console.log(username)
-            console.log(email)
-            console.log(name)
-            console.log(surname)
-            console.log(psw)
             if(!username || !email || !psw || !name || !surname){
                 conn.release()
                 return false

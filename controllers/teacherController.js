@@ -592,6 +592,81 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
     }
     res.status(200).json({status: "accepted", description: "Remove teacher from project classes specified"})
 }
+
+module.exports.add_teachers = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let existing_teacher, wrong_teacher, teacher_added;
+    let teacher_inserted = []
+    let teacher_list = req.body.teacher_list;
+    for(let teacher in teacher_list){
+        let teacher_cf = teacher_list[teacher].cf
+        let teacher_name = teacher_list[teacher].name
+        let teacher_surname = teacher_list[teacher].surname
+        let teacher_gender = teacher_list[teacher].gender
+        let teacher_birth_date = teacher_list[teacher].birth_date
+        let teacher_address = teacher_list[teacher].address
+        let teacher_email = teacher_list[teacher].email
+        let username = teacher_name.toLowerCase()+"."+teacher_surname.toLowerCase()
+        let user_exist = await teacherModel.read_email(teacher_email)
+        if(user_exist){
+            existing_teacher = true
+            console.log("User not valid")
+            continue
+        }
+        let teacher_psw = Math.random().toString(36).slice(-8)
+        let teacher_insert = await teacherModel.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address)
+        if(!teacher_insert){
+            wrong_teacher = true
+            console.log("User not added")
+            continue
+        } else {
+            teacher_added = true
+            teacher_inserted.push(username, teacher_psw)
+        }
+    }
+    if(!teacher_added){
+        if(existing_teacher){
+            res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_teacher: wrong_teacher})
+            console.log("Teacher insertion: users already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_teacher: wrong_teacher})
+            console.log("Teacher insertion: missing parameters")
+            return
+        }
+    }
+    let file_content = fs.readFileSync('teacher.txt', 'utf8')
+    let lines = file_content.split("\n")
+    for (let line in lines){
+        let line_arr = lines[line].split(", ")
+        let user_username = line_arr[0].split(": ")[1]
+        let teacher_exist = await teacherModel.read_username(user_username)
+        if(teacher_exist.first_access){
+            if(teacher_inserted.find(element => element==user_username) == undefined){
+                teacher_inserted.push(user_username, line_arr[1].split(": ")[1])
+            }
+            
+        }
+    }
+    fs.writeFile('teacher.txt', '', function(){console.log('done')})
+    let teacher_txt = ""
+    for(let i = 0; i<teacher_inserted.length;i=i+2){
+        teacher_txt += "username: " + teacher_inserted[i] + ", password: " + teacher_inserted[i+1] + " \n"
+    }
+    fs.appendFile("teacher.txt", teacher_txt, function(err){
+        if(err) console.log(err)
+        console.log("File created successfully")
+    });
+    res.status(201).json({status: "accepted", description: "New teacher users added", existing_teacher: existing_teacher, wrong_teacher: wrong_teacher})
+}
 /*classesSchema.read_project_classes_associated(3,7).then(msg => {
     for(var i=0;i<msg.length;i++){
         console.log("classes "+i);

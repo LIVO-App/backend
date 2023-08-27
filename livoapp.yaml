@@ -636,6 +636,36 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      description: Add new ordinary classes to the system
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      summary: Add new ordinary class
+      tags:
+        - ordinary classes
+        - v1
+      requestBody:
+        description: Array of ordinary classes
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                $ref: '#/components/schemas/ordinary_classes_insert_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/OrdClassInsert'
+        '400':
+          $ref: '#/components/responses/OrdClassInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/OrdClassInsert'
   /v1/auth/student_login:
     post:
       description: Authentication for student
@@ -1434,6 +1464,76 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+    post:
+      description: Add new components of an ordinary class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_study_year'
+        - $ref: '#/components/parameters/path_address'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_section'
+      summary: Add new components to ordinary class
+      tags:
+        - ordinary classes
+        - v1
+      requestBody:
+        description: Array of students
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: integer
+                description: "Id of the students to be added to the class"
+      responses:
+        '201':
+          $ref: '#/components/responses/OrdClassComponentsInsert'
+        '400':
+          $ref: '#/components/responses/OrdClassComponentsInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/OrdClassComponentsInsert'
+  /v1/ordinary_classes/{study_year}/{address}/teachers:
+    post:
+      description: Add new teachers of an ordinary class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_study_year'
+        - $ref: '#/components/parameters/path_address'
+        - $ref: '#/components/parameters/query_school_year'
+        - $ref: '#/components/parameters/query_section'
+      summary: Add new teachers to ordinary class
+      tags:
+        - ordinary classes
+        - v1
+      requestBody:
+        description: Array of teachers
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                $ref: '#/components/schemas/teacher_ord_class_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/OrdClassTeachersInsert'
+        '400':
+          $ref: '#/components/responses/OrdClassTeachersInsert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/OrdClassTeachersInsert'
   /v1/ordinary_classes/{study_year}/{address}/non_compliant:
     get:
       description: Get all components of a specific ordinary class that does not satisfy the credit constraints for a certain learning session
@@ -1684,6 +1784,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/AdminInsert'
+        '400':
+          $ref: '#/components/responses/AdminInsert'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -1712,6 +1814,8 @@ paths:
                 $ref: '#/components/schemas/student_insert_data'
       responses:
         '201':
+          $ref: '#/components/responses/StudentInsert'
+        '400':
           $ref: '#/components/responses/StudentInsert'
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -2438,6 +2542,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/TeacherInsert'
+        '400':
+          $ref: '#/components/responses/TeacherInsert'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -3009,6 +3115,57 @@ components:
               wrong_student:
                 type: boolean
                 description: "Tells if a student the user tried to add was not correct and consequently not added"
+    OrdClassInsert:
+      description: Ordinary classes insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_class:
+                type: boolean
+                description: "Tells if an ordinary class the user tried to add was already present"
+              wrong_class:
+                type: boolean
+                description: "Tells if an ordinary class the user tried to add was not correct and consequently not added"
+    OrdClassComponentsInsert:
+      description: Ordinary class components insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_comp:
+                type: boolean
+                description: "Tells if a components of an ordinary class the user tried to add was already present"
+              wrong_comp:
+                type: boolean
+                description: "Tells if a components of an ordinary class the user tried to add was not correct and consequently not added"
+    OrdClassTeachersInsert:
+      description: Ordinary class teachers insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              existing_teach:
+                type: boolean
+                description: "Tells if a teacher of an ordinary class the user tried to add was already present"
+              wrong_teach:
+                type: boolean
+                description: "Tells if a teacher of an ordinary class the user tried to add was not correct and consequently not added"
   schemas:
     learning_session_data:
       type: object
@@ -3352,9 +3509,6 @@ components:
             english_displayed_name:
               type: string
               description: "English name of the class displayed"
-            annual_credits_ref:
-              $ref: '#/components/schemas/annual_credits_ref'
-              description: "References to the credit model used for that class"
     study_year_ref:
       type: object
       properties:
@@ -4606,6 +4760,45 @@ components:
         email:
           type: string
           description: "Email of the student"
+    ordinary_classes_insert_data:
+      type: object
+      required:
+        - study_year
+        - study_address
+        - school_year
+      properties:
+        study_year:
+          type: integer
+          description: "The study year of the ordinary class"
+        study_address:
+          type: string
+          description: "The study address of the ordinary class"
+        school_year:
+          type: integer
+          description: "School year in which the class what defined"
+        italian_displayed_name:
+          type: string
+          description: "Italian name of the class displayed"
+        english_displayed_name:
+          type: string
+          description: "English name of the class displayed"
+    teacher_ord_class_data:
+      type: object
+      required:
+        - id
+        - teaching_list
+      properties:
+        id:
+          type: integer
+          description: "Id of the teacher the user wants to add"
+        coordinator:
+          type: boolean
+          description: "Tells if the teacher is the coordinator of the class"
+        teaching_list:
+          type: array
+          items:
+            type: string
+            description: "Id of the teaching the teacher will teach in the class"        
   parameters:
     query_school_year:
       name: school_year

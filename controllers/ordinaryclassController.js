@@ -5,7 +5,9 @@ const ordinaryclassModel = require('../models/ordinaryclassModel');
 const teacherModel = require('../models/teacherModel');
 const adminSchema = require('../models/adminModel');
 const learningSessionModel = require('../models/learning_sessionsModel');
-const constraint_schema = require('../models/constraintModel')
+const constraint_schema = require('../models/constraintModel');
+const studentModel = require('../models/studentModel');
+const teachingModel = require('../models/teachingModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -239,6 +241,200 @@ module.exports.get_student_class = async (req, res) => {
         data: data_cl
     }
     res.status(200).json(response);
+}
+
+module.exports.add_ordinary_classes = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminSchema.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let existing_class, wrong_class, class_added;
+    let classes_list = req.body.classes_list;
+    for(let cl in classes_list){
+        let cl_study_year = classes_list[cl].study_year
+        let year_exist = await ordinaryclassModel.check_study_year(cl_study_year)
+        if(!year_exist){
+            wrong_class = true
+            continue
+        }
+        let cl_study_address = classes_list[cl].study_address
+        let address_exist = await ordinaryclassModel.check_study_address(cl_study_address)
+        if(!address_exist){
+            wrong_class = true
+            continue
+        }
+        let cl_school_year = classes_list[cl].school_year
+        let cl_italian_displayed_name = classes_list[cl].italian_displayed_name
+        let cl_english_displayed_name = classes_list[cl].english_displayed_name
+        let class_exist = await ordinaryclassModel.read_with_year(cl_study_year, cl_study_address, cl_school_year)
+        if(class_exist){
+            existing_class = true
+            console.log("Class not added")
+            continue
+        }
+        let class_insert = await ordinaryclassModel.add_ordinary_class(cl_study_year, cl_study_address, cl_school_year, cl_italian_displayed_name, cl_english_displayed_name)
+        if(!class_insert){
+            wrong_class = true
+            console.log("Class not added")
+            continue
+        } else {
+            class_added = true
+        }
+    }
+    if(!class_added){
+        if(existing_class){
+            res.status(409).json({status: "error", description: "All the classes were already present in the database", wrong_class: wrong_class})
+            console.log("Class insertion: classes already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the classes tried to insert were wrong. Please, check them", wrong_class: wrong_class})
+            console.log("Class insertion: missing parameters")
+            return
+        }
+    }
+    res.status(201).json({status: "accepted", description: "New ordinary classes added", existing_class: existing_class, wrong_class: wrong_class})
+}
+
+module.exports.add_student_to_ordinary_classes = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminSchema.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let study_year = req.params.study_year
+    let year_exist = await ordinaryclassModel.check_study_year(study_year)
+    if(!year_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('add students to class: study year not found');
+        return;
+    }
+    let study_address = req.params.address
+    let address_exist = await ordinaryclassModel.check_study_address(study_address)
+    if(!address_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('add students to class: study year not found');
+        return;
+    }
+    let school_year = req.query.school_year
+    let section = req.query.section
+    let existing_comp, wrong_comp, comp_added;
+    let student_list = req.body.student_list;
+    for(let student in student_list){
+        let student_id = student_list[student]
+        let student_exist = await studentModel.read_id(student_id)
+        if(!student_exist){
+            wrong_comp = true
+            continue
+        }
+        let component_exist = await ordinaryclassModel.students_classes(student_id, school_year)
+        if(component_exist.length!=0){
+            existing_comp = true
+            continue
+        }
+        let component_insert = await ordinaryclassModel.add_student_to_class(student_id, study_year, study_address, school_year, section)
+        if(!component_insert){
+            wrong_comp = true
+            console.log("Component not added")
+            continue
+        } else {
+            comp_added = true
+        }
+    }
+    if(!comp_added){
+        if(existing_comp){
+            res.status(409).json({status: "error", description: "All the components were already present in the database", wrong_comp: wrong_comp})
+            console.log("Ordinary class component insertion: components already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the components tried to insert were wrong. Please, check them", wrong_comp: wrong_comp})
+            console.log("Ordinary class component insertion: missing parameters")
+            return
+        }
+    }
+    res.status(201).json({status: "accepted", description: "New members of ordinary class added", existing_comp: existing_comp, wrong_comp: wrong_comp})
+}
+
+module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminSchema.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let study_year = req.params.study_year
+    let year_exist = await ordinaryclassModel.check_study_year(study_year)
+    if(!year_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('add students to class: study year not found');
+        return;
+    }
+    let study_address = req.params.address
+    let address_exist = await ordinaryclassModel.check_study_address(study_address)
+    if(!address_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('add students to class: study year not found');
+        return;
+    }
+    let school_year = req.query.school_year
+    let section = req.query.section
+    let existing_teach, wrong_teach, teach_added;
+    let teacher_list = req.body.teacher_list;
+    for(let teacher in teacher_list){
+        let teacher_id = teacher_list[teacher].id
+        let teacher_coordinator = teacher_list[teacher].coordinator > 0 ? 1 : 0
+        let teacher_exist = await teacherModel.read_id(teacher_id)
+        if(!teacher_exist){
+            wrong_teach = true
+            continue
+        }
+        let teachers_exist = await ordinaryclassModel.teachers_classes(teacher_id, school_year)
+        if(teachers_exist.length!=0){
+            existing_teach = true
+            continue
+        }
+        let teaching_list = teacher_list[teacher].teaching_list;
+        for(let teaching in teaching_list){
+            let teaching_id = teaching_list[teaching];
+            let teaching_exist = await teachingModel.read(teaching_id)
+            if(!teaching_exist){
+                wrong_teach = true
+                continue
+            }
+            let teacher_insert = await ordinaryclassModel.add_teacher_to_class(teacher_id, study_year, study_address, school_year, section, teaching_id, teacher_coordinator)
+            if(!teacher_insert){
+                wrong_teach = true
+                console.log("Teacher not added")
+                continue
+            } else {
+                teach_added = true
+            }
+        }
+        
+    }
+    if(!teach_added){
+        if(existing_teach){
+            res.status(409).json({status: "error", description: "All the teachers were already present in the database", wrong_teach: wrong_teach})
+            console.log("Ordinary class teachers insertion: teacher already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the teachers tried to insert were wrong. Please, check them", wrong_teach: wrong_teach})
+            console.log("Ordinary class teachers insertion: missing parameters")
+            return
+        }
+    }
+    res.status(201).json({status: "accepted", description: "New teachers of ordinary class added", existing_teach: existing_teach, wrong_teach: wrong_teach})
 }
 /*{
     path: ".../student"

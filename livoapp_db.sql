@@ -480,8 +480,8 @@ CREATE TABLE `ordinary_class` (
   `study_year_id` int(11) NOT NULL,
   `study_address_id` varchar(5) NOT NULL,
   `school_year` int(11) NOT NULL,
-  `italian_displayed_name` varchar(250) NOT NULL,
-  `english_displayed_name` varchar(250) NOT NULL
+  `italian_displayed_name` varchar(250) DEFAULT NULL,
+  `english_displayed_name` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -489,23 +489,23 @@ CREATE TABLE `ordinary_class` (
 --
 
 INSERT INTO `ordinary_class` (`study_year_id`, `study_address_id`, `school_year`, `italian_displayed_name`, `english_displayed_name`) VALUES
-(1, 'ATS', 2020, '', ''),
-(1, 'BIO', 2018, '', ''),
-(1, 'BIO', 2022, '', ''),
-(1, 'ODO', 2019, '', ''),
-(1, 'TUR', 2019, '', ''),
-(2, 'ATS', 2021, '', ''),
-(2, 'BIO', 2019, '', ''),
-(2, 'ODO', 2020, '', ''),
-(2, 'TUR', 2020, '', ''),
-(3, 'ATS', 2022, '', ''),
-(3, 'BIO', 2020, '', ''),
-(3, 'ODO', 2021, '', ''),
-(3, 'TUR', 2021, '', ''),
+(1, 'ATS', 2020, NULL, NULL),
+(1, 'BIO', 2018, NULL, NULL),
+(1, 'BIO', 2022, NULL, NULL),
+(1, 'ODO', 2019, NULL, NULL),
+(1, 'TUR', 2019, NULL, NULL),
+(2, 'ATS', 2021, NULL, NULL),
+(2, 'BIO', 2019, NULL, NULL),
+(2, 'ODO', 2020, NULL, NULL),
+(2, 'TUR', 2020, NULL, NULL),
+(3, 'ATS', 2022, NULL, NULL),
+(3, 'BIO', 2020, NULL, NULL),
+(3, 'ODO', 2021, NULL, NULL),
+(3, 'TUR', 2021, NULL, NULL),
 (4, 'BIO', 2021, '4a biologia', '4th biology'),
 (4, 'ODO', 2022, '4a odontotecnica', '4th dental technician'),
-(4, 'TUR', 2022, '', ''),
-(5, 'BIO', 2022, '', '');
+(4, 'TUR', 2022, NULL, NULL),
+(5, 'BIO', 2022, NULL, NULL);
 
 -- --------------------------------------------------------
 

@@ -69,6 +69,28 @@ module.exports = {
             conn.release();
         }
     },
+    async students_classes(student_id, school_year){
+        try {
+            conn = await pool.getConnection();
+            if(!student_id){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT att.ordinary_class_study_year, att.ordinary_class_address, att.ordinary_class_school_year, att.section FROM attend AS att WHERE att.student_id = ?';
+            let values = [student_id];
+            if (school_year != undefined){
+                sql += ' AND att.ordinary_class_school_year = ?';
+                values.push(school_year);
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err);
+        } finally {
+            conn.release();
+        }
+    },
     async components(study_year, address, school_year, section, admin_user = false){
         try {
             conn = await pool.getConnection();
@@ -181,6 +203,28 @@ module.exports = {
             conn.release()
         }
     },
+    async read_with_year(study_year, study_address, school_year){
+        try {
+            conn = await pool.getConnection()
+            if(!study_year || !study_address || !school_year){
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT * FROM ordinary_class AS oc WHERE oc.study_year_id = ? AND oc.study_address_id = ? AND oc.school_year = ?';
+            let values = [study_year, study_address, school_year]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length==1){
+                return rows[0]
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
     async check_study_year(study_year){
         try{
             conn = await pool.getConnection()
@@ -253,7 +297,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log()
+            console.log(err)
         } finally {
             conn.release()
         }
@@ -279,7 +323,7 @@ module.exports = {
     async add_teacher_to_class(teacher_id, study_year, study_address, school_year, section = "A", teaching_id, coordinator=false){
         try {
             conn = await pool.getConnection()
-            if(!student_id || !study_year || !study_address || !school_year || !teaching_id){
+            if(!teacher_id || !study_year || !study_address || !school_year || !teaching_id){
                 conn.release()
                 return false
             }
@@ -289,7 +333,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log()
+            console.log(err)
         } finally {
             conn.release()
         }

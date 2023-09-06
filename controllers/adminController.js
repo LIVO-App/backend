@@ -1,6 +1,8 @@
 'use strict';
 
 const adminModel = require('../models/adminModel');
+const fs = require('fs')
+const readline = require('readline');
 
 let MSG = {
     notFound: "Resource not found",
@@ -73,4 +75,87 @@ module.exports.update_password = async (req, res) => {
         return
     }
     res.status(200).json({status: "updated", description: "Password updated successfully"})
+}
+
+module.exports.add_admins = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let existing_admin, wrong_admin, admin_added;
+    let admin_inserted = []
+    let admin_list = req.body.admin_list;
+    for(let admin in admin_list){
+        let admin_cf = admin_list[admin].cf
+        let admin_name = admin_list[admin].name
+        let admin_name_arr = admin_name.split(" ")
+        let admin_surname = admin_list[admin].surname
+        let admin_surname_arr = admin_surname.split(" ")
+        let admin_gender = admin_list[admin].gender
+        let admin_birth_date = admin_list[admin].birth_date
+        let admin_address = admin_list[admin].address
+        let admin_email = admin_list[admin].email
+        let username = admin_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+admin_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        let user_exist = await adminModel.read_email(admin_email)
+        if(user_exist){
+            existing_admin = true
+            console.log("User not valid")
+            continue
+        }
+        let admin_psw = Math.random().toString(36).slice(-8)
+        let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address)
+        if(!admin_insert){
+            wrong_admin = true
+            console.log("User not added")
+            continue
+        } else {
+            admin_added = true
+            admin_inserted.push(username, admin_psw)
+        }
+    }
+    if(!admin_added){
+        if(existing_admin){
+            res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_admin: wrong_admin})
+            console.log("Admin insertion: users already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_admin: wrong_admin})
+            console.log("Admin insertion: missing parameters")
+            return
+        }
+    }
+    if(!fs.existsSync('admin.txt')){
+        fs.writeFileAsync('admin.txt', "", function(err){
+            if(err) console.log(err)
+            console.log("Created");
+        })
+    }
+    let file_content = fs.readFileSync('admin.txt', 'utf8')
+    let lines = file_content.split("\n")
+    for (let line in lines){
+        let line_arr = lines[line].split(", ")
+        let user_username = line_arr[0].split(": ")[1]
+        let admin_exist = await adminModel.read_username(user_username)
+        if(admin_exist.first_access){
+            if(admin_inserted.find(element => element==user_username) == undefined){
+                admin_inserted.push(user_username, line_arr[1].split(": ")[1])
+            }
+            
+        }
+    }
+    fs.writeFile('admin.txt', '', function(){console.log('done')})
+    let admin_txt = ""
+    for(let i = 0; i<admin_inserted.length;i=i+2){
+        admin_txt += "username: " + admin_inserted[i] + ", password: " + admin_inserted[i+1] + " \n"
+    }
+    fs.appendFile("admin.txt", admin_txt, function(err){
+        if(err) console.log(err)
+        console.log("File created successfully")
+    });
+    res.status(201).json({status: "accepted", description: "New admin users added", existing_admin: existing_admin, wrong_admin: wrong_admin})
 }

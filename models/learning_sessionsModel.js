@@ -199,5 +199,18 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async list_of_years(){
+        try {
+            conn = await pool.getConnection()
+            let sql = 'SELECT DISTINCT ls.school_year FROM learning_session AS ls'
+            const rows = await conn.query(sql)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
     }
 };

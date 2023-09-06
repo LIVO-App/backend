@@ -8,6 +8,7 @@ const tokenChecker = require('../tokenChecker')
 
 router.get('/', learningSessionsHandler.get_sessions);
 router.post('/correspondence', learningSessionsHandler.get_sessions_from_courses);
+router.get('/school_years', learningSessionsHandler.get_school_years);
 router.get('/:session_id', learningSessionsHandler.get_session);
 router.post('/', tokenChecker);
 router.post('/', learningSessionsHandler.add_sessions);

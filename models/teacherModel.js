@@ -5,7 +5,7 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google FROM teacher WHERE " + condition;
+        sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google, first_access FROM teacher WHERE " + condition;
         const rows = await conn.query(sql,param);
         conn.release();
         if (rows.length == 1){
@@ -226,6 +226,29 @@ module.exports = {
             sql = 'UPDATE teacher SET password = ? WHERE id = ?'
             let values = [new_psw, teacher_id]
             rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+        } finally {
+            conn.release()
+        }
+    },
+    async add_teacher(cf, username, email, psw, name, surname, gender, birth_date, address, google = false){
+        try {
+            conn = await pool.getConnection()
+            if(!username || !email || !psw || !name || !surname){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO teacher (cf, username, email, `password`, name, surname, gender, birth_date, address, google, first_access) VALUES (?,?,?,?,?,?,?,?,?,?, 1)'
+            let cicf = cf != undefined ? crypto.cipher(cf).toString() : null
+            let cipsw = crypto.encrypt_password(psw)
+            let cigen = gender!=undefined ? crypto.cipher(gender).toString() : null
+            let cibirth = birth_date!=undefined ? crypto.cipher(birth_date).toString() : null
+            let ciaddr = address!=undefined ? crypto.cipher(address).toString() : null
+            let values = [cicf, username, email, cipsw.toString(), name, surname, cigen, cibirth, ciaddr, google]
+            const rows = await conn.query(sql, values)
             conn.release()
             return rows
         } catch (err) {

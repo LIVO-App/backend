@@ -11,6 +11,7 @@ const opentoSchema = require('../models/opentoModel');
 const crypto = require('../utils/cipher');
 const constraintModel = require('../models/constraintModel');
 const subscribeModel = require('../models/subscribeModel');
+const fs = require('fs')
 
 let MSG = {
     notFound: "Resource not found",
@@ -604,7 +605,7 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project course update components: project class has max students required');
         return;
     }
-    let unscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
+    let unsubscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
     let subscribeStudent = await subscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
     if(!subscribeStudent){
         res.status(400).json({status: "error", description: MSG.missingParameters});
@@ -612,4 +613,87 @@ module.exports.move_class_component = async (req, res) => {
         return
     }
     res.status(201).json({status: "accepted", description: "Student moved successfully"})
+}
+
+module.exports.add_students = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('update student psw: student does not exists');
+            return;
+        }
+    }
+    let existing_student, wrong_student, student_added;
+    let student_inserted = []
+    let student_list = req.body.student_list;
+    for(let student in student_list){
+        let student_cf = student_list[student].cf
+        let student_name = student_list[student].name
+        let student_name_arr = student_name.split(" ")
+        let student_surname = student_list[student].surname
+        let student_surname_arr = student_surname.split(" ")
+        let student_gender = student_list[student].gender
+        let student_birth_date = student_list[student].birth_date
+        let student_address = student_list[student].address
+        let student_email = student_list[student].email
+        let username = student_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+student_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        let user_exist = await studentModel.read_email(student_email)
+        if(user_exist){
+            existing_student = true
+            console.log("User not valid")
+            continue
+        }
+        let student_psw = Math.random().toString(36).slice(-8)
+        let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address)
+        if(!student_insert){
+            wrong_student = true
+            console.log("User not added")
+            continue
+        } else {
+            student_added = true
+            student_inserted.push(username, student_psw)
+        }
+    }
+    if(!student_added){
+        if(existing_student){
+            res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_student: wrong_student})
+            console.log("Student insertion: users already present")
+            return
+        } else {
+            res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_student: wrong_student})
+            console.log("Student insertion: missing parameters")
+            return
+        }
+    }
+    if(!fs.existsSync('student.txt')){
+        fs.writeFileSync('student.txt', '', function(err){
+            if(err) console.log("Ciao")
+            console.log("Created");
+        })
+    }
+    let file_content = fs.readFileSync('student.txt', 'utf8')
+    let lines = file_content.split("\n")
+    for (let line in lines){
+        let line_arr = lines[line].split(", ")
+        let user_username = line_arr[0].split(": ")[1]
+        let student_exist = await studentModel.read_username(user_username)
+        if(student_exist.first_access){
+            if(student_inserted.find(element => element==user_username) == undefined){
+                student_inserted.push(user_username, line_arr[1].split(": ")[1])
+            }
+            
+        }
+    }
+    fs.writeFile('student.txt', '', function(){console.log('done')})
+    let student_txt = ""
+    for(let i = 0; i<student_inserted.length;i=i+2){
+        student_txt += "username: " + student_inserted[i] + ", password: " + student_inserted[i+1] + " \n"
+    }
+    fs.appendFile("student.txt", student_txt, function(err){
+        if(err) console.log(err)
+        console.log("File created successfully")
+    });
+    res.status(201).json({status: "accepted", description: "New student users added", existing_student: existing_student, wrong_student: wrong_student})
 }

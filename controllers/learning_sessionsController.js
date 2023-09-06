@@ -391,6 +391,23 @@ module.exports.update_session = async (req, res) => {
     }
     res.status(200).json({status: "updated", description: "Learning session updated successfully"})
 }
+
+module.exports.get_school_years = async (req, res) => {
+    let school_years = await learningSessionSchema.list_of_years()
+    let data_years = school_years.map( (school_year) => {
+        return {
+            school_year: school_year.school_year
+        };
+    });
+    let response = {
+        path: "/api/v1/learning_sessions/school_years",
+        single: true,
+        query: {},
+        date: new Date(),
+        data: data_years
+    };
+    res.status(200).json(response);
+}
 /*obj.sort((a,b) => {
 	let school_year_a = a.school_year
     let school_year_b = b.school_year

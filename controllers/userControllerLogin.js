@@ -27,7 +27,8 @@ let generateToken = (user, role) => {
     let payload = {
         _id: user.id,
         username: user.username,
-        role: role
+        role: role,
+        first_access: user.first_access
     }
     let option = {
         expiresIn: expirationTime //expires in 24 hours

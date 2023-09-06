@@ -11,6 +11,7 @@ const opentoSchema = require('../models/opentoModel');
 const crypto = require('../utils/cipher');
 const constraintModel = require('../models/constraintModel');
 const subscribeModel = require('../models/subscribeModel');
+const fs = require('fs')
 
 let MSG = {
     notFound: "Resource not found",
@@ -630,12 +631,14 @@ module.exports.add_students = async (req, res) => {
     for(let student in student_list){
         let student_cf = student_list[student].cf
         let student_name = student_list[student].name
+        let student_name_arr = student_name.split(" ")
         let student_surname = student_list[student].surname
+        let student_surname_arr = student_surname.split(" ")
         let student_gender = student_list[student].gender
         let student_birth_date = student_list[student].birth_date
         let student_address = student_list[student].address
         let student_email = student_list[student].email
-        let username = student_name.toLowerCase()+"."+student_surname.toLowerCase()
+        let username = student_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+student_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         let user_exist = await studentModel.read_email(student_email)
         if(user_exist){
             existing_student = true
@@ -663,6 +666,12 @@ module.exports.add_students = async (req, res) => {
             console.log("Student insertion: missing parameters")
             return
         }
+    }
+    if(!fs.existsSync('student.txt')){
+        fs.writeFileSync('student.txt', '', function(err){
+            if(err) console.log("Ciao")
+            console.log("Created");
+        })
     }
     let file_content = fs.readFileSync('student.txt', 'utf8')
     let lines = file_content.split("\n")

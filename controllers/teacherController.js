@@ -9,6 +9,7 @@ const courseSchema = require('../models/coursesModel')
 const sessionSchema = require('../models/learning_sessionsModel')
 const projectClassSchema = require('../models/projectClassModel');
 const projectClassTeacherModel = require('../models/projectClassTeacherModel');
+const fs = require('fs')
 
 let MSG = {
     notFound: "Resource not found",
@@ -609,20 +610,22 @@ module.exports.add_teachers = async (req, res) => {
     for(let teacher in teacher_list){
         let teacher_cf = teacher_list[teacher].cf
         let teacher_name = teacher_list[teacher].name
+        let teacher_name_arr = teacher_name.split(" ")
         let teacher_surname = teacher_list[teacher].surname
+        let teacher_surname_arr = teacher_surname.split(" ")
         let teacher_gender = teacher_list[teacher].gender
         let teacher_birth_date = teacher_list[teacher].birth_date
         let teacher_address = teacher_list[teacher].address
         let teacher_email = teacher_list[teacher].email
-        let username = teacher_name.toLowerCase()+"."+teacher_surname.toLowerCase()
-        let user_exist = await teacherModel.read_email(teacher_email)
+        let username = teacher_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+teacher_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        let user_exist = await teacherSchema.read_email(teacher_email)
         if(user_exist){
             existing_teacher = true
             console.log("User not valid")
             continue
         }
         let teacher_psw = Math.random().toString(36).slice(-8)
-        let teacher_insert = await teacherModel.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address)
+        let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address)
         if(!teacher_insert){
             wrong_teacher = true
             console.log("User not added")
@@ -643,12 +646,18 @@ module.exports.add_teachers = async (req, res) => {
             return
         }
     }
+    if(!fs.existsSync('teacher.txt')){
+        fs.writeFileSync('teacher.txt', "", function(err){
+            if(err) console.log(err)
+            console.log("Created");
+        })
+    }
     let file_content = fs.readFileSync('teacher.txt', 'utf8')
     let lines = file_content.split("\n")
     for (let line in lines){
         let line_arr = lines[line].split(", ")
         let user_username = line_arr[0].split(": ")[1]
-        let teacher_exist = await teacherModel.read_username(user_username)
+        let teacher_exist = await teacherSchema.read_username(user_username)
         if(teacher_exist.first_access){
             if(teacher_inserted.find(element => element==user_username) == undefined){
                 teacher_inserted.push(user_username, line_arr[1].split(": ")[1])

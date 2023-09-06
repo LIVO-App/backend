@@ -93,12 +93,14 @@ module.exports.add_admins = async (req, res) => {
     for(let admin in admin_list){
         let admin_cf = admin_list[admin].cf
         let admin_name = admin_list[admin].name
+        let admin_name_arr = admin_name.split(" ")
         let admin_surname = admin_list[admin].surname
+        let admin_surname_arr = admin_surname.split(" ")
         let admin_gender = admin_list[admin].gender
         let admin_birth_date = admin_list[admin].birth_date
         let admin_address = admin_list[admin].address
         let admin_email = admin_list[admin].email
-        let username = admin_name.toLowerCase()+"."+admin_surname.toLowerCase()
+        let username = admin_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+admin_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         let user_exist = await adminModel.read_email(admin_email)
         if(user_exist){
             existing_admin = true
@@ -126,6 +128,12 @@ module.exports.add_admins = async (req, res) => {
             console.log("Admin insertion: missing parameters")
             return
         }
+    }
+    if(!fs.existsSync('admin.txt')){
+        fs.writeFileAsync('admin.txt', "", function(err){
+            if(err) console.log(err)
+            console.log("Created");
+        })
     }
     let file_content = fs.readFileSync('admin.txt', 'utf8')
     let lines = file_content.split("\n")

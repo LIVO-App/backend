@@ -72,6 +72,6 @@ console.log(decipher(txt3));
 //console.log("CIPHER");
 //console.log(cipher(text));
 *//*
-psw = encrypt_password("Password");
+psw = encrypt_password("ux8bkgdd");
 console.log("Password = "+psw);*/
 module.exports = {cipher, decipher, encrypt_password};

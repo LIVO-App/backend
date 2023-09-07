@@ -82,8 +82,8 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
-(1, NULL, 'admin', 'fronzapietro@gmail.com', '0x38343464396164326334653438376434303465663736616564313765613435323839656166363434643739646162303233613434383164613532396439306530', 'Pietro', 'Fronza', NULL, NULL, NULL, 0, 0),
-(2, NULL, 'claudio.march', 'march@istitutodecarneri.it', '0x38373434386365343762303465333138346637386333333933366462666335646566363834616532313866376161393633626337633763646136363031613034', 'Claudio', 'March', NULL, NULL, NULL, 0, 0);
+(1, NULL, 'admin', 'fronzapietro@gmail.com', 'f993b5bf51459b7352a2906633481b14c476214ac3ce5d2cb51ee60e8e8a4314', 'Pietro', 'Fronza', NULL, NULL, NULL, 0, 0),
+(2, NULL, 'claudio.march', 'march@istitutodecarneri.it', '82c60bb8db450ea353c08247ec3fd0642c2d7293d211ea88a7466bce0b3c4628', 'Claudio', 'March', NULL, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -676,10 +676,10 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
-(1, NULL, 'aurora.avi', 'aurora.avi@istitutodecarneri.it', '0x64356263386261373032623864633462383133316239393963356531373231323333313634616530346134363438316634393566613039633066343536353864', 'Aurora', 'Avi', NULL, NULL, NULL, 0, 0),
-(2, NULL, 'giulia.battistel', 'giulia.battistel@istitutodecarneri.it', '0x37326163373636646266316262643734656530633834323463353931353764393163303962643734363939653565333235623332393363343466646161656239', 'Giulia', 'Battistel', NULL, NULL, NULL, 0, 0),
-(23, NULL, 'leonardo.angeli', 'leonardo.angeli@istitutodecarneri.it', '0x64666237316433366465326236333934363564376366376438363161346362396462623162346364646361616565646364333833353731656162343538323135', 'Leonardo', 'Angeli', NULL, NULL, NULL, 0, 0),
-(24, NULL, 'enika.babi', 'enika.babi@istitutodecarneri.it', '0x38326437303864643338616536616339343632306365356563396133653030366564323333303637616332346432666132656531653065323562313637373564', 'Enika', 'Babi', NULL, NULL, NULL, 0, 0);
+(1, NULL, 'aurora.avi', 'aurora.avi@istitutodecarneri.it', '06a097a66551d16eaae96fcbfc529e23e65fb53ec83f48b1c23b5cdbe6195e8d', 'Aurora', 'Avi', NULL, NULL, NULL, 0, 0),
+(2, NULL, 'giulia.battistel', 'giulia.battistel@istitutodecarneri.it', '648849c64d11d86ce9d787d3f95efb8760721f793b07d67fc4e77d6b9835a749', 'Giulia', 'Battistel', NULL, NULL, NULL, 0, 0),
+(23, NULL, 'leonardo.angeli', 'leonardo.angeli@istitutodecarneri.it', '71ce99b94a53e0ee81e0896178f9e1e0a7a0883248706561b5ab59f99a3efc61', 'Leonardo', 'Angeli', NULL, NULL, NULL, 0, 0),
+(24, NULL, 'enika.babi', 'enika.babi@istitutodecarneri.it', 'd777f970a2ec8181ed0d95c33a8c7b351ef040ebefff0c5fa52a48b83955005e', 'Enika', 'Babi', NULL, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -753,25 +753,25 @@ CREATE TABLE `teacher` (
 --
 
 INSERT INTO `teacher` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`) VALUES
-(1, NULL, 'alessandro.anderle', 'anderle@istitutodecarneri.it', '0x64393732393834333134396564323564663164313639353063373064643132316234616163396339396162643137316564336533333363666637653633626565', 'Alessandro', 'Anderle', NULL, NULL, NULL, 0, 0),
-(2, NULL, 'italo.arcidiacono', 'arcidiacono@istitutodecarneri.it', '0x61353361663865376237326663613731323432336135306233663065623663343234343133306433623931393731346661623837376432336231363066663238', 'Italo Lucio', 'Arcidiacono', NULL, NULL, NULL, 0, 0),
-(3, NULL, 'guillermo.austin', 'austin@istitutodecarneri.it', '0x64376338373332383861396430373262376536353963343165386336313931373736363663383938376132333161643937316533633366363734373066376238', 'Guillermo Jorge', 'Austin', NULL, NULL, NULL, 0, 0),
-(4, NULL, 'erika.bella', 'bella@istitutodecarneri.it', '0x36636439343862313561653532343061663133383730363033643935336565346432613036323930663062333266396462646338653066383134653330623133', 'Erika', 'Bella', NULL, NULL, NULL, 0, 0),
-(5, NULL, 'stefania.bozzolan', 'bozzolan@istitutodecarneri.it', '0x31663530346538313336313730383161656462363261303131376231356337393733333462636432613137303264383461393231666236653463303033303635', 'Stefania', 'Bozzolan', NULL, NULL, NULL, 0, 0),
-(6, NULL, 'lino.capozza', 'capozza@istitutodecarneri.it', '0x30643438396131366634383532653166356434356539636331636236343135623931626237386564343436633465333937643135613139353636656534316530', 'Lino', 'Capozza', NULL, NULL, NULL, 0, 0),
-(7, NULL, 'dennis.dapra', 'dapra@istitutodecarneri.it', '0x36316366376238363135633835386435343730623239353830653966353065636539663135356464663432333563306638663632306631616238303863313166', 'Dennis', 'Daprà', NULL, NULL, NULL, 0, 0),
-(8, NULL, 'edo.grassi', 'grassi@istitutodecarneri.it', '0x39356462383431656463633964386164336261396538363536393531353362323837393431303935313932633134363663343439373031613535633561623132', 'Edo', 'Grassi', NULL, NULL, NULL, 0, 0),
-(9, NULL, 'mario.grasso', 'grasso@istitutodecarneri.it', '0x31373839623664646361326331643565646162613561623539336630666234343530373137393062653939316666613533666432643333393735376164623535', 'Mario', 'Grasso', NULL, NULL, NULL, 0, 0),
-(10, NULL, 'manuela.grott', 'grott@istitutodecarneri.it', '0x66656439373137363033336230376464333264363166313564323163336562356666333937663431653136633636313730363564636564336265353930653134', 'Manuela', 'Grott', NULL, NULL, NULL, 0, 0),
-(11, NULL, 'giuseppe.lucarelli', 'lucarelli@istitutodecarneri.it', '0x63653633323234376162653234393737666166636662303834366436646262353433393034356566646238376663303732353835333161633432363134353430', 'Giuseppe', 'Lucarelli', NULL, NULL, NULL, 0, 0),
-(12, NULL, 'mila.magnani', 'magnani@istitutodecarneri.it', '0x62626235373438656466363931386238346336366637333539313436353364303032636333323163636536303632343436613635663262376635346664653535', 'Mila', 'Magnani', NULL, NULL, NULL, 0, 0),
-(13, NULL, 'rita.nagy', 'nagy@istitutodecarneri.it', '0x36323035333839303536383930653830333563383833323839303137323166623561383132656464643038663762623061656463353835366437626562376237', 'Rita', 'Nagy', NULL, NULL, NULL, 0, 0),
-(14, NULL, 'michela.oss', 'oss@istitutodecarneri.it', '0x36643262663562366332653361643864633731326630323337653763353564363738356538623563643061646138323830373938626136373738666636376236', 'Michela', 'Oss', NULL, NULL, NULL, 0, 0),
-(15, NULL, 'manuela.pruner', 'pruner@istitutodecarneri.it', '0x64323765343835613430363634643936336134626138363261616334356166383432326137663063633866316665343939333732356339333635393237346361', 'Manuela', 'Pruner', NULL, NULL, NULL, 0, 0),
-(16, NULL, 'roberta.ravelli', 'ravelli@istitutodecarneri.it', '0x61633234613333636236646339313337333364306135356665313062353930363135343566363336633666636235626430363037343865326239343237663262', 'Roberta', 'Ravelli', NULL, NULL, NULL, 0, 0),
-(17, NULL, 'luca.riccadonna', 'riccadonna@istitutodecarneri.it', '0x62323632616263316264393131356333376564396337633462376338393332353766656463643562333134616237643835363762643434636230313266613536', 'Luca', 'Riccadonna', NULL, NULL, NULL, 0, 0),
-(18, NULL, 'giorgia.salomon', 'salomon@istitutodecarneri.it', '0x63666432613266353163326365393832306334313935356137636230663663376266336237643034343430356139633634383230333932643236343864366339', 'Giorgia', 'Salomon', NULL, NULL, NULL, 0, 0),
-(19, NULL, 'giovanni.scalfi', 'scalfi@istitutodecarneri.it', '0x63376633346664623466323666373134303235343765373164373034326164613038353838633865646432386662653564653134343132343630393132386239', 'Giovanni', 'Scalfi', NULL, NULL, NULL, 0, 0);
+(1, NULL, 'alessandro.anderle', 'anderle@istitutodecarneri.it', 'd9729843149ed25df1d16950c70dd121b4aac9c99abd171ed3e333cff7e63bee', 'Alessandro', 'Anderle', NULL, NULL, NULL, 0, 0),
+(2, NULL, 'italo.arcidiacono', 'arcidiacono@istitutodecarneri.it', 'a53af8e7b72fca712423a50b3f0eb6c4244130d3b919714fab877d23b160ff28', 'Italo Lucio', 'Arcidiacono', NULL, NULL, NULL, 0, 0),
+(3, NULL, 'guillermo.austin', 'austin@istitutodecarneri.it', 'd7c873288a9d072b7e659c41e8c619177666c8987a231ad971e3c3f67470f7b8', 'Guillermo Jorge', 'Austin', NULL, NULL, NULL, 0, 0),
+(4, NULL, 'erika.bella', 'bella@istitutodecarneri.it', '6cd948b15ae5240af13870603d953ee4d2a06290f0b32f9dbdc8e0f814e30b13', 'Erika', 'Bella', NULL, NULL, NULL, 0, 0),
+(5, NULL, 'stefania.bozzolan', 'bozzolan@istitutodecarneri.it', '1f504e813617081aedb62a0117b15c797334bcd2a1702d84a921fb6e4c003065', 'Stefania', 'Bozzolan', NULL, NULL, NULL, 0, 0),
+(6, NULL, 'lino.capozza', 'capozza@istitutodecarneri.it', '0d489a16f4852e1f5d45e9cc1cb6415b91bb78ed446c4e397d15a19566ee41e0', 'Lino', 'Capozza', NULL, NULL, NULL, 0, 0),
+(7, NULL, 'dennis.dapra', 'dapra@istitutodecarneri.it', 'cd5805673b9edf30c3c2d54a357c055f58ff9e56cb004aa56908f21426fe89d7', 'Dennis', 'Daprà', NULL, NULL, NULL, 0, 0),
+(8, NULL, 'edo.grassi', 'grassi@istitutodecarneri.it', '95db841edcc9d8ad3ba9e865695153b287941095192c1466c449701a55c5ab12', 'Edo', 'Grassi', NULL, NULL, NULL, 0, 0),
+(9, NULL, 'mario.grasso', 'grasso@istitutodecarneri.it', '1789b6ddca2c1d5edaba5ab593f0fb445071790be991ffa53fd2d339757adb55', 'Mario', 'Grasso', NULL, NULL, NULL, 0, 0),
+(10, NULL, 'manuela.grott', 'grott@istitutodecarneri.it', 'fed97176033b07dd32d61f15d21c3eb5ff397f41e16c6617065dced3be590e14', 'Manuela', 'Grott', NULL, NULL, NULL, 0, 0),
+(11, NULL, 'giuseppe.lucarelli', 'lucarelli@istitutodecarneri.it', 'ce632247abe24977fafcfb0846d6dbb5439045efdb87fc07258531ac42614540', 'Giuseppe', 'Lucarelli', NULL, NULL, NULL, 0, 0),
+(12, NULL, 'mila.magnani', 'magnani@istitutodecarneri.it', 'bbb5748edf6918b84c66f735914653d002cc321cce6062446a65f2b7f54fde55', 'Mila', 'Magnani', NULL, NULL, NULL, 0, 0),
+(13, NULL, 'rita.nagy', 'nagy@istitutodecarneri.it', '6205389056890e8035c88328901721fb5a812eddd08f7bb0aedc5856d7beb7b7', 'Rita', 'Nagy', NULL, NULL, NULL, 0, 0),
+(14, NULL, 'michela.oss', 'oss@istitutodecarneri.it', '6d2bf5b6c2e3ad8dc712f0237e7c55d6785e8b5cd0ada8280798ba6778ff67b6', 'Michela', 'Oss', NULL, NULL, NULL, 0, 0),
+(15, NULL, 'manuela.pruner', 'pruner@istitutodecarneri.it', 'd27e485a40664d963a4ba862aac45af8422a7f0cc8f1fe4993725c93659274ca', 'Manuela', 'Pruner', NULL, NULL, NULL, 0, 0),
+(16, NULL, 'roberta.ravelli', 'ravelli@istitutodecarneri.it', 'ac24a33cb6dc913733d0a55fe10b59061545f636c6fcb5bd060748e2b9427f2bsss', 'Roberta', 'Ravelli', NULL, NULL, NULL, 0, 0),
+(17, NULL, 'luca.riccadonna', 'riccadonna@istitutodecarneri.it', 'b262abc1bd9115c37ed9c7c4b7c893257fedcd5b314ab7d8567bd44cb012fa56', 'Luca', 'Riccadonna', NULL, NULL, NULL, 0, 0),
+(18, NULL, 'giorgia.salomon', 'salomon@istitutodecarneri.it', 'cfd2a2f51c2ce9820c41955a7cb0f6c7bf3b7d044405a9c64820392d2648d6c9', 'Giorgia', 'Salomon', NULL, NULL, NULL, 0, 0),
+(19, NULL, 'giovanni.scalfi', 'scalfi@istitutodecarneri.it', 'c7f34fdb4f26f71402547e71d7042ada08588c8edd28fbe5de144124609128b9', 'Giovanni', 'Scalfi', NULL, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 

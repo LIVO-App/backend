@@ -689,7 +689,7 @@ module.exports.add_students = async (req, res) => {
     fs.writeFile('student.txt', '', function(){console.log('done')})
     let student_txt = ""
     for(let i = 0; i<student_inserted.length;i=i+2){
-        student_txt += "username: " + student_inserted[i] + ", password: " + student_inserted[i+1] + " \n"
+        student_txt += "username: " + student_inserted[i] + ", password: " + student_inserted[i+1] + "\n"
     }
     fs.appendFile("student.txt", student_txt, function(err){
         if(err) console.log(err)

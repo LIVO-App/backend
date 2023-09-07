@@ -151,7 +151,7 @@ module.exports.add_admins = async (req, res) => {
     fs.writeFile('admin.txt', '', function(){console.log('done')})
     let admin_txt = ""
     for(let i = 0; i<admin_inserted.length;i=i+2){
-        admin_txt += "username: " + admin_inserted[i] + ", password: " + admin_inserted[i+1] + " \n"
+        admin_txt += "username: " + admin_inserted[i] + ", password: " + admin_inserted[i+1] + "\n"
     }
     fs.appendFile("admin.txt", admin_txt, function(err){
         if(err) console.log(err)

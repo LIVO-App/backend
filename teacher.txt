@@ -1,5 +1,4 @@
 username: dennis.dapra, password: bo5y3l7h 
-username: dennis.daprà, password: dxboy7q1   
 username: italo.arcidiacono, password: 75u4rlpu     
 username: guillermo.austin, password: pgjinhl2     
 username: erika.bella, password: hq9dnldu     

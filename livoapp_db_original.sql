@@ -360,9 +360,9 @@ CREATE TABLE `learning_session` (
 --
 
 INSERT INTO `learning_session` (`id`, `number`, `school_year`, `start`, `end`, `num_groups`, `open_day`) VALUES
-(1, 0, 2023, '2023-09-01', '2022-09-18', 1, '2023-08-18'),
-(2, 1, 2023, '2022-09-19', '2022-10-27', 1, '2023-09-14'),
-(3, 2, 2023, '2022-10-30', '2022-12-08', 1, '2023-10-19'),
+(1, 0, 2023, '2023-09-01', '2023-09-18', 1, '2023-08-18'),
+(2, 1, 2023, '2023-09-19', '2023-10-27', 1, '2023-09-14'),
+(3, 2, 2023, '2023-10-30', '2023-12-08', 1, '2023-10-19'),
 (4, 3, 2023, '2023-12-11', '2024-02-02', 1, '2023-11-30'),
 (5, 4, 2023, '2024-02-05', '2024-03-15', 1, '2024-01-24'),
 (6, 5, 2023, '2024-03-18', '2024-04-26', 1, '2024-03-09');
@@ -622,11 +622,11 @@ CREATE TABLE `project_class` (
 --
 
 INSERT INTO `project_class` (`course_id`, `learning_session_id`, `italian_displayed_name`, `english_displayed_name`, `group`, `num_section`, `proposer_teacher_id`, `certifying_admin_id`, `admin_confirmation`, `to_be_modified`, `final_confirmation`) VALUES
-(2, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', 0, '2023-08-15'),
-(3, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', 0, '2023-08-15'),
-(4, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', 0, '2023-08-15'),
-(5, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', 0, '2023-08-15'),
-(6, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', 0, '2023-08-15');
+(2, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', NULL, '2023-08-15'),
+(3, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', NULL, '2023-08-15'),
+(4, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', NULL, '2023-08-15'),
+(5, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', NULL, '2023-08-15'),
+(6, 1, NULL, NULL, 1, 1, 1, 1, '2023-07-31', NULL, '2023-08-15');
 
 -- --------------------------------------------------------
 
@@ -768,7 +768,7 @@ INSERT INTO `teacher` (`id`, `cf`, `username`, `email`, `password`, `name`, `sur
 (13, NULL, 'rita.nagy', 'nagy@istitutodecarneri.it', '6205389056890e8035c88328901721fb5a812eddd08f7bb0aedc5856d7beb7b7', 'Rita', 'Nagy', NULL, NULL, NULL, 0, 0),
 (14, NULL, 'michela.oss', 'oss@istitutodecarneri.it', '6d2bf5b6c2e3ad8dc712f0237e7c55d6785e8b5cd0ada8280798ba6778ff67b6', 'Michela', 'Oss', NULL, NULL, NULL, 0, 0),
 (15, NULL, 'manuela.pruner', 'pruner@istitutodecarneri.it', 'd27e485a40664d963a4ba862aac45af8422a7f0cc8f1fe4993725c93659274ca', 'Manuela', 'Pruner', NULL, NULL, NULL, 0, 0),
-(16, NULL, 'roberta.ravelli', 'ravelli@istitutodecarneri.it', 'ac24a33cb6dc913733d0a55fe10b59061545f636c6fcb5bd060748e2b9427f2bsss', 'Roberta', 'Ravelli', NULL, NULL, NULL, 0, 0),
+(16, NULL, 'roberta.ravelli', 'ravelli@istitutodecarneri.it', 'ac24a33cb6dc913733d0a55fe10b59061545f636c6fcb5bd060748e2b9427f2b', 'Roberta', 'Ravelli', NULL, NULL, NULL, 0, 0),
 (17, NULL, 'luca.riccadonna', 'riccadonna@istitutodecarneri.it', 'b262abc1bd9115c37ed9c7c4b7c893257fedcd5b314ab7d8567bd44cb012fa56', 'Luca', 'Riccadonna', NULL, NULL, NULL, 0, 0),
 (18, NULL, 'giorgia.salomon', 'salomon@istitutodecarneri.it', 'cfd2a2f51c2ce9820c41955a7cb0f6c7bf3b7d044405a9c64820392d2648d6c9', 'Giorgia', 'Salomon', NULL, NULL, NULL, 0, 0),
 (19, NULL, 'giovanni.scalfi', 'scalfi@istitutodecarneri.it', 'c7f34fdb4f26f71402547e71d7042ada08588c8edd28fbe5de144124609128b9', 'Giovanni', 'Scalfi', NULL, NULL, NULL, 0, 0);

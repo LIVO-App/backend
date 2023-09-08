@@ -57,10 +57,10 @@ module.exports.get_student = async (req, res) => {
         console.log('get_student: student not found');
         return;
     }
-    let cf = crypto.decipher(student.cf.toString())
-    let gender = crypto.decipher(student.gender.toString())
-    let birth_date = crypto.decipher(student.birth_date.toString())
-    let address = crypto.decipher(student.address.toString())
+    let cf = student.cf != null ? crypto.decipher(student.cf.toString()) : undefined
+    let gender = student.gender != null ? crypto.decipher(student.gender.toString()) : undefined
+    let birth_date = student.birth_date != null ? crypto.decipher(student.birth_date.toString()) : undefined
+    let address = student.address != null ? crypto.decipher(student.address.toString()) : undefined
     let ordinary_class_ref = {
         path: "/api/v1/ordinary_classes",
             single: true,

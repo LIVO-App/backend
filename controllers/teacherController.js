@@ -49,10 +49,10 @@ module.exports.get_teachers = async (req, res) => {
     }
     let teachers = await teacherSchema.list()
     let data_teachers = teachers.map((teacher) => {
-        let cf = crypto.decipher(teacher.cf.toString())
-        let gender = crypto.decipher(teacher.gender.toString())
-        let birth_date = crypto.decipher(teacher.birth_date.toString())
-        let address = crypto.decipher(teacher.address.toString())
+        let cf = teacher.cf != null ? crypto.decipher(teacher.cf.toString()) : undefined;
+        let gender = teacher.gender != null ? crypto.decipher(teacher.gender.toString()) : undefined
+        let birth_date = teacher.birth_date != null ? crypto.decipher(teacher.birth_date.toString()) : undefined
+        let address = teacher.address != null ? crypto.decipher(teacher.address.toString()) : undefined
         return {
             id: teacher.id,
             cf: cf,

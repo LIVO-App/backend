@@ -264,6 +264,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
 
 module.exports.get_my_ordinary_classes = async (req, res) => {
     let teacher_id = req.params.teacher_id;
+    let teaching = req.query.teaching;
     if(req.loggedUser.role == "teacher"){
         let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
@@ -290,7 +291,7 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
             return;
         }
     }
-    let cls = await ord_classSchema.teachers_classes(teacher_id, school_year);
+    let cls = await ord_classSchema.teachers_classes(teacher_id, school_year, teaching);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log("teacher ordinary class: missing parameters");
@@ -301,7 +302,8 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
             study_year: cl.ordinary_class_study_year,
             address: cl.ordinary_class_address,
             school_year: cl.ordinary_class_school_year,
-            section: cl.section
+            section: cl.section,
+            teaching: cl.teaching_id
         }
     });
     let path = "/api/v1/teachers/"+teacher_id+"/my_ordinary_classes";

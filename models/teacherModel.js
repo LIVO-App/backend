@@ -96,7 +96,7 @@ module.exports = {
             values = [teacher_id, study_year, address, school_year, section];
             const rows = await conn.query(sql, values);
             conn.release();
-            if(rows.length == 1){
+            if(rows.length >= 1){
                 return true;
             } else {
                 return false;

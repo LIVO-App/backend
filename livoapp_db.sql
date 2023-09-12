@@ -520,22 +520,23 @@ CREATE TABLE `ordinary_teach` (
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `teaching_id` varchar(5) NOT NULL,
   `teacher_id` int(11) NOT NULL,
-  `coordinator` tinyint(1) DEFAULT 0
+  `coordinator` tinyint(1) DEFAULT 0,
+  `tutor` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `ordinary_teach`
 --
 
-INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`) VALUES
-(1, 'BIO', 2022, 'A', 'BMTCS', 3, 1),
-(1, 'BIO', 2022, 'A', 'ITA', 1, 0),
-(1, 'BIO', 2022, 'A', 'TB', 2, 0),
-(4, 'ODO', 2022, 'A', 'CHI', 2, 1),
-(4, 'ODO', 2022, 'A', 'DMSL', 3, 0),
-(4, 'ODO', 2022, 'A', 'ITA', 1, 0),
-(5, 'BIO', 2022, 'A', 'ITA', 1, 0),
-(5, 'BIO', 2022, 'A', 'TB', 2, 1);
+INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`, `tutor`) VALUES
+(1, 'BIO', 2022, 'A', 'BMTCS', 3, 1, 0),
+(1, 'BIO', 2022, 'A', 'ITA', 1, 0, 0),
+(1, 'BIO', 2022, 'A', 'TB', 2, 0, 0),
+(4, 'ODO', 2022, 'A', 'CHI', 2, 1, 0),
+(4, 'ODO', 2022, 'A', 'DMSL', 3, 0, 0),
+(4, 'ODO', 2022, 'A', 'ITA', 1, 0, 0),
+(5, 'BIO', 2022, 'A', 'ITA', 1, 0, 0),
+(5, 'BIO', 2022, 'A', 'TB', 2, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -560,7 +561,8 @@ INSERT INTO `personal_growth_area` (`id`, `italian_title`, `english_title`, `ita
 (2, 'Prospettive di crescita', 'Growth prospects', '<p>Area in cui uno studente può effettuare corsi che gli permettono di crescere e migliorare le sue competenze</p>', '<p>Area in which a student can take courses that enable him/her to grow and improve his/her skills</p>'),
 (3, 'Imprenditività', 'Entrepreneurship', NULL, NULL),
 (4, 'Orientamento', 'Orientation', NULL, NULL),
-(5, 'CLIL', 'CLIL', NULL, NULL);
+(5, 'CLIL', 'CLIL', NULL, NULL),
+(6, 'Educazione civica', 'Civic education', NULL, NULL);
 
 -- --------------------------------------------------------
 

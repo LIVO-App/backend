@@ -524,53 +524,54 @@ CREATE TABLE `ordinary_teach` (
   `section` varchar(3) NOT NULL DEFAULT 'A',
   `teaching_id` varchar(5) NOT NULL,
   `teacher_id` int(11) NOT NULL,
-  `coordinator` tinyint(1) DEFAULT 0
+  `coordinator` tinyint(1) DEFAULT 0,
+  `tutor` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `ordinary_teach`
 --
 
-INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`) VALUES
-(1, 'BIO', 2023, 'A', 'REL', 1, 0),
-(1, 'ODO', 2023, 'A', 'REL', 1, 0),
-(1, 'TUR4', 2023, 'A', 'REL', 1, 0),
-(1, 'BIO', 2023, 'A', 'ING', 2, 0),
-(1, 'ODO', 2023, 'A', 'ING', 2, 0),
-(1, 'ODO', 2023, 'A', 'TED', 2, 0),
-(1, 'BIO', 2023, 'A', 'SMS', 3, 0),
-(1, 'ODO', 2023, 'A', 'SMS', 3, 0),
-(1, 'TUR4', 2023, 'A', 'SMS', 3, 0),
-(1, 'BIO', 2023, 'A', 'MAT', 4, 0),
-(1, 'BIO', 2023, 'A', 'FIS', 4, 0),
-(1, 'BIO', 2023, 'A', 'DE', 5, 0),
-(1, 'ODO', 2023, 'A', 'DE', 5, 0),
-(1, 'BIO', 2023, 'A', 'TTRG', 6, 0),
-(1, 'ODO', 2023, 'A', 'MAT', 6, 0),
-(1, 'BIO', 2023, 'A', 'CHI', 7, 0),
-(1, 'ODO', 2023, 'A', 'CHI', 7, 0),
-(1, 'TUR4', 2023, 'A', 'EA', 8, 0),
-(1, 'ODO', 2023, 'A', 'IAF', 9, 0),
-(1, 'TUR4', 2023, 'A', 'TB', 9, 0),
-(1, 'ODO', 2023, 'A', 'RMO', 10, 0),
-(1, 'ODO', 2023, 'A', 'ELO', 10, 0),
-(1, 'TUR4', 2023, 'A', 'MAT', 11, 0),
-(1, 'TUR4', 2023, 'A', 'FIS', 11, 0),
-(1, 'BIO', 2023, 'A', 'ITA', 12, 0),
-(1, 'BIO', 2023, 'A', 'STO', 12, 0),
-(1, 'TUR4', 2023, 'A', 'ITA', 12, 0),
-(1, 'TUR4', 2023, 'A', 'STO', 12, 0),
-(1, 'TUR4', 2023, 'A', 'ING', 13, 0),
-(1, 'BIO', 2023, 'A', 'TB', 14, 0),
-(1, 'BIO', 2023, 'A', 'TED', 15, 0),
-(1, 'TUR4', 2023, 'A', 'TED', 15, 0),
-(1, 'TUR4', 2023, 'A', 'DE', 16, 0),
-(1, 'BIO', 2023, 'A', 'TI', 17, 0),
-(1, 'ODO', 2023, 'A', 'TIC', 17, 0),
-(1, 'TUR4', 2023, 'A', 'INF', 17, 0),
-(1, 'ODO', 2023, 'A', 'ITA', 18, 0),
-(1, 'ODO', 2023, 'A', 'STO', 18, 0),
-(1, 'TUR4', 2023, 'A', 'GEO', 19, 0);
+INSERT INTO `ordinary_teach` (`ordinary_class_study_year`, `ordinary_class_address`, `ordinary_class_school_year`, `section`, `teaching_id`, `teacher_id`, `coordinator`, `tutor`) VALUES
+(1, 'BIO', 2023, 'A', 'REL', 1, 0, 0),
+(1, 'ODO', 2023, 'A', 'REL', 1, 0, 0),
+(1, 'TUR4', 2023, 'A', 'REL', 1, 0, 0),
+(1, 'BIO', 2023, 'A', 'ING', 2, 0, 0),
+(1, 'ODO', 2023, 'A', 'ING', 2, 0, 0),
+(1, 'ODO', 2023, 'A', 'TED', 2, 0, 0),
+(1, 'BIO', 2023, 'A', 'SMS', 3, 0, 0),
+(1, 'ODO', 2023, 'A', 'SMS', 3, 0, 0),
+(1, 'TUR4', 2023, 'A', 'SMS', 3, 0, 0),
+(1, 'BIO', 2023, 'A', 'MAT', 4, 0, 0),
+(1, 'BIO', 2023, 'A', 'FIS', 4, 0, 0),
+(1, 'BIO', 2023, 'A', 'DE', 5, 0, 0),
+(1, 'ODO', 2023, 'A', 'DE', 5, 0, 0),
+(1, 'BIO', 2023, 'A', 'TTRG', 6, 0, 0),
+(1, 'ODO', 2023, 'A', 'MAT', 6, 0, 0),
+(1, 'BIO', 2023, 'A', 'CHI', 7, 0, 0),
+(1, 'ODO', 2023, 'A', 'CHI', 7, 0, 0),
+(1, 'TUR4', 2023, 'A', 'EA', 8, 0, 0),
+(1, 'ODO', 2023, 'A', 'IAF', 9, 0, 0),
+(1, 'TUR4', 2023, 'A', 'TB', 9, 0, 0),
+(1, 'ODO', 2023, 'A', 'RMO', 10, 0, 0),
+(1, 'ODO', 2023, 'A', 'ELO', 10, 0, 0),
+(1, 'TUR4', 2023, 'A', 'MAT', 11, 0, 0),
+(1, 'TUR4', 2023, 'A', 'FIS', 11, 0, 0),
+(1, 'BIO', 2023, 'A', 'ITA', 12, 0, 0),
+(1, 'BIO', 2023, 'A', 'STO', 12, 0, 0),
+(1, 'TUR4', 2023, 'A', 'ITA', 12, 0, 0),
+(1, 'TUR4', 2023, 'A', 'STO', 12, 0, 0),
+(1, 'TUR4', 2023, 'A', 'ING', 13, 0, 0),
+(1, 'BIO', 2023, 'A', 'TB', 14, 0, 0),
+(1, 'BIO', 2023, 'A', 'TED', 15, 0, 0),
+(1, 'TUR4', 2023, 'A', 'TED', 15, 0, 0),
+(1, 'TUR4', 2023, 'A', 'DE', 16, 0, 0),
+(1, 'BIO', 2023, 'A', 'TI', 17, 0, 0),
+(1, 'ODO', 2023, 'A', 'TIC', 17, 0, 0),
+(1, 'TUR4', 2023, 'A', 'INF', 17, 0, 0),
+(1, 'ODO', 2023, 'A', 'ITA', 18, 0, 0),
+(1, 'ODO', 2023, 'A', 'STO', 18, 0, 0),
+(1, 'TUR4', 2023, 'A', 'GEO', 19, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -595,7 +596,8 @@ INSERT INTO `personal_growth_area` (`id`, `italian_title`, `english_title`, `ita
 (2, 'Prospettive di crescita', 'Growth prospects', '<p>Area in cui uno studente può effettuare corsi che gli permettono di crescere e migliorare le sue competenze</p>', '<p>Area in which a student can take courses that enable him/her to grow and improve his/her skills</p>'),
 (3, 'Imprenditività', 'Entrepreneurship', NULL, NULL),
 (4, 'Orientamento', 'Orientation', NULL, NULL),
-(5, 'CLIL', 'CLIL', NULL, NULL);
+(5, 'CLIL', 'CLIL', NULL, NULL),
+(6, 'Educazione civica', 'Civic education', NULL, NULL);
 
 -- --------------------------------------------------------
 

@@ -9,7 +9,7 @@ module.exports = {
                 return false
             }
             sql = "SELECT id, italian_title, english_title, italian_description, english_description FROM learning_area WHERE id = ?";
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql, [id]);
             conn.release();
             if(rows.length == 1){
                 return rows[0];
@@ -49,7 +49,7 @@ module.exports = {
                 sql += ", l.credits";
             }
             sql += " FROM limited AS l INNER JOIN learning_area AS la ON l.learning_area_id = la.id WHERE learning_session_id= ? GROUP BY la.id";
-            const rows = await conn.query(sql, session_id);
+            const rows = await conn.query(sql, [session_id]);
             conn.release();
             return rows;
         } catch (err) {

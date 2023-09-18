@@ -13,7 +13,7 @@ module.exports = {
                 sql += 'LEFT ';
             }
             sql += 'JOIN admin as ad ON ad.id = c.certifying_admin_id WHERE c.id = ?';
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql, [id]);
             conn.release();
             if(rows.length == 1){
                 return rows[0];
@@ -31,48 +31,67 @@ module.exports = {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
             let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group`;
+            let values = []
             if(student_id != undefined){
                 sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session WHERE `;
                 if(learn_area_id != undefined && session_id != undefined && context_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ? AND c.learning_area_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(session_id, learn_area_id, context_id)
                 } else if (learn_area_id != undefined && context_id != undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `c.learning_area_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(learn_area_id, context_id)
                 } else if (session_id != undefined && context_id != undefined) {
-                    sql += `learning_session_id = ${session_id} AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(session_id, context_id)
                 } else if (context_id != undefined){
-                    sql += `subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `subs.learning_context_id= ? AND `;
+                    values.push(context_id)
                 } else if (session_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND `
+                    sql += `learning_session_id = ? AND `
+                    values.push(session_id)
                 }
-                sql += `subs.student_id = ${student_id}) AND (SELECT subs.pending FROM subscribed AS subs WHERE  subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id `;
+                sql += `subs.student_id = ?) AND (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ? AND subs.project_class_session = pc.learning_session_id `;
+                values.push(student_id, student_id)
                 if(context_id != undefined){
-                    sql += ` AND subs.learning_context_id=\'${context_id}\'`;
+                    sql += ` AND subs.learning_context_id=?`;
+                    values.push(context_id)
                 }
                 sql += `) IS NULL THEN \"true\" WHEN c.id IN (SELECT c.id FROM course AS c LEFT JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session WHERE `;
                 if(learn_area_id != undefined && session_id != undefined && context_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ? AND c.learning_area_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(session_id, learn_area_id, context_id)
                 } else if (learn_area_id != undefined && context_id != undefined) {
-                    sql += `c.learning_area_id = \'${learn_area_id}\' AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `c.learning_area_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(learn_area_id, context_id)
                 } else if (session_id != undefined && context_id != undefined) {
-                    sql += `learning_session_id = ${session_id} AND subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `learning_session_id = ? AND subs.learning_context_id=? AND `;
+                    values.push(session_id, context_id)
                 } else if (context_id != undefined){
-                    sql += `subs.learning_context_id=\'${context_id}\' AND `;
+                    sql += `subs.learning_context_id=? AND `;
+                    values.push(context_id)
                 } else if (session_id != undefined){
-                    sql += `learning_session_id = ${session_id} AND `
+                    sql += `learning_session_id = ? AND `
+                    values.push(session_id)
                 }
-                sql += `subs.student_id = ${student_id}) AND (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id `;
+                sql += `subs.student_id = ?) AND (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ? AND subs.project_class_session = pc.learning_session_id `;
+                values.push(student_id, student_id)
                 if(context_id != undefined){
-                    sql += ` AND subs.learning_context_id=\'${context_id}\'`
+                    sql += ` AND subs.learning_context_id=?`
+                    values.push(context_id)
                 }
-                sql += `) IS NOT NULL THEN (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ${student_id} AND subs.project_class_session = pc.learning_session_id`
+                sql += `) IS NOT NULL THEN (SELECT subs.pending FROM subscribed AS subs WHERE subs.project_class_course_id = c.id AND subs.student_id = ? AND subs.project_class_session = pc.learning_session_id`
+                values.push(student_id)
                 if(context_id != undefined){
-                    sql += ` AND subs.learning_context_id=\'${context_id}\'`
+                    sql += ` AND subs.learning_context_id=?`
+                    values.push(context_id)
                 }
                 sql += `) ELSE \"false\" end AS subscribed`;
                 if (session_id!=undefined) {
-                    sql += `, (SELECT section FROM subscribed WHERE project_class_course_id = c.id AND student_id = ${student_id} AND project_class_session = ${session_id}`
+                    sql += `, (SELECT section FROM subscribed WHERE project_class_course_id = c.id AND student_id = ? AND project_class_session = ?`
+                    values.push(student_id, session_id)
                     if(context_id!=undefined){
-                        sql += ` AND learning_context_id=\'${context_id}\'`;
+                        sql += ` AND learning_context_id=?`;
+                        values.push(context_id)
                     }
                     sql +=`) AS section`;
                 }
@@ -87,42 +106,53 @@ module.exports = {
             }
             sql += `JOIN learning_session AS ls ON ls.id = pc.learning_session_id `;
             if(learn_area_id != undefined && session_id != undefined){
-                sql += `WHERE pc.learning_session_id = ${session_id} AND c.learning_area_id = \'${learn_area_id}\'`;
+                sql += `WHERE pc.learning_session_id = ? AND c.learning_area_id = ?`;
+                values.push(session_id, learn_area_id)
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year)`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year)`;
+                    values.push(student_id, student_id)
                     if(context_id != undefined){
-                        sql += ` AND ac.learning_context_id=\'${context_id}\'`
+                        sql += ` AND ac.learning_context_id=?`
+                        values.push(context_id)
                     }
                     sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if (learn_area_id != undefined) {
-                sql += `WHERE c.learning_area_id = \'${learn_area_id}\'`;
+                sql += `WHERE c.learning_area_id = ?`;
+                values.push(learn_area_id)
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year)`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year)`;
+                    values.push(student_id, student_id)
                     if(context_id != undefined){
-                        sql += ` AND ac.learning_context_id=\'${context_id}\'`
+                        sql += ` AND ac.learning_context_id=?`
+                        values.push(context_id)
                     }
                     sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if (session_id != undefined) {
-                sql += `WHERE pc.learning_session_id = ${session_id}`;
+                sql += `WHERE pc.learning_session_id = ?`;
+                values.push(session_id)
                 if(student_id != undefined) {
-                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year)`;
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year)`;
+                    values.push(student_id, student_id)
                     if(context_id != undefined){
-                        sql += ` AND ac.learning_context_id=\'${context_id}\'`
+                        sql += ` AND ac.learning_context_id= ?`
+                        values.push(context_id)
                     }
                     sql += `) AND c.certifying_admin_id IS NOT NULL`;
                 }
             } else if(student_id != undefined) {
-                sql += ` WHERE c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ${student_id} AND att.ordinary_class_school_year = ls.school_year)`;
+                sql += ` WHERE c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year) AND ac.study_address_id IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ? AND att.ordinary_class_school_year = ls.school_year)`;
+                values.push(student_id, student_id)
                 if(context_id != undefined){
-                    sql += ` AND ac.learning_context_id=\'${context_id}\'`
+                    sql += ` AND ac.learning_context_id=?`
+                    values.push(context_id)
                 }
                 sql += `) AND c.certifying_admin_id IS NOT NULL`;
             }
             sql += ` ORDER BY c.id`;
             //console.log(sql);
-            const rows = await conn.query(sql);
+            const rows = await conn.query(sql, values);
             conn.release();
             if(rows.length!=0){
                 return rows;
@@ -142,14 +172,18 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = `SELECT DISTINCT c.id AS course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', i.section, c.credits, c.learning_area_id, i.learning_context_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ${student_id} AND g.project_class_course_id = pc.course_id AND g.project_class_session = pc.learning_session_id AND g.final = 1) AS final_grade, CASE WHEN pc.learning_session_id IN (SELECT ls1.id FROM learning_session AS ls1 WHERE ls1.start>CURRENT_DATE()) THEN 1 ELSE 0 END AS future_course FROM student AS s JOIN subscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id JOIN learning_session AS ls ON pc.learning_session_id = ls.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_session_id = g.project_class_session WHERE s.id = ${student_id} AND ls.school_year=${school_year} AND i.pending IS NULL`
+            let values = []
+            sql = `SELECT DISTINCT c.id AS course_id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', i.section, c.credits, c.learning_area_id, i.learning_context_id, (SELECT g.grade FROM grade as g WHERE g.student_id = ? AND g.project_class_course_id = pc.course_id AND g.project_class_session = pc.learning_session_id AND g.final = 1) AS final_grade, CASE WHEN pc.learning_session_id IN (SELECT ls1.id FROM learning_session AS ls1 WHERE ls1.start>CURRENT_DATE()) THEN 1 ELSE 0 END AS future_course FROM student AS s JOIN subscribed as i ON s.id = i.student_id JOIN project_class AS pc ON i.project_class_course_id = pc.course_id AND i.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id JOIN learning_session AS ls ON pc.learning_session_id = ls.id LEFT JOIN grade AS g ON pc.course_id = g.project_class_course_id AND pc.learning_session_id = g.project_class_session WHERE s.id = ? AND ls.school_year=? AND i.pending IS NULL`
+            values.push(student_id, student_id, school_year)
             if(context_id!=undefined){
-                sql += ` AND i.learning_context_id = \'${context_id}\'`;
+                sql += ` AND i.learning_context_id = `;
+                values.push(context_id)
             }
             if(teacher_id!=undefined){
-                sql += ` AND c.id IN (SELECT DISTINCT c.id FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session JOIN associated AS ass ON c.id = ass.course_id WHERE subs.student_id IN (SELECT s.id FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id})) AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}) AND ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id = ${teacher_id}) UNION SELECT c.id FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ${teacher_id} AND pt.project_class_session IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ${school_year}))`;
+                sql += ` AND c.id IN (SELECT DISTINCT c.id FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session JOIN associated AS ass ON c.id = ass.course_id WHERE subs.student_id IN (SELECT s.id FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?)) AND pc.learning_session_id IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ?) AND ass.teaching_id IN (SELECT ot.teaching_id FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) UNION SELECT c.id FROM course AS c JOIN project_teach AS pt ON c.id = pt.project_class_course_id JOIN associated AS ass ON ass.course_id = c.id WHERE pt.teacher_id = ? AND pt.project_class_session IN (SELECT ls.id FROM learning_session AS ls WHERE ls.school_year = ?))`;
+                values.push(teacher_id, teacher_id, school_year, teacher_id, teacher_id, school_year)
             }
-            const rows = await conn.query(sql);
+            const rows = await conn.query(sql, values);
             conn.release();
             return rows;
         } catch (err) {
@@ -162,7 +196,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = `SELECT c.learning_area_id, c.credits FROM course as c WHERE c.id = ?`;
-            const rows = await conn.query(sql, course_id);
+            const rows = await conn.query(sql, [course_id]);
             conn.release();
             if(rows.length == 1){
                 return rows[0];
@@ -180,6 +214,7 @@ module.exports = {
         try {
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
+            let values = []
             if(recent_models){
                 sql += `, c.italian_title, c.english_title`
             } else {
@@ -199,23 +234,25 @@ module.exports = {
                     sql += ` JOIN teacher AS t ON t.id = c.proposer_teacher_id `
                 }
             }
-            if(recent_models){ // I want to have the last 3 models available
+            if(recent_models){ // I want to have the last n models available
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
             } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
                 if(teacher_id!=undefined && not_confirmed){
-                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id} AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
+                    sql += ` WHERE c.proposer_teacher_id = ? AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
+                    values.push(teacher_id)
                 } else if (teacher_id!=undefined){
-                    sql += ` WHERE c.proposer_teacher_id = ${teacher_id}`
+                    sql += ` WHERE c.proposer_teacher_id = ?`
+                    values.push(teacher_id)
                 } else if (not_confirmed){
                     sql += ` WHERE (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL)`
                 }
             }
             sql += ` ORDER BY c.creation_school_year DESC`
             //console.log(sql);
-            const rows = await conn.query(sql)
+            const rows = await conn.query(sql, values)
             conn.release()
             if (recent_models>0){
-                return rows.slice(0,3)
+                return rows.slice(0,recent_models)
             } else {
                 return rows 
             } 
@@ -251,7 +288,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             let sql = 'DELETE FROM course WHERE id=?';
-            const rows = await conn.query(sql, course_id)
+            const rows = await conn.query(sql, [course_id])
             conn.release()
             return rows
         } catch (err) {

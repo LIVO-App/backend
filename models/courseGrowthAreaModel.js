@@ -9,7 +9,7 @@ module.exports = {
                 return null;
             }
             sql = "SELECT ch.growth_area_id, pga.italian_title, pga.english_title, pga.italian_description, pga.english_description FROM characterize AS ch JOIN personal_growth_area AS pga ON ch.growth_area_id = pga.id WHERE ch.course_id = ?";
-            const rows = await conn.query(sql, course_id);
+            const rows = await conn.query(sql, [course_id]);
             conn.release();
             if(rows.length!=0){
                 return rows;
@@ -63,7 +63,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             let sql = 'DELETE FROM characterize WHERE course_id=?';
-            const rows = await conn.query(sql, course_id)
+            const rows = await conn.query(sql, [course_id])
             conn.release()
             return rows
         } catch (err) {

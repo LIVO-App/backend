@@ -4,14 +4,15 @@ module.exports = {
     async list(student_id, session_id){
         try {
             conn = await pool.getConnection();
-            sql = "SELECT DISTINCT lc.id, lc.italian_title, lc.english_title, lc.italian_description, lc.english_description";
+            let sql = "SELECT DISTINCT lc.id, lc.italian_title, lc.english_title, lc.italian_description, lc.english_description";
+            let values = []
             if (student_id!=undefined && session_id!=undefined){
                 sql += ", CASE WHEN l.learning_area_id IS NULL THEN l.credits ELSE NULL END AS credits"
             }
             sql += " FROM learning_context AS lc"
             if (student_id!=undefined && session_id!=undefined){
                 sql += ' JOIN limited AS l ON lc.id = l.learning_context_id WHERE l.learning_session_id=? AND l.ordinary_class_study_year IN (SELECT att.ordinary_class_study_year FROM attend AS att WHERE att.student_id=?) AND l.ordinary_class_address IN (SELECT att.ordinary_class_address FROM attend AS att WHERE att.student_id = ?) AND l.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?) ORDER BY lc.id'
-                values = [session_id, student_id, student_id, session_id]
+                values.push(session_id, student_id, student_id, session_id)
             }
             const rows = (student_id!=undefined && session_id!=undefined) ? await conn.query(sql, values) : await conn.query(sql);
             conn.release();
@@ -59,7 +60,7 @@ module.exports = {
                 return false
             }
             sql = "SELECT id, italian_title, english_title, italian_description, english_description FROM learning_context WHERE id = ?";
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql, [id]);
             conn.release();
             if(rows.length == 1){
                 return rows[0];

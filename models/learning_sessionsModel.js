@@ -19,7 +19,7 @@ module.exports = {
                 rows = await conn.query(sql, [school_year, id]);
             } else {
                 sql += "id = ?";
-                rows = await conn.query(sql, id);
+                rows = await conn.query(sql, [id]);
             }
             conn.release();
             if(rows.length == 1){

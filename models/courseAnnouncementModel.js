@@ -51,7 +51,7 @@ module.exports = {
             if(is_student){
                 sql += " AND pc.final_confirmation IS NOT NULL AND ann.publishment <= CURDATE()"
             }
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql, [id]);
             conn.release();
             if(rows.length === 1){
                 return rows[0];

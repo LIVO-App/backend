@@ -6,7 +6,7 @@ async function read(condition,param){
     try {
         conn = await pool.getConnection();
         sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, s.first_access, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
-        const rows = await conn.query(sql,param);
+        const rows = await conn.query(sql,[param]);
         conn.release();
         if (rows.length>=1){
             return rows[0];
@@ -59,7 +59,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = 'UPDATE student SET google = 1 WHERE id = ?'
-            const rows = await conn.query(sql, student_id);
+            const rows = await conn.query(sql, [student_id]);
             conn.release();
             return rows;
         } catch (err) {
@@ -75,20 +75,28 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ${student_id}`
+            let values = []
+            sql = `SELECT (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = ?`
+            values.push(student_id)
             if(context_id=='PER'){
-                sql += ` AND subs.learning_context_id=\'${context_id}\'`;
+                sql += ` AND subs.learning_context_id=?`;
+                values.push(context_id)
             } else {
-                sql += ` AND c.learning_area_id=\'${area_id}\' AND subs.learning_context_id=\'${context_id}\'`;
+                sql += ` AND c.learning_area_id=? AND subs.learning_context_id=?`;
+                values.push(area_id, context_id)
             }
-            sql += ` AND pc.learning_session_id = ${session_id} AND subs.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ${session_id} AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
+            sql += ` AND pc.learning_session_id = ? AND subs.pending IS NULL) AS credits, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ? AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year `
+            values.push(session_id, session_id)
             if(context_id=='PER'){
-                sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=\'${context_id}\'`;
+                sql += ` AND lm.learning_area_id IS NULL AND lm.learning_context_id=?`;
+                values.push(context_id)
             } else {
-                sql += ` AND lm.learning_area_id = \'${area_id}\' AND lm.learning_context_id=\'${context_id}\'`;
+                sql += ` AND lm.learning_area_id = ? AND lm.learning_context_id=?`;
+                values.push(area_id, context_id)
             }
-            sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ${student_id};`
-            const rows = await conn.query(sql);
+            sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?;`
+            values.push(student_id)
+            const rows = await conn.query(sql, values);
             conn.release();
             return rows[0];
         } catch (err) {
@@ -248,7 +256,7 @@ module.exports = {
             }
             let new_psw = crypto.encrypt_password(psw).toString()
             let sql = 'SELECT password FROM student WHERE id = ?'
-            let rows = await conn.query(sql, student_id)
+            let rows = await conn.query(sql, [student_id])
             if(rows.length==1){
                 if(rows[0].password.toString() === new_psw){
                     conn.release()

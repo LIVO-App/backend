@@ -6,7 +6,7 @@ async function read(condition,param){
     try {
         conn = await pool.getConnection();
         sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google, first_access FROM teacher WHERE " + condition;
-        const rows = await conn.query(sql,param);
+        const rows = await conn.query(sql,[param]);
         conn.release();
         if (rows.length == 1){
             return rows[0];
@@ -59,7 +59,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = 'UPDATE teacher SET google = 1 WHERE id = ?'
-            const rows = await conn.query(sql, teacher_id);
+            const rows = await conn.query(sql, [teacher_id]);
             conn.release();
             return rows;
         } catch (err) {
@@ -71,8 +71,8 @@ module.exports = {
     async isTeacherEmployed(teacher_id, school_year){
         try{
             conn = await pool.getConnection();
-            sql = 'SELECT ot.ordinary_class_school_year AS year FROM ordinary_teach AS ot WHERE ot.teacher_id = 3 ORDER BY ot.ordinary_class_school_year ASC';
-            const rows = await conn.query(sql, teacher_id);
+            sql = 'SELECT ot.ordinary_class_school_year AS year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? ORDER BY ot.ordinary_class_school_year ASC';
+            const rows = await conn.query(sql, [teacher_id]);
             conn.release();
             if (rows[0].year <= school_year) {
                 return true;
@@ -121,7 +121,7 @@ module.exports = {
                 sql += ' ot.ordinary_class_study_year, ot.ordinary_class_address,'
             }
             sql += ' ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id=?'
-            const rows = await conn.query(sql, teacher_id);
+            const rows = await conn.query(sql, [teacher_id]);
             conn.release();
             return rows;
         } catch (err) {
@@ -213,7 +213,7 @@ module.exports = {
             }
             let new_psw = crypto.encrypt_password(psw).toString()
             let sql = 'SELECT password FROM teacher WHERE id = ?'
-            let rows = await conn.query(sql, teacher_id)
+            let rows = await conn.query(sql, [teacher_id])
             if(rows.length==1){
                 if(rows[0].password.toString() === new_psw){
                     conn.release()

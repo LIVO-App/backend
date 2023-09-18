@@ -24,17 +24,21 @@ module.exports = {
                 sql += `, oc.annual_credits_study_year, oc.annual_credits_address, oc.annual_credits_definition_year `
             }*/
             sql += ` FROM ordinary_class as oc `
+            let values = []
             if(student_id != undefined && school_year != undefined){
-                sql += `JOIN attend as att ON att.ordinary_class_study_year = oc.study_year_id AND att.ordinary_class_address = oc.study_address_id AND att.ordinary_class_school_year = oc.school_year WHERE att.student_id = ${student_id} AND oc.school_year = ${school_year}`;
+                sql += `JOIN attend as att ON att.ordinary_class_study_year = oc.study_year_id AND att.ordinary_class_address = oc.study_address_id AND att.ordinary_class_school_year = oc.school_year WHERE att.student_id = ? AND oc.school_year = ?`;
+                values.push(student_id, school_year)
             } else if(student_id != undefined) {
-                sql += `JOIN attend as att ON att.ordinary_class_study_year = oc.study_year_id AND att.ordinary_class_address = oc.study_address_id AND att.ordinary_class_school_year = oc.school_year WHERE att.student_id = ${student_id}`;
+                sql += `JOIN attend as att ON att.ordinary_class_study_year = oc.study_year_id AND att.ordinary_class_address = oc.study_address_id AND att.ordinary_class_school_year = oc.school_year WHERE att.student_id = ?`;
+                values.push(student_id)
             } else if(school_year != undefined) {
-                sql += `WHERE oc.school_year = ${school_year}`;
+                sql += `WHERE oc.school_year = ?`;
+                values.push(school_year)
             }
             if(descending){
                 sql += ` ORDER BY oc.school_year DESC`
             }
-            const rows = await conn.query(sql);
+            const rows = await conn.query(sql, values);
             conn.release();
             if(rows.length!=0){
                 return rows;

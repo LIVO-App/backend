@@ -21,7 +21,7 @@ module.exports = {
             }     
             //console.log(sql, username);
             if(sql){
-                const rows = await conn.query(sql, username);
+                const rows = await conn.query(sql, [username]);
                 conn.release();
                 if(rows.length == 0) {
                     return null;

@@ -9,7 +9,7 @@ module.exports = {
                 return null;
             }
             sql = "SELECT ass.teaching_id, tc.italian_title, tc.english_title FROM teaching AS tc JOIN associated AS ass ON ass.teaching_id = tc.id WHERE ass.course_id = ?;";
-            const rows = await conn.query(sql, course_id);
+            const rows = await conn.query(sql, [course_id]);
             conn.release();
             if(rows.length!=0){
                 return rows;
@@ -63,7 +63,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             let sql = 'DELETE FROM associated WHERE course_id=?';
-            const rows = await conn.query(sql, course_id)
+            const rows = await conn.query(sql, [course_id])
             conn.release()
             return rows
         } catch (err) {

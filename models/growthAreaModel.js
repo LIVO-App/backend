@@ -9,7 +9,7 @@ module.exports = {
                 return false
             }
             sql = "SELECT id, italian_title, english_title, italian_description, english_description FROM personal_growth_area WHERE id = ?";
-            const rows = await conn.query(sql, id);
+            const rows = await conn.query(sql, [id]);
             conn.release();
             if(rows.length == 1){
                 return rows[0];

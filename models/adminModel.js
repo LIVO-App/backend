@@ -6,7 +6,7 @@ async function read(condition,param){
     try {
         conn = await pool.getConnection();
         sql = "SELECT id, cf, username, name, surname, gender, birth_date, address, email, google, first_access FROM admin WHERE " + condition;
-        const rows = await conn.query(sql,param);
+        const rows = await conn.query(sql,[param]);
         conn.release();
         if (rows.length == 1){
             return rows[0];
@@ -59,7 +59,7 @@ module.exports = {
         try{
             conn = await pool.getConnection();
             sql = 'UPDATE admin SET google = 1 WHERE id = ?'
-            const rows = await conn.query(sql, admin_id);
+            const rows = await conn.query(sql, [admin_id]);
             conn.release();
             return rows;
         } catch (err) {
@@ -129,7 +129,7 @@ module.exports = {
             }
             let new_psw = crypto.encrypt_password(psw).toString()
             let sql = 'SELECT password FROM admin WHERE id = ?'
-            let rows = await conn.query(sql, admin_id)
+            let rows = await conn.query(sql, [admin_id])
             if(rows.length==1){
                 if(rows[0].password.toString() === new_psw){
                     conn.release()

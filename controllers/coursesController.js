@@ -243,6 +243,8 @@ module.exports.get_courses_model = async (req, res) => {
     let recent_models = req.query.recent_models;
     if (recent_models!=undefined){
         recent_models = recent_models > 0 ? recent_models : 0
+    } else {
+        recent_models = 0
     }
     let not_confirmed = req.query.not_confirmed;
     if (not_confirmed!=undefined){
@@ -285,6 +287,7 @@ module.exports.get_courses_model = async (req, res) => {
             italian_title: model.italian_title,
             english_title: model.english_title,
             creation_school_year: model.creation_school_year,
+            learning_session_id: model.learning_session_id,
             project_class_confirmation_date: model.project_class_confirmation_date,
             project_class_to_be_modified: model.project_class_to_be_modified,
             course_confirmation_date: model.course_confirmation_date,

@@ -150,7 +150,7 @@ module.exports = {
     async not_same_group(course_id, session_id, student_id, area_id){
         try {
             conn = await pool.getConnection()
-            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_session_id = ? AND pc.group IN (SELECT pc1.group FROM subscribed AS subs JOIN project_class AS pc1 ON pc1.course_id = subs.project_class_course_id AND pc1.learning_session_id = subs.project_class_session JOIN course AS c ON c.id = pc1.course_id WHERE subs.student_id = ? AND c.learning_area_id = ?)'
+            let sql = 'SELECT * FROM project_class AS pc WHERE pc.course_id = ? AND pc.learning_session_id = ? AND pc.group IN (SELECT pc1.group FROM subscribed AS subs JOIN project_class AS pc1 ON pc1.course_id = subs.project_class_course_id AND pc1.learning_session_id = subs.project_class_session JOIN course AS c ON c.id = pc1.course_id WHERE subs.student_id = ? AND c.learning_area_id = ? AND subs.pending IS NULL)'
             let values = [course_id, session_id, student_id, area_id]
             const rows = await conn.query(sql, values);
             conn.release()
@@ -168,13 +168,31 @@ module.exports = {
     async remove_pending(student_id, course_id, session_id, section){
         try {
             conn = await pool.getConnection()
-            let sql = 'UPDATE subscribed SET pending = NULL WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND section = ? '
-            let values = [student_id, course_id, session_id, section]
+            let sql = 'UPDATE subscribed SET pending = NULL AND section = ? WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?'
+            let values = [section, student_id, course_id, session_id, section]
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
         } catch (err) {
             console.log("Something went wrong: remove pending from student")
+        } finally {
+            conn.release()
+        }
+    },
+    async get_pending_students(course_id, session_id){
+        try {
+            conn = await pool.getConnection()
+            if(!course_id || !session_id){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT student_id, learning_context_id FROM subscribed WHERE project_class_course_id = ? AND project_class_session = ? AND pending IS NOT NULL ORDER BY pending'
+            let values = [course_id, session_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: pending students")
         } finally {
             conn.release()
         }

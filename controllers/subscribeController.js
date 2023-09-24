@@ -227,7 +227,48 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
         status: "deleted", 
         description: res_des
     };
-    res.status(200).json(response);
+    let pending_students = await subscribe_schema.get_pending_students(course_id, session_id)
+    if(!pending_students){
+        response["pending"] = MSG.missing_params
+        res.status(200).json(response)
+        console.log('missing required information on class for pending students');
+        return;
+    }
+    if(pending_students.length > 0){
+        for(let row in pending_students){
+            let pending_student_id = pending_students[row].student_id;
+            let pending_context_id = pending_students[row].learning_context_id;
+            let cour = await courseSchema.read_learning_area(course_id);
+            if(!cour){
+                continue
+            }
+            let isMax = await studentModel.retrieve_credits(pending_student_id, session_id, cour.learning_area_id, pending_context_id);
+            if(!isMax){
+                continue
+            }
+            if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
+                continue
+            }
+            let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id);
+            if(!notSameGroup){
+                continue
+            }
+            let pending_section = await subscribe_schema.getAvailableSection(course_id, session_id);
+            if(pending_section == null){
+                continue
+            }
+            if(pending_section === ""){
+                continue // It is still in pending for some reason
+            }
+            let remove_pending = await subscribe_schema.remove_pending(pending_student_id, course_id, session_id, pending_section)
+            console.log("A student was removed from pending")
+            break
+        }
+    } else {
+        console.log("No pending students")
+    }
+    res.status(200).json(response)
+    return
 }
 /*subscribe_schema.isClassFull(3,7)
     .then((msg) => {

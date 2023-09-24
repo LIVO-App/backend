@@ -46,7 +46,7 @@ module.exports = {
                 return false;
             } 
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list ordinary classes");
         } finally {
             conn.release();
         }
@@ -76,7 +76,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read teacher ordinary classes");
         } finally {
             conn.release();
         }
@@ -98,7 +98,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read student ordinary classes");
         } finally {
             conn.release();
         }
@@ -121,7 +121,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of ordinary class components");
         } finally {
             conn.release();
         }
@@ -166,7 +166,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of students of ordinary class not in order");
         } finally {
             conn.release();
         }
@@ -188,7 +188,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read ordinary class from student and session");
         } finally {
             conn.release();
         }
@@ -210,7 +210,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: read ordinary class")
         } finally {
             conn.release()
         }
@@ -232,7 +232,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: read ordinary class from school year")
         } finally {
             conn.release()
         }
@@ -254,7 +254,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: check study year")
         } finally {
             conn.release()
         }
@@ -276,7 +276,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: check study address")
         } finally {
             conn.release()
         }
@@ -289,7 +289,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: get study address")
         } finally {
             conn.release()
         }
@@ -309,7 +309,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add ordinary class")
         } finally {
             conn.release()
         }
@@ -327,7 +327,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log()
+            console.log("Something went wrong: add student to ordinary class")
         } finally {
             conn.release()
         }
@@ -345,7 +345,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add teachers to ordinary class")
         } finally {
             conn.release()
         }

@@ -14,7 +14,7 @@ async function read(condition,param){
             return false;
         }
     } catch (err) {
-        console.log(err);
+        console.log("Something went wrong: read student");
     } finally {
         conn.release();
     }
@@ -50,7 +50,7 @@ module.exports = {
             //console.log("end");
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list student");
         } finally {
             conn.release();
         }
@@ -63,7 +63,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: google update student");
         } finally {
             conn.release();
         }
@@ -100,7 +100,7 @@ module.exports = {
             conn.release();
             return rows[0];
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: student credits");
         } finally {
             conn.release();
         }
@@ -119,7 +119,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: student project classes");
         } finally {
             conn.release();
         }
@@ -142,7 +142,7 @@ module.exports = {
             }
 
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: student section of project class")
         } finally {
             conn.release()
         }
@@ -189,7 +189,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: student annual credits");
         } finally {
             conn.release();
         }
@@ -242,7 +242,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update student")
         } finally {
             conn.release()
         }
@@ -272,7 +272,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update student password")
         } finally {
             conn.release()
         }
@@ -295,7 +295,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add student")
         } finally {
             conn.release()
         }

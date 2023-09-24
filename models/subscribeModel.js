@@ -29,7 +29,7 @@ module.exports = {
                 pending: pen_val
             };
         } catch (err){
-            console.log(err);
+            console.log("Something went wrong: student subscription");
         } finally {
             conn.release();
         }
@@ -49,7 +49,7 @@ module.exports = {
             //console.log("Deleted "+rows.affectedRows+" rows.");
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: student unsubscription");
         } finally {
             conn.release();
         }
@@ -72,7 +72,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log()
+            console.log("Something went wrong: class is full")
         } finally {
             conn.release();
         }
@@ -114,7 +114,7 @@ module.exports = {
             }
             return "";
         } catch (err) {
-            console.log()
+            console.log("Something went wrong: get available sections")
         } finally {
             conn.release();
         }
@@ -142,7 +142,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read student subscription");
         } finally {
             conn.release();
         }
@@ -160,7 +160,21 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: not same group student subscription")
+        } finally {
+            conn.release()
+        }
+    },
+    async remove_pending(student_id, course_id, session_id, section){
+        try {
+            conn = await pool.getConnection()
+            let sql = 'UPDATE subscribed SET pending = NULL WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND section = ? '
+            let values = [student_id, course_id, session_id, section]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: remove pending from student")
         } finally {
             conn.release()
         }

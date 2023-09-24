@@ -14,7 +14,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list grades");
         } finally {
             conn.release();
         }
@@ -43,7 +43,7 @@ module.exports = {
                 }
             };
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: insert grade");
         } finally {
             conn.release();
         }
@@ -65,7 +65,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get final grade");
         } finally {
             conn.release();
         }
@@ -80,7 +80,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: remove grades");
         } finally {
             conn.release();
         }

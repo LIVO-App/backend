@@ -21,7 +21,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read course");
         } finally {
             conn.release();
         }
@@ -160,7 +160,7 @@ module.exports = {
                 return false;
             } 
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of courses");
         } finally {
             conn.release();
         }
@@ -187,7 +187,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get curriculum");
         } finally {
             conn.release();
         }
@@ -205,7 +205,7 @@ module.exports = {
             }
             
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read course learning area");
         } finally {
             conn.release();
         }
@@ -257,7 +257,7 @@ module.exports = {
                 return rows 
             } 
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
         }
@@ -279,7 +279,7 @@ module.exports = {
                 date: creation_school_year
             };
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add proposition")
         } finally {
             conn.release()
         }
@@ -292,7 +292,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete course proposition")
         } finally {
             conn.release()
         }
@@ -314,7 +314,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: read course with different parameters")
         } finally {
             conn.release()
         }
@@ -332,7 +332,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add course to be modified")
         } finally {
             conn.release()
         }
@@ -354,7 +354,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: course already inserted")
         } finally {
             conn.release()
         }
@@ -385,7 +385,7 @@ module.exports = {
                 confirmation_date: confirmation_date
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: approve course")
         } finally {
             conn.release()
         }
@@ -445,7 +445,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update course")
         } finally {
             conn.release()
         }

@@ -17,7 +17,7 @@ module.exports = {
                 return false;
             } 
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read teaching from course");
         } finally {
             conn.release();
         }
@@ -54,7 +54,7 @@ module.exports = {
             conn.release()
             return rows;
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add teaching to course")
         } finally {
             conn.release()
         }
@@ -67,7 +67,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: remove teaching from course")
         } finally {
             conn.release()
         }
@@ -88,7 +88,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: teaching present")
         } finally {
             conn.release()
         }

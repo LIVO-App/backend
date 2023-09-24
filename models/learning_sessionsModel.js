@@ -28,7 +28,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read learning session");
         } finally {
             conn.release();
         }
@@ -57,7 +57,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list learning session");
         } finally {
             conn.release();
         }
@@ -86,7 +86,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: list learning session")
         } finally {
             conn.release();
         }
@@ -130,7 +130,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: insert learning session")
         } finally {
             conn.release()
         }
@@ -148,7 +148,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete learning session")
         } finally {
             conn.release()
         }
@@ -195,7 +195,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update learning session")
         } finally {
             conn.release()
         }
@@ -208,7 +208,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: list years from learning session")
         } finally {
             conn.release()
         }

@@ -17,7 +17,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read teachings");
         } finally {
             conn.release();
         }
@@ -30,7 +30,7 @@ module.exports = {
             conn.release();
             return rows
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list teachings");
         } finally {
             conn.release();
         }

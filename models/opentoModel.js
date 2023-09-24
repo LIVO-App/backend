@@ -17,7 +17,7 @@ module.exports = {
                 return false;
             } 
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read course accessibility");
         } finally {
             conn.release();
         }
@@ -89,7 +89,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: insert course accessibility")
         } finally {
             conn.release()
         }
@@ -102,7 +102,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete course accessibility")
         } finally {
             conn.release()
         }
@@ -123,7 +123,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: exist course accessibility")
         } finally {
             conn.release()
         }
@@ -145,7 +145,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: check course accessibility")
         } finally {
             conn.release()
         }
@@ -194,7 +194,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update course accessibility")
         } finally {
             conn.release()
         }

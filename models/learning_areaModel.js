@@ -17,7 +17,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read learning area");
         } finally {
             conn.release();
         }
@@ -30,7 +30,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list learning areas");
         }
     },
     /**
@@ -53,7 +53,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read learning areas from session");
         } finally {
             conn.release();
         }

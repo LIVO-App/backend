@@ -37,7 +37,7 @@ module.exports = {
             }
             
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: authentication");
         } finally {
             conn.release();
         }

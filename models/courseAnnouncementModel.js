@@ -31,7 +31,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of announcement");
         } finally {
             conn.release();
         }
@@ -59,7 +59,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read announcement");
         } finally {
             conn.release();
         }
@@ -89,7 +89,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: add announcement");
         } finally {
             conn.release();
         }
@@ -103,7 +103,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: remove announcement")
         } finally {
             conn.release();
         }

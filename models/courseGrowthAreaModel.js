@@ -17,7 +17,7 @@ module.exports = {
                 return false;
             } 
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read growth area associated to course");
         } finally {
             conn.release();
         }
@@ -54,7 +54,7 @@ module.exports = {
             conn.release()
             return rows;
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add growth area to course")
         } finally {
             conn.release()
         }
@@ -67,7 +67,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: remove growth area from course")
         } finally {
             conn.release()
         }
@@ -88,7 +88,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: exists growth area connected")
         } finally {
             conn.release()
         }

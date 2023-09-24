@@ -18,7 +18,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get annaul constraints");
         } finally {
             conn.release();
         }
@@ -78,7 +78,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: get constraints")
         } finally {
             conn.release()
         }
@@ -164,7 +164,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add constraints")
         } finally {
             conn.release()
         }
@@ -189,7 +189,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: is constraint present")
         } finally {
             conn.release()
         }
@@ -203,7 +203,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get constraints sum");
         } finally {
             conn.release()
         }
@@ -221,7 +221,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete constraints")
         } finally {
             conn.release()
         }
@@ -243,7 +243,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: get single constraint")
         } finally {
             conn.release()
         }
@@ -261,7 +261,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update constraints")
         } finally {
             conn.release()
         }

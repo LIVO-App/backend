@@ -19,7 +19,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read project class");
         } finally {
             conn.release();
         }
@@ -46,7 +46,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of project class");
         } finally {
             conn.release();
         }
@@ -68,7 +68,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: student enrolled in project class");
         } finally {
             conn.release();
         }
@@ -90,7 +90,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get project class info of students");
         } finally {
             conn.release();
         }
@@ -116,7 +116,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: get project class components");
         } finally {
             conn.release();
         }
@@ -138,7 +138,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: teacher teaches in project class");
         } finally {
             conn.release();
         }
@@ -161,7 +161,7 @@ module.exports = {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read project class");
         } finally {
             conn.release();
         }
@@ -181,7 +181,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add project class")
         } finally {
             conn.release()
         }
@@ -195,7 +195,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete project class")
         } finally {
             conn.release()
         }
@@ -213,7 +213,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: to be modified project class")
         } finally {
             conn.release()
         }
@@ -235,7 +235,7 @@ module.exports = {
                 return 0
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: get project class max section number")
         } finally {
             conn.release()
         }
@@ -257,7 +257,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: check confirmed project classed")
         } finally {
             conn.release()
         }
@@ -279,7 +279,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: get project class sessions from course")
         } finally {
             conn.release()
         }
@@ -301,7 +301,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: check project class grades")
         } finally {
             conn.release()
         }
@@ -325,7 +325,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: final confirmation project class")
         } finally {
             conn.release()
         }
@@ -364,7 +364,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update project class")
         } finally {
             conn.release()
         }

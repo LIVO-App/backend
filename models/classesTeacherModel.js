@@ -23,7 +23,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: read teacher project classes");
         } finally {
             conn.release();
         }
@@ -97,7 +97,7 @@ module.exports = {
             conn.release();
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add teacher project classes")
         } finally {
             conn.release()
         }
@@ -118,7 +118,7 @@ module.exports = {
                 return false
             }
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: exist teacher project classes")
         } finally {
             conn.release()
         }
@@ -132,7 +132,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete teacher project classes")
         } finally {
             conn.release()
         }
@@ -165,7 +165,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update teacher project classes")
         } finally {
             conn.release()
         }
@@ -203,7 +203,7 @@ module.exports = {
             conn.release();
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: add single teacher project classes")
         } finally {
             conn.release()
         }
@@ -230,7 +230,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: delete single teacher project classes")
         } finally {
             conn.release()
         }

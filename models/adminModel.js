@@ -14,7 +14,7 @@ async function read(condition,param){
             return false;
         }
     } catch (err) {
-        console.log(err);
+        console.log("Something went wrong: read admin");
     } finally {
         conn.release();
     }
@@ -50,7 +50,7 @@ module.exports = {
             //console.log("end");
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: list of admins");
         } finally {
             conn.release();
         }
@@ -63,7 +63,7 @@ module.exports = {
             conn.release();
             return rows;
         } catch (err) {
-            console.log(err);
+            console.log("Something went wrong: google update");
         } finally {
             conn.release();
         }
@@ -115,7 +115,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update admin info")
         } finally {
             conn.release()
         }
@@ -145,7 +145,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: update admin password")
         } finally {
             conn.release()
         }
@@ -168,7 +168,7 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
+            console.log("Something went wrong: admin insertion")
         } finally {
             conn.release()
         }

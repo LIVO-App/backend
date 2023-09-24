@@ -1029,6 +1029,33 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/confirmation:
+    patch:
+      description: | 
+        This api is used to manage the confirmation of the subscription by the student. 
+        If the outcome is negative, the subscription will be deleted and an eventual pending student will be enrolled in his place.
+        If the outcome is positive, we have two possible scenarios:
+          - If the student was not pending, all will remain the same
+          - If the student was pending, if there are free slots, the student will be enrolled, otherwise it will remain in the pending list until someone will unsubscribe or not confirm his subscription.
+      summary: Confirmation to a course
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_outcome'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/teachers/{teacher_id}/my_project_classes:
     get:
       description: Get all the project classes in which the teacher teaches in a certain learning session
@@ -5099,3 +5126,9 @@ components:
       schema:
         type: integer
       required: true
+    query_outcome:
+      name: outcome
+      in: query
+      description: Outcome of confirmation of the subscription.
+      schema:
+        type: boolean

@@ -61,7 +61,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM subscribed WHERE project_class_course_id=? AND project_class_session=?)>course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
+            sql = 'SELECT CASE WHEN (SELECT COUNT(student_id) AS num_students FROM subscribed WHERE project_class_course_id=? AND project_class_session=?)>=course.max_students THEN "true" ELSE "false" END AS full FROM course WHERE course.id = ?'        
             //console.log(sql);
             let values = [course_id, session_id, course_id]
             const rows = await conn.query(sql, values);
@@ -123,13 +123,17 @@ module.exports = {
         let values, rows;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !session_id || !context_id){
+            if(!student_id || !course_id || !session_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_session, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND learning_context_id = ?';
-            values = [student_id, course_id, session_id, context_id];
+            sql = 'SELECT student_id, project_class_course_id, project_class_session, learning_context_id, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?';
+            values = [student_id, course_id, session_id];
+            if (context_id != undefined){
+                sql += ' AND learning_context_id = ?'
+                values.push(context_id)
+            }
             if (section != undefined) {
                 sql += ' AND section = ?';
                 values.push(section.toUpperCase());

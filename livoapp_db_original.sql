@@ -743,7 +743,7 @@ CREATE TABLE `student` (
 
 INSERT INTO `student` (`id`, `cf`, `username`, `email`, `password`, `name`, `surname`, `gender`, `birth_date`, `address`, `google`, `first_access`, `assets`) VALUES
 (1, NULL, 'aurora.avi', 'aurora.avi@istitutodecarneri.it', '06a097a66551d16eaae96fcbfc529e23e65fb53ec83f48b1c23b5cdbe6195e8d', 'Aurora', 'Avi', NULL, NULL, NULL, 0, 0, '/assets/users/students/avi'),
-(2, NULL, 'giulia.battistel', 'giulia.battistel@istitutodecarneri.it', '648849c64d11d86ce9d787d3f95efb8760721f793b07d67fc4e77d6b9835a749', 'Giulia', 'Battistel', NULL, NULL, NULL, 0, 0, '/assets/users/students/battistel')
+(2, NULL, 'giulia.battistel', 'giulia.battistel@istitutodecarneri.it', '648849c64d11d86ce9d787d3f95efb8760721f793b07d67fc4e77d6b9835a749', 'Giulia', 'Battistel', NULL, NULL, NULL, 0, 0, '/assets/users/students/battistel'),
 (3, NULL, 'luca.bonvecchio', 'luca.bonvecchio@istitutodecarneri.it', 'b4b7ac146381299a500f7b283520272c243534b65bd920a6ad4288edcb8bbc41', 'Luca', 'Bonvecchio', NULL, NULL, NULL, 0, 0, '/assets/users/students/bonvecchio'),
 (4, NULL, 'francesco.bortolotti', 'francesco.bortolotti@istitutodecarneri.it', '562fb5c06172005e51c87acde4787adeb5ecc9989065e2dfe7f5101ad959df84', 'Francesco', 'Bortolotti', NULL, NULL, NULL, 0, 0, '/assets/users/students/bortolotti'),
 (5, NULL, 'giuseppe.caliari', 'giuseppe.caliari@istitutodecarneri.it', 'd804d9145ca0449757d48c70edf2094b7202ab44500940ed8089c6796b207423', 'Giuseppe', 'Caliari', NULL, NULL, NULL, 0, 0, '/assets/users/students/caliari'),

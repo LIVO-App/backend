@@ -620,6 +620,9 @@ module.exports.add_teachers = async (req, res) => {
         let teacher_address = teacher_list[teacher].address
         let teacher_email = teacher_list[teacher].email
         let username = teacher_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+teacher_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        for(let i=0; i<teacher_surname_arr.length;i++){
+            username += teacher_surname_arr[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        }
         let user_exist = await teacherSchema.read_email(teacher_email)
         if(user_exist){
             existing_teacher = true
@@ -627,7 +630,9 @@ module.exports.add_teachers = async (req, res) => {
             continue
         }
         let teacher_psw = Math.random().toString(36).slice(-8)
-        let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address)
+        let assets_link_name = username.split(".")[1]
+        let assets_link = "/assets/users/teachers/"+assets_link_name
+        let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address, assets_link)
         if(!teacher_insert){
             wrong_teacher = true
             console.log("User not added")

@@ -101,6 +101,9 @@ module.exports.add_admins = async (req, res) => {
         let admin_address = admin_list[admin].address
         let admin_email = admin_list[admin].email
         let username = admin_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+admin_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        for(let i=0;i<admin_surname_arr.length;i++){
+            username += admin_surname_arr[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        }
         let user_exist = await adminModel.read_email(admin_email)
         if(user_exist){
             existing_admin = true
@@ -108,7 +111,9 @@ module.exports.add_admins = async (req, res) => {
             continue
         }
         let admin_psw = Math.random().toString(36).slice(-8)
-        let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address)
+        let assets_link_name = username.split(".")[1]
+        let assets_link = "/assets/users/admins/"+assets_link_name
+        let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address, assets_link)
         if(!admin_insert){
             wrong_admin = true
             console.log("User not added")

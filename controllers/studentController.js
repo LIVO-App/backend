@@ -639,6 +639,9 @@ module.exports.add_students = async (req, res) => {
         let student_address = student_list[student].address
         let student_email = student_list[student].email
         let username = student_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+student_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        for(let i=1;i<student_surname_arr.length;i++){
+            username += student_surname_arr[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+        }
         let user_exist = await studentModel.read_email(student_email)
         if(user_exist){
             existing_student = true
@@ -646,7 +649,9 @@ module.exports.add_students = async (req, res) => {
             continue
         }
         let student_psw = Math.random().toString(36).slice(-8)
-        let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address)
+        let assets_link_name = username.split(".")[1]
+        let assets_link = "/assets/users/students/"+assets_link_name
+        let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address, assets_link)
         if(!student_insert){
             wrong_student = true
             console.log("User not added")

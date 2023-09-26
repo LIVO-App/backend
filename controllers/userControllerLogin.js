@@ -139,28 +139,28 @@ module.exports.google = async (req, res) => {
         email: userGoogle.email
     };
     var msg = await studentSchema.read_email(filterEmail.email);
-    if (!msg) {
+    if (msg) {
         if (!msg.google){
             await studentSchema.google(msg.id);
         }
         let token = generateToken(msg);
-        return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     msg = await teacherSchema.read_email(filterEmail.email);
-    if (!msg) {
+    if (msg) {
         if (!msg.google){
             await teacherSchema.google(msg.id);
         }
         let token = generateToken(msg);
-        return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     msg = await adminSchema.read_email(filterEmail.email);
-    if (!msg) {
+    if (msg) {
         if (!msg.google) {
             await adminSchema.google(msg.id);
         }
         let token = generateToken(msg);
-        return res.redirect("http://localhost:5000/google-redirect?token="+token);
+        return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     return res.status(401).json({status: 'error', message: MSG.errorAuth});
 }

@@ -16,4 +16,5 @@ username: roberta.ravelli, password: wfa8gjxg
 username: luca.riccadonna, password: jixo96np     
 username: giorgia.salomon, password: lxntu6sr     
 username: giovanni.scalfi, password: omkhdw1i     
-username: alessandro.anderle, password: ux8bkgdd      
+username: alessandro.anderle, password: ux8bkgdd     
+username: dylan.kier, password: at6c1l8s 

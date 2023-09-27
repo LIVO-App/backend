@@ -143,7 +143,7 @@ module.exports.google = async (req, res) => {
         if (!msg.google){
             await studentSchema.google(msg.id);
         }
-        let token = generateToken(msg);
+        let token = generateToken(msg,"student");
         return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     msg = await teacherSchema.read_email(filterEmail.email);
@@ -151,7 +151,7 @@ module.exports.google = async (req, res) => {
         if (!msg.google){
             await teacherSchema.google(msg.id);
         }
-        let token = generateToken(msg);
+        let token = generateToken(msg,"teacher");
         return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     msg = await adminSchema.read_email(filterEmail.email);
@@ -159,7 +159,7 @@ module.exports.google = async (req, res) => {
         if (!msg.google) {
             await adminSchema.google(msg.id);
         }
-        let token = generateToken(msg);
+        let token = generateToken(msg,"admin");
         return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
     return res.status(401).json({status: 'error', message: MSG.errorAuth});

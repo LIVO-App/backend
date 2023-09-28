@@ -17,8 +17,7 @@ module.exports.get_areas = async (req, res) => {
     let context_id = req.query.context_id;
     let areas;
     if (session_id != undefined) {
-        if(context_id === "SPE"){
-            console.log("HI")
+        if(context_id === "SPE" || context_id === undefined){
             areas = await learningAreaSchema.read_from_sessions(session_id,all_data,credits);
         } else {
             areas = await learningAreaSchema.list_personal_available_areas(session_id, all_data)

@@ -31,6 +31,8 @@ module.exports = {
             return rows;
         } catch (err) {
             console.log("Something went wrong: list learning areas");
+        } finally {
+            conn.release()
         }
     },
     /**
@@ -56,6 +58,26 @@ module.exports = {
             console.log("Something went wrong: read learning areas from session");
         } finally {
             conn.release();
+        }
+    },
+    async list_personal_available_areas(session_id, all_data){
+        try {
+            conn = await pool.getConnection();
+            sql = "SELECT la.id";
+            if (all_data) {
+                sql += ", la.italian_title, la.english_title, la.italian_description, la.english_description";
+            }
+            sql += " FROM learning_area AS la WHERE la.id IN (SELECT DISTINCT c.learning_area_id FROM course AS c JOIN `accessible` AS ac ON c.id = ac.course_id JOIN project_class AS pc ON c.id = pc.course_id LEFT JOIN limited AS l ON la.id = l.learning_area_id WHERE ac.learning_context_id = 'PER' AND pc.learning_session_id = ?) GROUP BY la.id;"
+            let values = [session_id]
+            const rows = await conn.query(sql, values);
+            console.log(sql)
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log(err)
+            console.log("Something went wrong: list learning areas");
+        } finally {
+            conn.release()
         }
     }
 };

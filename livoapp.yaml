@@ -209,6 +209,7 @@ paths:
       description: Get all learning areas in the system.
       parameters:
         - $ref: '#/components/parameters/query_session_id'
+        - $ref: '#/components/parameters/query_context_id'
         - $ref: '#/components/parameters/query_all_data'
         - $ref: '#/components/parameters/query_credits'
       summary: View of all the learning areas.

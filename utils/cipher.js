@@ -71,7 +71,7 @@ console.log("Indirizzo: "+txt3);
 console.log(decipher(txt3));
 //console.log("CIPHER");
 //console.log(cipher(text));
-*/
+*//*
 psw = encrypt_password("teachProvaLivoPath1");
-console.log("Password = "+psw);
+console.log("Password = "+psw);*/
 module.exports = {cipher, decipher, encrypt_password};

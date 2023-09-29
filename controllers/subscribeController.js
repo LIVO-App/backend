@@ -383,7 +383,9 @@ module.exports.subscription_confirmation = async (req, res) => {
             console.log("Student is still in pending list of the course")
             return
         }
-
+        res.status(200).json({status: "accepted", description: "The student is enrolled to this course"})
+        console.log("Student is enrolled definetely.")
+        return
     }
 }
 /*subscribe_schema.isClassFull(3,7)

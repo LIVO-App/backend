@@ -24,11 +24,13 @@ function addSeconds(date, seconds) {
   }
 
 let generateToken = (user, role) => {
+    let expirationDate = addSeconds(new Date(), expirationTime)
     let payload = {
         _id: user.id,
         username: user.username,
         role: role,
-        first_access: user.first_access
+        first_access: user.first_access,
+        expirationDate: expirationDate
     }
     let option = {
         expiresIn: expirationTime //expires in 24 hours
@@ -162,7 +164,7 @@ module.exports.google = async (req, res) => {
         let token = generateToken(msg,"admin");
         return res.redirect("http://localhost:8100/google-redirect?token="+token);
     }
-    return res.status(401).json({status: 'error', message: MSG.errorAuth});
+    return res.redirect("http://localhost:8100/google-redirect");
 }
 
 /*studentSchema.google(1).then((msg) => {

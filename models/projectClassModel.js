@@ -112,6 +112,7 @@ module.exports = {
                 sql += ' AND s.id IN (SELECT att.student_id FROM attend AS att WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_school_year = (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?))'
                 values.push(teacher_id, teacher_id, session_id);
             }
+            sql += ' ORDER BY s.surname'
             const rows = await conn.query(sql, values);
             conn.release();
             return rows;

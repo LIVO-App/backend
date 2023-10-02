@@ -115,7 +115,7 @@ module.exports = {
             if(admin_user){
                 sql += ', (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session JOIN course AS c ON c.id = pc.course_id JOIN characterize AS ch ON ch.course_id = c.id WHERE ch.growth_area_id = 4 AND subs.student_id = att.student_id) AS orientation_credits, (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session JOIN course AS c ON c.id = pc.course_id JOIN characterize AS ch ON ch.course_id = c.id WHERE ch.growth_area_id = 5 AND subs.student_id = att.student_id) AS clil_credits';
             }
-            sql += ' FROM attend AS att JOIN student AS s ON att.student_id = s.id WHERE att.ordinary_class_study_year = ? AND att.ordinary_class_address = ? AND att.ordinary_class_school_year = ? AND att.section = ?'
+            sql += ' FROM attend AS att JOIN student AS s ON att.student_id = s.id WHERE att.ordinary_class_study_year = ? AND att.ordinary_class_address = ? AND att.ordinary_class_school_year = ? AND att.section = ? ORDER BY s.surname'
             let values = [study_year, address, school_year, section];            
             const rows = await conn.query(sql, values);
             conn.release();

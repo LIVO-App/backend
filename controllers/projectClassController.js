@@ -173,7 +173,7 @@ module.exports.get_class = async (req, res) => {
 module.exports.get_project_class_components = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let query = teacher_id ? {teacher_id: teacher_id} : {}; 
-    let associated_class;
+    let associated_class = undefined;
     let course_id = req.params.course;
     let session_id = req.params.session;
     let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
@@ -197,6 +197,8 @@ module.exports.get_project_class_components = async (req, res) => {
                 return;
             }
             associated_class = true
+        } else {
+            associated_class = false
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exists = await adminModel.read_id(req.loggedUser._id)
@@ -247,7 +249,10 @@ module.exports.get_project_class_components = async (req, res) => {
         single: false,
         query: query,
         date: new Date(),
-        data: data_cmps
+        data: {
+            associated_teacher: associated_class,
+            components: data_cmps
+        }
     };
     res.status(200).json(response);
 }

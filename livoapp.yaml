@@ -1652,9 +1652,7 @@ paths:
                     format: date
                     description: "Date of the current call to the API"
                   data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ordinary_class_non_compliant_component_data'
+                    $ref: '#/components/schemas/ordinary_class_non_compliant_component_data'
                     description: "Data return from the api"
         '400':
           $ref: "#/components/responses/BadInputs"
@@ -3972,6 +3970,16 @@ components:
           type: string 
           description: "Section of ordinary class"
     project_class_component_data:
+      type: object
+      properties:
+        associated_teacher:
+          type: boolean
+          description: "Tells if the teacher that wants to see the components of the project class is its teacher (false) or is associated to it (true)"
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/project_class_single_component_data'
+    project_class_single_component_data:
       type: object
       properties:
         id:

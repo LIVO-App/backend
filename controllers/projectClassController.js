@@ -199,7 +199,7 @@ module.exports.get_project_class_components = async (req, res) => {
     let session_id = req.params.session;
     let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
     query["section"] = section;
-    let associated_class = req.query.assoc_class;
+    let associated_class = req.query.assoc_class === "true" ? 1 : 0;
     query["assoc_class"] = associated_class
     let cmps;
     if(req.loggedUser.role=="admin"){

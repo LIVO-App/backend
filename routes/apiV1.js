@@ -19,6 +19,7 @@ const teachingRouter = require('./apiV1/teaching');
 const constraintRouter = require('./apiV1/constraints');
 const adminRouter = require('./apiV1/admin');
 const studyAddressRouter = require('./apiV1/study_address')
+const gradeRouter = require('./apiV1/grade');
 
 apiV1.use('/auth', authRouter);
 apiV1.use('/learning_sessions', sessionsRouter);
@@ -35,6 +36,7 @@ apiV1.use('/growth_areas', growthAreaRouter);
 apiV1.use('/teachings', teachingRouter);
 apiV1.use('/constraints', constraintRouter);
 apiV1.use('/admins', adminRouter);
-apiV1.use('/study_addresses', studyAddressRouter)
+apiV1.use('/study_addresses', studyAddressRouter);
+apiV1.use('/grades', gradeRouter);
 
 module.exports = apiV1;

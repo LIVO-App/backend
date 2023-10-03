@@ -455,6 +455,7 @@ INSERT INTO `course` (`id`, `italian_title`, `english_title`, `creation_school_y
 --
 
 CREATE TABLE `grade` (
+  `id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `teacher_id` int(11) NOT NULL,
   `project_class_course_id` int(11) NOT NULL,
@@ -1555,7 +1556,9 @@ ALTER TABLE `course`
 -- Indici per le tabelle `grade`
 --
 ALTER TABLE `grade`
-  ADD PRIMARY KEY (`student_id`,`teacher_id`,`project_class_course_id`,`project_class_session`,`publication`),
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `publication` (`student_id`,`teacher_id`,`project_class_course_id`,`project_class_session`,`publication`),
+  ADD KEY `student_id` (`student_id`),
   ADD KEY `teacher_id` (`teacher_id`),
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
@@ -1703,6 +1706,12 @@ ALTER TABLE `citizenship_report`
 --
 ALTER TABLE `course`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT per la tabella `grade`
+--
+ALTER TABLE `grade`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT per la tabella `learning_session`

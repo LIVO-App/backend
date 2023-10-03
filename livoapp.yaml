@@ -936,6 +936,62 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/grades/{grade_id}:
+    put:
+      description: Update a specific grade information. If it is not final it can be updated until a final grade is inserted. If it is a final grade it can be updated until a week after its insertion.
+      parameters:
+        - $ref: '#/components/parameters/path_grade_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+        - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+      requestBody:
+        description: Data of final message
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/grade_update'
+      summary: Update of a specific grade
+      tags:
+        - grades
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Deletion of a grade. If it is not final it can be deleted until a final grade is inserted. If it is a final grade it can be deleted until a week after its insertion.
+      summary: Deletion of a grade
+      tags:
+        - grades
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/path_grade_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+        - $ref: '#/components/parameters/query_section'
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_teacher_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/students/{student_id}/subscribe:
     post:
       description: Subscription to a project class by a student
@@ -3846,6 +3902,9 @@ components:
     grade_data:
       type: object
       properties:
+        id:
+          type: integer
+          description: "Grade Identifier"
         italian_description:
           type: string
           description: "Italian description of a grade"
@@ -4832,7 +4891,23 @@ components:
           type: array
           items:
             type: string
-            description: "Id of the teaching the teacher will teach in the class"        
+            description: "Id of the teaching the teacher will teach in the class"      
+    grade_update:
+      type: object
+      required:
+        - ita_description
+        - eng_description
+        - grade
+      properties:
+        ita_description:  
+          type: string
+          description: "Italian description of the grade"
+        eng_description:
+          type: string
+          description: "English description of the grade"
+        grade:
+          type: integer
+          description: "Grade of the student"
   parameters:
     query_school_year:
       name: school_year
@@ -5139,3 +5214,10 @@ components:
       description: Outcome of confirmation of the subscription.
       schema:
         type: boolean
+    path_grade_id:
+      name: grade_id
+      in: path
+      description: Id of the grade
+      schema:
+        type: boolean
+      required: true

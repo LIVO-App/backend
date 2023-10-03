@@ -1466,7 +1466,6 @@ paths:
         - $ref: '#/components/parameters/path_learning_session_id'
         - $ref: '#/components/parameters/query_teacher_id'
         - $ref: '#/components/parameters/query_section'
-        - $ref: '#/components/parameters/query_associated_class'
       summary: Get project classes components
       tags:
         - project classes
@@ -4987,12 +4986,6 @@ components:
       description: Specifies the id of the teacher
       schema:
         type: integer
-    query_associated_class:
-      name: assoc_class
-      in: query
-      description: Specifies if the project class is associated to the teacher through its teaching
-      schema:
-        type: boolean
     path_session_id:
       name: session_id
       in: path

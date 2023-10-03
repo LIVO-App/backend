@@ -30,7 +30,7 @@ module.exports.get_classes = async (req, res) => {
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
+            console.log('project_classes: unauthorized access');
             return;
         }
     } else {
@@ -94,26 +94,26 @@ module.exports.get_class = async (req, res) => {
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
+            console.log('project_class: unauthorized access');
             return;
         }
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherModel.read_id(req.loggedUser._id);
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
+            console.log('project_class: unauthorized access');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentModel.read_id(req.loggedUser._id);
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
+            console.log('project_class: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class list: unauthorized access');
+        console.log('project_class: unauthorized access');
         return;
     }
     let course_id = req.params.course
@@ -173,6 +173,11 @@ module.exports.get_class = async (req, res) => {
 module.exports.get_project_class_components = async (req, res) => {
     let teacher_id = req.query.teacher_id;
     let query = teacher_id ? {teacher_id: teacher_id} : {}; 
+    let associated_class;
+    let course_id = req.params.course;
+    let session_id = req.params.session;
+    let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
+    query["section"] = section;
     if(req.loggedUser.role == "teacher"){
         if(teacher_id!=undefined){
             if(req.loggedUser._id != teacher_id){
@@ -182,6 +187,16 @@ module.exports.get_project_class_components = async (req, res) => {
             }
         } else {
             teacher_id = req.loggedUser._id;
+        }
+        let teaches_proj = await teacherModel.isTeacherTeachingProject(teacher_id, course_id, session_id, section)
+        if(!teaches_proj){
+            let assoc_class = await classesTeacherModel.read_project_classes_associated(teacher_id, session_id, course_id)
+            if(assoc_class.length == 0){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('update_grades: unauthorized access');
+                return;
+            }
+            associated_class = true
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exists = await adminModel.read_id(req.loggedUser._id)
@@ -195,12 +210,6 @@ module.exports.get_project_class_components = async (req, res) => {
         console.log('project_class components: unauthorized access');
         return;
     }
-    let course_id = req.params.course;
-    let session_id = req.params.session;
-    let section = req.query.section != undefined ? req.query.section.toUpperCase() : req.query.section;
-    query["section"] = section;
-    let associated_class = req.query.assoc_class === "true" ? 1 : 0;
-    query["assoc_class"] = associated_class
     let cmps;
     if(req.loggedUser.role=="admin"){
         cmps = await projectClassesSchema.classComponents(course_id, session_id, section);

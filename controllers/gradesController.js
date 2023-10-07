@@ -192,27 +192,6 @@ module.exports.insert_grade = async (req, res) => {
 
 module.exports.update_grade = async (req, res) => {
     let teacher_id = req.query.teacher_id;
-    let course_id = req.query.course_id;
-    let course_exist = await coursesModel.read(course_id)
-    if(!course_exist){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('update_grades: course does not exist');
-        return;
-    }
-    let session_id = req.query.session_id;
-    let session_exists = await learningSessionModel.read(session_id)
-    if(!session_exists){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('update_grades: session does not exist');
-        return;
-    }
-    let project_class_exist = await project_classSchema.read(course_id, session_id)
-    if(!project_class_exist){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('update_grades: project class does not exist');
-        return;
-    }
-    let section = req.query.section;
     if(req.loggedUser.role == "teacher"){  
         if(teacher_id===undefined){
             teacher_id = req.loggedUser._id
@@ -228,15 +207,6 @@ module.exports.update_grade = async (req, res) => {
             console.log('update_grades: unauthorized access');
             return;
         }
-        let teaches_proj = await teacherModel.isTeacherTeachingProject(teacher_id, course_id, session_id, section)
-        if(!teaches_proj){
-            let assoc_class = await classesTeacherModel.read_project_classes_associated(teacher_id, session_id, course_id)
-            if(assoc_class.length == 0){
-                res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('update_grades: unauthorized access');
-                return;
-            }
-        }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('update_grades: unauthorized access');
@@ -248,6 +218,21 @@ module.exports.update_grade = async (req, res) => {
         res.status(404).json({status: "error", description: MSG.notFound})
         console.log('update_grades: grade not found')
         return
+    }
+    let course_id = grade_exist.project_class_course_id;
+    let session_id = grade_exist.project_class_session;
+    let student_id = grade_exist.student_id;
+    let section = await studentModel.retrieve_section_from_project_class(student_id, course_id, session_id);
+    if(!section){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('update_grades: student not inscribe to this class')
+        return
+    }
+    let teaches_proj = await teacherModel.isTeacherTeachingProject(teacher_id, course_id, session_id, section.section)
+    if(!teaches_proj){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update_grades: unauthorized access');
+        return;
     }
     let today = new Date()
     if (grade_exist.final){
@@ -283,27 +268,6 @@ module.exports.update_grade = async (req, res) => {
 
 module.exports.remove_grade = async (req, res) => {
     let teacher_id = req.query.teacher_id;
-    let course_id = req.query.course_id;
-    let course_exist = await coursesModel.read(course_id)
-    if(!course_exist){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('remove grade: course does not exist');
-        return;
-    }
-    let session_id = req.query.session_id;
-    let session_exists = await learningSessionModel.read(session_id)
-    if(!session_exists){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('remove grade: session does not exist');
-        return;
-    }
-    let project_class_exist = await project_classSchema.read(course_id, session_id)
-    if(!project_class_exist){
-        res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('remove grade: project class does not exist');
-        return;
-    }
-    let section = req.query.section;
     if(req.loggedUser.role == "teacher"){  
         if(teacher_id===undefined){
             teacher_id = req.loggedUser._id
@@ -319,15 +283,6 @@ module.exports.remove_grade = async (req, res) => {
             console.log('remove_grades: unauthorized access');
             return;
         }
-        let teaches_proj = await teacherModel.isTeacherTeachingProject(teacher_id, course_id, session_id, section)
-        if(!teaches_proj){
-            let assoc_class = await classesTeacherModel.read_project_classes_associated(teacher_id, session_id, course_id)
-            if(assoc_class.length == 0){
-                res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('remove_grades: unauthorized access');
-                return;
-            }
-        }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('remove_grades: unauthorized access');
@@ -339,6 +294,21 @@ module.exports.remove_grade = async (req, res) => {
         res.status(404).json({status: "error", description: MSG.notFound})
         console.log('remove_grades: grade not found')
         return
+    }
+    let course_id = grade_exist.project_class_course_id;
+    let session_id = grade_exist.project_class_session;
+    let student_id = grade_exist.student_id;
+    let section = await studentModel.retrieve_section_from_project_class(student_id, course_id, session_id);
+    if(!section){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('remove_grades: student not inscribe to this class')
+        return
+    }
+    let teaches_proj = await teacherModel.isTeacherTeachingProject(teacher_id, course_id, session_id, section.section)
+    if(!teaches_proj){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('remove_grades: unauthorized access');
+        return;
     }
     let today = new Date()
     if (grade_exist.final){
@@ -360,7 +330,12 @@ module.exports.remove_grade = async (req, res) => {
         }
     }
     let remove_grade = await gradesSchema.remove(grade_id)
-    res.status(200).json({status: "deleted", description: "grade deleted successfully"});
+    let res_des = "Deleted " + remove_grade.affectedRows + " rows";
+    let response = {
+        status: "deleted", 
+        description: res_des
+    };
+    res.status(200).json(response);
 }
 
 /*project_classSchema.isStudentEnrolled(2,4,7).then((msg) => {

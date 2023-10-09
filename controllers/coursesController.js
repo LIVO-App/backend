@@ -251,7 +251,8 @@ module.exports.get_courses_model = async (req, res) => {
     if (not_confirmed!=undefined){
         not_confirmed = not_confirmed === "true" ? true : false
     }
-    let models = await courseSchema.get_models(teacher_id, recent_models, not_confirmed, is_admin);
+    let session_id = req.query.session_id;
+    let models = await courseSchema.get_models(teacher_id, recent_models, not_confirmed, is_admin, session_id);
     let data_models = models.map((model) => {
         let course_ref = {
             path: "/api/v1/courses",
@@ -307,7 +308,8 @@ module.exports.get_courses_model = async (req, res) => {
         query: {
             teacher_id: teacher_id,
             recent_models: recent_models,
-            not_confirmed: not_confirmed
+            not_confirmed: not_confirmed,
+            session_id: session_id
         },
         date: new Date(),
         data: data_models

@@ -1803,7 +1803,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_user_info_data'
+              type: object
+              properties:
+                teacher_info:
+                  $ref: '#/components/schemas/update_user_info_data'
       responses:
         '200':
           $ref: '#/components/responses/AcceptUpdate'
@@ -1905,7 +1908,7 @@ paths:
   /v1/admins/{admin_id}:
     put:
       description: Update of information of the admin
-      summary: Update teacher information
+      summary: Update admin information
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_admin_id'
@@ -1918,7 +1921,39 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_user_info_data'
+              type: object
+              properties:
+                admin_info:
+                  $ref: '#/components/schemas/update_user_info_data'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptUpdate'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}:
+    put:
+      description: Update of information of the student
+      summary: Update student information
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+      tags:
+        - admins
+        - v1
+      requestBody:
+        description: Object to be inserted
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                student_info:
+                  $ref: '#/components/schemas/update_user_info_data'
       responses:
         '200':
           $ref: '#/components/responses/AcceptUpdate'

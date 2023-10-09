@@ -32,19 +32,19 @@ module.exports.get_teachers = async (req, res) => {
         let teacher_esist = teacherSchema.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_teacher: unauthorized access');
             return;
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exist = adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_teacher: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_student: unauthorized access');
+        console.log('get_teacher: unauthorized access');
         return;
     }
     let teachers = await teacherSchema.list()
@@ -369,7 +369,7 @@ module.exports.update_info = async (req, res) => {
         console.log('update student information: unauthorized access');
         return;
     }
-    let information = req.body.student_info
+    let information = req.body.teacher_info
     let update_info = await teacherSchema.update(teacher_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameter});
@@ -601,10 +601,14 @@ module.exports.add_teachers = async (req, res) => {
     if(req.loggedUser.role == "admin"){
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
-            res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('update teacher psw: not authorized');
             return;
         }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update teacher psw: not authorized');
+        return;
     }
     let existing_teacher, wrong_teacher, teacher_added;
     let teacher_inserted = []

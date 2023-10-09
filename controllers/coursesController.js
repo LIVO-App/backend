@@ -1101,7 +1101,7 @@ module.exports.update_course = async (req, res) => {
             new_teachings = true
         }
     }
-    let course_update = await courseSchema.update_course(course_id, ita_title, eng_title, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
+    let course_update = await courseSchema.update_course(course_id, ita_descr, eng_descr, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
     let access_update = await opentoSchema.update(course_id, access_object)
     let new_project_class;
     let proj_class_exists = await projectclassSchema.read(course_id, session_id)

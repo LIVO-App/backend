@@ -31,6 +31,8 @@ tags:
     description: Authentication methods
   - name: announcements
     description: Announcement methods
+  - name: general announcements
+    description: General announcements methods
   - name: propositions
     description: Course propositions methods
   - name: teachings
@@ -2868,6 +2870,112 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/general_announcements/{announcement_id}:
+    get:
+      description: Get specific announcement from its id
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_general_announcement_id'
+      tags:
+        - general announcements
+        - v1
+      summary: Get specific general announcement
+      responses:
+        '200':
+          description: "Specific general announcement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/announcement_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/general_announcements:
+    get:
+      description: Get list of general announcement
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - general announcements
+        - v1
+      summary: Get list of general announcement
+      responses:
+        '200':
+          description: "List of general announcement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/general_announcements_data'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      description: Publication of general announcements
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_admin_id'
+      summary: Publication of general announcements
+      tags:
+        - general announcements
+        - v1
+      requestBody:
+        description: Data of the announcement
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/general_announcements_post_data'
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   responses:
     NotFound:
@@ -4233,6 +4341,22 @@ components:
         english_message:
           type: string
           description: "English message in the announcement"
+    general_announcements_data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "The id of the announcement"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string
+          description: "English title of the announcement"
+        publishment:
+          type: string
+          format: date
+          description: "Date of publication of the announcement"
     proposal_object_insertion:
       type: object
       required:
@@ -4580,6 +4704,26 @@ components:
           items:
             type: string
           description: "Sections of the project class the teacher wants to publish"
+        italian_title:
+          type: string
+          description: "Italian title of the announcement"
+        english_title:
+          type: string 
+          description: "English title of the announcement"
+        italian_message:
+          type: string
+          description: "Italian content of the announcement"
+        english_message:
+          type: string
+          description: "English content of the announcement"
+    general_announcements_post_data:
+      type: object
+      required:
+        - italian_title
+        - english_title
+        - italian_message
+        - english_message
+      properties:
         italian_title:
           type: string
           description: "Italian title of the announcement"
@@ -5116,6 +5260,13 @@ components:
       schema:
         type: integer
       required: true
+    path_general_announcement_id:
+      name: announcement_id
+      in: path
+      description: Id of a general announcement
+      schema:
+        type: integer
+      required: true
     query_context_id:
       name: context_id
       in: query
@@ -5203,6 +5354,12 @@ components:
       schema:
         type: integer
       required: true
+    query_admin_id:
+      name: admin_id
+      in: query
+      description: Admin Id
+      schema:
+        type: integer
     query_outcome:
       name: outcome
       in: query

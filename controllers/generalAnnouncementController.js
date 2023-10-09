@@ -61,7 +61,6 @@ module.exports.get_general_announcements = async (req, res) => {
 
 module.exports.publish_announcement = async (req, res) => {
     let admin_id = req.query.admin_id;
-    is_admin = is_admin === "true" ? true : false;
     if(req.loggedUser.role == "admin") {
         if(admin_id == undefined){
             admin_id = req.loggedUser._id;

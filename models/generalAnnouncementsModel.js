@@ -4,8 +4,7 @@ module.exports = {
     async list(){
         try {
             conn = await pool.getConnection();
-            let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment FROM general_announcement AS ann '
-            sql += ' ORDER BY ann.publishment DESC'
+            let sql = 'SELECT ann.id, ann.italian_title, ann.english_title, ann.publishment FROM general_announcement AS ann ORDER BY ann.publishment DESC'
             const rows = await conn.query(sql);
             conn.release();
             return rows;
@@ -40,12 +39,12 @@ module.exports = {
     async add(admin_id, italian_title, english_title, italian_message, english_message, publish_date){
         try{
             conn = await pool.getConnection();
-            if(!admin_id || !italian_title || !english_title || !italian_message || !english_message){
+            if(admin_id == undefined || !italian_title || !english_title || !italian_message || !english_message){
                 conn.release();
                 return false;
             }
             let publishment = publish_date == undefined ? new Date() : publish_date;
-            let sql = 'INSERT INTO general_announcement (admin, publishment, italian_title, english_title, italian_message, english_message) VALUES (?,?,?,?,?,?)';
+            let sql = 'INSERT INTO general_announcement (admin_id, publishment, italian_title, english_title, italian_message, english_message) VALUES (?,?,?,?,?,?)';
             let values = [admin_id, publishment, italian_title, english_title, italian_message, english_message];
             const rows = await conn.query(sql, values);
             conn.release();

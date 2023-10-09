@@ -2,7 +2,8 @@
 
 const announcementSchema = require('../models/generalAnnouncementsModel');
 const teacherSchema = require('../models/teacherModel');
-const adminSchema = require('../models/adminModel')
+const adminSchema = require('../models/adminModel');
+const studentSchema = require('../models/studentModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -14,6 +15,33 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_announcement = async (req, res) => {
+    let user_id = req.loggedUser._id
+    if(req.loggedUser.role == "admin") {
+        let admin_exists = await adminSchema.read_id(user_id)
+        if(!admin_exists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "student") {
+        let student_exist = await studentSchema.read_id(user_id)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "teacher") {
+        let teacher_exist = await teacherSchema.read_id(user_id)
+        if(!teacher_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('general announcements publishment: unauthorized access');
+        return;
+    }
     let announcement_id = req.params.announcement_id;
     let announcement = await announcementSchema.read(announcement_id);
     if(!announcement){
@@ -40,6 +68,33 @@ module.exports.get_announcement = async (req, res) => {
 }
 
 module.exports.get_general_announcements = async (req, res) => {
+    let user_id = req.loggedUser._id
+    if(req.loggedUser.role == "admin") {
+        let admin_exists = await adminSchema.read_id(user_id)
+        if(!admin_exists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "student") {
+        let student_exist = await studentSchema.read_id(user_id)
+        if(!student_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else if (req.loggedUser.role == "teacher") {
+        let teacher_exist = await teacherSchema.read_id(user_id)
+        if(!teacher_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('general announcements publishment: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('general announcements publishment: unauthorized access');
+        return;
+    }
     let announcements = await announcementSchema.list();
     let data_announcement = announcements.map((announcement) => {
         return {
@@ -65,7 +120,7 @@ module.exports.publish_announcement = async (req, res) => {
         if(admin_id == undefined){
             admin_id = req.loggedUser._id;
         }
-        let admin_exists = await adminSchema.read_id(publisher_id)
+        let admin_exists = await adminSchema.read_id(admin_id)
         if(admin_id!=req.loggedUser._id || !admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('general announcements publishment: unauthorized access');
@@ -82,11 +137,6 @@ module.exports.publish_announcement = async (req, res) => {
     let english_message = req.body.english_message;
     let publish_date = req.body.publish_date;
     let publish = await announcementSchema.add(admin_id, italian_title, english_title, italian_message, english_message, publish_date);
-    if(publish==null){
-        res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('general announcements publishment: missing parameters');
-        return;
-    }
     if(!publish){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: general announcement publishing');

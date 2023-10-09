@@ -3,7 +3,16 @@
 const announcementSchema = require('../models/generalAnnouncementsModel');
 const teacherSchema = require('../models/teacherModel');
 const adminSchema = require('../models/adminModel');
-const studentSchema = require('../models/studentModel')
+const studentSchema = require('../models/studentModel');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+      pass: process.env.GOOGLE_APP_PSW
+    }
+  });
 
 let MSG = {
     notFound: "Resource not found",
@@ -147,5 +156,18 @@ module.exports.publish_announcement = async (req, res) => {
         status: "accepted", 
         description: res_des,
     };
+    let mailOptions = {
+        from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+        to: 'pietro.fronza@studenti.unitn.it',
+        subject: italian_title,
+        text: italian_message
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
     res.status(201).json(response);
 }

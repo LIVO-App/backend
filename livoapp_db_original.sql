@@ -417,8 +417,8 @@ CREATE TABLE `course` (
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
   `creation_school_year` int(11) NOT NULL,
-  `italian_description` varchar(1000) NOT NULL,
-  `english_description` varchar(1000) NOT NULL,
+  `italian_description` varchar(1500) NOT NULL,
+  `english_description` varchar(1500) NOT NULL,
   `up_hours` int(11) NOT NULL,
   `credits` int(11) NOT NULL,
   `italian_expected_learning_results` varchar(2000) NOT NULL,
@@ -434,7 +434,7 @@ CREATE TABLE `course` (
   `certifying_admin_id` int(11) DEFAULT NULL,
   `admin_confirmation` date DEFAULT NULL,
   `to_be_modified` tinyint(1) DEFAULT NULL,
-  `assets` varchar(1000)
+  `assets` varchar(50)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

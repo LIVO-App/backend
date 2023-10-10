@@ -231,7 +231,7 @@ module.exports = {
             if(recent_models==0){
                 sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
                 if(admin){
-                    sql += ` JOIN teacher AS t ON t.id = c.proposer_teacher_id `
+                    sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
                 }
             }
             if(recent_models>0){ // I want to have the last n models available

@@ -210,7 +210,7 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id, recent_models, not_confirmed = false, admin = true){
+    async get_models(teacher_id, recent_models, not_confirmed = false, admin = true, session_id = undefined){
         try {
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
@@ -222,32 +222,47 @@ module.exports = {
             }
             sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified'`
             if(recent_models==0){
-                sql += `, c.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname' `
+                sql += `, pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname' `
                 if(admin){
-                    sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                    sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
                 }
             }
             sql += ` FROM course AS c`
             if(recent_models==0){
-                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = c.certifying_admin_id `
+                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
                 if(admin){
-                    sql += ` JOIN teacher AS t ON t.id = c.proposer_teacher_id `
+                    sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
                 }
             }
             if(recent_models>0){ // I want to have the last n models available
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
             } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
                 if(teacher_id!=undefined && not_confirmed){
-                    sql += ` WHERE c.proposer_teacher_id = ? AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
-                    values.push(teacher_id)
+                    sql += ` WHERE pc.proposer_teacher_id = ? OR pc.proposer_teacher_id = ? AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
+                    values.push(teacher_id, teacher_id)
+                    if(session_id!=undefined){
+                        sql += ` AND pc.learning_session_id = ?`
+                        values.push(session_id)
+                    }
                 } else if (teacher_id!=undefined){
                     sql += ` WHERE c.proposer_teacher_id = ? OR pc.proposer_teacher_id = ?`
                     values.push(teacher_id, teacher_id)
+                    if(session_id!=undefined){
+                        sql += ` AND pc.learning_session_id = ?`
+                        values.push(session_id)
+                    }
                 } else if (not_confirmed){
                     sql += ` WHERE (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL)`
+                    if(session_id!=undefined){
+                        sql += ` AND pc.learning_session_id = ?`
+                        values.push(session_id)
+                    }
+                } else if (session_id!=undefined){
+                    sql += ` WHERE pc.learning_session_id = ?`
+                    values.push(session_id)
                 }
             }
-            sql += ` ORDER BY c.creation_school_year DESC`
+            sql += ` ORDER BY pc.learning_session_id ASC, c.id ASC, c.creation_school_year DESC`
             //console.log(sql);
             const rows = await conn.query(sql, values)
             conn.release()

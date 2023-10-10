@@ -55,11 +55,11 @@ module.exports.get_grades = async (req, res) => {
 module.exports.get_grades_v2 = async (req, res) => {
     let student_id = req.params.student_id;
     let student_exist = await studentModel.read_id(student_id)
-        if(!student_exist){
-            res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
-            return;
-        }
+    if(!student_exist){
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_v2: unauthorized access');
+        return;
+    }
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
@@ -73,7 +73,6 @@ module.exports.get_grades_v2 = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let session_id = req.query.session_id;
-    // TODO: Check if student project class relation exists before searching for the grades
     let classControl = await project_classSchema.isStudentEnrolled(student_id, course_id, session_id);
     if(!classControl){
         res.status(404).json({status: "error", description: MSG.notFound});

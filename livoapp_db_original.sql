@@ -180,6 +180,26 @@ CREATE TABLE `announcement` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `general_announcement`
+--
+
+CREATE TABLE `general_announcement` (
+  `id` int(11) NOT NULL,
+  `admin_id` int(11) NOT NULL,
+  `publishment` date NOT NULL,
+  `italian_title` varchar(200) NOT NULL,
+  `english_title` varchar(200) NOT NULL,
+  `italian_message` varchar(1000) NOT NULL,
+  `english_message` varchar(1000) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dump dei dati per la tabella `general_announcement`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `associated`
 --
 
@@ -397,8 +417,8 @@ CREATE TABLE `course` (
   `italian_title` varchar(250) NOT NULL,
   `english_title` varchar(250) NOT NULL,
   `creation_school_year` int(11) NOT NULL,
-  `italian_description` varchar(1000) NOT NULL,
-  `english_description` varchar(1000) NOT NULL,
+  `italian_description` varchar(1500) NOT NULL,
+  `english_description` varchar(1500) NOT NULL,
   `up_hours` int(11) NOT NULL,
   `credits` int(11) NOT NULL,
   `italian_expected_learning_results` varchar(2000) NOT NULL,
@@ -414,7 +434,7 @@ CREATE TABLE `course` (
   `certifying_admin_id` int(11) DEFAULT NULL,
   `admin_confirmation` date DEFAULT NULL,
   `to_be_modified` tinyint(1) DEFAULT NULL,
-  `assets` varchar(1000)
+  `assets` varchar(50)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1511,6 +1531,13 @@ ALTER TABLE `announcement`
   ADD KEY `project_class_course_id` (`project_class_course_id`,`project_class_session`);
 
 --
+-- Indici per le tabelle `general_announcement`
+--
+ALTER TABLE `general_announcement`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `admin_id` (`admin_id`);
+
+--
 -- Indici per le tabelle `associated`
 --
 ALTER TABLE `associated`
@@ -1696,6 +1723,12 @@ ALTER TABLE `announcement`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
+-- AUTO_INCREMENT per la tabella `general_announcement`
+--
+ALTER TABLE `general_announcement`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
 -- AUTO_INCREMENT per la tabella `citizenship_report`
 --
 ALTER TABLE `citizenship_report`
@@ -1761,6 +1794,12 @@ ALTER TABLE `accessible`
 --
 ALTER TABLE `announcement`
   ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`project_class_course_id`,`project_class_session`) REFERENCES `project_class` (`course_id`, `learning_session_id`);
+
+--
+-- Limiti per la tabella `general_announcement`
+--
+ALTER TABLE `general_announcement`
+  ADD CONSTRAINT `general_announcement_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`id`);
 
 --
 -- Limiti per la tabella `associated`

@@ -621,10 +621,14 @@ module.exports.add_students = async (req, res) => {
     if(req.loggedUser.role == "admin"){
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
-            res.status(404).json({status: "error", description: MSG.notFound});
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('update student psw: student does not exists');
             return;
         }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('update student psw: student does not exists');
+        return;
     }
     let existing_student, wrong_student, student_added;
     let student_inserted = []

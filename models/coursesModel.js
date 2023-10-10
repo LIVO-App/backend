@@ -262,7 +262,11 @@ module.exports = {
                     values.push(session_id)
                 }
             }
-            sql += ` ORDER BY pc.learning_session_id ASC, c.id ASC, c.creation_school_year DESC`
+            sql += ` ORDER BY `
+            if(recent_models == 0) {
+                sql += ` pc.learning_session_id ASC,`
+            } 
+            sql += ` c.id ASC, c.creation_school_year DESC`
             //console.log(sql);
             const rows = await conn.query(sql, values)
             conn.release()

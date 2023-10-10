@@ -53,6 +53,7 @@ module.exports = {
             } else if(future_session){
                 sql += " WHERE start > NOW() AND DATEDIFF(start, NOW()) > 10"
             }
+            sql += " ORDER BY start"
             const rows = await conn.query(sql, values);
             conn.release();
             return rows;

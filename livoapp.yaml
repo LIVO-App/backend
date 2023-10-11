@@ -2353,9 +2353,10 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_approved'
+        - $ref: '#/components/parameters/query_total_del'
       responses:
         '200':
-          $ref: '#/components/responses/AcceptUpdate'
+          $ref: '#/components/responses/PropositionApproved'
         '400':
           $ref: '#/components/responses/CourseInsertion'
         '401':
@@ -3233,6 +3234,20 @@ components:
               num_inserted:
                 type: integer
                 description: "Tells how many learning sessions were inserted in the database"
+    PropositionApproved:
+      description: Proposition approval response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              course_deleted:
+                type: boolean
+                description: "Specifies if the rejection of a proposition also deleted the course model of reference"
     CourseUpdate:
       description: Course update response
       content:
@@ -5408,3 +5423,9 @@ components:
       schema:
         type: boolean
       required: true
+    query_total_del:
+      name: total_del
+      in: query
+      description: Tells if it should delete everything related to a project class, course included
+      schema:
+        type: boolean

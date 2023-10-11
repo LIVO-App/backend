@@ -128,8 +128,8 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_session, learning_context_id, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?';
-            values = [student_id, course_id, session_id];
+            sql = 'SELECT student_id, project_class_course_id, project_class_session, learning_context_id, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? ';
+            values = [student_id, course_id];
             if (context_id != undefined){
                 sql += ' AND learning_context_id = ?'
                 values.push(context_id)

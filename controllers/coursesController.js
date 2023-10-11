@@ -798,6 +798,8 @@ module.exports.approve_proposals = async (req, res) => {
     }
     let approved = req.query.approved;
     approved = approved === "false" ? 0 : 1;
+    let total_del = req.query.total_del;
+    total_del = (total_del === "true" || total_del == 1) ? 1 : 0;
     if(approved){
         let course_approval = await courseSchema.approve_proposal(course_id, session_id, admin_id, approved)
         if(!course_approval){
@@ -810,19 +812,23 @@ module.exports.approve_proposals = async (req, res) => {
         let students_in = await projectclassSchema.classComponents(course_id, session_id)
         if(students_in.length>0){
             res.status(400).json({status: "error", description: MSG.courseConfirmed})
-            console.log('The course you tried to reject was already been approved')
+            console.log('The proposition you tried to reject was already been approved')
             return
         }
+        let course_del = false
         await teacherClassSchema.delete(course_id, session_id)
         await projectclassSchema.delete(course_id, session_id)
-        let get_class_sessions = await projectclassSchema.get_sessions(course_id)
-        if(!get_class_sessions){
-            await courseGrowthAreaModel.delete(course_id)
-            await courseteachingModel.delete(course_id)
-            await opentoSchema.delete(course_id)
-            await courseSchema.deleteProposal(course_id)
+        if(total_del){
+            let get_class_sessions = await projectclassSchema.get_sessions(course_id)
+            if(!get_class_sessions){
+                await courseGrowthAreaModel.delete(course_id)
+                await courseteachingModel.delete(course_id)
+                await opentoSchema.delete(course_id)
+                await courseSchema.deleteProposal(course_id)
+            }
+            course_del = true
         }
-        res.status(200).json({status: "deleted", description: "Course deleted since it was not approved"})
+        res.status(200).json({status: "deleted", description: "Proposition deleted since it was not approved", course_deleted: course_del})
     }
     
     

@@ -8,7 +8,7 @@ const courseSchema = require('../models/coursesModel');
 let MSG = {
     notFound: "Resource not found",
     missing_params: "Bad input. Missing required information",
-    itemAlreadyExists: "The student is already subscribed to this project class",
+    itemAlreadyExists: "The student is already subscribed to this project class or is already subscribed to this course in a previous session",
     studentNotExist: "The student does not exist",
     maxCreditsLimit: "The student has passed the maximum number of credits for this learning area",
     notAuthorized: "Not authorized request",
@@ -132,7 +132,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await subscribe_schema.read(student_id, course_id, session_id, context_id);
+    const subscriptionExists = await subscribe_schema.read(student_id, course_id, context_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');

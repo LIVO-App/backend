@@ -233,7 +233,7 @@ module.exports = {
             if(typeof(recent_models) == "boolean" && !recent_models){
                 sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
                 if(admin){
-                    sql += ` LEFT JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
+                    sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
                 }
             }
             if(typeof(recent_models) == "number"){ // I want to have the last n models available
@@ -280,7 +280,6 @@ module.exports = {
                 return rows 
             } 
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -437,7 +436,6 @@ module.exports = {
                 confirmation_date: confirmation_date
             }
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: approve course")
         } finally {
             conn.release()

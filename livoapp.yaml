@@ -2357,7 +2357,7 @@ paths:
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_session_id'
         - $ref: '#/components/parameters/query_approved'
-        - $ref: '#/components/parameters/query_total_del'
+        - $ref: '#/components/parameters/query_proj_class'
       responses:
         '200':
           $ref: '#/components/responses/PropositionApproved'
@@ -3249,6 +3249,13 @@ components:
                 type: string
               description: 
                 type: string
+              confirmation_date:
+                type: string
+                format: date
+                description: "Confirmation date of the approval"  
+              project_class_deleted:
+                type: boolean
+                description: "Tells if the approval of the proposition deleted also the project class associated"
               course_deleted:
                 type: boolean
                 description: "Specifies if the rejection of a proposition also deleted the course model of reference"
@@ -4415,17 +4422,12 @@ components:
       type: object
       required:
         - italian_title
-        - english_title
         - italian_descr
-        - english_descr
         - up_hours
         - credits
         - italian_exp_l
-        - english_exp_l
         - italian_cri
-        - english_cri
         - italian_act
-        - english_act
         - area_id
         - growth_list
         - min_students
@@ -5427,9 +5429,9 @@ components:
       schema:
         type: boolean
       required: true
-    query_total_del:
-      name: total_del
+    query_proj_class:
+      name: proj_class
       in: query
-      description: Tells if it should delete everything related to a project class, course included
+      description: Tells if it should approve also the project class
       schema:
         type: boolean

@@ -418,15 +418,15 @@ CREATE TABLE `course` (
   `english_title` varchar(250) NOT NULL,
   `creation_school_year` int(11) NOT NULL,
   `italian_description` varchar(1500) NOT NULL,
-  `english_description` varchar(1500) NOT NULL,
+  `english_description` varchar(1500),
   `up_hours` int(11) NOT NULL,
   `credits` int(11) NOT NULL,
   `italian_expected_learning_results` varchar(2000) NOT NULL,
-  `english_expected_learning_results` varchar(2000) NOT NULL,
+  `english_expected_learning_results` varchar(2000),
   `italian_criterions` varchar(2000) NOT NULL,
-  `english_criterions` varchar(2000) NOT NULL,
+  `english_criterions` varchar(2000),
   `italian_activities` varchar(2000) NOT NULL,
-  `english_activities` varchar(2000) NOT NULL,
+  `english_activities` varchar(2000),
   `learning_area_id` varchar(5) NOT NULL,
   `min_students` int(11) NOT NULL,
   `max_students` int(11) NOT NULL,
@@ -1574,7 +1574,7 @@ ALTER TABLE `citizenship_report`
 --
 ALTER TABLE `course`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `course` (`italian_title`,`english_title`,`creation_school_year`),
+  ADD UNIQUE KEY `course` (`italian_title`,`creation_school_year`),
   ADD KEY `learning_area_id` (`learning_area_id`),
   ADD KEY `course_ibfk_3` (`proposer_teacher_id`),
   ADD KEY `course_ibfk_4` (`certifying_admin_id`);

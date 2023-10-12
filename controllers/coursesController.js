@@ -404,7 +404,7 @@ module.exports.add_proposition = async (req, res) => {
         course_id_exist = false
     }
     if(course_id_exist){
-        if(course_id_exist.italian_title == ita_title && course_id_exist.english_title == eng_title && course_id_exist.creation_school_year == today.getFullYear()){
+        if(course_id_exist.italian_title == ita_title && course_id_exist.creation_school_year == today.getFullYear()){
             same_year = true
         } else {
             same_year = await courseSchema.already_inserted_year(ita_title, eng_title, today.getFullYear())
@@ -788,29 +788,37 @@ module.exports.approve_proposals = async (req, res) => {
         console.log('resource not found: session course approval');
         return
     }
-    let class_exist = await projectclassSchema.read(course_id, session_id)
-    if(class_exist == null){
-        res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing parameters: project class course approval');
-        return
-    }
-    if(!class_exist){
-        res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('resource not found: project class course approval');
-        return
-    }
     let approved = req.query.approved;
     approved = approved === "false" ? 0 : 1;
-    let total_del = req.query.total_del;
-    total_del = (total_del === "true" || total_del == 1) ? 1 : 0;
+    let proj_class = req.query.proj_class;
+    proj_class = (proj_class === "true" || proj_class == 1) ? 1 : 0;
+    if(approved && proj_class){
+        let class_exist = await projectclassSchema.read(course_id, session_id)
+        if(class_exist == null){
+            res.status(400).json({status: "error", description: MSG.missing_params})
+            console.log('missing parameters: project class course approval');
+            return
+        }
+        if(!class_exist){
+            res.status(404).json({status: "error", description: MSG.notFound})
+            console.log('resource not found: project class course approval');
+            return
+        }
+    }
     if(approved){
-        let course_approval = await courseSchema.approve_proposal(course_id, session_id, admin_id, approved)
+        let course_approval = await courseSchema.approve_proposal(course_id, session_id, admin_id, approved, proj_class)
         if(!course_approval){
             res.status(400).json({status: "error", description: MSG.missing_params})
             console.log('missing required information: course approval');
             return
         }
-        res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date})
+        let proj_class_deleted = !proj_class;
+        if(proj_class_deleted){
+            await teacherClassSchema.delete(course_id, session_id)
+            await projectclassSchema.delete(course_id, session_id)
+        }
+        
+        res.status(200).json({status: "accepted", description: "Resources updated successfully", confirmation_date: course_approval.confirmation_date, project_class_deleted: proj_class_deleted})
     } else {
         let students_in = await projectclassSchema.classComponents(course_id, session_id)
         if(students_in.length>0){
@@ -821,14 +829,12 @@ module.exports.approve_proposals = async (req, res) => {
         let course_del = false
         await teacherClassSchema.delete(course_id, session_id)
         await projectclassSchema.delete(course_id, session_id)
-        if(total_del){
-            let get_class_sessions = await projectclassSchema.get_sessions(course_id)
-            if(!get_class_sessions){
-                await courseGrowthAreaModel.delete(course_id)
-                await courseteachingModel.delete(course_id)
-                await opentoSchema.delete(course_id)
-                await courseSchema.deleteProposal(course_id)
-            }
+        let get_class_sessions = await projectclassSchema.get_sessions(course_id)
+        if(!get_class_sessions){
+            await courseGrowthAreaModel.delete(course_id)
+            await courseteachingModel.delete(course_id)
+            await opentoSchema.delete(course_id)
+            await courseSchema.deleteProposal(course_id)
             course_del = true
         }
         res.status(200).json({status: "deleted", description: "Proposition deleted since it was not approved", course_deleted: course_del})
@@ -939,8 +945,8 @@ module.exports.update_course = async (req, res) => {
             return;
         }
     }*/
-    if(ita_title!=undefined && eng_title!=undefined && credits != undefined && area_id != undefined && min_students != undefined && max_students != undefined){
-        if(course_exist.italian_title != ita_title || course_exist.english_title != eng_title || course_exist.credits != credits || course_exist.learning_area_id != area_id || course_exist.min_students != min_students || course_exist.max_students != max_students){
+    if(ita_title!=undefined && credits != undefined && area_id != undefined && min_students != undefined && max_students != undefined){
+        if(course_exist.italian_title != ita_title || course_exist.credits != credits || course_exist.learning_area_id != area_id || course_exist.min_students != min_students || course_exist.max_students != max_students){
             res.status(400).json({status: "error", description: MSG.changedUniqueInformation});
             console.log('course update: changed some important information');
             return;

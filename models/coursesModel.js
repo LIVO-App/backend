@@ -289,11 +289,16 @@ module.exports = {
     async add_proposition(ita_title, eng_title, school_year, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, min_students, max_students, teacher_id){
         try{
             conn = await pool.getConnection()
-            if(!ita_title || !eng_title || !ita_descr || !eng_descr || up_hours==undefined || credits==undefined || !it_ex_learn || !eng_ex_learn || !ita_cri || !eng_cri || !ita_ac || !eng_ac || !area_id || min_students==undefined || max_students==undefined || !teacher_id){
+            if(!ita_title || !ita_descr || up_hours==undefined || credits==undefined || !it_ex_learn || !ita_cri || !ita_ac || !area_id || min_students==undefined || max_students==undefined || !teacher_id){
                 conn.release()
                 return false
             }
             let creation_school_year = school_year
+            eng_title = eng_title == undefined ? null : eng_title
+            eng_descr = eng_descr == undefined ? null : eng_descr
+            eng_ex_learn = eng_ex_learn == undefined ? null : eng_ex_learn
+            eng_cri = eng_cri == undefined ? null : eng_cri
+            eng_ac = eng_ac == undefined ? null : eng_ac
             let sql = 'INSERT INTO course (italian_title, english_title, creation_school_year, italian_description, english_description, up_hours, credits, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities, learning_area_id, min_students, max_students, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
             let values = [ita_title, eng_title, creation_school_year, ita_descr, eng_descr, up_hours, credits, it_ex_learn, eng_ex_learn, ita_cri, eng_cri, ita_ac, eng_ac, area_id, min_students, max_students, teacher_id]
             const rows = await conn.query(sql, values)
@@ -324,12 +329,16 @@ module.exports = {
     async read_complete(ita_title, eng_title, up_hours, credits, area_id, min_students, max_students){
         try{
             conn = await pool.getConnection()
-            if(!ita_title || !eng_title || up_hours==undefined || credits==undefined || !area_id || min_students==undefined || max_students==undefined){
+            if(!ita_title || up_hours==undefined || credits==undefined || !area_id || min_students==undefined || max_students==undefined){
                 conn.release()
                 return false
             }
-            let sql = 'SELECT * FROM course WHERE italian_title = ? AND english_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND min_students = ? AND max_students = ?'
-            let values = [ita_title, eng_title, up_hours, credits, area_id, min_students, max_students]
+            let sql = 'SELECT * FROM course WHERE italian_title = ? AND up_hours = ? AND credits = ? AND learning_area_id = ? AND min_students = ? AND max_students = ?'
+            let values = [ita_title, up_hours, credits, area_id, min_students, max_students]
+            if(eng_title!=undefined){
+                sql += ' AND english_title = ? '
+                values.push(eng_title)
+            }
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){
@@ -364,12 +373,16 @@ module.exports = {
     async already_inserted_year(ita_title, eng_title, school_year){
         try {
             conn = await pool.getConnection()
-            if(!ita_title || !eng_title || !school_year){
+            if(!ita_title|| !school_year){
                 conn.release()
                 return null
             }
-            let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.english_title = ? AND c.creation_school_year = ?'
-            let values = [ita_title, eng_title, school_year]
+            let sql = 'SELECT * FROM course AS c WHERE c.italian_title = ? AND c.creation_school_year = ?'
+            let values = [ita_title, school_year]
+            if(eng_title!=undefined){
+                sql += ' AND c.english_title = ? '
+                values.push(eng_title)
+            }
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){
@@ -383,25 +396,40 @@ module.exports = {
             conn.release()
         }
     },
-    async approve_proposal(course_id, session_id, admin_id, approved = true){
+    async approve_proposal(course_id, session_id, admin_id, approved = true, proj_class = true){
         try {
             conn = await pool.getConnection()
             if(!course_id || !session_id || !admin_id){
                 conn.release()
                 return false
             }
-            let sql = 'UPDATE course, project_class SET '
+            let sql = 'UPDATE course'
+            if(proj_class){
+                sql += ', project_class'
+            }
+            sql += ' SET '
             let values = []
             let confirmation_date = undefined
             if(approved) {
                 confirmation_date = new Date()
-                sql += 'course.certifying_admin_id = ?, course.admin_confirmation = ?, course.to_be_modified = NULL, project_class.certifying_admin_id = ?, project_class.admin_confirmation = ?, project_class.to_be_modified = NULL '
-                values.push(admin_id, confirmation_date, admin_id, confirmation_date)
+                sql += 'course.certifying_admin_id = ?, course.admin_confirmation = ?, course.to_be_modified = NULL'
+                values.push(admin_id, confirmation_date)
+                if(proj_class){
+                    sql += ', project_class.certifying_admin_id = ?, project_class.admin_confirmation = ?, project_class.to_be_modified = NULL '
+                    values.push(admin_id, confirmation_date)
+                }
             } else {
-                sql += 'course.to_be_modified = true, project_class.to_be_modified = true, project_class.certifying_admin_id = NULL, project_class.admin_confirmation = NULL '
+                sql += 'course.to_be_modified = true'
+                if(proj_class){
+                    sql += ', project_class.to_be_modified = true'
+                }
             }
-            sql += 'WHERE course.id = ? AND project_class.course_id = ? AND project_class.learning_session_id = ?'
-            values.push(course_id, course_id, session_id)
+            sql += ' WHERE course.id = ?' 
+            values.push(course_id)
+            if(proj_class){
+                sql += ' AND project_class.course_id = ? AND project_class.learning_session_id = ?'
+                values.push(course_id, session_id)
+            }
             const rows = await conn.query(sql, values)
             conn.release()
             return {
@@ -409,6 +437,7 @@ module.exports = {
                 confirmation_date: confirmation_date
             }
         } catch (err) {
+            console.log(err)
             console.log("Something went wrong: approve course")
         } finally {
             conn.release()

@@ -242,17 +242,20 @@ module.exports.get_courses_model = async (req, res) => {
         return;
     }
     let recent_models = req.query.recent_models;
-    if (recent_models!=undefined){
-        recent_models = recent_models > 0 ? recent_models : 0
+    let actual_recent_models = parseInt(recent_models);
+    if (isNaN(actual_recent_models) && recent_models === "true"){
+        actual_recent_models = true
+    } else if (isNaN(actual_recent_models) && recent_models === "false"){
+        actual_recent_models = false
     } else {
-        recent_models = 0
+        actual_recent_models = 0
     }
     let not_confirmed = req.query.not_confirmed;
     if (not_confirmed!=undefined){
         not_confirmed = not_confirmed === "true" ? true : false
     }
     let session_id = req.query.session_id;
-    let models = await courseSchema.get_models(teacher_id, recent_models, not_confirmed, is_admin, session_id);
+    let models = await courseSchema.get_models(teacher_id, actual_recent_models, not_confirmed, is_admin, session_id);
     let data_models = models.map((model) => {
         let course_ref = {
             path: "/api/v1/courses",

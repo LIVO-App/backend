@@ -2270,7 +2270,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /v1/propositions:
     get:
-      description: List of courses proposals
+      description: |
+        List of courses proposals. If the query parameter recent_models is a number, it will show the specified number of propositions approved. 
+        If recent_models has a true value it will show all the proposals which are already been approved.
+        In it has a false value it will show all the propositions. If the user is a teacher, it will show only the propositions related to its proposalts (both project classes and courses)
+        In all other cases the value will be converted to 0, so it will show no proposals.
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/query_teacher_id'
@@ -5326,9 +5330,9 @@ components:
     query_recent_models:
       name: recent_models
       in: query
-      description: Tells how many models the user wants to see in the most recent confirmed courses proposals
+      description: It can be a number or a string value. If it is a number, it tells how many models the user wants to see in the most recent confirmed courses proposals. If it is not a number it will tell us if we want all the courses models or all the propositions.
       schema:
-        type: integer
+        type: string
     query_not_confirmed:
       name: not_confirmed
       in: query

@@ -212,29 +212,34 @@ module.exports = {
     },
     async get_models(teacher_id, recent_models, not_confirmed = false, admin = true, session_id = undefined){
         try {
+            console.log(recent_models)
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
             let values = []
-            if(recent_models>0){
+            if(typeof(recent_models) == "number"){
+                sql += `, c.italian_title, c.english_title`
+            } else if (typeof(recent_models) == "boolean" && recent_models){
                 sql += `, c.italian_title, c.english_title`
             } else {
                 sql += `, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id`
             }
             sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified'`
-            if(recent_models==0){
+            if(typeof(recent_models) == "boolean" && !recent_models){
                 sql += `, pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname' `
                 if(admin){
                     sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
                 }
             }
             sql += ` FROM course AS c`
-            if(recent_models==0){
+            if(typeof(recent_models) == "boolean" && !recent_models){
                 sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
                 if(admin){
                     sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
                 }
             }
-            if(recent_models>0){ // I want to have the last n models available
+            if(typeof(recent_models) == "number"){ // I want to have the last n models available
+                sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
+            } else if (typeof(recent_models) == "boolean" && recent_models) {
                 sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
             } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
                 if(teacher_id!=undefined && not_confirmed){
@@ -263,19 +268,20 @@ module.exports = {
                 }
             }
             sql += ` ORDER BY `
-            if(recent_models == 0) {
+            if(typeof(recent_models) == "boolean" && !recent_models) {
                 sql += ` pc.learning_session_id ASC,`
             } 
             sql += ` c.id ASC, c.creation_school_year DESC`
             //console.log(sql);
             const rows = await conn.query(sql, values)
             conn.release()
-            if (recent_models>0){
+            if (typeof(recent_models) == "number"){
                 return rows.slice(0,recent_models)
             } else {
                 return rows 
             } 
         } catch (err) {
+            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()

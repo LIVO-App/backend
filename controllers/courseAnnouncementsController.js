@@ -21,14 +21,14 @@ module.exports.get_announcement = async (req, res) => {
         let admin_exists = await adminSchema.read_id(user_id)
         if(!admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('Announcement: unauthorized access');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentSchema.read_id(user_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('Announcement: unauthorized access');
             return;
         }
         is_student = true
@@ -36,12 +36,12 @@ module.exports.get_announcement = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(user_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('Announcement: unauthorized access');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('general announcements publishment: unauthorized access');
+        console.log('Announcement: unauthorized access');
         return;
     }
     let announcement_id = req.params.announcement_id;

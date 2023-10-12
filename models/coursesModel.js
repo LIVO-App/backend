@@ -212,7 +212,6 @@ module.exports = {
     },
     async get_models(teacher_id, recent_models, not_confirmed = false, admin = true, session_id = undefined){
         try {
-            console.log(recent_models)
             conn = await pool.getConnection()
             let sql = `SELECT c.id`
             let values = []

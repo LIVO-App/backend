@@ -199,8 +199,8 @@ module.exports.add_sessions = async (req, res) => {
                         break
                     } else {
                         console.log("Overlapping start date. Session number "+number+" school year "+school_year)
-                        console.log(end_date)
-                        console.log(future_session_end)
+                        //console.log(end_date)
+                        //console.log(future_session_end)
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
                         console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again');
@@ -210,8 +210,8 @@ module.exports.add_sessions = async (req, res) => {
                     // Check ending date to see if it is still overlapping or not
                     if(end_date>future_session_start){
                         console.log("Overlapping end date. Session number "+number+" school year "+school_year)
-                        console.log(end_date)
-                        console.log(future_session_start)
+                        //console.log(end_date)
+                        //console.log(future_session_start)
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
                         console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again');

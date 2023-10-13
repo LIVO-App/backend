@@ -4,6 +4,7 @@ const subscribe_schema = require('../models/subscribeModel');
 const studentModel = require('../models/studentModel');
 const pcModel = require('../models/projectClassModel');
 const courseSchema = require('../models/coursesModel');
+const sessionSchema = require('../models/learning_sessionsModel')
 
 let MSG = {
     notFound: "Resource not found",
@@ -125,6 +126,17 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
     }
     let course_id = req.query.course_id;
     let session_id = req.query.session_id;
+    let session_exist = await sessionSchema.read(session_id)
+    if(!session_exist){
+        res.status(404).json({status: "error", description: MSG.notFound})
+        console.log('subscription: session does not exist');
+        return;
+    }
+    if(session_exist.open_day>new Date()){
+        res.status(400).json({status: "error", description: "The orientation day date is not already passed. You cannot subscribe to the course."})
+        console.log('orientation day not passed');
+        return;
+    }
     let context_id = req.query.context_id;
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){

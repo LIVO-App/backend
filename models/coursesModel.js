@@ -210,68 +210,16 @@ module.exports = {
             conn.release();
         }
     },
-    async get_models(teacher_id, recent_models, not_confirmed = false, admin = true, session_id = undefined){
+    async get_course_models(recent_models, school_year){
         try {
             conn = await pool.getConnection()
-            let sql = `SELECT c.id`
+            let sql = `SELECT c.id, c.italian_title, c.english_title, c.creation_school_year, c.certifying_admin_id, c.admin_confirmation, c.to_be_modified, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname' FROM course AS c JOIN admin AS a ON a.id = c.certifying_admin_id JOIN teacher AS t ON t.id = c.proposer_teacher_id WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
             let values = []
-            if(typeof(recent_models) == "number"){
-                sql += `, c.italian_title, c.english_title`
-            } else if (typeof(recent_models) == "boolean" && recent_models){
-                sql += `, c.italian_title, c.english_title`
-            } else {
-                sql += `, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id`
+            if(school_year!=undefined){
+                sql += ` AND c.creation_school_year = ?`
+                values.push(school_year)
             }
-            sql += `, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified'`
-            if(typeof(recent_models) == "boolean" && !recent_models){
-                sql += `, pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname' `
-                if(admin){
-                    sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
-                }
-            }
-            sql += ` FROM course AS c`
-            if(typeof(recent_models) == "boolean" && !recent_models){
-                sql += ` LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
-                if(admin){
-                    sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
-                }
-            }
-            if(typeof(recent_models) == "number"){ // I want to have the last n models available
-                sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
-            } else if (typeof(recent_models) == "boolean" && recent_models) {
-                sql += ` WHERE c.admin_confirmation IS NOT NULL and c.certifying_admin_id IS NOT NULL`
-            } else { // I want to check the propositions of the courses. not_confirmed tells if the user wants to see only the ones not confirmed yet.
-                if(teacher_id!=undefined && not_confirmed){
-                    sql += ` WHERE pc.proposer_teacher_id = ? OR pc.proposer_teacher_id = ? AND ((c.admin_confirmation IS NULL AND c.certifying_admin_id IS NOT NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL))`
-                    values.push(teacher_id, teacher_id)
-                    if(session_id!=undefined){
-                        sql += ` AND pc.learning_session_id = ?`
-                        values.push(session_id)
-                    }
-                } else if (teacher_id!=undefined){
-                    sql += ` WHERE c.proposer_teacher_id = ? OR pc.proposer_teacher_id = ?`
-                    values.push(teacher_id, teacher_id)
-                    if(session_id!=undefined){
-                        sql += ` AND pc.learning_session_id = ?`
-                        values.push(session_id)
-                    }
-                } else if (not_confirmed){
-                    sql += ` WHERE (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL) OR (pc.admin_confirmation IS NULL and pc.certifying_admin_id IS NULL)`
-                    if(session_id!=undefined){
-                        sql += ` AND pc.learning_session_id = ?`
-                        values.push(session_id)
-                    }
-                } else if (session_id!=undefined){
-                    sql += ` WHERE pc.learning_session_id = ?`
-                    values.push(session_id)
-                }
-            }
-            sql += ` ORDER BY `
-            if(typeof(recent_models) == "boolean" && !recent_models) {
-                sql += ` pc.learning_session_id ASC,`
-            } 
-            sql += ` c.id ASC, c.creation_school_year DESC`
-            //console.log(sql);
+            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
             const rows = await conn.query(sql, values)
             conn.release()
             if (typeof(recent_models) == "number"){
@@ -280,6 +228,103 @@ module.exports = {
                 return rows 
             } 
         } catch (err) {
+            console.log(err)
+            console.log("Something went wrong: list of course models")
+        } finally {
+            conn.release()
+        }
+    },
+    async get_models(teacher_id, not_confirmed = false, admin = true, school_year = undefined){
+        try {
+            conn = await pool.getConnection()
+            let sql = `SELECT c.id , c.italian_title, c.english_title, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified', c.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
+            let values = []
+            if(admin){
+                sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+            }
+            sql += ` FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = c.certifying_admin_id`
+            if(admin){
+                sql += ` JOIN teacher AS t ON t.id = c.proposer_teacher_id `
+            }
+            sql += ` WHERE pc.learning_session_id IS NULL`
+            if(teacher_id!=undefined && not_confirmed){
+                sql += ` AND c.proposer_teacher_id = ? AND (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL)`
+                values.push(teacher_id)
+                if(school_year!=undefined){
+                    sql += ` AND c.creation_school_year = ?`
+                    values.push(school_year)
+                }
+            } else if (teacher_id!=undefined){
+                sql += ` AND c.proposer_teacher_id = ? `
+                values.push(teacher_id)
+                if(school_year!=undefined){
+                    sql += ` AND c.creation_school_year = ?`
+                    values.push(school_year)
+                }
+            } else if (not_confirmed){
+                sql += ` AND (c.admin_confirmation IS NULL AND c.certifying_admin_id IS NULL)`
+                if(school_year!=undefined){
+                    sql += ` AND c.creation_school_year = ?`
+                    values.push(school_year)
+                }
+            } else if (school_year!=undefined){
+                sql += ` AND c.creation_school_year = ?`
+                values.push(school_year)
+            }
+            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log(err)
+            console.log("Something went wrong: list of course models")
+        } finally {
+            conn.release()
+        }
+    }, 
+    async get_class_models(teacher_id, not_confirmed = false, admin = true, session_id = undefined){
+        try {
+            conn = await pool.getConnection()
+            let sql = `SELECT c.id , CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id , pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
+            if(admin){
+                sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+            }
+            sql +=  `FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
+            let values = []
+            if(admin){
+                sql += ` JOIN teacher AS t ON t.id = pc.proposer_teacher_id `
+            }
+            if(teacher_id!=undefined && not_confirmed){
+                sql += ` WHERE pc.proposer_teacher_id = ? AND (pc.admin_confirmation IS NULL AND pc.certifying_admin_id IS NULL))`
+                values.push(teacher_id)
+                if(session_id!=undefined){
+                    sql += ` AND pc.learning_session_id = ?`
+                    values.push(session_id)
+                }
+            } else if (teacher_id!=undefined){
+                sql += ` WHERE pc.proposer_teacher_id = ?`
+                values.push(teacher_id)
+                if(session_id!=undefined){
+                    sql += ` AND pc.learning_session_id = ?`
+                    values.push(session_id)
+                }
+            } else if (not_confirmed){
+                sql += ` WHERE (pc.admin_confirmation IS NULL AND pc.certifying_admin_id IS NULL)`
+                if(session_id!=undefined){
+                    sql += ` AND pc.learning_session_id = ?`
+                    values.push(session_id)
+                }
+            } else if (session_id!=undefined){
+                sql += ` WHERE pc.learning_session_id = ?`
+                values.push(session_id)
+            }
+            sql += ` ORDER BY pc.learning_session_id ASC, c.id ASC, c.creation_school_year DESC`
+            //console.log(sql);
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows 
+        } catch (err) {
+            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()

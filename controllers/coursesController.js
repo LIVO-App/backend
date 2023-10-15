@@ -241,21 +241,57 @@ module.exports.get_courses_model = async (req, res) => {
         console.log('get_courses_v2: unauthorized access');
         return;
     }
+    let session_id = req.query.session_id;
+    let school_year = req.query.school_year;
+    let session_exist, school_year_exist
+    if(session_id!=undefined){
+        session_exist = await sessionSchema.read(session_id)
+        if(!session_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('resource not found: learning session');
+            return;
+        }
+    }
+    if(school_year!=undefined){
+        school_year_exist = await sessionSchema.year_exist(school_year)
+        if(!school_year_exist){
+            res.status(404).json({status: "error", description: MSG.notFound});
+            console.log('resource not found: school year not defined in learning sessions');
+            return;
+        }
+    }
     let recent_models = req.query.recent_models;
     let actual_recent_models = parseInt(recent_models);
     if (isNaN(actual_recent_models) && recent_models === "true"){
         actual_recent_models = true
     } else if (isNaN(actual_recent_models) && recent_models === "false"){
         actual_recent_models = false
-    } else {
+    } else if(actual_recent_models<0){
         actual_recent_models = 0
     }
     let not_confirmed = req.query.not_confirmed;
     if (not_confirmed!=undefined){
         not_confirmed = not_confirmed === "true" ? true : false
     }
-    let session_id = req.query.session_id;
-    let models = await courseSchema.get_models(teacher_id, actual_recent_models, not_confirmed, is_admin, session_id);
+    let models;
+    if (typeof(actual_recent_models)=="number" || (typeof(actual_recent_models)=="boolean" && actual_recent_models)){
+        models = await courseSchema.get_course_models(actual_recent_models, school_year)
+    } else {
+        if(school_year_exist!=undefined && session_exist!=undefined){
+            if(school_year != session_exist.school_year){
+                res.status(400).json({status: "error", description: "The session and the school year you passed are not in the same school year definition. Please try again."});
+                console.log('get_course_models: school year not equal to session school_year');
+                return;
+            }
+            models = await courseSchema.get_models(teacher_id, not_confirmed, is_admin, school_year)
+        } else if(school_year_exist!=undefined){
+            models = await courseSchema.get_models(teacher_id, not_confirmed, is_admin, school_year)
+        } else if(session_exist!=undefined){
+            models = await courseSchema.get_class_models(teacher_id, not_confirmed, is_admin, session_id);
+        } else {
+            models = await courseSchema.get_models(teacher_id, not_confirmed, is_admin)
+        }
+    }
     let data_models = models.map((model) => {
         let course_ref = {
             path: "/api/v1/courses",
@@ -404,10 +440,10 @@ module.exports.add_proposition = async (req, res) => {
         course_id_exist = false
     }
     if(course_id_exist){
-        if(course_id_exist.italian_title == ita_title && course_id_exist.creation_school_year == today.getFullYear()){
+        if(course_id_exist.italian_title == ita_title && course_id_exist.creation_school_year == session_year){
             same_year = true
         } else {
-            same_year = await courseSchema.already_inserted_year(ita_title, eng_title, today.getFullYear())
+            same_year = await courseSchema.already_inserted_year(ita_title, eng_title, session_year)
             if(same_year == null){
                 res.status(400).json({status: "error", description: MSG.missing_params, course_exist: false})
                 console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');

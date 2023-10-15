@@ -213,5 +213,23 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async year_exist(school_year){
+        try {
+            conn = await pool.getConnection()
+            let sql = 'SELECT DISTINCT ls.school_year FROM learning_session AS ls WHERE ls.school_year = ?'
+            let values = [school_year]
+            const rows = await conn.query(sql,values)
+            conn.release()
+            if(rows.length === 1){
+                return rows[0]
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log("Something went wrong: school year existance")
+        } finally {
+            conn.release()
+        }
     }
 };

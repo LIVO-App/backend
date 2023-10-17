@@ -285,7 +285,7 @@ module.exports = {
     async get_class_models(teacher_id, not_confirmed = false, admin = true, session_id = undefined){
         try {
             conn = await pool.getConnection()
-            let sql = `SELECT c.id , CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id , pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
+            let sql = `SELECT c.id, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id , pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
             if(admin){
                 sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
             }
@@ -509,8 +509,8 @@ module.exports = {
                 values.push(up_hours)
             }
             if(ita_ex_l_r!=undefined){
-                sql += ' up_hours = ?,'
-                values.push(italian_expected_learning_results)
+                sql += ' italian_expected_learning_results = ?,'
+                values.push(ita_ex_l_r)
             }
             if(eng_ex_l_r!=undefined){
                 sql += ' english_expected_learning_results = ?,'

@@ -486,16 +486,20 @@ module.exports = {
             conn.release()
         }
     },
-    async update_course(course_id, italian_description, english_description, up_hours, ita_ex_l_r, eng_ex_l_r, ita_cri, eng_cri, ita_ac, eng_ac){
+    async update_course(course_id, english_title, italian_description, english_description, up_hours, credits, ita_ex_l_r, eng_ex_l_r, ita_cri, eng_cri, ita_ac, eng_ac, learning_area_id, min_students, max_students){
         // italian_activities=?, =? WHERE id = ?
         try {
             conn = await pool.getConnection()
-            if(!course_id || (italian_description == undefined && english_description == undefined && up_hours == undefined && ita_ex_l_r == undefined && eng_ex_l_r == undefined && ita_cri == undefined && eng_cri == undefined && ita_ac == undefined && eng_ac == undefined)){
+            if(!course_id || (english_title == undefined && italian_description == undefined && english_description == undefined && up_hours == undefined && credits == undefined && ita_ex_l_r == undefined && eng_ex_l_r == undefined && ita_cri == undefined && eng_cri == undefined && ita_ac == undefined && eng_ac == undefined && learning_area_id == undefined && min_students == undefined && max_students == undefined)){
                 conn.release()
                 return false
             }
             let sql = 'UPDATE course SET'
             let values = []
+            if(english_title!=undefined){
+                sql += ' english_title = ?,'
+                values.push(english_title)
+            }
             if(italian_description!=undefined){
                 sql += ' italian_description = ?,'
                 values.push(italian_description)
@@ -507,6 +511,10 @@ module.exports = {
             if(up_hours!=undefined){
                 sql += ' up_hours = ?,'
                 values.push(up_hours)
+            }
+            if(credits!=undefined){
+                sql += ' credits = ?,'
+                values.push(credits)
             }
             if(ita_ex_l_r!=undefined){
                 sql += ' up_hours = ?,'
@@ -529,8 +537,20 @@ module.exports = {
                 values.push(ita_ac)
             }
             if(eng_ac!=undefined){
-                sql += ' english_activities = ?'
+                sql += ' english_activities = ?,'
                 values.push(eng_ac)
+            }
+            if(learning_area_id!=undefined){
+                sql += ' learning_area_id = ?,'
+                values.push(learning_area_id)
+            }
+            if(min_students!=undefined){
+                sql += ' min_students = ?,'
+                values.push(min_students)
+            }
+            if(max_students!=undefined){
+                sql += ' max_students = ?'
+                values.push(max_students)
             }
             if(sql[sql.length-1]==","){
                 sql = sql.slice(0,-1);

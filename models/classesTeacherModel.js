@@ -137,30 +137,15 @@ module.exports = {
             conn.release()
         }
     },
-    async update(course_id, session_id, teacher_list){
+    async update(course_id, session_id, teacher_id, main_teacher, section){
         try {
             conn = await pool.getConnection()
-            if(!course_id || !session_id || teacher_list == undefined ||teacher_list.length == 0){
+            if(!course_id || !session_id || teacher_id==undefined || main_teacher==undefined || section == undefined){
                 conn.release()
                 return false
             }
-            let sql = ''
-            let values = []
-            for(let i=0;i<teacher_list.length;i++){
-                let teacher_id = teacher_list[i]["teacher_id"]
-                let main_teacher = teacher_list[i]["main"]
-                let sections = teacher_list[i]["sections"]
-                for(let j=0;j<sections.length;j++){
-                    sql += 'UPDATE project_teach SET main = ? WHERE teacher_id = ? AND project_class_course_id = ? AND project_class_session = ? AND section = ?';
-                    values.push(main_teacher, teacher_id, course_id, session_id, sections[j])
-                    if(j<sections.length-1){
-                        sql+='; '
-                    }
-                }
-                if(i<teacher_list.length-1){
-                    sql += '; ';
-                }                
-            }
+            let sql = 'UPDATE project_teach SET main = ? WHERE teacher_id = ? AND project_class_course_id = ? AND project_class_session = ? AND section = ?'
+            let values = [main_teacher, teacher_id, course_id, session_id, section]
             const rows = await conn.query(sql, values)
             conn.release()
             return rows

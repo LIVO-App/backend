@@ -391,6 +391,11 @@ module.exports.add_proposition = async (req, res) => {
     let growth_list = req.body.growth_list; //Its an array like teaching_list
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
+    if(min_students+6>max_students){
+        res.status(400).json({status: "error", description: "Range of possible students too short. Increase it and try again."});
+        console.log('add proposition: range of students too small');
+        return;
+    }
     let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
     if(!area_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -963,11 +968,17 @@ module.exports.update_course = async (req, res) => {
     let growth_list = req.body.growth_list;
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
+    let course_not_updated;
+    if(context_exist.admin_confirmation!=undefined){
+        if(eng_title==undefined && eng_descr==undefined && eng_exp_l==undefined && eng_cri == undefined && eng_act==undefined){
+            course_not_updated = true
+        }
+    }
     let area_id_exists
     if(area_id!=undefined){
         area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
         if(!area_id_exists){
-            res.status(404).json({status: "error", description: MSG.notFound});
+            res.status(404).json({status: "error", description: MSG.notFound,course_not_updated:course_not_updated});
             console.log('resource not found: learning area');
             return;
         }
@@ -981,9 +992,9 @@ module.exports.update_course = async (req, res) => {
             return;
         }
     }*/
-    if(ita_title!=undefined && credits != undefined && area_id != undefined && min_students != undefined && max_students != undefined){
-        if(course_exist.italian_title != ita_title || course_exist.credits != credits || course_exist.learning_area_id != area_id || course_exist.min_students != min_students || course_exist.max_students != max_students){
-            res.status(400).json({status: "error", description: MSG.changedUniqueInformation});
+    if(ita_title!=undefined){
+        if(course_exist.italian_title != ita_title){
+            res.status(400).json({status: "error", description: MSG.changedUniqueInformation, course_not_updated: course_not_updated});
             console.log('course update: changed some important information');
             return;
         }
@@ -991,7 +1002,7 @@ module.exports.update_course = async (req, res) => {
     let session_id = req.body.session_id;
     let session_id_exists = await sessionSchema.read(session_id); // Is learning session present in the database
     if(!session_id_exists){
-        res.status(404).json({status: "error", description: MSG.notFound});
+        res.status(404).json({status: "error", description: MSG.notFound, course_not_updated: course_not_updated});
         console.log('resource not found: learning session');
         return;
     }
@@ -1152,8 +1163,34 @@ module.exports.update_course = async (req, res) => {
             new_teachings = true
         }
     }
-    let course_update = await courseSchema.update_course(course_id, ita_descr, eng_descr, up_hours, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act);
-    let access_update = await opentoSchema.update(course_id, access_object)
+    if(access_object!=undefined){
+        for(let context in access_object){
+            if(access_object[context].length==0){
+                delete access_object[context]
+                continue
+            }
+            for(let index=0;index<access_object[context].length;index++){
+                if(Object.keys(access_object[context][index]).length==0){
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+                if(access_object[context][index].study_year==undefined || access_object[context][index].study_address==undefined || access_object[context][index].presidium==undefined || access_object[context][index].main_study_year==undefined){
+                    access_object[context].splice(index, 1)
+                    index = index - 1
+                    continue
+                }
+                let context_id = context
+                let study_year = access_object[context][index].study_year;
+                let study_address = access_object[context][index].study_address;
+                let presidium = access_object[context][index].presidium > 0 ? 1 : 0;
+                let main_study_year = access_object[context][index].main_study_year > 0 ? 1 : 0;
+                let access_update = await opentoSchema.update(course_id, context_id, study_year, study_address, presidium, main_study_year)
+            }
+        }
+    }
+    let course_update = await courseSchema.update_course(course_id, eng_title, ita_descr, eng_descr, up_hours, credits, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act, area_id, min_students, max_students);
+    //let access_update = await opentoSchema.update(course_id, access_object)
     let new_project_class;
     let proj_class_exists = await projectclassSchema.read(course_id, session_id)
     if(!proj_class_exists){
@@ -1216,7 +1253,17 @@ module.exports.update_course = async (req, res) => {
                 //console.log(i)
             }
         }
-        teacher_update = await teacherClassSchema.update(course_id, session_id, teacher_list)
+        if(teacher_list!=undefined){
+            for(let i=0;i<teacher_list.length;i++){
+                let teacher_id = teacher_list[i]["teacher_id"]
+                let main_teacher = teacher_list[i]["main"]
+                let sections = teacher_list[i]["sections"]
+                for(let j=0;j<sections.length;j++){
+                    teacher_update = await teacherClassSchema.update(course_id, session_id, teacher_id, main_teacher, sections[j])
+                }
+            }
+        }
+        //teacher_update = await teacherClassSchema.update(course_id, session_id, teacher_list)
     }
     if(course_update == false && access_update == false && project_class_update == false && teacher_update == false){
         res.status(400).json({
@@ -1230,7 +1277,8 @@ module.exports.update_course = async (req, res) => {
             new_classes: new_classes, 
             new_teachings: new_teachings, 
             new_teacher: new_teacher,
-            new_growth_area: new_growth_area
+            new_growth_area: new_growth_area,
+            course_not_updated: course_not_updated
         })
         return
     }

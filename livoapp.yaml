@@ -3291,6 +3291,9 @@ components:
               new_teacher:
                 type: boolean
                 description: "Tells if some values of the teachers tried to update were new and consequently not updated"
+              course_not_updated:
+                type: boolean
+                description: "Tells if the course the user is trying to update is not updated."
     TeacherProjectClassInsert:
       description: Teacher insertion to project class response
       content:

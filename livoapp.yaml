@@ -489,6 +489,54 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      description: Open the course to a single new class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_context_id'
+        - $ref: '#/components/parameters/query_study_year'
+        - $ref: '#/components/parameters/query_study_address'
+        - $ref: '#/components/parameters/query_presidium'
+        - $ref: '#/components/parameters/query_main_study_year'
+      summary: Open course to new class
+      tags:
+        - courses
+        - v1
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Remove the access to the course to a single class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_context_id'
+        - $ref: '#/components/parameters/query_study_year'
+        - $ref: '#/components/parameters/query_study_address'
+      summary: Remove course for a class
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/courses/{course_id}/teachings:
     get:
       description: Get all the teachings that are teach in the course
@@ -526,6 +574,48 @@ paths:
                     description: "Data return from the api"
         '404':
           $ref: '#/components/responses/NotFound'
+    post:
+      description: Add single teaching to the course
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_teaching_id'
+      summary: Add teachign to course
+      tags:
+        - courses
+        - v1
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Remove a specific teaching from the course
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_teaching_id'
+      summary: Remove course for a class
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/courses/{course_id}/growth_areas:
     get:
       description: Get all the growth areas that characterize the course
@@ -561,6 +651,48 @@ paths:
                     items:
                       $ref: '#/components/schemas/growth_area_related_data'
                     description: "Data return from the api"
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      description: Add single growth area to the course
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_growth_area_id'
+      summary: add growth area to course
+      tags:
+        - courses
+        - v1
+      responses:
+        '201':
+          $ref: '#/components/responses/AcceptInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Remove single growth area from the course
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_course_id'
+        - $ref: '#/components/parameters/query_growth_area_id'
+      summary: Remove growth area from course
+      tags:
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
   /v1/learning_contexts:
@@ -5438,3 +5570,27 @@ components:
       description: Tells if it should approve also the project class
       schema:
         type: boolean
+    query_presidium:
+      name: presidium
+      in: query
+      description: Tells if the class address is the presidium of the course
+      schema:
+        type: boolean
+    query_main_study_year:
+      name: presidium
+      in: query
+      description: Tells if the class study year is the main year which the course is open
+      schema:
+        type: boolean
+    query_teaching_id:
+      name: teaching_id
+      in: query
+      description: Id of the teaching
+      schema:
+        type: string
+    query_growth_area_id:
+      name: growth_area_id
+      in: query
+      description: Id of the growth area
+      schema:
+        type: integer

@@ -115,7 +115,7 @@ module.exports = {
                 return null
             }
             let sql = 'SELECT * FROM `accessible` WHERE course_id = ? AND study_year_id = ? AND study_address_id = ? AND learning_context_id = ?'
-            let values = [course_id, context_id, study_year, study_address]
+            let values = [course_id, study_year, study_address, context_id]
             const rows = await conn.query(sql, values)
             if(rows.length==1){
                 return true
@@ -165,6 +165,42 @@ module.exports = {
             return rows
         } catch (err) {
             console.log("Something went wrong: update course accessibility")
+        } finally {
+            conn.release()
+        }
+    },
+    async add_single(course_id, context_id, study_year, study_address, presidium = false, main_study_year = false){
+        try {
+            let conn = await pool.getConnection()
+            if(course_id==undefined || context_id==undefined || study_year == undefined || study_address == undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO `accessible` (course_id, study_year_id, study_address_id, presidium, main_study_year, learning_context_id) VALUES (?,?,?,?,?,?)';
+            let values = [course_id, study_year, study_address, presidium, main_study_year, context_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: insert course single accessibility")
+        } finally {
+            conn.release()
+        }
+    },
+    async remove(course_id, context_id, study_year, study_address){
+        try {
+            let conn = await pool.getConnection()
+            if(course_id==undefined || context_id==undefined || study_year == undefined || study_address == undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'DELETE FROM `accessible` WHERE course_id = ? AND study_year_id = ? AND study_address_id = ? AND learning_context_id = ?';
+            let values = [course_id, study_year, study_address, context_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: remove course single accessibility")
         } finally {
             conn.release()
         }

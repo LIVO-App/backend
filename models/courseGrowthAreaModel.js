@@ -92,5 +92,41 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async add_single(course_id, growth_area_id){
+        try {
+            let conn = await pool.getConnection()
+            if(course_id==undefined || growth_area_id==undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'INSERT INTO characterize (course_id, growth_area_id) VALUES (?,?)';
+            let values = [course_id, growth_area_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: insert course single growth area")
+        } finally {
+            conn.release()
+        }
+    },
+    async remove(course_id, growth_area_id){
+        try {
+            let conn = await pool.getConnection()
+            if(course_id==undefined || growth_area_id==undefined){
+                conn.release()
+                return false
+            }
+            let sql = 'DELETE FROM characterize WHERE course_id = ? AND growth_area_id = ?';
+            let values = [course_id, growth_area_id]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            return rows
+        } catch (err) {
+            console.log("Something went wrong: remove course single growth area")
+        } finally {
+            conn.release()
+        }
     }
 }

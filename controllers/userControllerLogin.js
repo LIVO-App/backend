@@ -16,7 +16,7 @@ let MSG = {
 }
 
 process.env.TZ = 'Etc/Universal';
-let expirationTime = 86400
+let expirationTime = 3600
 
 function addSeconds(date, seconds) {
     date.setSeconds(date.getSeconds() + seconds);
@@ -33,7 +33,7 @@ let generateToken = (user, role) => {
         expirationDate: expirationDate
     }
     let option = {
-        expiresIn: expirationTime //expires in 24 hours
+        expiresIn: expirationTime //expires in 1 hours
     }
     return jwt.sign(payload, process.env.SUPER_SECRET, option);
 }
@@ -146,7 +146,7 @@ module.exports.google = async (req, res) => {
             await studentSchema.google(msg.id);
         }
         let token = generateToken(msg,"student");
-        return res.redirect("http://localhost:8100/google-redirect?token="+token);
+        return res.redirect("https://livopath.istitutodecarneri.it/google-redirect?token="+token);
     }
     msg = await teacherSchema.read_email(filterEmail.email);
     if (msg) {
@@ -154,7 +154,7 @@ module.exports.google = async (req, res) => {
             await teacherSchema.google(msg.id);
         }
         let token = generateToken(msg,"teacher");
-        return res.redirect("http://localhost:8100/google-redirect?token="+token);
+        return res.redirect("https://livopath.istitutodecarneri.it/google-redirect?token="+token);
     }
     msg = await adminSchema.read_email(filterEmail.email);
     if (msg) {
@@ -162,9 +162,9 @@ module.exports.google = async (req, res) => {
             await adminSchema.google(msg.id);
         }
         let token = generateToken(msg,"admin");
-        return res.redirect("http://localhost:8100/google-redirect?token="+token);
+        return res.redirect("https://livopath.istitutodecarneri.it/google-redirect?token="+token);
     }
-    return res.redirect("http://localhost:8100/google-redirect");
+    return res.redirect("https://livopath.istitutodecarneri.it/google-redirect");
 }
 
 /*studentSchema.google(1).then((msg) => {

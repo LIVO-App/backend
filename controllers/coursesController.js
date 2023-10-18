@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
   });
 
 const csvWriter = createCsvWriter({
-    path: 'propositions.csv',
+    path: process.env.PROPOSITIONS_CSV_PATH,
     header: [
         {id: 'titolo_italiano', title: 'titolo_italiano'},
         {id: 'titolo_inglese', title: 'titolo_inglese'},
@@ -1455,7 +1455,7 @@ module.exports.propositions_export = async (req, res) => {
             to: 'pietro.fronza@studenti.unitn.it',
             subject: "Corsi da approvare",
             text: "Ciao Claudio,\nIn allegato trovi il file csv con i corsi che dobbiamo approvare per la prossima sessione.",
-            attachments: [{filename: 'propositions.csv', path: process.env.PATH_TO_CSV,}]
+            attachments: [{filename: 'propositions.csv', path: process.env.PROPOSITIONS_CSV_PATH,}]
         };
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {

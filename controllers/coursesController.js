@@ -109,24 +109,26 @@ module.exports.get_courses = async (req, res) => {
 module.exports.get_courses_v2 = async (req, res) => {
     let session_id = req.query.session_id;
     let student_id = req.query.student_id;
-    if(student_id!=undefined){
+    let query_student_id = student_id;
+    if(req.loggedUser.role == "student"){
+        if(student_id==undefined){
+            student_id = req.loggedUser._id
+        }
         let student_exist = await studentSchema.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
             return;
-        }
-        if(req.loggedUser.role == "student"){
-            if(req.loggedUser._id != student_id){
-                res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('get_courses_v2: unauthorized access');
-                return;
-            }
-        } else {
+        }  
+        if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_courses_v2: unauthorized access');
             return;
         }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_v2: unauthorized access');
+        return;
     }
     let area_id = req.query.area_id;
     let context_id = req.query.context_id;
@@ -161,7 +163,7 @@ module.exports.get_courses_v2 = async (req, res) => {
         path: "/api/v2/courses",
         single: true,
         query: {
-            student_id: student_id,
+            student_id: query_student_id,
             area_id: area_id,
             session_id: session_id,
             context_id: context_id,
@@ -1466,6 +1468,70 @@ module.exports.propositions_export = async (req, res) => {
         });
     });
     res.status(200).json({status: 'success', description: 'Data exported'})
+}
+
+module.exports.get_courses_for_tutors = async (req, res) => {
+    let session_id = req.query.session_id;
+    let teacher_id = req.params.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(teacher_id==undefined){
+            teacher_id = req.loggedUser._id
+        }
+        let teacher_esist = await teacherSchema.read_id(teacher_id)
+        if(!teacher_esist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_for_tutors: unauthorized access');
+            return;
+        }  
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_courses_for_tutors: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_courses_for_tutors: unauthorized access');
+        return;
+    }
+    let area_id = req.query.area_id;
+    let context_id = req.query.context_id;
+    let courses = await courseSchema.list_for_teacher(teacher_id, area_id, session_id, context_id);
+    if(!courses){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get_courses_for_tutors: resource not found');
+        return;
+    }
+    let data_courses = courses.map((course) => {
+        let learning_area_ref = {
+            path: "/api/v1/learning_areas",
+            single: true,
+            query: {},
+            data: {
+                id: course.learning_area_id
+            }
+        }
+        return {
+            id: course.id,
+            italian_title: course.italian_title,
+            english_title: course.english_title,
+            credits: course.credits,
+            learning_area_ref: learning_area_ref,
+            group: course.group,
+            section: course.section
+        };
+    });
+    let response = {
+        path: "/api/v1/teachers/"+teacher_id+"/tutor_courses",
+        single: false,
+        query: {
+            area_id: area_id,
+            session_id: session_id,
+            context_id: context_id
+        },
+        date: new Date(),
+        data: data_courses
+    };
+    res.status(200).json(response);
 }
 
 /*courseSchema.list(1, undefined, 7)

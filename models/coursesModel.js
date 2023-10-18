@@ -165,6 +165,71 @@ module.exports = {
             conn.release();
         }
     },
+    async list_for_teacher(teacher_id, learn_area_id, session_id, context_id){
+        try {
+            conn = await pool.getConnection();
+            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group FROM course AS c JOIN project_class AS pc ON c.id = pc.course_id JOIN learning_area AS la ON c.learning_area_id = la.id JOIN learning_session AS ls ON ls.id = pc.learning_session_id`;
+            let values = []
+            if (learn_area_id != undefined && session_id != undefined){
+                sql += ` WHERE pc.learning_session_id = ? AND c.learning_area_id = ?`;
+                values.push(session_id, learn_area_id)
+                if (teacher_id != undefined) {
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1) AND ac.study_address_id IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1)`;
+                    values.push(teacher_id, teacher_id)
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=?`
+                        values.push(context_id)
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
+                }
+            } else if (learn_area_id != undefined){
+                sql += ` WHERE c.learning_area_id = ?`;
+                values.push(learn_area_id)
+                if (teacher_id != undefined) {
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1) AND ac.study_address_id IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1)`;
+                    values.push(teacher_id, teacher_id)
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=?`
+                        values.push(context_id)
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
+                }
+            } else if (session_id != undefined){
+                sql += ` WHERE pc.learning_session_id = ?`;
+                values.push(session_id)
+                if (teacher_id != undefined) {
+                    sql += ` AND c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1) AND ac.study_address_id IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1)`;
+                    values.push(teacher_id, teacher_id)
+                    if(context_id != undefined){
+                        sql += ` AND ac.learning_context_id=?`
+                        values.push(context_id)
+                    }
+                    sql += `) AND c.certifying_admin_id IS NOT NULL`;
+                }
+            } else if (teacher_id != undefined) {
+                sql += ` WHERE c.id IN (SELECT ac.course_id FROM \`accessible\` AS ac WHERE ac.study_year_id IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1) AND ac.study_address_id IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_school_year = ls.school_year AND ot.tutor = 1)`;
+                values.push(teacher_id, teacher_id)
+                if(context_id != undefined){
+                    sql += ` AND ac.learning_context_id=?`
+                    values.push(context_id)
+                }
+                sql += `) AND c.certifying_admin_id IS NOT NULL`;
+            }
+            sql += ` ORDER BY c.id`;
+            //console.log(sql);
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length!=0){
+                return rows;
+            } else {
+                return false;
+            } 
+        } catch (err) {
+            console.log("Something went wrong: list of courses");
+        } finally {
+            conn.release();
+        }
+    },
     async curriculum(student_id, school_year, context_id, teacher_id){
         try {
             conn = await pool.getConnection();

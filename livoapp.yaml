@@ -2476,6 +2476,27 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/CourseInsertion'
+  /v1/propositions/export:
+    get:
+      description: Creates a .csv file with all the courses and classes propositions to be approved in the next learning session. The csv file will be send via email at the end of the creation.
+      summary: Course proposal export
+      tags:
+        - courses
+        - propositions
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      responses:
+        '200':
+          $ref: '#/components/responses/DataExported'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/propositions/approval:
     put:
       description: Confirmation of course proposals. If the approved parameter is true, it will approve the course. If it is false, it will delete the project class from the database. If the course of reference has no other classes, it will delete the course completely.
@@ -3545,6 +3566,17 @@ components:
               wrong_teach:
                 type: boolean
                 description: "Tells if a teacher of an ordinary class the user tried to add was not correct and consequently not added"
+    DataExported:
+      description: Exportation of data ended successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
   schemas:
     learning_session_data:
       type: object

@@ -1407,7 +1407,7 @@ module.exports.propositions_export = async (req, res) => {
     for(let i in confirmed_courses_without_class){
         let course_id = confirmed_courses_without_class[i].id
         sessione_di_apprendimento = confirmed_courses_without_class[i].learning_session_id
-        let course_data = await courseSchema.read(course_id);
+        let course_data = await courseSchema.read(course_id, true);
         let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
         let opento_data = await opentoSchema.read_from_course(course_id);
         titolo_italiano = confirmed_courses_without_class[i].italian_title

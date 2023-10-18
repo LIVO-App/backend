@@ -231,5 +231,22 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async read_current_session(){
+        try {
+            conn = await pool.getConnection();
+            let sql = "SELECT id, number, school_year, start, end, num_groups, open_day FROM learning_session WHERE start <= CURRENT_DATE AND end >= CURRENT_DATE";
+            let rows = await conn.query(sql);
+            conn.release();
+            if(rows.length == 1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log("Something went wrong: read learning session");
+        } finally {
+            conn.release();
+        }
     }
 };

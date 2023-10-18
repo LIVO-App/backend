@@ -17,6 +17,33 @@ const studentSchema = require('../models/studentModel');
 const courseteachingModel = require('../models/courseteachingModel');
 const courseGrowthAreaModel = require('../models/courseGrowthAreaModel');
 const growthAreaModel = require('../models/growthAreaModel');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+      pass: process.env.GOOGLE_APP_PSW
+    }
+  });
+
+const csvWriter = createCsvWriter({
+    path: 'propositions.csv',
+    header: [
+        {id: 'titolo_italiano', title: 'titolo_italiano'},
+        {id: 'titolo_inglese', title: 'titolo_inglese'},
+        {id: 'sessione_di_apprendimento', title: 'sessione_di_apprendimento'},
+        {id: 'gruppo', title: 'gruppo'},
+        {id: 'insegnante_proposto', title: 'insegnante_proposto'},
+        {id: 'area_di_apprendimento', title: 'area_di_apprendimento'},
+        {id: 'crediti', title: 'crediti'},
+        {id: 'min_studenti', title: 'min_studenti'},
+        {id: 'max_studenti', title: 'max_studenti'},
+        {id: 'contesto_specifico', title: 'contesto_specifico'},
+        {id: 'contesto_personale', title: 'contesto_personale'}
+    ]
+});
 
 let MSG = {
     notFound: "Resource not found",
@@ -1295,6 +1322,150 @@ module.exports.update_course = async (req, res) => {
         new_teacher: new_teacher,
         new_growth_area: new_growth_area
     })
+}
+
+module.exports.propositions_export = async (req, res) => {
+    if(req.loggedUser.role==="admin"){
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('course update: unauthorized access');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('course update: unauthorized access');
+        return;
+    }
+    let current_session = await sessionSchema.read_current_session();
+    if(!current_session){
+        res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
+        console.log('export_propositions: not in a session period')
+        return
+    }
+    let current_session_id = current_session.id;
+    let future_session_id = current_session_id+1;
+    let session_id_exists = await sessionSchema.read(future_session_id); // Is learning session present in the database
+    if(!session_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: future learning session');
+        return;
+    }
+    if(current_session.school_year!=session_id_exists.school_year){
+        res.status(400).json({status: "error", description: "The current learning session is the last one of the school year."})
+        console.log("export_propositions: last session of the school year")
+    }
+    let non_confirmed_proj_class = await courseSchema.get_class_models(undefined, true, true, future_session_id);
+    let confirmed_courses_without_class = await courseSchema.get_models(undefined, false, true, session_id_exists.school_year);
+    let csv_data = []
+    let titolo_italiano, titolo_inglese,sessione_di_apprendimento,gruppo,insegnante_proposto,area_di_apprendimento,crediti,min_studenti,max_studenti,contesto_specifico,contesto_personale;
+    for(let i in non_confirmed_proj_class){
+        let course_id = non_confirmed_proj_class[i].id
+        sessione_di_apprendimento = non_confirmed_proj_class[i].learning_session_id
+        let course_data = await courseSchema.read(course_id);
+        let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
+        let opento_data = await opentoSchema.read_from_course(course_id);
+        titolo_italiano = non_confirmed_proj_class[i].italian_title
+        titolo_inglese = non_confirmed_proj_class[i].english_title
+        gruppo = class_data.group
+        insegnante_proposto = non_confirmed_proj_class[i].teacher_surname + '_'+non_confirmed_proj_class[i].teacher_name
+        area_di_apprendimento = course_data.learning_area_id
+        crediti = course_data.credits
+        min_studenti = course_data.min_students
+        max_studenti = course_data.max_students
+        contesto_specifico = ""
+        contesto_personale = ""
+        for(let j in opento_data){
+            if(opento_data[j].learning_context_id === "SPE"){
+                contesto_specifico += opento_data[j].study_year_id + '_' + opento_data[j].study_address_id +','
+            } else if(opento_data[j].learning_context_id === "PER"){
+                contesto_personale += opento_data[j].study_year_id + '_' + opento_data[j].study_address_id + ','
+            }
+        }
+        if(contesto_specifico[contesto_specifico.length-1]==','){
+            contesto_specifico = contesto_specifico.slice(0,-1);
+        }
+        if(contesto_personale[contesto_personale.length-1]==','){
+            contesto_personale = contesto_personale.slice(0,-1);
+        }
+        let csv_row = {
+            titolo_italiano: titolo_italiano,
+            titolo_inglese: titolo_inglese,
+            sessione_di_apprendimento: sessione_di_apprendimento,
+            gruppo: gruppo,
+            insegnante_proposto: insegnante_proposto,
+            area_di_apprendimento: area_di_apprendimento,
+            crediti: crediti,
+            min_studenti: min_studenti,
+            max_studenti: max_studenti,
+            contesto_specifico: contesto_specifico,
+            contesto_personale: contesto_personale
+        }
+        csv_data.push(csv_row)
+    }
+    for(let i in confirmed_courses_without_class){
+        let course_id = confirmed_courses_without_class[i].id
+        sessione_di_apprendimento = confirmed_courses_without_class[i].learning_session_id
+        let course_data = await courseSchema.read(course_id);
+        let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
+        let opento_data = await opentoSchema.read_from_course(course_id);
+        titolo_italiano = confirmed_courses_without_class[i].italian_title
+        titolo_inglese = confirmed_courses_without_class[i].english_title
+        gruppo = class_data == undefined ? undefined : class_data.group
+        insegnante_proposto = confirmed_courses_without_class[i].teacher_surname + '_'+confirmed_courses_without_class[i].teacher_name
+        area_di_apprendimento = course_data.learning_area_id
+        crediti = course_data.credits
+        min_studenti = course_data.min_students
+        max_studenti = course_data.max_students
+        contesto_specifico = ""
+        contesto_personale = ""
+        for(let j in opento_data){
+            if(opento_data[j].learning_context_id === "SPE"){
+                contesto_specifico += opento_data[j].study_year_id + '_' + opento_data[j].study_address_id +','
+            } else if(opento_data[j].learning_context_id === "PER"){
+                contesto_personale += opento_data[j].study_year_id + '_' + opento_data[j].study_address_id + ','
+            }
+        }
+        if(contesto_specifico[contesto_specifico.length-1]==','){
+            contesto_specifico = contesto_specifico.slice(0,-1);
+        }
+        if(contesto_personale[contesto_personale.length-1]==','){
+            contesto_personale = contesto_personale.slice(0,-1);
+        }
+        let csv_row = {
+            titolo_italiano: titolo_italiano,
+            titolo_inglese: titolo_inglese,
+            sessione_di_apprendimento: sessione_di_apprendimento,
+            gruppo: gruppo,
+            insegnante_proposto: insegnante_proposto,
+            area_di_apprendimento: area_di_apprendimento,
+            crediti: crediti,
+            min_studenti: min_studenti,
+            max_studenti: max_studenti,
+            contesto_specifico: contesto_specifico,
+            contesto_personale: contesto_personale
+        }
+        csv_data.push(csv_row)
+    }
+    csvWriter.writeRecords(csv_data)       // returns a promise
+    .then(() => {
+        let mailOptions = {
+            from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+            to: 'pietro.fronza@studenti.unitn.it',
+            subject: "Corsi da approvare",
+            text: "Ciao Claudio,\nIn allegato trovi il file csv con i corsi che dobbiamo approvare per la prossima sessione.",
+            attachments: [{filename: 'propositions.csv', path: process.env.PATH_TO_CSV,}]
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+    });
+    res.status(200).json({status: 'success', description: 'Data exported'})
 }
 
 /*courseSchema.list(1, undefined, 7)

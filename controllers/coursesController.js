@@ -1363,7 +1363,7 @@ module.exports.propositions_export = async (req, res) => {
     for(let i in non_confirmed_proj_class){
         let course_id = non_confirmed_proj_class[i].id
         sessione_di_apprendimento = non_confirmed_proj_class[i].learning_session_id
-        let course_data = await courseSchema.read(course_id);
+        let course_data = await courseSchema.read(course_id, true);
         let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
         let opento_data = await opentoSchema.read_from_course(course_id);
         titolo_italiano = non_confirmed_proj_class[i].italian_title
@@ -1408,11 +1408,11 @@ module.exports.propositions_export = async (req, res) => {
         let course_id = confirmed_courses_without_class[i].id
         sessione_di_apprendimento = confirmed_courses_without_class[i].learning_session_id
         let course_data = await courseSchema.read(course_id, true);
-        let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
+        let class_data = undefined;
         let opento_data = await opentoSchema.read_from_course(course_id);
         titolo_italiano = confirmed_courses_without_class[i].italian_title
         titolo_inglese = confirmed_courses_without_class[i].english_title
-        gruppo = class_data == undefined ? undefined : class_data.group
+        gruppo = class_data == undefined
         insegnante_proposto = confirmed_courses_without_class[i].teacher_surname + '_'+confirmed_courses_without_class[i].teacher_name
         area_di_apprendimento = course_data.learning_area_id
         crediti = course_data.credits

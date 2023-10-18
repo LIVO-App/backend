@@ -696,3 +696,58 @@ module.exports.add_teachers = async (req, res) => {
         console.log("=============");
     }
 })*/
+
+module.exports.get_tutor_classes = async (req, res) => {
+    let teacher_id = req.params.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log("teacher tutor classes: not authorized");
+            return; 
+        }
+        let existingTeacher = await teacherSchema.read_id(teacher_id);
+        if(!existingTeacher){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log("teacher tutor classes: not authorized");
+            return; 
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('teacher tutor classes: not authorized');
+        return;
+    }
+    let current_session = await sessionSchema.read_current_session();
+    if(!current_session){
+        res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
+        console.log('teacher tutor classes: not in a session period')
+        return
+    }
+    let cls = await teacherSchema.get_tutor_classes(teacher_id, current_session.school_year);
+    if(cls == null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log("teacher tutor classes: missing parameters");
+        return;
+    }
+    if(!cls){
+        res.status(404).json({status: "error", description: "You are not a tutor in any classes for this school year."});
+        console.log("teacher tutor classes: teacher is not a tutor in this school year");
+        return;
+    }
+    let data_classes = cls.map((cl) => {
+        return {
+            study_year: cl.ordinary_class_study_year,
+            address: cl.ordinary_class_address,
+            school_year: cl.ordinary_class_school_year,
+            section: cl.section
+        }
+    })
+    let path = "/api/v1/teachers/"+teacher_id+"/tutor_classes";
+    let response = {
+        path: path,
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_classes
+    }
+    res.status(200).json(response);
+}

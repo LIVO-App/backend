@@ -1450,6 +1450,50 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/tutor_classes:
+    get:
+      description: Get all the ordinary classes in which the teacher is the livopath tutor in a specific school year
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      summary: Get all teacher's tutor ordinary classes
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher tutor ordinary classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/my_ordinary_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/project_classes/:
     get:
       description: Get all project classes of the school

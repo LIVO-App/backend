@@ -14,6 +14,8 @@ router.get('/:teacher_id/my_project_classes', teacherHandler.get_my_project_clas
 router.get('/:teacher_id/associated_project_classes', teacherHandler.get_associated_project_classes);
 router.get('/:teacher_id/my_ordinary_classes', tokenChecker);
 router.get('/:teacher_id/my_ordinary_classes', teacherHandler.get_my_ordinary_classes);
+router.get('/:teacher_id/tutor_classes', tokenChecker);
+router.get('/:teacher_id/tutor_classes', teacherHandler.get_tutor_classes);
 router.get('/:teacher_id/active_years', teacherHandler.get_active_years);
 router.put('/:teacher_id', tokenChecker);
 router.put('/:teacher_id', teacherHandler.update_info);

@@ -123,13 +123,17 @@ module.exports = {
         let values, rows;
         try{
             conn = await pool.getConnection();
-            if(!student_id || !course_id || !session_id){
+            if(!student_id || !course_id){
                 console.log("MISSING PARAMETERS");
                 conn.release();
                 return null;
             }
-            sql = 'SELECT student_id, project_class_course_id, project_class_session, learning_context_id, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND learning_session = ? ';
+            sql = 'SELECT student_id, project_class_course_id, project_class_session, learning_context_id, section, pending FROM subscribed WHERE student_id = ? AND project_class_course_id = ? ';
             values = [student_id, course_id, session_id];
+            if (session_id != undefined){
+                sql += '  AND project_class_session = ?'
+                values.push(session_id)
+            }
             if (context_id != undefined){
                 sql += ' AND learning_context_id = ?'
                 values.push(context_id)

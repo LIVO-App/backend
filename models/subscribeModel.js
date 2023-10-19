@@ -144,7 +144,7 @@ module.exports = {
             }
             rows = await conn.query(sql, values);
             conn.release();
-            if(rows.length == 1){
+            if(rows.length >= 1){
                 return rows[0];
             } else {
                 return false;

@@ -144,7 +144,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await subscribe_schema.read(student_id, course_id, undefined, context_id);
+    const subscriptionExists = await subscribe_schema.read(student_id, course_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');

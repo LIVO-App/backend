@@ -175,7 +175,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('max credits limit reached');
         return;
     }
-    let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, student_id, cour.learning_area_id);
+    let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, student_id, cour.learning_area_id, context_id);
     if(!notSameGroup){
         res.status(403).json({status: "error", description: MSG.sameGroup})
         console.log('group already selected')

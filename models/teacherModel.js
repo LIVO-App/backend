@@ -256,5 +256,31 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async get_tutor_classes(teacher_id, school_year){
+        try{
+            conn = await pool.getConnection();
+            if(teacher_id == undefined){
+                conn.release();
+                return null;
+            }
+            let sql = `SELECT DISTINCT ot.ordinary_class_study_year, ot.ordinary_class_address, ot.ordinary_class_school_year, ot.section FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.tutor = 1`;
+            let values = [teacher_id];
+            if(school_year!=undefined){
+                sql += ` AND ot.ordinary_class_school_year = ?`
+                values.push(school_year)
+            }
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length>=1){
+                return rows;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log("Something went wrong: ordinary classes teacher tutor");
+        } finally {
+            conn.release();
+        }
     }
 };

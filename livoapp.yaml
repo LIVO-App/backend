@@ -1450,6 +1450,95 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/tutor_classes:
+    get:
+      description: Get all the ordinary classes in which the teacher is the livopath tutor in a specific school year
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      summary: Get all teacher's tutor ordinary classes
+      tags:
+        - teachers
+        - v1
+      responses:
+        '200':
+          description: "Teacher tutor ordinary classes"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/my_ordinary_class_data'
+                    description: "Data return from the api"
+        '400':
+          $ref: "#/components/responses/BadInputs"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/tutor_courses:
+    get:
+      description: Get all the courses in the system related to the teacher that is tutor of a certain ordinary class (so it only see the courses open to that class), with basic information and the eventual name provided for their project classes
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/query_session_id'
+        - $ref: '#/components/parameters/query_area_id'
+        - $ref: '#/components/parameters/query_context_id'
+      summary: View of all the courses
+      tags:
+        - teachers
+        - courses
+        - v1
+      responses:
+        '200':
+          description: "Collection of courses for tutor teacher"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/course_data_short_tutor'
+                    description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/project_classes/:
     get:
       description: Get all project classes of the school
@@ -2476,6 +2565,27 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/CourseInsertion'
+  /v1/propositions/export:
+    get:
+      description: Creates a .csv file with all the courses and classes propositions to be approved in the next learning session. The csv file will be send via email at the end of the creation.
+      summary: Course proposal export
+      tags:
+        - courses
+        - propositions
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      responses:
+        '200':
+          $ref: '#/components/responses/DataExported'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/propositions/approval:
     put:
       description: Confirmation of course proposals. If the approved parameter is true, it will approve the course. If it is false, it will delete the project class from the database. If the course of reference has no other classes, it will delete the course completely.
@@ -3545,6 +3655,17 @@ components:
               wrong_teach:
                 type: boolean
                 description: "Tells if a teacher of an ordinary class the user tried to add was not correct and consequently not added"
+    DataExported:
+      description: Exportation of data ended successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description:
+                type: string
   schemas:
     learning_session_data:
       type: object
@@ -3654,6 +3775,30 @@ components:
         pending:
           type: boolean
           description: "Is the student already subscribed to this course? Or is he waiting for a response?"
+        section:
+          type: string
+          description: "Section of the project class in case the student is subscribed to it"
+    course_data_short_tutor:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Id of the course"
+        italian_title:
+          type: string
+          description: "Italian title of the course"
+        english_title:
+          type: string
+          description: "English title of the course"
+        credits:
+          type: integer
+          description: "Credits that the course provides"
+        learning_area_ref:
+          $ref: '#/components/schemas/learning_area_ref'
+          description: "Reference to the learning area associated to the course"
+        group:
+          type: integer
+          description: "Specifies in which group a certain course belongs. If two courses have the same group, they are concurrent. (Only for v2)"
         section:
           type: string
           description: "Section of the project class in case the student is subscribed to it"

@@ -261,7 +261,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
             if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
                 continue
             }
-            let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id);
+            let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
             if(!notSameGroup){
                 continue
             }
@@ -351,7 +351,7 @@ module.exports.subscription_confirmation = async (req, res) => {
                 if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
                     continue
                 }
-                let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id);
+                let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
                 if(!notSameGroup){
                     continue
                 }

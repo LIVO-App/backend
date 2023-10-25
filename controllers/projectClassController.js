@@ -591,6 +591,9 @@ module.exports.final_confirmation = async (req, res) => {
         console.log('project course final confirmation: missing parameters');
         return;
     }
+    // Retrieve the class again to get the final confirmation date
+    project_class_exist = await projectClassesSchema.read(course_id, session_id);
+    let confimation_date = project_class_exist.final_confirmation;
     let italian_title = req.body.italian_title
     let english_title = req.body.english_title
     let italian_message = req.body.italian_message
@@ -608,5 +611,5 @@ module.exports.final_confirmation = async (req, res) => {
             return;
         }
     }
-    res.status(201).json({status: "updated", description: "Project class confirmed definetly. Added first message of the course"})
+    res.status(201).json({status: "updated", description: "Project class confirmed definetly. Added first message of the course", final_confirmation: final_confirmation})
 }

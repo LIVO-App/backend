@@ -1667,7 +1667,7 @@ paths:
             schema:
               $ref: '#/components/schemas/final_confirmation_data'
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/AcceptUpdate'
         '400':
           $ref: '#/components/responses/BadInputs'

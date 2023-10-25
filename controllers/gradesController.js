@@ -142,10 +142,11 @@ module.exports.insert_grade = async (req, res) => {
         return;
     }
     let student_id = req.params.student_id;
-    let ita_descr = req.query.ita_description;
-    let eng_descr = req.query.eng_description;
-    let grade = req.query.grade;
-    let final = req.query.final;
+    let ita_descr = req.body.ita_description;
+    let eng_descr = req.body.eng_description;
+    let publication_date = req.body.publication_date;
+    let grade = req.body.grade;
+    let final = req.body.final;
     // Needed to add grades to existing student
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
@@ -172,7 +173,7 @@ module.exports.insert_grade = async (req, res) => {
         return;
     }
     // Launch the insertion into the database
-    let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, final);
+    let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, publication_date, final);
     if(!ins_grade.rows){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: grade insertion');
@@ -255,7 +256,8 @@ module.exports.update_grade = async (req, res) => {
     let ita_description = req.body.ita_description;
     let eng_description = req.body.eng_description;
     let grade_value = req.body.grade;
-    let update_grade = await gradesSchema.update(grade_id, ita_description, eng_description, grade_value)
+    let publication_date = req.body.publication_date;
+    let update_grade = await gradesSchema.update(grade_id, ita_description, eng_description, grade_value, publication_date)
     if(!update_grade){
         res.status(400).json({status: "error", description: MSG.missing_params})
             console.log("Update grade: missing parameters")

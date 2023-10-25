@@ -559,6 +559,14 @@ module.exports.final_confirmation = async (req, res) => {
         console.log('project course final confirmation: project class already confirmed');
         return;
     }
+    let starting_date = new Date(session_exist.start)
+    let today = new Date()
+    let _10days = today.setDate(today.getDate() + 10)
+    if (!(starting_date > today && starting_date <= _10days)){
+        res.status(400).json({status: "error", description: MSG.pastSession});
+        console.log('project class final confimation: the session is not an imminent session. Abort confirmation');
+        return;
+    }
     let min_students = course_exist.min_students
     let max_students = course_exist.max_students
     let num_section = project_class_exist.num_section;
@@ -587,7 +595,6 @@ module.exports.final_confirmation = async (req, res) => {
     let english_title = req.body.english_title
     let italian_message = req.body.italian_message
     let english_message = req.body.english_message
-    let starting_date = session_exist.start
     italian_title = italian_title == undefined ? "Inizio del corso" : italian_title;
     english_title = english_title == undefined ? "Start of the course" : english_title;
     italian_message = italian_message == undefined ? "Il corso inizierà oggi "+starting_date+". Recati nell'aula predisposta." : italian_message

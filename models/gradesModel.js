@@ -41,14 +41,14 @@ module.exports = {
             conn.release()
         }
     },
-    async add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, final = false){
+    async add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, publication_date = undefined, final = false){
         try {
             conn = await pool.getConnection();
             if(!student_id || !teacher_id || !course_id || !session_id || !ita_descr || !eng_descr || !grade){
                 conn.release();
                 return false;
             }
-            let publication = new Date();
+            let publication = publication_date != undefined ? publication_date : new Date();
             let final_val = final === "true" ? true : false;
             let sql = 'INSERT INTO grade (student_id, teacher_id, project_class_course_id, project_class_session, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
             let values = [student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, publication, grade, final_val];
@@ -107,10 +107,10 @@ module.exports = {
             conn.release();
         }
     },
-    async update(grade_id, ita_descr, eng_descr, grade_value){
+    async update(grade_id, ita_descr, eng_descr, grade_value, publication_date){
         try {
             conn = await pool.getConnection()
-            if(ita_descr == undefined && eng_descr==undefined && grade_value == undefined){
+            if(ita_descr == undefined && eng_descr==undefined && grade_value == undefined && publication_date == undefined){
                 conn.release()
                 return false
             }
@@ -125,8 +125,12 @@ module.exports = {
                 values.push(eng_descr)
             }
             if(grade_value!=undefined && grade_value!=""){
-                sql += ' grade = ?'
+                sql += ' grade = ?,'
                 values.push(grade_value)
+            }
+            if(publication_date!=undefined && publication_date!=""){
+                sql += ' publication = ?'
+                values.push(publication_date)
             }
             if(sql[sql.length-1]==","){
                 sql = sql.slice(0,-1);

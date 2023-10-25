@@ -1009,14 +1009,17 @@ paths:
         - $ref: '#/components/parameters/query_teacher_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_session_id'
-        - $ref: '#/components/parameters/query_ita_descr'
-        - $ref: '#/components/parameters/query_eng_descr'
-        - $ref: '#/components/parameters/query_grade'
-        - $ref: '#/components/parameters/query_final'
       summary: Insertion of a student grade
       tags:
         - students
         - v1
+      requestBody:
+        description: Data of grade insertion
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/grade_insert'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -5373,12 +5376,14 @@ components:
           items:
             type: string
             description: "Id of the teaching the teacher will teach in the class"      
-    grade_update:
+    grade_insert:
       type: object
       required:
         - ita_description
         - eng_description
         - grade
+        - final
+        - publication_date
       properties:
         ita_description:  
           type: string
@@ -5389,6 +5394,29 @@ components:
         grade:
           type: integer
           description: "Grade of the student"
+        final:
+          type: boolean
+          description: "Tells if the grade is a final grade or not"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
+    grade_update:
+      type: object
+      properties:
+        ita_description:  
+          type: string
+          description: "Italian description of the grade"
+        eng_description:
+          type: string
+          description: "English description of the grade"
+        grade:
+          type: integer
+          description: "Grade of the student"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
   parameters:
     query_school_year:
       name: school_year
@@ -5545,30 +5573,6 @@ components:
       schema:
         type: string
       required: true
-    query_ita_descr:
-      name: ita_description
-      in: query
-      description: Italian description of the resource we want to search/add
-      schema:
-        type: string
-    query_eng_descr:
-      name: eng_description
-      in: query
-      description: English description of the resource we want to search/add
-      schema:
-        type: string
-    query_grade:
-      name: grade
-      in: query
-      description: Grade the user want to add
-      schema:
-        type: integer
-    query_final:
-      name: final
-      in: query
-      description: Specifies if the grade the user want to add is a final grade
-      schema:
-        type: string
     path_study_year:
       name: study_year
       in: path

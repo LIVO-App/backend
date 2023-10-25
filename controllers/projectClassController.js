@@ -75,7 +75,8 @@ module.exports.get_classes = async (req, res) => {
             admin_ref: admin_ref,
             admin_name: cl.admin_name,
             admin_surname: cl.admin_surname,
-            to_be_modified: cl.to_be_modified
+            to_be_modified: cl.to_be_modified,
+            final_confirmation: cl.final_confirmation,
         }
     });
     let path = "/api/v1/project_classes/"
@@ -157,7 +158,8 @@ module.exports.get_class = async (req, res) => {
         admin_ref: admin_ref,
         admin_name: cl.admin_name,
         admin_surname: cl.admin_surname,
-        to_be_modified: cl.to_be_modified
+        to_be_modified: cl.to_be_modified,
+        final_confirmation: cl.final_confirmation,
     }
     let path = "/api/v1/project_classes/"+course_id+"/"+session_id
     let response = {

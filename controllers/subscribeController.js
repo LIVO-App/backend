@@ -144,7 +144,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('student does not exist');
         return;
     }
-    const subscriptionExists = await subscribe_schema.read(student_id, course_id, undefined, context_id);
+    const subscriptionExists = await subscribe_schema.read(student_id, course_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription');
@@ -261,7 +261,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
             if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
                 continue
             }
-            let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id);
+            let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
             if(!notSameGroup){
                 continue
             }
@@ -351,7 +351,7 @@ module.exports.subscription_confirmation = async (req, res) => {
                 if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
                     continue
                 }
-                let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id);
+                let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
                 if(!notSameGroup){
                     continue
                 }

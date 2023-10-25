@@ -563,7 +563,7 @@ module.exports.final_confirmation = async (req, res) => {
     let starting_date = new Date(session_exist.start)
     let today = new Date()
     let _10days = today.setDate(today.getDate() + 10)
-    if (!(starting_date < today && starting_date <= _10days)){
+    if (starting_date > _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
         console.log('project class final confimation: the session is not an imminent session. Abort confirmation');
         return;

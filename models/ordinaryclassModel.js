@@ -149,7 +149,7 @@ module.exports = {
                 } 
                 sql += '),0) - (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = att.student_id AND '
                 if(context_id == "PER"){
-                    sql += ' subs.learning_context_id = ? AND c.learning_area_id IS NULL '
+                    sql += ' subs.learning_context_id = ? '
                     values.push(context_id)
                 } else {
                     sql += ' subs.learning_context_id = ? AND c.learning_area_id = ? '

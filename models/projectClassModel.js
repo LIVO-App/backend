@@ -102,7 +102,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND subs.pending IS NULL AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
             let values = [course_id, session_id, section, session_id];
             if(associated_class){
                 if(!teacher_id){

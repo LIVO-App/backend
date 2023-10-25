@@ -116,13 +116,16 @@ module.exports.insert_grade = async (req, res) => {
         console.log('class grades: future block');
         return;
     }
-    let teacher_exists = await teacherModel.read_id(teacher_id)
-    if(!teacher_exists){
-        res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_courses_v2: unauthorized access');
-        return;
-    }
     if(req.loggedUser.role == "teacher"){
+        if(teacher_id==undefined){
+            teacher_id = req.loggedUser._id
+        }
+        let teacher_exists = await teacherModel.read_id(teacher_id)
+        if(!teacher_exists){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('insert_grade: unauthorized access');
+            return;
+        }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('insert_grade: unauthorized access');
@@ -172,6 +175,15 @@ module.exports.insert_grade = async (req, res) => {
         console.log('final grade already inserted');
         return;
     }
+    if(publication_date!=undefined){
+        let existing_grade = await gradesSchema.read_from_date(student_id, course_id, session_id, teacher_id, publication_date)
+        if(existing_grade){
+            res.status(409).json({status: "error", description: "Grade is already been published in that day"});
+            console.log('duplicate grade inserted');
+            return;
+        }
+    }
+    
     // Launch the insertion into the database
     let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, publication_date, final);
     if(!ins_grade.rows){

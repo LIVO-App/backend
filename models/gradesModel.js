@@ -41,6 +41,28 @@ module.exports = {
             conn.release()
         }
     },
+    async read_from_date(student_id, course_id, session_id, teacher_id, publication_date){
+        try {
+            conn = await pool.getConnection()
+            if(student_id == undefined || course_id == undefined || session_id == undefined || teacher_id == undefined){
+                conn.release();
+                return false;
+            }
+            let sql = 'SELECT * FROM grade WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND teacher_id = ? AND publication = ?'
+            let values = [student_id, course_id, session_id, teacher_id, new Date(publication_date)]
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length===1){
+                return rows[0]
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log("Something went wrong: read grade")
+        } finally {
+            conn.release()
+        }
+    },
     async add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, publication_date = undefined, final = false){
         try {
             conn = await pool.getConnection();
@@ -48,7 +70,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            let publication = publication_date != undefined ? publication_date : new Date();
+            let publication = publication_date != undefined ? new Date(publication_date) : new Date();
             let final_val = final === "true" ? true : false;
             let sql = 'INSERT INTO grade (student_id, teacher_id, project_class_course_id, project_class_session, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
             let values = [student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, publication, grade, final_val];

@@ -151,7 +151,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT DISTINCT subs.section FROM subscribed AS subs WHERE subs.project_class_course_id = ? AND subs.project_class_session = ?';
+            let sql = 'SELECT DISTINCT subs.section FROM subscribed AS subs WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.pending IS NULL';
             let values = [course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();

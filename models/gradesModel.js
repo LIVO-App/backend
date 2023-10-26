@@ -71,7 +71,7 @@ module.exports = {
                 return false;
             }
             let publication = publication_date != undefined ? new Date(publication_date) : new Date();
-            let final_val = final === "true" ? true : false;
+            let final_val = final === true ? true : false;
             let sql = 'INSERT INTO grade (student_id, teacher_id, project_class_course_id, project_class_session, italian_description, english_description, publication, grade, final) VALUES (?,?,?,?,?,?,?,?,?)';
             let values = [student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, publication, grade, final_val];
             const rows = await conn.query(sql, values);

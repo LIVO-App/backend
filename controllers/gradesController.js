@@ -15,7 +15,8 @@ let MSG = {
     missing_params: "Bad input. Missing required information",
     studentNotExist: "The student does not exist",
     studentNotEnrolled: "The student isn't subscribe to this class",
-    finalGradeAlreadyInserted: "The final grade of this course for the student selected has already been inserted"
+    finalGradeAlreadyInserted: "The final grade of this course for the student selected has already been inserted",
+    futureGradePublication: "You tried to add a grade to a new grade with a future publication date w.r.t. today. Abort insert."
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -176,6 +177,11 @@ module.exports.insert_grade = async (req, res) => {
         return;
     }
     if(publication_date!=undefined){
+        if(new Date(publication_date) > new Date()){
+            res.status(400).json({status: "error", description: MSG.futureGradePublication})
+            console.log('future grade publication');
+            return;
+        }
         let existing_grade = await gradesSchema.read_from_date(student_id, course_id, session_id, teacher_id, publication_date)
         if(existing_grade){
             res.status(409).json({status: "error", description: "Grade is already been published in that day"});

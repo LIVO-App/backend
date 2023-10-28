@@ -29,33 +29,33 @@ module.exports.get_announcement = async (req, res) => {
         let admin_exists = await adminSchema.read_id(user_id)
         if(!admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentSchema.read_id(user_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherSchema.read_id(user_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('general announcements publishment: unauthorized access');
+        console.log('general announcements publishment: unauthorized access ('+new Date()+')');
         return;
     }
     let announcement_id = req.params.announcement_id;
     let announcement = await announcementSchema.read(announcement_id);
     if(!announcement){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("General announcement: resource not found");
+        console.log('General announcement: resource not found ('+new Date()+')');
         return;
     }
     let data_announcement = {
@@ -82,26 +82,26 @@ module.exports.get_general_announcements = async (req, res) => {
         let admin_exists = await adminSchema.read_id(user_id)
         if(!admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentSchema.read_id(user_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherSchema.read_id(user_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('general announcements publishment: unauthorized access');
+        console.log('general announcements publishment: unauthorized access ('+new Date()+')');
         return;
     }
     let announcements = await announcementSchema.list();
@@ -132,12 +132,12 @@ module.exports.publish_announcement = async (req, res) => {
         let admin_exists = await adminSchema.read_id(admin_id)
         if(admin_id!=req.loggedUser._id || !admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('general announcements publishment: unauthorized access');
+            console.log('general announcements publishment: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('general announcements publishment: unauthorized access');
+        console.log('general announcements publishment: unauthorized access ('+new Date()+')');
         return;
     }
     let italian_title = req.body.italian_title;
@@ -148,7 +148,7 @@ module.exports.publish_announcement = async (req, res) => {
     let publish = await announcementSchema.add(admin_id, italian_title, english_title, italian_message, english_message, publish_date);
     if(!publish){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: general announcement publishing');
+        console.log('missing required information: general announcement publishing ('+new Date()+')');
         return;
     }
     let res_des = "Inserted " + publish.affectedRows + " rows";

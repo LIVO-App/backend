@@ -66,7 +66,7 @@ module.exports = {
     async add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade, publication_date = undefined, final = false){
         try {
             conn = await pool.getConnection();
-            if(!student_id || !teacher_id || !course_id || !session_id || !ita_descr || !eng_descr || !grade){
+            if(student_id == undefined || teacher_id == undefined || course_id == undefined || session_id == undefined || !ita_descr || !eng_descr || grade == undefined){
                 conn.release();
                 return false;
             }

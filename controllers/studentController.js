@@ -35,26 +35,26 @@ module.exports.get_student = async (req, res) => {
         let teacher_esist = teacherModel.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_student: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exist = adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_student: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_student: unauthorized access');
+        console.log('get_student: unauthorized access ('+new Date()+')');
         return;
     }
     let student_id = req.params.student_id;
     let student = await studentModel.read_id(student_id)
     if(!student){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('get_student: student not found');
+        console.log('get_student: student not found ('+new Date()+')');
         return;
     }
     let cf = student.cf != null ? crypto.decipher(student.cf.toString()) : undefined
@@ -100,26 +100,26 @@ module.exports.get_credits_annual_progession = async (req, res) => {
         let student_esist = studentModel.read_id(user_id);
         if(!student_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_student: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "teacher"){
         let teacher_esist = teacherModel.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_student: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exist = adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_student: unauthorized access');
+            console.log('get_student: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_student: unauthorized access');
+        console.log('get_student: unauthorized access ('+new Date()+')');
         return;
     }
     let student_id = req.params.student_id;
@@ -127,7 +127,7 @@ module.exports.get_credits_annual_progession = async (req, res) => {
     let annual_constraints = await constraintModel.get_annual_constraints(student_id,school_year)
     if(!annual_constraints){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('get annual credits constraints: resource not found');
+        console.log('get annual credits constraints: resource not found ('+new Date()+')');
         return;
     }
     let area_id = []; // build it as an array from the annual constraints
@@ -139,7 +139,7 @@ module.exports.get_credits_annual_progession = async (req, res) => {
     let student_progression = await studentModel.retrieve_annual_credits(student_id, school_year, area_id, context_id)
     if(!student_progression){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('get annual credits progression: resource not found');
+        console.log('get annual credits progression: resource not found ('+new Date()+')');
         return;
     }
     //console.log(student_progression)
@@ -187,13 +187,13 @@ module.exports.get_curriculum = async (req, res) => {
     let check = await ordinaryclassSchema.list(student_id, school_year);
     if(!check){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('ord_class: resource not found');
+        console.log('ord_class: resource not found ('+new Date()+')');
         return
     }
     let curriculum = await courseSchema.curriculum(student_id, school_year);
     if(!curriculum){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('curriculum: resource not found');
+        console.log('curriculum: resource not found ('+new Date()+')');
         return;
     }
     let data_curr = curriculum.map((curr) => {
@@ -248,24 +248,24 @@ module.exports.get_curriculum_v2 = async (req, res) => {
         let student_exist = await studentModel.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('get_curriculum: unauthorized access ('+new Date()+')');
             return;
         }
         let check = await ordinaryclassSchema.list(student_id, school_year);
         if(!check){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('ord_class: resource not found');
+            console.log('ord_class: resource not found ('+new Date()+')');
             return
         }
         let curriculum = await courseSchema.curriculum(student_id, school_year, context_id);
         if(!curriculum){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('curriculum: resource not found');
+            console.log('curriculum: resource not found ('+new Date()+')');
             return;
         }
         let data_curr = curriculum.map((curr) => {
@@ -316,13 +316,13 @@ module.exports.get_curriculum_v2 = async (req, res) => {
         let teacher_esist = await teacherModel.isTeacherEmployed(req.loggedUser._id, school_year);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_curriculum: unauthorized access');
+            console.log('get_curriculum: unauthorized access ('+new Date()+')');
             return;
         }
         let curriculum = await courseSchema.curriculum(student_id, school_year, context_id, req.loggedUser._id);
         if(!curriculum){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('curriculum: resource not found');
+            console.log('curriculum: resource not found ('+new Date()+')');
             return;
         }
         let data_curr = curriculum.map((curr) => {
@@ -372,7 +372,7 @@ module.exports.get_curriculum_v2 = async (req, res) => {
         return;
     } else{
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_curriculum: unauthorized access');
+        console.log('get_curriculum: unauthorized access ('+new Date()+')');
         return;
     }
 }
@@ -383,24 +383,24 @@ module.exports.get_project_classes = async (req,res) => {
         let student_exist = await studentModel.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('student project classes: unauthorized access');
+            console.log('student project classes: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('student project classes: unauthorized access');
+        console.log('student project classes: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
     let cls = await studentModel.retrieve_project_classes(student_id, session_id);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('student project classes: missing required information');
+        console.log('student project classes: missing required information ('+new Date()+')');
         return;
     }
     let data_cls = cls.map((cl) => {
@@ -428,24 +428,24 @@ module.exports.update_info = async (req, res) => {
         let student_exist = await studentModel.read_id(student_id);
         if(!student_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student information: student does not exists');
+            console.log('update student information: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update student information: unauthorized access');
+            console.log('update student information: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update student information: unauthorized access');
+        console.log('update student information: unauthorized access ('+new Date()+')');
         return;
     }
     let information = req.body.student_info
     let update_info = await studentModel.update(student_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('update student information: no parameters to change')
+        console.log('update student information: no parameters to change ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Information updated successfully"})
@@ -457,29 +457,29 @@ module.exports.update_password = async (req, res) => {
         let student_exist = await studentModel.read_id(student_id);
         if(!student_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update student psw: unauthorized access');
+            console.log('update student psw: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update student psw: unauthorized access');
+        console.log('update student psw: unauthorized access ('+new Date()+')');
         return;
     }
     let psw = req.body.psw
     let update_psw = await studentModel.change_psw(student_id, psw)
     if(update_psw==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('update student psw: no parameters to change')
+        console.log('update student psw: no parameters to change ('+new Date()+')')
         return
     }
     if(!update_psw){
         res.status(400).json({status: "error", description: "The password is the same. Please change it."});
-        console.log('update student psw: same password')
+        console.log('update student psw: same password ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Password updated successfully"})
@@ -491,19 +491,19 @@ module.exports.move_class_component = async (req, res) => {
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project class update components: unauthorized access');
+            console.log('project class update components: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project class update components: unauthorized access');
+        console.log('project class update components: unauthorized access ('+new Date()+')');
         return;
     }
     let student_id = req.params.student_id
     let student_esist = await studentModel.read_id(student_id);
     if(!student_esist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: student does not exists');
+        console.log('project class update components: student does not exists ('+new Date()+')');
         return;
     }
     let start_class = req.body.from
@@ -511,32 +511,32 @@ module.exports.move_class_component = async (req, res) => {
     let course_exist = await courseSchema.read(start_course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: course does not exists');
+        console.log('project class update components: course does not exists ('+new Date()+')');
         return;
     }
     let start_session_id = start_class.session_id;
     let session_exist = await learning_sessionsModel.read(start_session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: session does not exists');
+        console.log('project class update components: session does not exists ('+new Date()+')');
         return;
     }
     let start_project_class_exist = await projectClassesSchema.read(start_course_id, start_session_id);
     if(!start_project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: project class does not exists');
+        console.log('project class update components: project class does not exists ('+new Date()+')');
         return;
     }
     if(start_project_class_exist.to_be_modified == "true"){
         res.status(400).json({status: "error", description: MSG.classToBeModified});
-        console.log('project class update components: project class needs to be modified');
+        console.log('project class update components: project class needs to be modified ('+new Date()+')');
         return;
     }
     // Check if student is part of start project class
     let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, start_course_id, start_session_id)
     if(!is_student_present){
         res.status(400).json({status: "error", description: MSG.student_not_enrolled});
-        console.log('project class update components: student is not enrolled to start project class. Abort move class');
+        console.log('project class update components: student is not enrolled to start project class. Abort move class ('+new Date()+')');
         return;
     }
     let start_class_section = is_student_present.section
@@ -545,7 +545,7 @@ module.exports.move_class_component = async (req, res) => {
     let start_components = await projectClassesSchema.classComponents(start_course_id, start_session_id, start_class_section)
     if(start_components.length==course_exist.min_students){
         res.status(400).json({status: "error", description: MSG.minStudents});
-        console.log('project course update components: project class will not have min students required');
+        console.log('project course update components: project class will not have min students required ('+new Date()+')');
         return;
     }
     let arrival_class = req.body.to
@@ -553,64 +553,64 @@ module.exports.move_class_component = async (req, res) => {
     let arrival_course_exist = await courseSchema.read(arrival_course_id, true);
     if(!arrival_course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: course does not exists');
+        console.log('project class update components: course does not exists ('+new Date()+')');
         return;
     }
     if(course_exist.credits != arrival_course_exist.credits){
         res.status(400).json({status: "error", description: MSG.notCredits});
-        console.log('project class update components: the course you want to move the student has not the same number of credits of the original one.')
+        console.log('project class update components: the course you want to move the student has not the same number of credits of the original one. ('+new Date()+')')
         return
     }
     let arrival_session_id = arrival_class.session_id
     let arrival_session_exist = await learning_sessionsModel.read(arrival_session_id)
     if(!arrival_session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class update components: session does not exists');
+        console.log('project class update components: session does not exists ('+new Date()+')');
         return;
     }
     let arrival_class_section = arrival_class.section != undefined ? arrival_class.section.toUpperCase() : undefined
     let arrival_project_class_exist = await projectClassesSchema.read(arrival_course_id, arrival_session_id);
     if(!arrival_project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project class fupdate components: project class does not exists');
+        console.log('project class fupdate components: project class does not exists ('+new Date()+')');
         return;
     }
     if(arrival_project_class_exist.to_be_modified == "true"){
         res.status(400).json({status: "error", description: MSG.classToBeModified});
-        console.log('project course update components: project class needs to be modified');
+        console.log('project course update components: project class needs to be modified ('+new Date()+')');
         return;
     }
     // Check if destination project class is accessible to student
     let is_class_accessible = await opentoSchema.is_course_accessible(student_id, arrival_course_id, arrival_session_id, start_class_context);
     if(is_class_accessible == null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('project class update components: missing parameters. Is arrival project class accessible')
+        console.log('project class update components: missing parameters. Is arrival project class accessible ('+new Date()+')')
         return
     }
     if(!is_class_accessible){
         res.status(400).json({status: "error", description: MSG.classNotAccessible});
-        console.log('project class update components: the course is not accessible for the student given the learning context of the starting class')
+        console.log('project class update components: the course is not accessible for the student given the learning context of the starting class ('+new Date()+')')
         return
     }
     // Check if student is not enrolled to any section of the destination project class
     let is_student_present_dest = await projectClassesSchema.isStudentEnrolled(student_id, arrival_course_id, arrival_session_id)
     if(is_student_present_dest){
         res.status(400).json({status: "error", description: MSG.student_already_enrolled});
-        console.log('project class update components: student is enrolled to the destination project class. Abort move class');
+        console.log('project class update components: student is enrolled to the destination project class. Abort move class ('+new Date()+')');
         return;
     }
     // Check if destination is already full
     let arrival_components = await projectClassesSchema.classComponents(arrival_course_id, arrival_session_id, arrival_class_section)
     if(arrival_components.length>=arrival_course_exist.max_students){
         res.status(400).json({status: "error", description: MSG.minStudents});
-        console.log('project course update components: project class has max students required');
+        console.log('project course update components: project class has max students required ('+new Date()+')');
         return;
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
     let subscribeStudent = await subscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
     if(!subscribeStudent){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('project class update components: missing parameters. Subscribe to destination')
+        console.log('project class update components: missing parameters. Subscribe to destination ('+new Date()+')')
         return
     }
     res.status(201).json({status: "accepted", description: "Student moved successfully"})
@@ -622,12 +622,12 @@ module.exports.add_students = async (req, res) => {
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update student psw: student does not exists');
+        console.log('update student psw: student does not exists ('+new Date()+')');
         return;
     }
     let existing_student, wrong_student, student_added;
@@ -669,11 +669,11 @@ module.exports.add_students = async (req, res) => {
     if(!student_added){
         if(existing_student){
             res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_student: wrong_student})
-            console.log("Student insertion: users already present")
+            console.log('Student insertion: users already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_student: wrong_student})
-            console.log("Student insertion: missing parameters")
+            console.log('Student insertion: missing parameters ('+new Date()+')')
             return
         }
     }

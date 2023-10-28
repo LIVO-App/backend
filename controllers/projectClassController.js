@@ -31,12 +31,12 @@ module.exports.get_classes = async (req, res) => {
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_classes: unauthorized access');
+            console.log('project_classes: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class list: unauthorized access');
+        console.log('project_class list: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
@@ -44,7 +44,7 @@ module.exports.get_classes = async (req, res) => {
     let cls = await projectClassesSchema.list(session_id, year);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class: missing parameters. Specified year but not learning session to use");
+        console.log('project class: missing parameters. Specified year but not learning session to use ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -96,26 +96,26 @@ module.exports.get_class = async (req, res) => {
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class: unauthorized access');
+            console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherModel.read_id(req.loggedUser._id);
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class: unauthorized access');
+            console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentModel.read_id(req.loggedUser._id);
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class: unauthorized access');
+            console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class: unauthorized access');
+        console.log('project_class: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course
@@ -123,12 +123,12 @@ module.exports.get_class = async (req, res) => {
     let cl = await projectClassesSchema.read(course_id, session_id);
     if(cl==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class: missing parameters");
+        console.log('project class: missing parameters ('+new Date()+')');
         return;
     }
     if(!cl){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("project class: resource not found");
+        console.log('project class: resource not found ('+new Date()+')');
         return;
     }
     let teacher_ref = {
@@ -185,7 +185,7 @@ module.exports.get_project_class_components = async (req, res) => {
         if(teacher_id!=undefined){
             if(req.loggedUser._id != teacher_id){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('project_class components: unauthorized access');
+                console.log('project_class components: unauthorized access ('+new Date()+')');
                 return;
             }
         } else {
@@ -196,7 +196,7 @@ module.exports.get_project_class_components = async (req, res) => {
             let assoc_class = await classesTeacherModel.read_project_classes_associated(teacher_id, session_id, course_id)
             if(assoc_class.length == 0){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('update_grades: unauthorized access');
+                console.log('update_grades: unauthorized access ('+new Date()+')');
                 return;
             }
             associated_class = true
@@ -207,12 +207,12 @@ module.exports.get_project_class_components = async (req, res) => {
         let admin_exists = await adminModel.read_id(req.loggedUser._id)
         if(!admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class components: unauthorized access');
+            console.log('project_class components: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class components: unauthorized access');
+        console.log('project_class components: unauthorized access ('+new Date()+')');
         return;
     }
     let cmps;
@@ -224,7 +224,7 @@ module.exports.get_project_class_components = async (req, res) => {
     
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class components: missing parameters");
+        console.log('project class components: missing parameters ('+new Date()+')');
         return;
     }
     let data_cmps = cmps.map((cmp) => {
@@ -263,7 +263,7 @@ module.exports.get_project_class_components = async (req, res) => {
 module.exports.get_project_class_sections = async (req,res) => {
     if(req.loggedUser.role!="admin"){
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class sections: unauthorized access');
+        console.log('project_class sections: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course;
@@ -271,12 +271,12 @@ module.exports.get_project_class_sections = async (req,res) => {
     let sections = await projectClassesSchema.read_section_from_course_and_session(course_id, session_id);
     if(sections == null) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class sections: missing parameters");
+        console.log('project class sections: missing parameters ('+new Date()+')');
         return;
     }
     if(!sections){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("project class sections: resource not found");
+        console.log('project class sections: resource not found ('+new Date()+')');
         return;
     }
     let data_sections = sections.map((section) => {
@@ -308,12 +308,12 @@ module.exports.get_announcments = async (req, res) => {
         let teacher_exists = await teacherModel.read_id(publisher_id)
         if(!teacher_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(publisher_id != req.loggedUser._id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     }
@@ -325,12 +325,12 @@ module.exports.get_announcments = async (req, res) => {
         let admin_exist = await adminModel.read_id(publisher_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(publisher_id != req.loggedUser._id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     }
@@ -343,18 +343,18 @@ module.exports.get_announcments = async (req, res) => {
         let student_exist = await studentModel.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         let student_section = await studentModel.retrieve_section_from_project_class(student_id, course_id, session_id)
         if(student_section == null){
             res.status(400).json({status: "error", description: MSG.missingParameter})
-            console.log('project class announcements: missing required information')
+            console.log('project class announcements: missing required information ('+new Date()+')')
             return
         }
         if(!student_section){
             res.status(404).json({status: "error", description: MSG.notFound})
-            console.log('project class announcements: section not found')
+            console.log('project class announcements: section not found ('+new Date()+')')
             return
         }
         section = student_section.section
@@ -364,7 +364,7 @@ module.exports.get_announcments = async (req, res) => {
     let announcements = await courseAnnouncementSchema.list(course_id, session_id, section, publisher_id, is_admin, is_student);
     if(!announcements){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("project class announcments: missing parameters");
+        console.log('project class announcments: missing parameters ('+new Date()+')');
         return;
     }
     let data_announcements = announcements.map((announcement) => {
@@ -391,26 +391,26 @@ module.exports.get_teachers = async (req, res) => {
         let admin_exist = await adminModel.read_id(req.loggedUser._id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "teacher"){
         let teacher_exist = await teacherModel.read_id(req.loggedUser._id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "student"){
         let student_exist = await studentModel.read_id(req.loggedUser._id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class sections: unauthorized access');
+        console.log('project_class sections: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course;
@@ -418,12 +418,12 @@ module.exports.get_teachers = async (req, res) => {
     let cls = await projectClassTeacherSchema.read_from_project_class(course_id, session_id);
     if(cls===null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('missing parameters for project class teachers');
+        console.log('missing parameters for project class teachers ('+new Date()+')');
         return;
     }
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project_class teachers: resource not found');
+        console.log('project_class teachers: resource not found ('+new Date()+')');
         return;
     }
     let data_cls = cls.map((cl) => {
@@ -460,46 +460,46 @@ module.exports.delete_project_class = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class deletion: unauthorized access');
+            console.log('project_class deletion: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class deletion: unauthorized access');
+        console.log('project_class deletion: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course;
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project_class deletion: course does not exists');
+        console.log('project_class deletion: course does not exists ('+new Date()+')');
         return;
     }
     let session_id = req.params.session;
     let session_exist = await learning_sessionsModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project_class deletion: session does not exists');
+        console.log('project_class deletion: session does not exists ('+new Date()+')');
         return;
     }
     let starting_date = new Date(session_exist.start)
     let today = new Date()
     if (starting_date <= today){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('project class deletion: tried to delete a project class helded in a session already started');
+        console.log('project class deletion: tried to delete a project class helded in a session already started ('+new Date()+')');
         return;
     }
     let project_class_exist = await projectClassesSchema.read(course_id, session_id);
     if(!project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project_class deletion: project class does not exists');
+        console.log('project_class deletion: project class does not exists ('+new Date()+')');
         return;
     }
     let num_section = project_class_exist.num_section;
     let existing_grades = await projectClassesSchema.grades_present(course_id, session_id)
     if(existing_grades){
         res.status(400).json({status: "error", description: MSG.has_grades});
-        console.log('project class deletion: project classes already has grades');
+        console.log('project class deletion: project classes already has grades ('+new Date()+')');
         return;
     }
     let components;
@@ -522,42 +522,42 @@ module.exports.final_confirmation = async (req, res) => {
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project course final confirmation: unauthorized access');
+            console.log('project course final confirmation: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project course final confirmation: unauthorized access');
+        console.log('project course final confirmation: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course;
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project course final confirmation: course does not exists');
+        console.log('project course final confirmation: course does not exists ('+new Date()+')');
         return;
     }
     let session_id = req.params.session;
     let session_exist = await learning_sessionsModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project course final confirmation: session does not exists');
+        console.log('project course final confirmation: session does not exists ('+new Date()+')');
         return;
     }
     let project_class_exist = await projectClassesSchema.read(course_id, session_id);
     if(!project_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('project course final confirmation: project class does not exists');
+        console.log('project course final confirmation: project class does not exists ('+new Date()+')');
         return;
     }
     if(project_class_exist.to_be_modified == "true"){
         res.status(400).json({status: "error", description: MSG.classToBeModified});
-        console.log('project course final confirmation: project class needs to be modified');
+        console.log('project course final confirmation: project class needs to be modified ('+new Date()+')');
         return;
     }
     if(project_class_exist.final_confirmation != null){
         res.status(400).json({status: "error", description: MSG.alreadyConfirmed});
-        console.log('project course final confirmation: project class already confirmed');
+        console.log('project course final confirmation: project class already confirmed ('+new Date()+')');
         return;
     }
     let starting_date = new Date(session_exist.start)
@@ -565,7 +565,7 @@ module.exports.final_confirmation = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date > _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('project class final confimation: the session is not an imminent session. Abort confirmation');
+        console.log('project class final confimation: the session is not an imminent session. Abort confirmation ('+new Date()+')');
         return;
     }
     let min_students = course_exist.min_students
@@ -576,12 +576,12 @@ module.exports.final_confirmation = async (req, res) => {
         let components = await projectClassesSchema.classComponents(course_id, session_id, String.fromCharCode(65+i))
         if(components.length<min_students){
             res.status(400).json({status: "error", description: MSG.minStudents});
-            console.log('project course final confirmation: project class does not have min students required');
+            console.log('project course final confirmation: project class does not have min students required ('+new Date()+')');
             return;
         }
         if(components.length>max_students){
             res.status(400).json({status: "error", description: MSG.maxStudents});
-            console.log('project course final confirmation: project class has too much students w.r.t. the ones required');
+            console.log('project course final confirmation: project class has too much students w.r.t. the ones required ('+new Date()+')');
             return;
         }
     }
@@ -589,7 +589,7 @@ module.exports.final_confirmation = async (req, res) => {
     let final_confirmation = await projectClassesSchema.final_confirmation(course_id, session_id, true)
     if(!final_confirmation){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('project course final confirmation: missing parameters');
+        console.log('project course final confirmation: missing parameters ('+new Date()+')');
         return;
     }
     // Retrieve the class again to get the final confirmation date
@@ -608,7 +608,7 @@ module.exports.final_confirmation = async (req, res) => {
         if(!first_announcement){
             await projectClassesSchema.final_confirmation(course_id, session_id)
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log('project course final confirmation: final message parameters');
+            console.log('project course final confirmation: final message parameters ('+new Date()+')');
             return;
         }
     }

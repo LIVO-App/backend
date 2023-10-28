@@ -40,7 +40,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
     let contexts = await learningContextModel.list_from_list_of_courses(student_id, session_id, courses);
     if(contexts==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('list of session: missing list of courses');
+        console.log('list of session: missing list of courses ('+new Date()+')');
         return;
     }
     let data_contexts = contexts.map( (context) => {

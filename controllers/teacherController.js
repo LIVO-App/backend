@@ -32,19 +32,19 @@ module.exports.get_teachers = async (req, res) => {
         let teacher_esist = teacherSchema.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_teacher: unauthorized access');
+            console.log('get_teacher: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "admin"){
         let admin_exist = adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_teacher: unauthorized access');
+            console.log('get_teacher: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_teacher: unauthorized access');
+        console.log('get_teacher: unauthorized access ('+new Date()+')');
         return;
     }
     let teachers = await teacherSchema.list()
@@ -82,7 +82,7 @@ module.exports.get_my_project_classes = async (req, res) => {
     let cls = await classesSchema.read_project_classes_teach(teacher_id, session_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher project class: missing parameters");
+        console.log('teacher project class: missing parameters ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -120,7 +120,7 @@ module.exports.get_associated_project_classes = async (req, res) => {
     let cls = await classesSchema.read_project_classes_associated(teacher_id, session_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher project class: missing parameters");
+        console.log('teacher project class: missing parameters ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -157,17 +157,17 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_project_classes: unauthorized access');
+            console.log('my_project_classes: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('my_project_classes: unauthorized access');
+        console.log('my_project_classes: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
@@ -175,7 +175,7 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
     let cls = await classesSchema.read_project_classes_teach(teacher_id, session_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher project class: missing parameters");
+        console.log('teacher project class: missing parameters ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -213,17 +213,17 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('associated_project_classes: unauthorized access');
+            console.log('associated_project_classes: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('associated_project_classes: unauthorized access');
+        console.log('associated_project_classes: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
@@ -231,7 +231,7 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
     let cls = await classesSchema.read_project_classes_associated(teacher_id, session_id, course_id);
     if (!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher project class: missing parameters");
+        console.log('teacher project class: missing parameters ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -269,17 +269,17 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(teacher_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_ordinary_class: unauthorized access');
+            console.log('my_ordinary_class: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('my_ordinary_class: unauthorized access');
+        console.log('my_ordinary_class: unauthorized access ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year;
@@ -287,14 +287,14 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
         let teacher_esist = await teacherSchema.isTeacherEmployed(teacher_id, school_year);
         if(!teacher_esist){
             res.status(404).json({status: "error", description: MSG.teacherNotEmployed});
-            console.log('my_ordinary_class: teacher was not employed');
+            console.log('my_ordinary_class: teacher was not employed ('+new Date()+')');
             return;
         }
     }
     let cls = await ord_classSchema.teachers_classes(teacher_id, school_year, teaching);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher ordinary class: missing parameters");
+        console.log('teacher ordinary class: missing parameters ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {
@@ -322,14 +322,14 @@ module.exports.get_active_years = async (req, res) => {
     let existingTeacher = await teacherSchema.read_id(teacher_id);
     if(!existingTeacher){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("teacher active year: resource not found");
+        console.log('teacher active year: resource not found ('+new Date()+')');
         return; 
     }
     let full_class = req.query.full_class;
     let yrs = await teacherSchema.getActiveYears(teacher_id, full_class);
     if(!yrs){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher active year: missing parameters");
+        console.log('teacher active year: missing parameters ('+new Date()+')');
         return;
     }
     let data_years = yrs.map((yr) => {
@@ -356,24 +356,24 @@ module.exports.update_info = async (req, res) => {
         let teacher_esist = await teacherSchema.read_id(teacher_id);
         if(!teacher_esist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student information: student does not exists');
+            console.log('update student information: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update student information: unauthorized access');
+            console.log('update student information: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update student information: unauthorized access');
+        console.log('update student information: unauthorized access ('+new Date()+')');
         return;
     }
     let information = req.body.teacher_info
     let update_info = await teacherSchema.update(teacher_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('update student information: no parameters to change')
+        console.log('update student information: no parameters to change ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Information updated successfully"})
@@ -385,29 +385,29 @@ module.exports.update_password = async (req, res) => {
         let teacher_esist = await teacherSchema.read_id(teacher_id);
         if(!teacher_esist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update student psw: unauthorized access');
+            console.log('update student psw: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update student psw: unauthorized access');
+        console.log('update student psw: unauthorized access ('+new Date()+')');
         return;
     }
     let psw = req.body.psw
     let update_psw = await teacherSchema.change_psw(teacher_id, psw)
     if(update_psw==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('update student psw: no parameters to change')
+        console.log('update student psw: no parameters to change ('+new Date()+')')
         return
     }
     if(!update_psw){
         res.status(400).json({status: "error", description: "The password is the same. Please change it."});
-        console.log('update student psw: same password')
+        console.log('update student psw: same password ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Password updated successfully"})
@@ -419,12 +419,12 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
         let user_exist = await adminModel.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('new project class for teacher: unauthorized access');
+            console.log('new project class for teacher: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('new project class for teacher: unauthorized access');
+        console.log('new project class for teacher: unauthorized access ('+new Date()+')');
         return;
     }
     // Teacher exists
@@ -432,7 +432,7 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
     let teacher_esist = await teacherSchema.read_id(teacher_id)
     if(!teacher_esist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("new project class for teacher: resource not found");
+        console.log('new project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check course id
@@ -444,33 +444,33 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
     let course_exists = await courseSchema.read(course_id)
     if(!course_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("new project class for teacher: resource not found");
+        console.log('new project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check session id
     let session_exists = await sessionSchema.read(session_id)
     if(!session_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("new project class for teacher: resource not found");
+        console.log('new project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check project class
     let class_exist = await projectClassSchema.read(course_id, session_id)
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("new project class for teacher: resource not found");
+        console.log('new project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check if we already have 3 teachers. If yes -> abort insert
     let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, session_id)
     if(!get_teachers){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("new project class for teacher: missing parameters");
+        console.log('new project class for teacher: missing parameters ('+new Date()+')');
         return; 
     }
     if(get_teachers.length === 3){
         res.status(400).json({status: "error", description: MSG.maxTeachers});
-        console.log("new project class for teacher: max teachers reached");
+        console.log('new project class for teacher: max teachers reached ('+new Date()+')');
         return; 
     }
     let dup_entries;
@@ -504,11 +504,11 @@ module.exports.add_teacher_to_project_class = async (req, res) => {
     if(!insert_teacher){
         if(dup_entries){
             res.status(409).json({status: "error", description: MSG.itemAlreadyInserted});
-            console.log("new project class for teacher: duplicate information");
+            console.log('new project class for teacher: duplicate information ('+new Date()+')');
             return; 
         } else {
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log("new project class for teacher: missing parameters");
+            console.log('new project class for teacher: missing parameters ('+new Date()+')');
             return; 
         }
         
@@ -522,12 +522,12 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
         let user_exist = await adminModel.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('remove project class for teacher: unauthorized access');
+            console.log('remove project class for teacher: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('remove project class for teacher: unauthorized access');
+        console.log('remove project class for teacher: unauthorized access ('+new Date()+')');
         return;
     }
     // Teacher exists
@@ -535,7 +535,7 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
     let teacher_esist = await teacherSchema.read_id(teacher_id)
     if(!teacher_esist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("remove project class for teacher: resource not found");
+        console.log('remove project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check course id
@@ -545,28 +545,28 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
     let course_exists = await courseSchema.read(course_id)
     if(!course_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("remove project class for teacher: resource not found");
+        console.log('remove project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check session id
     let session_exists = await sessionSchema.read(session_id)
     if(!session_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("remove project class for teacher: resource not found");
+        console.log('remove project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check project class
     let class_exist = await projectClassSchema.read(course_id, session_id)
     if(!class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("remove project class for teacher: resource not found");
+        console.log('remove project class for teacher: resource not found ('+new Date()+')');
         return; 
     }
     // Check if we already have only 1 teachers. If yes -> abort insert
     let get_teachers = await projectClassTeacherModel.read_from_project_class(course_id, session_id)
     if(!get_teachers){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("remove project class for teacher: missing parameters");
+        console.log('remove project class for teacher: missing parameters ('+new Date()+')');
         return; 
     }
     let is_present = false
@@ -578,19 +578,19 @@ module.exports.remove_teacher_from_project_class = async (req, res) => {
     }
     if(!is_present){
         res.status(400).json({status: "error", description: MSG.teacherDoNotTeachPC});
-        console.log("remove project class for teacher: teacher does not teach in the project class specified");
+        console.log('remove project class for teacher: teacher does not teach in the project class specified ('+new Date()+')');
         return; 
     }
     if(get_teachers.length === 1){
         res.status(400).json({status: "error", description: MSG.noMoreTeachers});
-        console.log("remove project class for teacher: max teachers reached");
+        console.log('remove project class for teacher: max teachers reached ('+new Date()+')');
         return; 
     }
     // Insert data
     let delete_teacher = await classesSchema.delete_single(course_id, session_id, teacher_id, sections);
     if(!delete_teacher){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("new project class for teacher: missing parameters");
+        console.log('new project class for teacher: missing parameters ('+new Date()+')');
         return; 
     }
     res.status(200).json({status: "accepted", description: "Remove teacher from project classes specified"})
@@ -602,12 +602,12 @@ module.exports.add_teachers = async (req, res) => {
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update teacher psw: not authorized');
+            console.log('update teacher psw: not authorized ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update teacher psw: not authorized');
+        console.log('update teacher psw: not authorized ('+new Date()+')');
         return;
     }
     let existing_teacher, wrong_teacher, teacher_added;
@@ -649,11 +649,11 @@ module.exports.add_teachers = async (req, res) => {
     if(!teacher_added){
         if(existing_teacher){
             res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_teacher: wrong_teacher})
-            console.log("Teacher insertion: users already present")
+            console.log('Teacher insertion: users already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_teacher: wrong_teacher})
-            console.log("Teacher insertion: missing parameters")
+            console.log('Teacher insertion: missing parameters ('+new Date()+')')
             return
         }
     }
@@ -702,35 +702,35 @@ module.exports.get_tutor_classes = async (req, res) => {
     if(req.loggedUser.role == "teacher"){
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log("teacher tutor classes: not authorized");
+            console.log('teacher tutor classes: not authorized ('+new Date()+')');
             return; 
         }
         let existingTeacher = await teacherSchema.read_id(teacher_id);
         if(!existingTeacher){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log("teacher tutor classes: not authorized");
+            console.log('teacher tutor classes: not authorized ('+new Date()+')');
             return; 
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('teacher tutor classes: not authorized');
+        console.log('teacher tutor classes: not authorized ('+new Date()+')');
         return;
     }
     let current_session = await sessionSchema.read_current_session();
     if(!current_session){
         res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
-        console.log('teacher tutor classes: not in a session period')
+        console.log('teacher tutor classes: not in a session period ('+new Date()+')')
         return
     }
     let cls = await teacherSchema.get_tutor_classes(teacher_id, current_session.school_year);
     if(cls == null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("teacher tutor classes: missing parameters");
+        console.log('teacher tutor classes: missing parameters ('+new Date()+')');
         return;
     }
     if(!cls){
         res.status(404).json({status: "error", description: "You are not a tutor in any classes for this school year."});
-        console.log("teacher tutor classes: teacher is not a tutor in this school year");
+        console.log('teacher tutor classes: teacher is not a tutor in this school year ('+new Date()+')');
         return;
     }
     let data_classes = cls.map((cl) => {

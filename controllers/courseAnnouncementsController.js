@@ -21,14 +21,14 @@ module.exports.get_announcement = async (req, res) => {
         let admin_exists = await adminSchema.read_id(user_id)
         if(!admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('Announcement: unauthorized access');
+            console.log('Announcement: unauthorized access ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "student") {
         let student_exist = await studentSchema.read_id(user_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('Announcement: unauthorized access');
+            console.log('Announcement: unauthorized access ('+new Date()+')');
             return;
         }
         is_student = true
@@ -36,19 +36,19 @@ module.exports.get_announcement = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(user_id)
         if(!teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('Announcement: unauthorized access');
+            console.log('Announcement: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('Announcement: unauthorized access');
+        console.log('Announcement: unauthorized access ('+new Date()+')');
         return;
     }
     let announcement_id = req.params.announcement_id;
     let announcement = await announcementSchema.read(announcement_id, is_student);
     if(!announcement){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("Announcement: resource not found");
+        console.log('Announcement: resource not found ('+new Date()+')');
         return;
     }
     let data_announcement = {
@@ -81,7 +81,7 @@ module.exports.publish_announcement = async (req, res) => {
         let teacher_exist = await teacherSchema.read_id(publisher_id)
         if(publisher_id!=req.loggedUser._id || !teacher_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     } else if(req.loggedUser.role == "admin") {
@@ -92,12 +92,12 @@ module.exports.publish_announcement = async (req, res) => {
         let admin_exists = await adminSchema.read_id(publisher_id)
         if(publisher_id!=req.loggedUser._id || !admin_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('project_class sections: unauthorized access');
+            console.log('project_class sections: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('project_class sections: unauthorized access');
+        console.log('project_class sections: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.query.course_id;
@@ -108,12 +108,12 @@ module.exports.publish_announcement = async (req, res) => {
             let teacherTeach = await teacherSchema.isTeacherTeachingProject(publisher_id, course_id, session_id, sections[i].toUpperCase());
             if(teacherTeach==null){
                 res.status(400).json({status: "error", description: MSG.missing_params})
-                console.log('missing required information: teacher teach in project class');
+                console.log('missing required information: teacher teach in project class ('+new Date()+')');
                 return;
             }
             if(!teacherTeach){
                 res.status(400).json({status: "error", description: MSG.teacherNotTeach})
-                console.log('teacher doesn\'t teach in that class');
+                console.log('teacher doesn\'t teach in that class ('+new Date()+')');
                 return;
             }
         }
@@ -126,12 +126,12 @@ module.exports.publish_announcement = async (req, res) => {
     let publish = await announcementSchema.add(publisher_id, is_admin, course_id, session_id, sections, italian_title, english_title, italian_message, english_message, publish_date);
     if(publish==null){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('no sections: announcement publishing');
+        console.log('no sections: announcement publishing ('+new Date()+')');
         return;
     }
     if(!publish){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: announcement publishing');
+        console.log('missing required information: announcement publishing ('+new Date()+')');
         return;
     }
     let res_des = "Inserted " + publish.affectedRows + " rows";

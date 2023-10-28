@@ -1073,6 +1073,36 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/grades:
+    post:
+      description: Insert a list of grades for a single project class related to a single test
+      parameters:
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+      summary: Insertion of a list of grades
+      tags:
+        - grades
+        - students
+        - v1
+      requestBody:
+        description: Data of multiple grade insertion
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/multiple_grade_insert'
+      responses:
+        '201':
+          $ref: '#/components/responses/GradeInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
   /v1/grades/{grade_id}:
     put:
       description: Update a specific grade information. If it is not final it can be updated until a final grade is inserted. If it is a final grade it can be updated until a week after its insertion.
@@ -3669,6 +3699,28 @@ components:
                 type: string
               description:
                 type: string
+    GradeInsert:
+      description: Multiple grades insertion to the system response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              duplicate_entry:
+                type: boolean
+                description: "Tells if a grade for some student was already inserted in the same day"
+              wrong_entry:
+                type: boolean
+                description: "Tells if a grade the teacher tried to add was not correct and consequently not added"
+              students_with_errors:
+                type: array
+                description: "List of student_ids which very not inserted because of an error in the actual insert. They must be communicated to the teacher"
+                items:
+                  type: integer
   schemas:
     learning_session_data:
       type: object
@@ -5394,6 +5446,45 @@ components:
         grade:
           type: integer
           description: "Grade of the student"
+        final:
+          type: boolean
+          description: "Tells if the grade is a final grade or not"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
+    grades_list:
+      type: object
+      required:
+        - student_id
+        - grade_value
+      properties:
+        student_id:
+          type: integer
+          description: "Student id that obtained a grade"
+        grade_value:
+          type: integer
+          description: "Actual grade obtained by the student"
+    multiple_grade_insert:
+      type: object
+      required:
+        - ita_description
+        - eng_description
+        - grades_list
+        - final
+        - publication_date
+      properties:
+        ita_description:  
+          type: string
+          description: "Italian description of the grade"
+        eng_description:
+          type: string
+          description: "English description of the grade"
+        grades_list:
+          type: array
+          description: "List of grades with their student"
+          items:
+            $ref: '#/components/schemas/grades_list'
         final:
           type: boolean
           description: "Tells if the grade is a final grade or not"

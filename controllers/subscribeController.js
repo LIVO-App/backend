@@ -28,7 +28,7 @@ module.exports.subscribe_project_class = async (req, res) => {
     let pending = await subscribe_schema.isClassFull(course_id, session_id);
     if(!pending){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: full class');
+        console.log('resource not found: full class ('+new Date()+')');
         return;
     }
     if (pending.full === "true"){
@@ -37,13 +37,13 @@ module.exports.subscribe_project_class = async (req, res) => {
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
         res.status(400).json({status: "error", description: MSG.studentNotExist})
-        console.log('student does not exist');
+        console.log('student does not exist ('+new Date()+')');
         return;
     }
     const subscriptionExists = await subscribe_schema.read(student_id, course_id, session_id, context_id, section);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: existing subscription');
+        console.log('missing required information: existing subscription ('+new Date()+')');
         return;
     }
     if (subscriptionExists) {
@@ -51,30 +51,30 @@ module.exports.subscribe_project_class = async (req, res) => {
             status: "error", 
             description: MSG.itemAlreadyExists
         });
-        console.log("record already exists");
+        console.log('record already exists ('+new Date()+')');
         return;
     }
     let cour = await courseSchema.read_learning_area(course_id);
     if(!cour){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning area');
+        console.log('resource not found: learning area ('+new Date()+')');
         return;
     }
     let isMax = await studentModel.retrieve_credits(student_id, session_id, cour.learning_area_id, context_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
-        console.log('missing required information: is max');
+        console.log('missing required information: is max ('+new Date()+')');
         return;
     }
     if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
-        console.log('max credits limit reached');
+        console.log('max credits limit reached ('+new Date()+')');
         return;
     }
     let subscribe = await subscribe_schema.add(student_id, course_id, session_id, section, context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: subscribe');
+        console.log('missing required information: subscribe ('+new Date()+')');
         return;
     }
     let res_des = "Inserted " + subscribe.rows.affectedRows + " rows";
@@ -94,12 +94,12 @@ module.exports.unsubscribe_project_class = async (req, res) => {
     let classExist = await pcModel.read(course_id, session_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information on class');
+        console.log('missing required information on class ('+new Date()+')');
         return;
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: unsubscribe');
+        console.log('resource not found: unsubscribe ('+new Date()+')');
         return;
     }
     let unsubscribe = await subscribe_schema.remove(student_id, course_id, session_id, context_id);
@@ -116,12 +116,12 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('subscribe: unauthorized access');
+            console.log('subscribe: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('subscribe: unauthorized access');
+        console.log('subscribe: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.query.course_id;
@@ -129,25 +129,25 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
     let session_exist = await sessionSchema.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('subscription: session does not exist');
+        console.log('subscription: session does not exist ('+new Date()+')');
         return;
     }
     if(session_exist.open_day>new Date()){
         res.status(400).json({status: "error", description: "The orientation day date is not already passed. You cannot subscribe to the course."})
-        console.log('orientation day not passed');
+        console.log('orientation day not passed ('+new Date()+')');
         return;
     }
     let context_id = req.query.context_id;
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
         res.status(400).json({status: "error", description: MSG.studentNotExist})
-        console.log('student does not exist');
+        console.log('student does not exist ('+new Date()+')');
         return;
     }
     const subscriptionExists = await subscribe_schema.read(student_id, course_id);
     if(subscriptionExists === null){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: existing subscription');
+        console.log('missing required information: existing subscription ('+new Date()+')');
         return;
     }
     if (subscriptionExists) {
@@ -155,37 +155,37 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
             status: "error", 
             description: MSG.itemAlreadyExists
         });
-        console.log("record already exists");
+        console.log('record already exists ('+new Date()+')');
         return;
     }
     let cour = await courseSchema.read_learning_area(course_id);
     if(!cour){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning area');
+        console.log('resource not found: learning area ('+new Date()+')');
         return;
     }
     let isMax = await studentModel.retrieve_credits(student_id, session_id, cour.learning_area_id, context_id);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
-        console.log('missing required information: is max');
+        console.log('missing required information: is max ('+new Date()+')');
         return;
     }
     if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
-        console.log('max credits limit reached');
+        console.log('max credits limit reached ('+new Date()+')');
         return;
     }
     let notSameGroup = await subscribe_schema.not_same_group(course_id, session_id, student_id, cour.learning_area_id, context_id);
     if(!notSameGroup){
         res.status(403).json({status: "error", description: MSG.sameGroup})
-        console.log('group already selected')
+        console.log('group already selected ('+new Date()+')')
         return;
     }
     let pen_val = undefined;
     let section = await subscribe_schema.getAvailableSection(course_id, session_id);
     if(section == null){
         res.status(400).json({status: "error", description: MSG.missing_params});
-        console.log('mising required information: section');
+        console.log('mising required information: section ('+new Date()+')');
         return;
     }
     if (section === ""){
@@ -194,7 +194,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
     let subscribe = await subscribe_schema.add(student_id, course_id, session_id, section.toUpperCase(), context_id, pen_val);
     if (!subscribe){
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information: subscribe');
+        console.log('missing required information: subscribe ('+new Date()+')');
         return;
     }
     let res_des = "Inserted " + subscribe.rows.affectedRows + " rows";
@@ -211,12 +211,12 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('unsubscribe: unauthorized access');
+            console.log('unsubscribe: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('unsubscribe: unauthorized access');
+        console.log('unsubscribe: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.query.course_id;
@@ -225,12 +225,12 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     let classExist = await pcModel.read(course_id, session_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information on class');
+        console.log('missing required information on class ('+new Date()+')');
         return;
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: unsubscribe');
+        console.log('resource not found: unsubscribe ('+new Date()+')');
         return;
     }
     let unsubscribe = await subscribe_schema.remove(student_id, course_id, session_id, context_id);
@@ -243,7 +243,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
     if(!pending_students){
         response["pending"] = MSG.missing_params
         res.status(200).json(response)
-        console.log('missing required information on class for pending students');
+        console.log('missing required information on class for pending students ('+new Date()+')');
         return;
     }
     if(pending_students.length > 0){
@@ -273,7 +273,7 @@ module.exports.unsubscribe_project_class_v2 = async (req, res) => {
                 continue // It is still in pending for some reason
             }
             let remove_pending = await subscribe_schema.remove_pending(pending_student_id, course_id, session_id, pending_section)
-            console.log("A student was removed from pending")
+            console.log('A student was removed from pending ('+new Date()+')')
             break
         }
     } else {
@@ -288,12 +288,12 @@ module.exports.subscription_confirmation = async (req, res) => {
     if(req.loggedUser.role == "student"){
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('unsubscribe: unauthorized access');
+            console.log('unsubscribe: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('unsubscribe: unauthorized access');
+        console.log('unsubscribe: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.query.course_id;
@@ -302,24 +302,24 @@ module.exports.subscription_confirmation = async (req, res) => {
     let existStudent = await studentModel.read_id(student_id);
     if(!existStudent){
         res.status(400).json({status: "error", description: MSG.studentNotExist})
-        console.log('student does not exist');
+        console.log('student does not exist ('+new Date()+')');
         return;
     }
     let classExist = await pcModel.read(course_id, session_id);
     if(classExist === null) {
         res.status(400).json({status: "error", description: MSG.missing_params})
-        console.log('missing required information on class');
+        console.log('missing required information on class ('+new Date()+')');
         return;
     }
     if(!classExist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: unsubscribe');
+        console.log('resource not found: unsubscribe ('+new Date()+')');
         return;
     }
     let student_subscription = await subscribe_schema.read(student_id, course_id, session_id)
     if(!student_subscription){
         res.status(403).json({status: "error", description: MSG.notAuthorized})
-        console.log("Subscription does not exist")
+        console.log('Subscription does not exist ('+new Date()+')')
         return
     }
     if(!outcome){
@@ -333,7 +333,7 @@ module.exports.subscription_confirmation = async (req, res) => {
         if(!pending_students){
             response["pending"] = MSG.missing_params
             res.status(200).json(response)
-            console.log('missing required information on class for pending students');
+            console.log('missing required information on class for pending students ('+new Date()+')');
             return;
         }
         if(pending_students.length > 0){
@@ -363,11 +363,11 @@ module.exports.subscription_confirmation = async (req, res) => {
                     continue // It is still in pending for some reason
                 }
                 let remove_pending = await subscribe_schema.remove_pending(pending_student_id, course_id, session_id, pending_section)
-                console.log("A student was removed from pending")
+                console.log('A student was removed from pending ('+new Date()+')')
                 break
             }
         } else {
-            console.log("No pending students")
+            console.log('No pending students ('+new Date()+')')
         }
         res.status(200).json(response)
         return
@@ -376,27 +376,27 @@ module.exports.subscription_confirmation = async (req, res) => {
             let pending = await subscribe_schema.isClassFull(course_id, session_id);
             if(!pending){
                 res.status(404).json({status: "error", description: MSG.notFound});
-                console.log('resource not found: full class');
+                console.log('resource not found: full class ('+new Date()+')');
                 return;
             }
             if (pending.full === "false"){
                 let pending_section = await subscribe_schema.getAvailableSection(course_id, session_id);
                 if(pending_section===""){
                     res.status(400).json({status: "error", description: "Something went wrong"})
-                    console.log('pending removal didn\'t succeded')
+                    console.log('pending removal didn\'t succeded ('+new Date()+')')
                     return
                 }
                 let remove_pending = await subscribe_schema.remove_pending(student_id, course_id, session_id, pending_section.toUpperCase())
                 res.status(200).json({status: "updated", description: "The student is now subscribed to the course since a slot is now free"})
-                console.log("Student is now subscribed to the course")
+                console.log('Student is now subscribed to the course ('+new Date()+')')
                 return
             }
             res.status(200).json({status: "not updated", description: "The student will remain in pending list since there are no slot available. It will become subscribed if one slot will be available before the starting of the courses. It has still express its liking into taking the course in future editions."})
-            console.log("Student is still in pending list of the course")
+            console.log('Student is still in pending list of the course ('+new Date()+')')
             return
         }
         res.status(200).json({status: "accepted", description: "The student is enrolled to this course"})
-        console.log("Student is enrolled definetely.")
+        console.log('Student is enrolled definetely. ('+new Date()+')')
         return
     }
 }

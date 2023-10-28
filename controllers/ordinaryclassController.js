@@ -26,7 +26,7 @@ module.exports.get_classes = async (req, res) => {
     let classes = await courseSchema.list(student_id, school_year, credits, descending);
     if(!classes){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found');
+        console.log('resource not found ('+new Date()+')');
         return;
     }
     let data_classes = classes.map((cls) => {
@@ -91,31 +91,31 @@ module.exports.get_components = async (req, res) => {
         //console.log(teach);
         if(teach==null){
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log("ordinary_class components: missing parameters teacher");
+            console.log('ordinary_class components: missing parameters teacher ('+new Date()+')');
             return;
         }
         if(!teach){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_ordinary_class: unauthorized access. Not my class');
+            console.log('my_ordinary_class: unauthorized access. Not my class ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "admin") {
         let adminexists = await adminSchema.read_id(req.loggedUser._id)
         if(!adminexists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_ordinary_class: unauthorized access.');
+            console.log('my_ordinary_class: unauthorized access. ('+new Date()+')');
             return;
         }
         admin_user = true
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('my_ordinary_class: unauthorized access');
+        console.log('my_ordinary_class: unauthorized access ('+new Date()+')');
         return;
     }
     let cmps = await ordinaryclassModel.components(study_year, address, school_year, section, admin_user);
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("ordinary class components: missing parameters");
+        console.log('ordinary class components: missing parameters ('+new Date()+')');
         return;
     }
     let data_cmps = cmps.map((cmp) => {
@@ -145,7 +145,7 @@ module.exports.get_not_in_order_components = async (req, res) => {
     let session_exist = await learningSessionModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('not in order students: session not found');
+        console.log('not in order students: session not found ('+new Date()+')');
         return;
     }
     let section = req.query.section!=undefined ? req.query.section.toUpperCase() : undefined;
@@ -155,30 +155,30 @@ module.exports.get_not_in_order_components = async (req, res) => {
         //console.log(teach);
         if(teach==null){
             res.status(400).json({status: "error", description: MSG.missingParameter});
-            console.log("ordinary_class components: missing parameters teacher");
+            console.log('ordinary_class components: missing parameters teacher ('+new Date()+')');
             return;
         }
         if(!teach){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_ordinary_class: unauthorized access. Not my class');
+            console.log('my_ordinary_class: unauthorized access. Not my class ('+new Date()+')');
             return;
         }
     } else if (req.loggedUser.role == "admin") {
         let adminexists = await adminSchema.read_id(req.loggedUser._id)
         if(!adminexists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('my_ordinary_class: unauthorized access.');
+            console.log('my_ordinary_class: unauthorized access. ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('my_ordinary_class: unauthorized access');
+        console.log('my_ordinary_class: unauthorized access ('+new Date()+')');
         return;
     }
     let constraints_exist = await constraint_schema.get_constraints(session_id, false, undefined, undefined, study_year, address)
     if(!constraints_exist){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("constraints for ordinary class: missing parameters");
+        console.log('constraints for ordinary class: missing parameters ('+new Date()+')');
         return;
     }
     let constraints_list = constraints_exist.map((constraint) => {
@@ -190,7 +190,7 @@ module.exports.get_not_in_order_components = async (req, res) => {
     let cmps = await ordinaryclassModel.not_in_order_students(study_year, address, session_id, section, constraints_list);
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("ordinary class components not in order: missing parameters");
+        console.log('ordinary class components not in order: missing parameters ('+new Date()+')');
         return;
     }
     let data_cmps = cmps.map((cmp) => {
@@ -219,12 +219,12 @@ module.exports.get_student_class = async (req, res) => {
     let cl = await ordinaryclassModel.read_from_student_and_session(student_id, session_id);
     if(cl == null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log("student ordinary clas: missing parameters");
+        console.log('student ordinary clas: missing parameters ('+new Date()+')');
         return;
     }
     if(!cl){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log("ordinary class components: resource not found");
+        console.log('ordinary class components: resource not found ('+new Date()+')');
         return;
     }
     let data_cl = {
@@ -249,7 +249,7 @@ module.exports.add_ordinary_classes = async (req, res) => {
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
     }
@@ -289,11 +289,11 @@ module.exports.add_ordinary_classes = async (req, res) => {
     if(!class_added){
         if(existing_class){
             res.status(409).json({status: "error", description: "All the classes were already present in the database", wrong_class: wrong_class})
-            console.log("Class insertion: classes already present")
+            console.log('Class insertion: classes already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the classes tried to insert were wrong. Please, check them", wrong_class: wrong_class})
-            console.log("Class insertion: missing parameters")
+            console.log('Class insertion: missing parameters ('+new Date()+')')
             return
         }
     }
@@ -306,7 +306,7 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
     }
@@ -314,14 +314,14 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
     let year_exist = await ordinaryclassModel.check_study_year(study_year)
     if(!year_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found');
+        console.log('add students to class: study year not found ('+new Date()+')');
         return;
     }
     let study_address = req.params.address
     let address_exist = await ordinaryclassModel.check_study_address(study_address)
     if(!address_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found');
+        console.log('add students to class: study year not found ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year
@@ -352,11 +352,11 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
     if(!comp_added){
         if(existing_comp){
             res.status(409).json({status: "error", description: "All the components were already present in the database", wrong_comp: wrong_comp})
-            console.log("Ordinary class component insertion: components already present")
+            console.log('Ordinary class component insertion: components already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the components tried to insert were wrong. Please, check them", wrong_comp: wrong_comp})
-            console.log("Ordinary class component insertion: missing parameters")
+            console.log('Ordinary class component insertion: missing parameters ('+new Date()+')')
             return
         }
     }
@@ -369,7 +369,7 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists');
+            console.log('update student psw: student does not exists ('+new Date()+')');
             return;
         }
     }
@@ -377,14 +377,14 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
     let year_exist = await ordinaryclassModel.check_study_year(study_year)
     if(!year_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found');
+        console.log('add students to class: study year not found ('+new Date()+')');
         return;
     }
     let study_address = req.params.address
     let address_exist = await ordinaryclassModel.check_study_address(study_address)
     if(!address_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found');
+        console.log('add students to class: study year not found ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year
@@ -426,11 +426,11 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
     if(!teach_added){
         if(existing_teach){
             res.status(409).json({status: "error", description: "All the teachers were already present in the database", wrong_teach: wrong_teach})
-            console.log("Ordinary class teachers insertion: teacher already present")
+            console.log('Ordinary class teachers insertion: teacher already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the teachers tried to insert were wrong. Please, check them", wrong_teach: wrong_teach})
-            console.log("Ordinary class teachers insertion: missing parameters")
+            console.log('Ordinary class teachers insertion: missing parameters ('+new Date()+')')
             return
         }
     }

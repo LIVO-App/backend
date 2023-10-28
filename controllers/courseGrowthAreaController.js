@@ -21,7 +21,7 @@ module.exports.get_growth_areas = async (req, res) => {
     let cls = await growthAreaModel.read_from_course(course_id);
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course growth areas: resource not found');
+        console.log('course growth areas: resource not found ('+new Date()+')');
         return;
     }
     let data_cls = cls.map((cl) => {
@@ -58,38 +58,38 @@ module.exports.add_single_growth_area = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course single growth area insert: unauthorized access');
+            console.log('course single growth area insert: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course single growth area insert: unauthorized access');
+        console.log('course single growth area insert: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await coursesModel.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course single growth area insert: course not found');
+        console.log('course single growth area insert: course not found ('+new Date()+')');
         return;
     }
     let growth_area_id = req.query.growth_area_id;
     let growth_area_exist = await personalGrowthAreaModel.read(growth_area_id);
     if(!growth_area_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course single growth area insert: growth area not found');
+        console.log('course single growth area insert: growth area not found ('+new Date()+')');
         return;
     }
     let growth_area_entry_exist = await growthAreaModel.is_present(course_id, growth_area_id)
     if(growth_area_entry_exist){
         res.status(409).json({status: "error", description: MSG.duplicateEntry});
-        console.log('course single growth area insert: duplicate entry');
+        console.log('course single growth area insert: duplicate entry ('+new Date()+')');
         return;
     }
     let class_area_insert = await growthAreaModel.add_single(course_id, growth_area_id);
     if(!class_area_insert){
         res.status(400).json({status: "error", description: MSG.missingParameters})
-        console.log('course single growth area insert: missing parameters')
+        console.log('course single growth area insert: missing parameters ('+new Date()+')')
         return
     }
     res.status(201).json({status: "inserted", description: MSG.insertSuccess})
@@ -101,26 +101,26 @@ module.exports.delete_growth_area = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course single growth area remove: unauthorized access');
+            console.log('course single growth area remove: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course single growth area remove: unauthorized access');
+        console.log('course single growth area remove: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await coursesModel.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course single growth area remove: course not found');
+        console.log('course single growth area remove: course not found ('+new Date()+')');
         return;
     }
     let growth_area_id = req.query.growth_area_id;
     let growth_area_exist = await personalGrowthAreaModel.read(growth_area_id);
     if(!growth_area_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course single growth area remove: growth area not found');
+        console.log('course single growth area remove: growth area not found ('+new Date()+')');
         return;
     }
     let remove_area = await growthAreaModel.remove(course_id, growth_area_id)

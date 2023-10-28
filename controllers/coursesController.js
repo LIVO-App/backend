@@ -68,7 +68,7 @@ module.exports.get_courses = async (req, res) => {
     let courses = await courseSchema.list(student_id, area_id, session_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('courses: resource not found');
+        console.log('courses: resource not found('+new Date()+')');
         return;
     }
     let data_courses = courses.map((course) => {
@@ -117,17 +117,17 @@ module.exports.get_courses_v2 = async (req, res) => {
         let student_exist = await studentSchema.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }  
         if(req.loggedUser._id != student_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access');
+            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_courses_v2: unauthorized access');
+        console.log('get_courses_v2: unauthorized access ('+new Date()+')');
         return;
     }
     let area_id = req.query.area_id;
@@ -136,7 +136,7 @@ module.exports.get_courses_v2 = async (req, res) => {
     let courses = await courseSchema.list(student_id, area_id, session_id, context_id, alone);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('courses: resource not found');
+        console.log('courses: resource not found ('+new Date()+')');
         return;
     }
     let data_courses = courses.map((course) => {
@@ -181,7 +181,7 @@ module.exports.get_course = async (req, res) => {
     let course = await courseSchema.read(course_id, admin_info);
     if(!course){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('single course: resource not found');
+        console.log('single course: resource not found ('+new Date()+')');
         return;
     }
     let proposer_teacher_ref = {
@@ -258,7 +258,7 @@ module.exports.get_courses_model = async (req, res) => {
         if(teacher_id != undefined){
             if(req.loggedUser._id != teacher_id){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('get_courses_v2: unauthorized access');
+                console.log('get_courses_v2: unauthorized access ('+new Date()+')');
                 return;
             }
         } else {
@@ -267,7 +267,7 @@ module.exports.get_courses_model = async (req, res) => {
         is_admin = false
     } else if (req.loggedUser.role != "admin"){
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_courses_v2: unauthorized access');
+        console.log('get_courses_v2: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
@@ -277,7 +277,7 @@ module.exports.get_courses_model = async (req, res) => {
         session_exist = await sessionSchema.read(session_id)
         if(!session_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('resource not found: learning session');
+            console.log('resource not found: learning session ('+new Date()+')');
             return;
         }
     }
@@ -285,7 +285,7 @@ module.exports.get_courses_model = async (req, res) => {
         school_year_exist = await sessionSchema.year_exist(school_year)
         if(!school_year_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('resource not found: school year not defined in learning sessions');
+            console.log('resource not found: school year not defined in learning sessions ('+new Date()+')');
             return;
         }
     }
@@ -309,7 +309,7 @@ module.exports.get_courses_model = async (req, res) => {
         if(school_year_exist!=undefined && session_exist!=undefined){
             if(school_year != session_exist.school_year){
                 res.status(400).json({status: "error", description: "The session and the school year you passed are not in the same school year definition. Please try again."});
-                console.log('get_course_models: school year not equal to session school_year');
+                console.log('get_course_models: school year not equal to session school_year ('+new Date()+')');
                 return;
             }
             models = await courseSchema.get_models(teacher_id, not_confirmed, is_admin, school_year)
@@ -395,12 +395,12 @@ module.exports.add_proposition = async (req, res) => {
         let user_exist = await teacherSchema.read_id(teacher_id)
         if(teacher_id!=req.loggedUser._id || !user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course proposition insertion: unauthorized access');
+            console.log('course proposition insertion: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course proposition insertion: unauthorized access');
+        console.log('course proposition insertion: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.body.course_id;
@@ -422,13 +422,13 @@ module.exports.add_proposition = async (req, res) => {
     let max_students = req.body.max_students;
     if(min_students+6>max_students){
         res.status(400).json({status: "error", description: "Range of possible students too short. Increase it and try again."});
-        console.log('add proposition: range of students too small');
+        console.log('add proposition: range of students too small ('+new Date()+')');
         return;
     }
     let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
     if(!area_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning area');
+        console.log('resource not found: learning area ('+new Date()+')');
         return;
     }
     /*let growth_id_exists = await growthareaSchema.read(growth_id) // Is growth area present in the dataset
@@ -441,7 +441,7 @@ module.exports.add_proposition = async (req, res) => {
     let session_id_exists = await sessionSchema.read(session_id); // Is learning session present in the database
     if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: learning session');
+        console.log('resource not found: learning session ('+new Date()+')');
         return;
     }
     let session_year = session_id_exists.school_year
@@ -451,7 +451,7 @@ module.exports.add_proposition = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('course proposition insertion: tried to add a proposition for a session already started');
+        console.log('course proposition insertion: tried to add a proposition for a session already started ('+new Date()+')');
         return;
     }
     // Add new classes
@@ -480,7 +480,7 @@ module.exports.add_proposition = async (req, res) => {
             same_year = await courseSchema.already_inserted_year(ita_title, eng_title, session_year)
             if(same_year == null){
                 res.status(400).json({status: "error", description: MSG.missing_params, course_exist: false})
-                console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');
+                console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title ('+new Date()+')');
                 return;
             }
         }
@@ -488,7 +488,7 @@ module.exports.add_proposition = async (req, res) => {
         same_year = await courseSchema.already_inserted_year(ita_title, eng_title, session_year)
         if(same_year == null){
             res.status(400).json({status: "error", description: MSG.missing_params, course_exist: false})
-            console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title');
+            console.log('missing required information: new course proposal addition, check if course proposal inserted today with same title ('+new Date()+')');
             return;
         }
     }
@@ -630,7 +630,7 @@ module.exports.add_proposition = async (req, res) => {
                 course_exist = true
             }
             res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
-            console.log('missing required information: new course proposal addition');
+            console.log('missing required information: new course proposal addition ('+new Date()+')');
             return;
         }
         //Get inserted course table for other insertions
@@ -641,7 +641,7 @@ module.exports.add_proposition = async (req, res) => {
         if(!add_assets){
             // If error occurs and the course added is new, delete entry added in course
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, course_exist: class_exist})
-            console.log('missing required information: new course proposal addition. Add assets to course');
+            console.log('missing required information: new course proposal addition. Add assets to course ('+new Date()+')');
             await courseSchema.deleteProposal(course_id);
             return
         }
@@ -653,7 +653,7 @@ module.exports.add_proposition = async (req, res) => {
                 }
                 // If error occurs and the course added is new, delete entry added in course
                 res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, course_exist: class_exist})
-                console.log('missing required information: new course proposal addition. Accessible classes');
+                console.log('missing required information: new course proposal addition. Accessible classes ('+new Date()+')');
                 await courseSchema.deleteProposal(course_id);
                 return
             }
@@ -667,7 +667,7 @@ module.exports.add_proposition = async (req, res) => {
                 }
                 // If error occurs, delete entries in accessible table and entry added in course
                 res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, course_exist: course_exist})
-                console.log('missing required information: new course proposal addition. Teachings');
+                console.log('missing required information: new course proposal addition. Teachings ('+new Date()+')');
                 await opentoSchema.delete(course_id)
                 await courseSchema.deleteProposal(course_id)
                 return 
@@ -680,7 +680,7 @@ module.exports.add_proposition = async (req, res) => {
                     course_exist = true
                 }
                 res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
-                console.log('missing required information: new course proposal addition. Growth area');
+                console.log('missing required information: new course proposal addition. Growth area ('+new Date()+')');
                 await teachingCourseSchema.delete(course_id)
                 await opentoSchema.delete(course_id)
                 await courseSchema.deleteProposal(course_id)
@@ -698,7 +698,7 @@ module.exports.add_proposition = async (req, res) => {
         course_exist = true
         proj_class_exists = true
         res.status(409).json({status: "error", description: MSG.itemAlreadyExists, course_exist: course_exist, proj_class_exists:proj_class_exists})
-        console.log("Duplicate entry for course proposal insertion")
+        console.log('Duplicate entry for course proposal insertion ('+new Date()+')')
         return
     }
     // The teachers in teacher_list exists?
@@ -773,7 +773,7 @@ module.exports.add_proposition = async (req, res) => {
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
-            console.log('missing required information: new course proposal addition. Project class');
+            console.log('missing required information: new course proposal addition. Project class ('+new Date()+')');
             await courseGrowthAreaModel.delete(course_id)
             await teachingCourseSchema.delete(course_id)
             await opentoSchema.delete(course_id)
@@ -784,7 +784,7 @@ module.exports.add_proposition = async (req, res) => {
                 course_exist = true
             }
             res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
-            console.log('missing required information: new course proposal addition. Project class');
+            console.log('missing required information: new course proposal addition. Project class ('+new Date()+')');
             return
         }
     }
@@ -792,7 +792,7 @@ module.exports.add_proposition = async (req, res) => {
     if(!teachers_ins){
         if(!course_exist){
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_teacher: wrong_teacher, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
-            console.log('missing required information: new course proposal addition. Project class');
+            console.log('missing required information: new course proposal addition. Project class ('+new Date()+')');
             await projectclassSchema.delete(course_id, session_id)
             await courseGrowthAreaModel.delete(course_id)
             await teachingCourseSchema.delete(course_id)
@@ -804,7 +804,7 @@ module.exports.add_proposition = async (req, res) => {
                 course_exist = true
                 await projectclassSchema.delete(course_id, session_id)
                 res.status(400).json({status: "error", description: MSG.missing_params, course_exist: course_exist})
-                console.log('missing required information: new course proposal addition. Project teach insertion');
+                console.log('missing required information: new course proposal addition. Project teach insertion ('+new Date()+')');
                 return
             }
         }
@@ -836,12 +836,12 @@ module.exports.approve_proposals = async (req, res) => {
         let user_exist = await adminSchema.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course proposition approval: unauthorized access');
+            console.log('course proposition approval: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course proposition approval: unauthorized access');
+        console.log('course proposition approval: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.query.course_id;
@@ -849,13 +849,13 @@ module.exports.approve_proposals = async (req, res) => {
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('resource not found: course approval course_id');
+        console.log('resource not found: course approval course_id ('+new Date()+')');
         return
     }
     let session_exist = await sessionSchema.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound})
-        console.log('resource not found: session course approval');
+        console.log('resource not found: session course approval ('+new Date()+')');
         return
     }
     let approved = req.query.approved;
@@ -866,12 +866,12 @@ module.exports.approve_proposals = async (req, res) => {
         let class_exist = await projectclassSchema.read(course_id, session_id)
         if(class_exist == null){
             res.status(400).json({status: "error", description: MSG.missing_params})
-            console.log('missing parameters: project class course approval');
+            console.log('missing parameters: project class course approval ('+new Date()+')');
             return
         }
         if(!class_exist){
             res.status(404).json({status: "error", description: MSG.notFound})
-            console.log('resource not found: project class course approval');
+            console.log('resource not found: project class course approval ('+new Date()+')');
             return
         }
     }
@@ -879,7 +879,7 @@ module.exports.approve_proposals = async (req, res) => {
         let course_approval = await courseSchema.approve_proposal(course_id, session_id, admin_id, approved, proj_class)
         if(!course_approval){
             res.status(400).json({status: "error", description: MSG.missing_params})
-            console.log('missing required information: course approval');
+            console.log('missing required information: course approval ('+new Date()+')');
             return
         }
         let proj_class_deleted = !proj_class;
@@ -893,7 +893,7 @@ module.exports.approve_proposals = async (req, res) => {
         let students_in = await projectclassSchema.classComponents(course_id, session_id)
         if(students_in.length>0){
             res.status(400).json({status: "error", description: MSG.courseConfirmed})
-            console.log('The proposition you tried to reject was already been approved')
+            console.log('The proposition you tried to reject was already been approved ('+new Date()+')')
             return
         }
         let course_del = false
@@ -919,25 +919,25 @@ module.exports.delete_course = async (req, res) => {
         let user_exist = await adminSchema.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course proposition approval: unauthorized access');
+            console.log('course proposition approval: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course proposition approval: unauthorized access');
+        console.log('course proposition approval: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course deletion: course does not exists');
+        console.log('course deletion: course does not exists ('+new Date()+')');
         return;
     }
     let sessions = await projectclassSchema.get_sessions(course_id)
     if(!sessions){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course deletion: course does not exists');
+        console.log('course deletion: course does not exists ('+new Date()+')');
         return;
     }
     let project_class_confirmed;
@@ -945,7 +945,7 @@ module.exports.delete_course = async (req, res) => {
         project_class_confirmed = await projectclassSchema.class_confirmed_exists(course_id, sessions[i].learning_session_id)
         if(project_class_confirmed){
             res.status(400).json({status: "error", description: MSG.already_confirmed});
-            console.log('course deletion: project classes already confirmed');
+            console.log('course deletion: project classes already confirmed ('+new Date()+')');
             return;
         }
     }
@@ -966,19 +966,19 @@ module.exports.update_course = async (req, res) => {
         let user_exist = await adminSchema.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course update: unauthorized access');
+            console.log('course update: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course update: unauthorized access');
+        console.log('course update: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await courseSchema.read(course_id, true)
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('course update: course not found');
+        console.log('course update: course not found ('+new Date()+')');
         return;
     }
     let ita_title = req.body.italian_title;
@@ -1008,7 +1008,7 @@ module.exports.update_course = async (req, res) => {
         area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
         if(!area_id_exists){
             res.status(404).json({status: "error", description: MSG.notFound,course_not_updated:course_not_updated});
-            console.log('resource not found: learning area');
+            console.log('resource not found: learning area ('+new Date()+')');
             return;
         }
     }
@@ -1024,7 +1024,7 @@ module.exports.update_course = async (req, res) => {
     if(ita_title!=undefined){
         if(course_exist.italian_title != ita_title){
             res.status(400).json({status: "error", description: MSG.changedUniqueInformation, course_not_updated: course_not_updated});
-            console.log('course update: changed some important information');
+            console.log('course update: changed some important information ('+new Date()+')');
             return;
         }
     }
@@ -1032,7 +1032,7 @@ module.exports.update_course = async (req, res) => {
     let session_id_exists = await sessionSchema.read(session_id); // Is learning session present in the database
     if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound, course_not_updated: course_not_updated});
-        console.log('resource not found: learning session');
+        console.log('resource not found: learning session ('+new Date()+')');
         return;
     }
     let access_object = req.body.access_object;
@@ -1047,7 +1047,7 @@ module.exports.update_course = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date < today){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('course update: the session is a past session. The data of the project class were not updated');
+        console.log('course update: the session is a past session. The data of the project class were not updated ('+new Date()+')');
         return;
     }
     // If session is imminent or current or is the first future session (the one where the students are choosing the courses) you cannot change the class group
@@ -1332,18 +1332,18 @@ module.exports.propositions_export = async (req, res) => {
         let user_exist = await adminSchema.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('course update: unauthorized access');
+            console.log('course update: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('course update: unauthorized access');
+        console.log('course update: unauthorized access ('+new Date()+')');
         return;
     }
     let current_session = await sessionSchema.read_current_session();
     if(!current_session){
         res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
-        console.log('export_propositions: not in a session period')
+        console.log('export_propositions: not in a session period ('+new Date()+')')
         return
     }
     let current_session_id = current_session.id;
@@ -1351,12 +1351,13 @@ module.exports.propositions_export = async (req, res) => {
     let session_id_exists = await sessionSchema.read(future_session_id); // Is learning session present in the database
     if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('resource not found: future learning session');
+        console.log('resource not found: future learning session ('+new Date()+')');
         return;
     }
     if(current_session.school_year!=session_id_exists.school_year){
         res.status(400).json({status: "error", description: "The current learning session is the last one of the school year."})
-        console.log("export_propositions: last session of the school year")
+        console.log('export_propositions: last session of the school year ('+new Date()+')')
+        return;
     }
     let non_confirmed_proj_class = await courseSchema.get_class_models(undefined, true, true, future_session_id);
     let confirmed_courses_without_class = await courseSchema.get_models(undefined, false, true, session_id_exists.school_year);
@@ -1480,17 +1481,17 @@ module.exports.get_courses_for_tutors = async (req, res) => {
         let teacher_esist = await teacherSchema.read_id(teacher_id)
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_for_tutors: unauthorized access');
+            console.log('get_courses_for_tutors: unauthorized access ('+new Date()+')');
             return;
         }  
         if(req.loggedUser._id != teacher_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_for_tutors: unauthorized access');
+            console.log('get_courses_for_tutors: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_courses_for_tutors: unauthorized access');
+        console.log('get_courses_for_tutors: unauthorized access ('+new Date()+')');
         return;
     }
     let area_id = req.query.area_id;
@@ -1498,7 +1499,7 @@ module.exports.get_courses_for_tutors = async (req, res) => {
     let courses = await courseSchema.list_for_teacher(teacher_id, area_id, session_id, context_id);
     if(!courses){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('get_courses_for_tutors: resource not found');
+        console.log('get_courses_for_tutors: resource not found ('+new Date()+')');
         return;
     }
     let data_courses = courses.map((course) => {

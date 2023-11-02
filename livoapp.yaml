@@ -4049,6 +4049,9 @@ components:
         teacher_surname:
           type: string
           description: "Surname of the proposer teacher of the proposition"
+        preferences:
+          type: integer
+          description: Number of students that wanted to attend the course but cannot since it was already full. Visible when the user does not want the recent models.
     annual_credits_ref:
       type: object
       properties:
@@ -4555,6 +4558,13 @@ components:
         to_be_modified:
           type: boolean
           description: Tells if the class is to be modified
+        final_confirmation:
+          type: string
+          format: date
+          description: Date in which the project class was confirmed definetely
+        preferences:
+          type: integer
+          description: Number of students that wanted to attend the course but cannot since it was already full. Visible only by the proposer teacher and by the admin.
     ordinary_class_component_data:
       type: object
       properties:

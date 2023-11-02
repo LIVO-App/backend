@@ -10,6 +10,7 @@ const courseSchema = require('../models/coursesModel')
 const learning_sessionsModel = require('../models/learning_sessionsModel');
 const classesTeacherModel = require('../models/classesTeacherModel');
 const subscribeSchema = require('../models/subscribeModel');
+const subscribeModel = require('../models/subscribeModel');
 
 let MSG = {
     notFound: "Resource not found",
@@ -147,6 +148,22 @@ module.exports.get_class = async (req, res) => {
             id: cl.admin_id
         }
     }
+    let preferences;
+    if(req.loggedUser.role == "teacher"){
+        if(req.loggedUser._id === cl.teacher_id){
+            preferences = 0
+            let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
+            if(pending_students!=false){
+                preferences = pending_students.length;
+            }
+        }
+    } else if (req.loggedUser.role == "admin"){
+        preferences = 0
+        let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
+        if(pending_students!=false){
+            preferences = pending_students.length;
+        }
+    }
     let data_class ={
         course_id: cl.course_id,
         learning_session: cl.learning_session_id,
@@ -161,6 +178,7 @@ module.exports.get_class = async (req, res) => {
         admin_surname: cl.admin_surname,
         to_be_modified: cl.to_be_modified,
         final_confirmation: cl.final_confirmation,
+        preferences: preferences
     }
     let path = "/api/v1/project_classes/"+course_id+"/"+session_id
     let response = {

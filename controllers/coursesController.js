@@ -17,6 +17,7 @@ const studentSchema = require('../models/studentModel');
 const courseteachingModel = require('../models/courseteachingModel');
 const courseGrowthAreaModel = require('../models/courseGrowthAreaModel');
 const growthAreaModel = require('../models/growthAreaModel');
+const subscribeModel = require('../models/subscribeModel');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const nodemailer = require('nodemailer');
 
@@ -256,16 +257,35 @@ module.exports.get_courses_model = async (req, res) => {
     let is_admin = true;
     if (req.loggedUser.role == "teacher"){
         if(teacher_id != undefined){
+            let teacher_esist = await teacherSchema.read_id(teacher_id);
+            if(!teacher_esist){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_models: unauthorized access ('+new Date()+')');
+                return;
+            }
             if(req.loggedUser._id != teacher_id){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
-                console.log('get_courses_v2: unauthorized access ('+new Date()+')');
+                console.log('get_courses_models: unauthorized access ('+new Date()+')');
                 return;
             }
         } else {
+            let teacher_esist = await teacherSchema.read_id(teacher_id);
             teacher_id = req.loggedUser._id
+            if(!teacher_esist){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_models: unauthorized access ('+new Date()+')');
+                return;
+            }
         }
         is_admin = false
-    } else if (req.loggedUser.role != "admin"){
+    } else if (req.loggedUser.role == "admin"){
+        let admin_exist = await adminSchema.read_id(req.loggedUser._id);
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_models: unauthorized access ('+new Date()+')');
+                return;
+        }
+    } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('get_courses_v2: unauthorized access ('+new Date()+')');
         return;
@@ -321,7 +341,16 @@ module.exports.get_courses_model = async (req, res) => {
             models = await courseSchema.get_models(teacher_id, not_confirmed, is_admin)
         }
     }
-    let data_models = models.map((model) => {
+    //console.log(models)
+    let data_models = await Promise.all(models.map(async (model) => {
+        let preferences;
+        if(session_exist!=undefined && (typeof(actual_recent_models)=="boolean" && !actual_recent_models)){
+            preferences = 0
+            let pending_students = await subscribeModel.get_pending_students(model.id, session_id)
+            if(pending_students!=false){
+                preferences = pending_students.length;
+            }
+        }
         let course_ref = {
             path: "/api/v1/courses",
             single: true,
@@ -367,9 +396,10 @@ module.exports.get_courses_model = async (req, res) => {
             admin_surname: model.admin_surname,
             proposer_teacher_ref: proposer_teacher_ref,
             teacher_name: model.teacher_name,
-            teacher_surname: model.teacher_surname
+            teacher_surname: model.teacher_surname,
+            preferences: preferences
         }
-    })
+    }))
     let response = {
         path: "/api/v1/propositions",
         single: true,
@@ -377,6 +407,7 @@ module.exports.get_courses_model = async (req, res) => {
             teacher_id: teacher_id,
             recent_models: recent_models,
             not_confirmed: not_confirmed,
+            school_year: school_year,
             session_id: session_id
         },
         date: new Date(),

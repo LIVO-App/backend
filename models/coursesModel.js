@@ -293,7 +293,6 @@ module.exports = {
                 return rows 
             } 
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -341,7 +340,6 @@ module.exports = {
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -389,7 +387,6 @@ module.exports = {
             conn.release()
             return rows 
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()

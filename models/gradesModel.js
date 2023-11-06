@@ -79,11 +79,8 @@ module.exports = {
             return {
                 rows: rows,
                 grade: {
+                    id: parseInt(rows.insertId.toString()),
                     publication: publication,
-                    grade: parseFloat(grade),
-                    final: final_val,
-                    italian_description: ita_descr,
-                    english_description: eng_descr
                 }
             };
         } catch (err) {

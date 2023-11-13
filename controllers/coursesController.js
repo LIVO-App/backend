@@ -269,8 +269,8 @@ module.exports.get_courses_model = async (req, res) => {
                 return;
             }
         } else {
-            let teacher_esist = await teacherSchema.read_id(teacher_id);
             teacher_id = req.loggedUser._id
+            let teacher_esist = await teacherSchema.read_id(teacher_id);
             if(!teacher_esist){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
                 console.log('get_courses_models: unauthorized access ('+new Date()+')');

@@ -23,6 +23,7 @@ let MSG = {
     student_already_enrolled: "The student is already enrolled to the arrival project class.",
     minStudents: "The class will not have anymore the min number of students required. Please, try again.",
     maxStudents: "Too many students. You can not move the student to the destination class.",
+    classAlreadyStarted: "The class has already started. Cannot remove/move a student",
     classNotAccessible: "The class you want to move the student is not accessible to him or is not accessible for the specific learning context of the original class you want to move him from. Please choose another class.",
     notCredits: "The destination course has not the same number of credits of the start course. The student will not respect anymore the constraints you created. Please, choose another destination course."
 }
@@ -532,6 +533,11 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project class update components: project class needs to be modified ('+new Date()+')');
         return;
     }
+    if(start_project_class_exist.final_confirmation != null){
+        res.status(400).json({status: "error", description: MSG.classAlreadyStarted});
+        console.log('project class remove component: starting project class already started ('+new Date()+')');
+        return;
+    }
     // Check if student is part of start project class
     let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, start_course_id, start_session_id)
     if(!is_student_present){
@@ -578,6 +584,11 @@ module.exports.move_class_component = async (req, res) => {
     if(arrival_project_class_exist.to_be_modified == "true"){
         res.status(400).json({status: "error", description: MSG.classToBeModified});
         console.log('project course update components: project class needs to be modified ('+new Date()+')');
+        return;
+    }
+    if(arrival_project_class_exist.final_confirmation != null){
+        res.status(400).json({status: "error", description: MSG.classAlreadyStarted});
+        console.log('project class remove component: arrival project class already started ('+new Date()+')');
         return;
     }
     // Check if destination project class is accessible to student
@@ -706,4 +717,76 @@ module.exports.add_students = async (req, res) => {
         console.log("File created successfully")
     });
     res.status(201).json({status: "accepted", description: "New student users added", existing_student: existing_student, wrong_student: wrong_student})
+}
+
+module.exports.remove_student = async (req, res) => {
+    let user_id = req.loggedUser._id
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = await adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('project class remove component: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('project class remove component: unauthorized access ('+new Date()+')');
+        return;
+    }
+    let student_id = req.params.student_id
+    let student_esist = await studentModel.read_id(student_id);
+    if(!student_esist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class remove component: student does not exists ('+new Date()+')');
+        return;
+    }
+    let project_class = req.body.project_class
+    let course_id = project_class.course_id;
+    let course_exist = await courseSchema.read(course_id, true);
+    if(!course_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class remove component: course does not exists ('+new Date()+')');
+        return;
+    }
+    let session_id = project_class.session_id;
+    let session_exist = await learning_sessionsModel.read(session_id)
+    if(!session_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class remove component: session does not exists ('+new Date()+')');
+        return;
+    }
+    let project_class_exist = await projectClassesSchema.read(course_id, session_id);
+    if(!project_class_exist){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('project class remove component: project class does not exists ('+new Date()+')');
+        return;
+    }
+    if(project_class_exist.to_be_modified == "true"){
+        res.status(400).json({status: "error", description: MSG.classToBeModified});
+        console.log('project class remove component: project class needs to be modified ('+new Date()+')');
+        return;
+    }
+    if(project_class_exist.final_confirmation != null){
+        res.status(400).json({status: "error", description: MSG.classAlreadyStarted});
+        console.log('project class remove component: project class already started ('+new Date()+')');
+        return;
+    }
+    // Check if student is part of start project class
+    let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, course_id, session_id)
+    if(!is_student_present){
+        res.status(400).json({status: "error", description: MSG.student_not_enrolled});
+        console.log('project class remove component: student is not enrolled to the project class. Abort remove component ('+new Date()+')');
+        return;
+    }
+    let class_section = is_student_present.section
+    let class_context = is_student_present.learning_context_id
+    // Check if the components go under min_students
+    let components = await projectClassesSchema.classComponents(course_id, session_id, class_section)
+    if(components.length==course_exist.min_students){
+        res.status(400).json({status: "error", description: MSG.minStudents});
+        console.log('project course remove component: project class will not have min students required ('+new Date()+')');
+        return;
+    }
+    let unsubscribeStudent = await subscribeModel.remove(student_id, course_id, session_id, class_context);
+    res.status(200).json({status: "accepted", description: "Student removed successfully"})
 }

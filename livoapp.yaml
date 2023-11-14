@@ -184,7 +184,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/path_session_id'
         - $ref: '#/components/parameters/header_token'
-      summary: Delete course
+      summary: Update course
       tags:
         - project classes
         - v1
@@ -3085,7 +3085,7 @@ paths:
             schema:
               $ref: '#/components/schemas/move_class'
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/AcceptUpdate'
         '400':
           $ref: '#/components/responses/BadInputs'
@@ -3094,6 +3094,34 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden' 
         '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/remove_class: 
+    delete:
+      description: Remove the student from a project class he is currently enrolled in.
+      summary: Remove of subscription
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+      requestBody:
+        description: Project class information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/project_class_remove_student'
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
           $ref: '#/components/responses/NotFound'
   /v1/study_addresses:
     get:
@@ -5192,6 +5220,18 @@ components:
               type: string
               description: "Section of the project class where you want to move the student to"
           description: "Information of the project class you want to move the student from"
+    project_class_remove_student:
+      type: object
+      properties:  
+        project_class:
+          type: object
+          properties:
+            course_id:
+              type: integer
+              description: "Id of the course of the project class from where you want to remove the student from"
+            session_id:
+              type: integer
+              description: "Id of the session of the project class from where you want to remove the student from"
     course_update_data:
       type: object
       required:

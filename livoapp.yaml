@@ -3105,13 +3105,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_student_id'
-      requestBody:
-        description: Project class information
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/project_class_remove_student'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
       responses:
         '200':
           $ref: '#/components/responses/AcceptDelete'
@@ -5220,18 +5215,6 @@ components:
               type: string
               description: "Section of the project class where you want to move the student to"
           description: "Information of the project class you want to move the student from"
-    project_class_remove_student:
-      type: object
-      properties:  
-        project_class:
-          type: object
-          properties:
-            course_id:
-              type: integer
-              description: "Id of the course of the project class from where you want to remove the student from"
-            session_id:
-              type: integer
-              description: "Id of the session of the project class from where you want to remove the student from"
     course_update_data:
       type: object
       required:

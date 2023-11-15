@@ -11,7 +11,8 @@ const opentoSchema = require('../models/opentoModel');
 const crypto = require('../utils/cipher');
 const constraintModel = require('../models/constraintModel');
 const subscribeModel = require('../models/subscribeModel');
-const fs = require('fs')
+const fs = require('fs');
+const { response } = require('express');
 
 let MSG = {
     notFound: "Resource not found",
@@ -618,6 +619,57 @@ module.exports.move_class_component = async (req, res) => {
         return;
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
+    let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
+    if(!pending_students){
+        response["pending"] = MSG.missingParameters
+        res.status(200).json(response)
+        console.log('missing required information on class for pending students ('+new Date()+')');
+        return;
+    }
+    if(pending_students.length > 0){
+        for(let row in pending_students){
+            let pending_student_id = pending_students[row].student_id;
+            let pending_context_id = pending_students[row].learning_context_id;
+            let cour = await courseSchema.read_learning_area(course_id);
+            if(!cour){
+                continue
+            }
+            let isMax = await studentModel.retrieve_credits(pending_student_id, session_id, cour.learning_area_id, pending_context_id);
+            if(!isMax){
+                continue
+            }
+            if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
+                continue
+            }
+            let notSameGroup = await subscribeModel.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
+            if(!notSameGroup){
+                continue
+            }
+            let pending_section = await subscribeModel.getAvailableSection(course_id, session_id);
+            if(pending_section == null){
+                continue
+            }
+            if(pending_section === ""){
+                continue // It is still in pending for some reason
+            }
+            let remove_pending = await subscribeModel.remove_pending(pending_student_id, course_id, session_id, pending_section)
+            let new_student_data = await studentModel.read_id(pending_student_id)
+            let new_student_ord_class = await ordinaryclassSchema.students_classes(pending_student_id, session_exist.school_year)
+            let learning_context_ref = {
+                path: "/api/v1/learning_contexts", 
+                single: true, 
+                query: {},
+                data: {
+                    id: pending_context_id
+                }
+            }
+            response["previous_pending"] = {id: pending_student_id, name: new_student_data.name, surname: new_student_data.surname, learning_context_ref: learning_context_ref, ord_class_study_year: new_student_ord_class.ordinary_class_study_year, ord_class_address: new_student_ord_class.ordinary_class_address, ord_class_section: new_student_ord_class.section}
+            console.log('A student was removed from pending ('+new Date()+')')
+            break
+        }
+    } else {
+        console.log("No pending students")
+    }
     let subscribeStudent = await subscribeModel.add(student_id, arrival_course_id, arrival_session_id, arrival_class_section, start_class_context);
     if(!subscribeStudent){
         res.status(400).json({status: "error", description: MSG.missingParameters});
@@ -787,5 +839,56 @@ module.exports.remove_student = async (req, res) => {
         return;
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, course_id, session_id, class_context);
+    let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
+    if(!pending_students){
+        response["pending"] = MSG.missingParameters
+        res.status(200).json(response)
+        console.log('missing required information on class for pending students ('+new Date()+')');
+        return;
+    }
+    if(pending_students.length > 0){
+        for(let row in pending_students){
+            let pending_student_id = pending_students[row].student_id;
+            let pending_context_id = pending_students[row].learning_context_id;
+            let cour = await courseSchema.read_learning_area(course_id);
+            if(!cour){
+                continue
+            }
+            let isMax = await studentModel.retrieve_credits(pending_student_id, session_id, cour.learning_area_id, pending_context_id);
+            if(!isMax){
+                continue
+            }
+            if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
+                continue
+            }
+            let notSameGroup = await subscribeModel.not_same_group(course_id, session_id, pending_student_id, cour.learning_area_id, pending_context_id);
+            if(!notSameGroup){
+                continue
+            }
+            let pending_section = await subscribeModel.getAvailableSection(course_id, session_id);
+            if(pending_section == null){
+                continue
+            }
+            if(pending_section === ""){
+                continue // It is still in pending for some reason
+            }
+            let remove_pending = await subscribeModel.remove_pending(pending_student_id, course_id, session_id, pending_section)
+            let new_student_data = await studentModel.read_id(pending_student_id)
+            let new_student_ord_class = await ordinaryclassSchema.students_classes(pending_student_id, session_exist.school_year)
+            let learning_context_ref = {
+                path: "/api/v1/learning_contexts", 
+                single: true, 
+                query: {},
+                data: {
+                    id: pending_context_id
+                }
+            }
+            response["previous_pending"] = {id: pending_student_id, name: new_student_data.name, surname: new_student_data.surname, learning_context_ref: learning_context_ref, ord_class_study_year: new_student_ord_class.ordinary_class_study_year, ord_class_address: new_student_ord_class.ordinary_class_address, ord_class_section: new_student_ord_class.section}
+            console.log('A student was removed from pending ('+new Date()+')')
+            break
+        }
+    } else {
+        console.log("No pending students")
+    }
     res.status(200).json({status: "accepted", description: "Student removed successfully"})
 }

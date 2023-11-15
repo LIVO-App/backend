@@ -12,7 +12,6 @@ const crypto = require('../utils/cipher');
 const constraintModel = require('../models/constraintModel');
 const subscribeModel = require('../models/subscribeModel');
 const fs = require('fs');
-const { response } = require('express');
 
 let MSG = {
     notFound: "Resource not found",

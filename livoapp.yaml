@@ -3086,7 +3086,7 @@ paths:
               $ref: '#/components/schemas/move_class'
       responses:
         '201':
-          $ref: '#/components/responses/AcceptUpdate'
+          $ref: '#/components/responses/MoveStudents'
         '400':
           $ref: '#/components/responses/BadInputs'
         '401':
@@ -3109,7 +3109,7 @@ paths:
         - $ref: '#/components/parameters/query_session_id'
       responses:
         '200':
-          $ref: '#/components/responses/AcceptDelete'
+          $ref: '#/components/responses/MoveStudents'
         '400':
           $ref: '#/components/responses/BadInputs'
         '401':
@@ -3744,6 +3744,21 @@ components:
                 description: "List of student_ids which very not inserted because of an error in the actual insert. They must be communicated to the teacher"
                 items:
                   type: integer
+    MoveStudents:
+      description: Response for move and remove student from project class
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              pending:
+                type: string
+              previous_pending:
+                $ref: '#/components/schemas/project_class_single_component_data'
   schemas:
     learning_session_data:
       type: object

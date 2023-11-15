@@ -619,6 +619,7 @@ module.exports.move_class_component = async (req, res) => {
         return;
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, start_course_id, start_session_id, start_class_context);
+    let response = {status: "accepted", description: "Student moved successfully"}
     let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
     if(!pending_students){
         response["pending"] = MSG.missingParameters
@@ -676,7 +677,7 @@ module.exports.move_class_component = async (req, res) => {
         console.log('project class update components: missing parameters. Subscribe to destination ('+new Date()+')')
         return
     }
-    res.status(201).json({status: "accepted", description: "Student moved successfully"})
+    res.status(201).json(response)
 }
 
 module.exports.add_students = async (req, res) => {
@@ -839,6 +840,10 @@ module.exports.remove_student = async (req, res) => {
         return;
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, course_id, session_id, class_context);
+    let response = {
+        status: "accepted",
+        description: "Student removed successfully"
+    }
     let pending_students = await subscribeModel.get_pending_students(course_id, session_id)
     if(!pending_students){
         response["pending"] = MSG.missingParameters
@@ -890,5 +895,5 @@ module.exports.remove_student = async (req, res) => {
     } else {
         console.log("No pending students")
     }
-    res.status(200).json({status: "accepted", description: "Student removed successfully"})
+    res.status(200).json(response)
 }

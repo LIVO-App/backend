@@ -740,15 +740,14 @@ module.exports.remove_student = async (req, res) => {
         console.log('project class remove component: student does not exists ('+new Date()+')');
         return;
     }
-    let project_class = req.body.project_class
-    let course_id = project_class.course_id;
+    let course_id = req.query.course_id;
     let course_exist = await courseSchema.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('project class remove component: course does not exists ('+new Date()+')');
         return;
     }
-    let session_id = project_class.session_id;
+    let session_id = req.query.session_id;
     let session_exist = await learning_sessionsModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});

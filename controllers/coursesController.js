@@ -1029,7 +1029,7 @@ module.exports.update_course = async (req, res) => {
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
     let course_not_updated;
-    if(context_exist.admin_confirmation!=undefined){
+    if(course_exist.admin_confirmation!=undefined){
         if(eng_title==undefined && eng_descr==undefined && eng_exp_l==undefined && eng_cri == undefined && eng_act==undefined){
             course_not_updated = true
         }

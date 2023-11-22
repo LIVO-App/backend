@@ -299,5 +299,19 @@ module.exports = {
         } finally {
             conn.release()
         }
+    },
+    async list_with_class(school_year){
+        try{
+            conn = await pool.getConnection();
+            sql = `SELECT s.id, s.name, s.surname, att.ordinary_class_study_year, att.ordinary_class_address FROM student AS s JOIN attend AS att ON att.student_id = s.id WHERE att.ordinary_class_school_year = ? ORDER BY att.ordinary_class_address, att.ordinary_class_study_year, s.surname`;
+            let values = [school_year]
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log("Something went wrong: list student with class");
+        } finally {
+            conn.release();
+        }
     }
 };

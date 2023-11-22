@@ -2619,6 +2619,26 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/subscriptions/export:
+    get:
+      description: Creates a .csv file with all students and their subscriptions for the next learning session. The csv file will be send via email at the end of the creation.
+      summary: Subscriptions export
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      responses:
+        '200':
+          $ref: '#/components/responses/DataExported'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/propositions/approval:
     put:
       description: Confirmation of course proposals. If the approved parameter is true, it will approve the course. If it is false, it will delete the project class from the database. If the course of reference has no other classes, it will delete the course completely.

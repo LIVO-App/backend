@@ -4,7 +4,21 @@ const subscribe_schema = require('../models/subscribeModel');
 const studentModel = require('../models/studentModel');
 const pcModel = require('../models/projectClassModel');
 const courseSchema = require('../models/coursesModel');
-const sessionSchema = require('../models/learning_sessionsModel')
+const sessionSchema = require('../models/learning_sessionsModel');
+const adminSchema = require('../models/adminModel');
+const constraintModel = require('../models/constraintModel');
+const subscribeModel = require('../models/subscribeModel');
+let converter = require('json-2-csv');
+const nodemailer = require('nodemailer');
+const projectClassModel = require('../models/projectClassModel');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+      pass: process.env.GOOGLE_APP_PSW
+    }
+  });
 
 let MSG = {
     notFound: "Resource not found",
@@ -399,6 +413,116 @@ module.exports.subscription_confirmation = async (req, res) => {
         console.log('Student is enrolled definetely. ('+new Date()+')')
         return
     }
+}
+
+module.exports.subscription_export = async (req, res) => {
+    if(req.loggedUser.role==="admin"){
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('subscription export: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('subscription export: unauthorized access ('+new Date()+')');
+        return;
+    }
+    let current_session = await sessionSchema.read_current_session();
+    if(!current_session){
+        res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
+        console.log('export_propositions: not in a session period ('+new Date()+')')
+        return
+    }
+    let current_session_id = current_session.id;
+    let future_session_id = current_session_id+1;
+    let session_id_exists = await sessionSchema.read(future_session_id); // Is learning session present in the database
+    if(!session_id_exists){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('resource not found: future learning session ('+new Date()+')');
+        return;
+    }
+    if(current_session.school_year!=session_id_exists.school_year){
+        res.status(400).json({status: "error", description: "The current learning session is the last one of the school year."})
+        console.log('export_propositions: last session of the school year ('+new Date()+')')
+        return;
+    }
+    // Get all students in school_year of the next session with their ordinary class
+    let student_list = await studentModel.list_with_class(session_id_exists.school_year);
+    let csv_data = []
+    // Write csv
+    // For each student, get its constraints and then fill the csv file
+    let nome_studente, cognome_studente, titolo_italiano, gruppo, area_di_apprendimento, contesto_di_apprendimento
+    for(let i in student_list){ 
+        let student_id = student_list[i].id
+        nome_studente = student_list[i].name
+        cognome_studente = student_list[i].surname
+        let classe_ordinaria = student_list[i].ordinary_class_study_year + ' ' + student_list[i].ordinary_class_address
+        let get_constraints
+        //let student_subscriptions = await studentModel.retrieve_project_classes(student_id, future_session_id)
+        get_constraints = await constraintModel.get_constraints(future_session_id, undefined, undefined, undefined, student_list[i].ordinary_class_study_year, student_list[i].ordinary_class_address)
+        //let constraints_list = []
+        for(let constraint in get_constraints){
+            contesto_di_apprendimento = get_constraints[constraint].learning_context_id;
+            let credits = get_constraints[constraint].credits;
+            area_di_apprendimento = get_constraints[constraint].learning_area_id != null ? get_constraints[constraint].learning_area_id : "";
+            //constraints_list.push({context_id: context_id, learning_area_id: learning_area_id, max_credits: max_credits})
+            let check_subs = await subscribeModel.check_subscription(student_id, future_session_id, contesto_di_apprendimento, area_di_apprendimento)
+            //console.log(check_subs)
+            if(check_subs.length>0){
+                for(let j in check_subs){
+                    let course_credits = check_subs[j].credits
+                    titolo_italiano = check_subs[j].italian_title
+                    let class_related = await projectClassModel.read(check_subs[j].project_class_course_id, future_session_id)
+                    gruppo = class_related.group
+                    let csv_row = {
+                        id_studente: student_id,
+                        nome: nome_studente,
+                        cognome: cognome_studente,
+                        classe_ordinaria: classe_ordinaria,
+                        titolo_italiano: titolo_italiano,
+                        gruppo: gruppo,
+                        area_di_apprendimento: area_di_apprendimento,
+                        contesto_di_apprendimento: contesto_di_apprendimento,
+                        crediti: course_credits
+                    }
+                    csv_data.push(csv_row)
+                    credits = credits - course_credits
+                }
+            }
+            if (credits > 0){
+                let csv_row = {
+                    id_studente: student_id,
+                    nome: nome_studente,
+                    cognome: cognome_studente,
+                    classe_ordinaria: classe_ordinaria,
+                    titolo_italiano: '',
+                    gruppo: '',
+                    area_di_apprendimento: area_di_apprendimento,
+                    contesto_di_apprendimento: contesto_di_apprendimento,
+                    crediti: credits
+                }
+                csv_data.push(csv_row)
+            }
+        }
+    }
+    const csv = await converter.json2csv(csv_data);
+    let mailOptions = {
+        from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+        to: 'pietro.fronza@studenti.unitn.it',
+        subject: "Iscrizioni da controllare",
+        text: "Ciao Claudio,\nIn allegato trovi il file csv con tutti gli studenti e i vari corsi a cui si sono iscritti.",
+        attachments: [{filename: 'subscriptions.csv', content: csv,}]
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+    res.status(200).json({status: 'success', description: 'Data exported'})
 }
 /*subscribe_schema.isClassFull(3,7)
     .then((msg) => {

@@ -18,8 +18,8 @@ const courseteachingModel = require('../models/courseteachingModel');
 const courseGrowthAreaModel = require('../models/courseGrowthAreaModel');
 const growthAreaModel = require('../models/growthAreaModel');
 const subscribeModel = require('../models/subscribeModel');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const nodemailer = require('nodemailer');
+let converter = require('json-2-csv');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -28,23 +28,6 @@ const transporter = nodemailer.createTransport({
       pass: process.env.GOOGLE_APP_PSW
     }
   });
-
-const csvWriter = createCsvWriter({
-    path: process.env.PROPOSITIONS_CSV_PATH,
-    header: [
-        {id: 'titolo_italiano', title: 'titolo_italiano'},
-        {id: 'titolo_inglese', title: 'titolo_inglese'},
-        {id: 'sessione_di_apprendimento', title: 'sessione_di_apprendimento'},
-        {id: 'gruppo', title: 'gruppo'},
-        {id: 'insegnante_proposto', title: 'insegnante_proposto'},
-        {id: 'area_di_apprendimento', title: 'area_di_apprendimento'},
-        {id: 'crediti', title: 'crediti'},
-        {id: 'min_studenti', title: 'min_studenti'},
-        {id: 'max_studenti', title: 'max_studenti'},
-        {id: 'contesto_specifico', title: 'contesto_specifico'},
-        {id: 'contesto_personale', title: 'contesto_personale'}
-    ]
-});
 
 let MSG = {
     notFound: "Resource not found",
@@ -1482,22 +1465,20 @@ module.exports.propositions_export = async (req, res) => {
         }
         csv_data.push(csv_row)
     }
-    csvWriter.writeRecords(csv_data)       // returns a promise
-    .then(() => {
-        let mailOptions = {
-            from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
-            to: 'pietro.fronza@studenti.unitn.it',
-            subject: "Corsi da approvare",
-            text: "Ciao Claudio,\nIn allegato trovi il file csv con i corsi che dobbiamo approvare per la prossima sessione.",
-            attachments: [{filename: 'propositions.csv', path: process.env.PROPOSITIONS_CSV_PATH,}]
-        };
-        transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-                console.log(error);
-            } else {
-                console.log('Email sent: ' + info.response);
-            }
-        });
+    const csv = await converter.json2csv(csv_data);
+    let mailOptions = {
+        from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
+        to: 'pietro.fronza@studenti.unitn.it',
+        subject: "Corsi da approvare",
+        text: "Ciao Claudio,\nIn allegato trovi il file csv con i corsi che dobbiamo approvare per la prossima sessione.",
+        attachments: [{filename: 'propositions.csv', content: csv,}]
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
     });
     res.status(200).json({status: 'success', description: 'Data exported'})
 }

@@ -434,11 +434,6 @@ module.exports.add_proposition = async (req, res) => {
     let growth_list = req.body.growth_list; //Its an array like teaching_list
     let min_students = req.body.min_students;
     let max_students = req.body.max_students;
-    if(min_students+6>max_students){
-        res.status(400).json({status: "error", description: "Range of possible students too short. Increase it and try again."});
-        console.log('add proposition: range of students too small ('+new Date()+')');
-        return;
-    }
     let area_id_exists = await areaSchema.read(area_id); // Is learning area present in the database
     if(!area_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -511,6 +506,13 @@ module.exports.add_proposition = async (req, res) => {
         course_id = course_exist
     } else {
         course_id = 0
+    }
+    if(course_id==0 || course_id == undefined){
+        if(min_students+4>max_students){
+            res.status(400).json({status: "error", description: "Range of possible students too short. Increase it and try again."});
+            console.log('add proposition: range of students too small ('+new Date()+')');
+            return;
+        }
     }
     //console.log(course_id)
     // Let's now check if there is any new value in the other objects. If there are new ordinary classes or contexts or new teachings, add new course

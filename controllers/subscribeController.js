@@ -146,7 +146,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('subscription: session does not exist ('+new Date()+')');
         return;
     }
-    if(session_exist.open_day>new Date()){
+    if(new Date(session_exist.open_day)>new Date()){
         res.status(400).json({status: "error", description: "The orientation day date is not already passed. You cannot subscribe to the course."})
         console.log('orientation day not passed ('+new Date()+')');
         return;

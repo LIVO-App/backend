@@ -109,6 +109,13 @@ module.exports.get_courses_v2 = async (req, res) => {
             console.log('get_courses_v2: unauthorized access ('+new Date()+')');
             return;
         }
+    } else if (req.loggedUser.role == "admin"){
+        let admin_exist = await adminSchema.read_id(req.loggedUser._id);
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_courses_models: unauthorized access ('+new Date()+')');
+                return;
+        }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('get_courses_v2: unauthorized access ('+new Date()+')');

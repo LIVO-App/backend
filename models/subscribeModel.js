@@ -216,7 +216,7 @@ module.exports = {
     async check_subscription(student_id, session_id, context_id, area_id){
         try {
             conn = await pool.getConnection()
-            if(student_id == undefined || session_id==undefined || !context_id || !area_id){
+            if(student_id == undefined || session_id==undefined || !context_id){
                 conn.release()
                 return false
             }

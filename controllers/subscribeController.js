@@ -508,12 +508,14 @@ module.exports.subscription_export = async (req, res) => {
         }
     }
     const csv = await converter.json2csv(csv_data);
+    let _filename = 'subscriptions'+new Date().toLocaleDateString('en-GB')+'.csv'
+    let filename = _filename.replace(/[/]/g,"")
     let mailOptions = {
         from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
         to: 'pietro.fronza@studenti.unitn.it',
         subject: "Iscrizioni da controllare",
         text: "Ciao Claudio,\nIn allegato trovi il file csv con tutti gli studenti e i vari corsi a cui si sono iscritti.",
-        attachments: [{filename: 'subscriptions.csv', content: csv,}]
+        attachments: [{filename: filename, content: csv,}]
     };
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {

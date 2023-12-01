@@ -613,12 +613,7 @@ module.exports.move_class_component = async (req, res) => {
             }
         }
     } else {
-        console.log("HI")
-        console.log(arrival_course_exist.learning_area_id)
-        console.log(is_class_accessible)
-        
         let notSameGroup = await subscribeModel.not_same_group(arrival_course_id, arrival_session_id, student_id, arrival_course_exist.learning_area_id, is_class_accessible);
-        console.log(notSameGroup)
         if(!notSameGroup){
             res.status(400).json({status: "error", description: MSG.classNotAccessible});
             console.log('project class update components: the student is already subscribe to a course of the same group in the destination class ('+new Date()+')')

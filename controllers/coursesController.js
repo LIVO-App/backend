@@ -147,7 +147,8 @@ module.exports.get_courses_v2 = async (req, res) => {
             learning_area_ref: learning_area_ref,
             group: course.group,
             pending: course.subscribed,
-            section: course.section
+            section: course.section,
+            final_confirmation: course.final_confirmation,
         };
     });
     let response = {

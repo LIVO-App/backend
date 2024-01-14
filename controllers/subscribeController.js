@@ -133,6 +133,14 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
             console.log('subscribe: unauthorized access ('+new Date()+')');
             return;
         }
+    } else if (req.loggedUser.role == "admin") {
+        let admin_id = req.loggedUser._id
+        let user_exist = await adminSchema.read_id(admin_id)
+        if(!user_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('subscription export: unauthorized access ('+new Date()+')');
+            return;
+        }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('subscribe: unauthorized access ('+new Date()+')');

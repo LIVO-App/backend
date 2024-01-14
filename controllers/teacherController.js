@@ -751,3 +751,45 @@ module.exports.get_tutor_classes = async (req, res) => {
     }
     res.status(200).json(response);
 }
+
+module.exports.get_tutor_years = async (req, res) => {
+    let teacher_id = req.params.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if(req.loggedUser._id != teacher_id){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('teacher tutor years: not authorized ('+new Date()+')');
+            return; 
+        }
+        let existingTeacher = await teacherSchema.read_id(teacher_id);
+        if(!existingTeacher){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('teacher tutor years: not authorized ('+new Date()+')');
+            return; 
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('teacher tutor years: not authorized ('+new Date()+')');
+        return;
+    }
+    let cls = await teacherSchema.getTutorYears(teacher_id);
+    if(cls == null){
+        res.status(400).json({status: "error", description: MSG.missingParameter});
+        console.log('teacher tutor years: missing parameters ('+new Date()+')');
+        return;
+    }
+    if(!cls){
+        res.status(404).json({status: "error", description: "You are not a tutor in any classes."});
+        console.log('teacher tutor years: teacher is not a tutor in any classes ('+new Date()+')');
+        return;
+    }
+    let data_classes = cls.map((cl) => cl.ordinary_class_school_year);
+    let path = "/api/v1/teachers/"+teacher_id+"/tutor_years";
+    let response = {
+        path: path,
+        single: false,
+        query: {},
+        date: new Date(),
+        data: data_classes
+    }
+    res.status(200).json(response);
+}

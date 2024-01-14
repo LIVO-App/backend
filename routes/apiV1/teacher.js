@@ -19,6 +19,8 @@ router.get('/:teacher_id/tutor_classes', tokenChecker);
 router.get('/:teacher_id/tutor_classes', teacherHandler.get_tutor_classes);
 router.get('/:teacher_id/tutor_courses', tokenChecker);
 router.get('/:teacher_id/tutor_courses', courseHandler.get_courses_for_tutors);
+router.get('/:teacher_id/tutor_years', tokenChecker);
+router.get('/:teacher_id/tutor_years', teacherHandler.get_tutor_years);
 router.get('/:teacher_id/active_years', teacherHandler.get_active_years);
 router.put('/:teacher_id', tokenChecker);
 router.put('/:teacher_id', teacherHandler.update_info);

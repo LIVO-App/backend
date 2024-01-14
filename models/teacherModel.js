@@ -282,5 +282,26 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async getTutorYears(teacher_id) {
+        try{
+            conn = await pool.getConnection();
+            if(teacher_id == undefined){
+                conn.release();
+                return null;
+            }
+            let sql = `SELECT DISTINCT ot.ordinary_class_school_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.tutor = 1`;
+            const rows = await conn.query(sql, [teacher_id]);
+            conn.release();
+            if(rows.length>=1){
+                return rows;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log("Something went wrong: ordinary classes teacher tutor");
+        } finally {
+            conn.release();
+        }
     }
 };

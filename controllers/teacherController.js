@@ -782,7 +782,11 @@ module.exports.get_tutor_years = async (req, res) => {
         console.log('teacher tutor years: teacher is not a tutor in any classes ('+new Date()+')');
         return;
     }
-    let data_classes = cls.map((cl) => cl.ordinary_class_school_year);
+    let data_classes = cls.map((cl) => {
+        return {
+            school_year:  cl.ordinary_class_school_year
+        }
+    });
     let path = "/api/v1/teachers/"+teacher_id+"/tutor_years";
     let response = {
         path: path,

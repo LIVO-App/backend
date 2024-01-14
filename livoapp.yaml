@@ -3334,6 +3334,48 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/{teacher_id}/tutor_years:
+    get:
+      description: Get list of years in which the teacher was a tutor for at least an ordinary class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - teachers
+        - v1
+      summary: Get list of teacher's tutor school years
+      responses:
+        '200':
+          description: "List of school years in which the teacher was a tutor for an ordinary class"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/tutor_school_years'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -5576,6 +5618,12 @@ components:
           type: string
           format: date
           description: "Publication date of the grade"
+    tutor_school_years:
+      type: object
+      properties:
+        school_year:
+          type: integer
+          description: "Starting year of the school year in which the teacher was a tutor for at least one ordinary class. E.g., for the school year 2023/2024, school_year will have the value 2023."
   parameters:
     query_school_year:
       name: school_year

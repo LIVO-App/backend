@@ -1,6 +1,7 @@
 'use strict';
 
 const constraintSchema = require('../models/constraintModel');
+const studentSchema = require('../models/studentModel');
 const adminSchema = require('../models/adminModel');
 const learning_sessionsModel = require('../models/learning_sessionsModel');
 const learning_areaModel = require('../models/learning_areaModel');
@@ -20,7 +21,15 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_constraints = async (req, res) => {
-    if(req.loggedUser.role == "admin"){
+    if (req.loggedUser.role == "student") {
+        let user_id = req.loggedUser._id
+        let user_exist = await studentSchema.read_id(user_id)
+        if (!user_exist) {
+            res.status(401).json({ status: "error", description: MSG.notAuthorized });
+            console.log('get constraints: unauthorized access (' + new Date() + ')');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
         let user_id = req.loggedUser._id
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){

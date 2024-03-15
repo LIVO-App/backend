@@ -284,7 +284,7 @@ module.exports = {
                 sql += ` AND c.creation_school_year = ?`
                 values.push(school_year)
             }
-            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
+            sql += ` ORDER BY c.italian_title ASC, c.creation_school_year DESC`
             const rows = await conn.query(sql, values)
             conn.release()
             if (typeof(recent_models) == "number"){
@@ -335,7 +335,7 @@ module.exports = {
                 sql += ` AND c.creation_school_year = ?`
                 values.push(school_year)
             }
-            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
+            sql += ` ORDER BY c.italian_title ASC, c.creation_school_year DESC`
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
@@ -381,8 +381,7 @@ module.exports = {
                 sql += ` WHERE pc.learning_session_id = ?`
                 values.push(session_id)
             }
-            sql += ` ORDER BY pc.learning_session_id ASC, c.id ASC, c.creation_school_year DESC`
-            //console.log(sql);
+            sql += ` ORDER BY pc.learning_session_id ASC, c.italian_title ASC, c.creation_school_year DESC`
             const rows = await conn.query(sql, values)
             conn.release()
             return rows 

@@ -173,23 +173,24 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         res.status(400).json({status: "error", description: MSG.missing_params})
         console.log('missing required information: existing subscription ('+new Date()+')');
         return;
-    }
-    if (subscriptionExists.project_class_session == session_id) {
-        res.status(409).send({
-            status: "error", 
-            description: MSG.itemAlreadyExistsActual,
-            specified_session: true,
-        });
-        console.log('record already exists: student already subscribed ('+new Date()+')');
-        return;
-    } else {
-        res.status(409).send({
-            status: "error", 
-            description: MSG.itemAlreadyExistsPrevious,
-            specified_session: false,
-        });
-        console.log('record already exists: student subscribed in another session ('+new Date()+')');
-        return;
+    } else if (subscriptionExists !== false) {
+        if (subscriptionExists.project_class_session == session_id) {
+            res.status(409).send({
+                status: "error", 
+                description: MSG.itemAlreadyExistsActual,
+                specified_session: true,
+            });
+            console.log('record already exists: student already subscribed ('+new Date()+')');
+            return;
+        } else {
+            res.status(409).send({
+                status: "error", 
+                description: MSG.itemAlreadyExistsPrevious,
+                specified_session: false,
+            });
+            console.log('record already exists: student subscribed in another session ('+new Date()+')');
+            return;
+        }
     }
     let cour = await courseSchema.read_learning_area(course_id);
     if(!cour){

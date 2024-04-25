@@ -145,7 +145,7 @@ module.exports = {
             rows = await conn.query(sql, values);
             conn.release();
             if(rows.length >= 1){
-                return rows[0];
+                return rows.reduce((max, row) => max.project_class_session > row.project_class_session ? max : row);
             } else {
                 return false;
             }

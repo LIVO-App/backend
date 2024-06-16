@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const projectClassesSchema = require('../models/projectClassModel');
 const courseAnnouncementSchema = require('../models/courseAnnouncementModel');
 const studentModel = require('../models/studentModel');
@@ -65,18 +66,24 @@ module.exports.get_classes = async (req, res) => {
                 id: cl.admin_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let teacher_name = htmlentitiesenc.encode(cl.teacher_name, {mode: 'nonAsciiPrintable'})
+        let teacher_surname = htmlentitiesenc.encode(cl.teacher_surname, {mode: 'nonAsciiPrintable'})
+        let admin_name = htmlentitiesenc.encode(cl.admin_name, {mode: 'nonAsciiPrintable'})
+        let admin_surname = htmlentitiesenc.encode(cl.admin_surname, {mode: 'nonAsciiPrintable'})
         return {
             course_id: cl.course_id,
             learning_session: cl.learning_session_id,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
+            italian_title: italian_title,
+            english_title: english_title,
             group: cl.group,
             teacher_ref: teacher_ref,
-            teacher_name: cl.teacher_name,
-            teacher_surname: cl.teacher_surname,
+            teacher_name: teacher_name,
+            teacher_surname: teacher_surname,
             admin_ref: admin_ref,
-            admin_name: cl.admin_name,
-            admin_surname: cl.admin_surname,
+            admin_name: admin_name,
+            admin_surname: admin_surname,
             to_be_modified: cl.to_be_modified,
             final_confirmation: cl.final_confirmation,
         }
@@ -164,18 +171,24 @@ module.exports.get_class = async (req, res) => {
             preferences = pending_students.length;
         }
     }
+    let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let teacher_name = htmlentitiesenc.encode(cl.teacher_name, {mode: 'nonAsciiPrintable'})
+        let teacher_surname = htmlentitiesenc.encode(cl.teacher_surname, {mode: 'nonAsciiPrintable'})
+        let admin_name = htmlentitiesenc.encode(cl.admin_name, {mode: 'nonAsciiPrintable'})
+        let admin_surname = htmlentitiesenc.encode(cl.admin_surname, {mode: 'nonAsciiPrintable'})
     let data_class ={
         course_id: cl.course_id,
         learning_session: cl.learning_session_id,
-        italian_title: cl.italian_title,
-        english_title: cl.english_title,
+        italian_title: italian_title,
+        english_title: english_title,
         group: cl.group,
         teacher_ref: teacher_ref,
-        teacher_name: cl.teacher_name,
-        teacher_surname: cl.teacher_surname,
+        teacher_name: teacher_name,
+        teacher_surname: teacher_surname,
         admin_ref: admin_ref,
-        admin_name: cl.admin_name,
-        admin_surname: cl.admin_surname,
+        admin_name: admin_name,
+        admin_surname: admin_surname,
         to_be_modified: cl.to_be_modified,
         final_confirmation: cl.final_confirmation,
         preferences: preferences
@@ -254,10 +267,12 @@ module.exports.get_project_class_components = async (req, res) => {
                 id: cmp.learning_context_id
             }
         }
+        let name = htmlentitiesenc.encode(cmp.name, {mode: 'nonAsciiPrintable'})
+        let surname = htmlentitiesenc.encode(cmp.surname, {mode: 'nonAsciiPrintable'})
         return {
             id: cmp.id,
-            name: cmp.name,
-            surname: cmp.surname,
+            name: name,
+            surname: surname,
             learning_context_ref: learning_context_ref,
             ord_class_study_year: cmp.ordinary_class_study_year,
             ord_class_address: cmp.ordinary_class_address,
@@ -298,8 +313,9 @@ module.exports.get_project_class_sections = async (req,res) => {
         return;
     }
     let data_sections = sections.map((section) => {
+        let sec = htmlentitiesenc.encode(section.section, {mode: 'nonAsciiPrintable'})
         return {
-            section: section.section
+            section: sec
         }
     })
     let path = "/api/v1/project_classes/"+course_id+"/"+session_id+"/sections";
@@ -386,10 +402,12 @@ module.exports.get_announcments = async (req, res) => {
         return;
     }
     let data_announcements = announcements.map((announcement) => {
+        let italian_title = htmlentitiesenc.encode(announcement.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(announcement.english_title, {mode: 'nonAsciiPrintable'})
         return {
             id: announcement.id,
-            italian_title: announcement.italian_title,
-            english_title: announcement.english_title,
+            italian_title: italian_title,
+            english_title: english_title,
             publishment: announcement.publishment
         }
     });
@@ -453,11 +471,14 @@ module.exports.get_teachers = async (req, res) => {
                 id: cl.id
             }
         }
+        let name = htmlentitiesenc.encode(cl.name, {mode: 'nonAsciiPrintable'})
+        let surname = htmlentitiesenc.encode(cl.surname, {mode: 'nonAsciiPrintable'})
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             teacher_ref: teacher_ref,
-            teacher_name: cl.name,
-            teacher_surname: cl.surname,
-            section: cl.section,
+            teacher_name: name,
+            teacher_surname: surname,
+            section: section,
             main_teacher: cl.main
         };
     });
@@ -613,10 +634,10 @@ module.exports.final_confirmation = async (req, res) => {
     // Retrieve the class again to get the final confirmation date
     project_class_exist = await projectClassesSchema.read(course_id, session_id);
     let confimation_date = project_class_exist.final_confirmation;
-    let italian_title = req.body.italian_title
-    let english_title = req.body.english_title
-    let italian_message = req.body.italian_message
-    let english_message = req.body.english_message
+    let italian_title = htmlentitiesenc.encode(req.body.italian_title)
+    let english_title = htmlentitiesenc.encode(req.body.english_title)
+    let italian_message = htmlentitiesenc.encode(req.body.italian_message)
+    let english_message = htmlentitiesenc.encode(req.body.english_message)
     italian_title = italian_title == undefined ? "Inizio del corso" : italian_title;
     english_title = english_title == undefined ? "Start of the course" : english_title;
     italian_message = italian_message == undefined ? "Il corso inizierà oggi "+starting_date+". Recati nell'aula predisposta." : italian_message

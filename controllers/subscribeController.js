@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const subscribe_schema = require('../models/subscribeModel');
 const studentModel = require('../models/studentModel');
 const pcModel = require('../models/projectClassModel');
@@ -476,8 +477,8 @@ module.exports.subscription_export = async (req, res) => {
     let nome_studente, cognome_studente, titolo_italiano, gruppo, area_di_apprendimento, contesto_di_apprendimento
     for(let i in student_list){ 
         let student_id = student_list[i].id
-        nome_studente = student_list[i].name
-        cognome_studente = student_list[i].surname
+        nome_studente = htmlentitiesenc.decode(student_list[i].name)
+        cognome_studente = htmlentitiesenc.decode(student_list[i].surname)
         let classe_ordinaria = student_list[i].ordinary_class_study_year + ' ' + student_list[i].ordinary_class_address
         let get_constraints
         //let student_subscriptions = await studentModel.retrieve_project_classes(student_id, future_session_id)
@@ -493,7 +494,7 @@ module.exports.subscription_export = async (req, res) => {
             if(check_subs.length>0){
                 for(let j in check_subs){
                     let course_credits = check_subs[j].credits
-                    titolo_italiano = check_subs[j].italian_title
+                    titolo_italiano = htmlentitiesenc.decode(check_subs[j].italian_title)
                     let class_related = await projectClassModel.read(check_subs[j].project_class_course_id, future_session_id)
                     gruppo = class_related.group
                     let csv_row = {

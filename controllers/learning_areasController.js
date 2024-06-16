@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const learningAreaSchema = require('../models/learning_areaModel');
 
 let MSG = {
@@ -26,12 +27,16 @@ module.exports.get_areas = async (req, res) => {
         areas = await learningAreaSchema.list();
     }
     let data_areas = areas.map((area) => {
+        let italian_title = htmlentitiesenc.encode(area.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(area.english_title, {mode: 'nonAsciiPrintable'})
+        let italian_description = htmlentitiesenc.encode(area.italian_description, {mode: 'nonAsciiPrintable'})
+        let english_description = htmlentitiesenc.encode(area.english_description, {mode: 'nonAsciiPrintable'})
         return {
             id: area.id,
-            italian_title: area.italian_title,
-            english_title: area.english_title,
-            italian_description: area.italian_description,
-            english_description: area.english_description,
+            italian_title: italian_title,
+            english_title: english_title,
+            italian_description: italian_description,
+            english_description: english_description,
             credits: area.credits
         };
     });
@@ -55,12 +60,16 @@ module.exports.get_area = async (req, res) => {
         console.log('single learning area: resource not found ('+new Date()+')');
         return;
     }
+    let italian_title = htmlentitiesenc.encode(area.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(area.english_title, {mode: 'nonAsciiPrintable'})
+        let italian_description = htmlentitiesenc.encode(area.italian_description, {mode: 'nonAsciiPrintable'})
+        let english_description = htmlentitiesenc.encode(area.english_description, {mode: 'nonAsciiPrintable'})
     let data_area = {
         id: area.id,
-        italian_title: area.italian_title,
-        english_title: area.english_title,
-        italian_description: area.italian_description,
-        english_description: area.english_description
+        italian_title: italian_title,
+        english_title: english_title,
+        italian_description: italian_description,
+        english_description: english_description
     };
     let response = {
         path: "/api/v1/learning_areas/",

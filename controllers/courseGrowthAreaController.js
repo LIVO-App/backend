@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const adminModel = require('../models/adminModel');
 const growthAreaModel = require('../models/courseGrowthAreaModel');
 const coursesModel = require('../models/coursesModel');
@@ -33,12 +34,16 @@ module.exports.get_growth_areas = async (req, res) => {
                 id: cl.growth_area_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let italian_description = htmlentitiesenc.encode(cl.italian_description, {mode: 'nonAsciiPrintable'})
+        let english_description = htmlentitiesenc.encode(cl.english_description, {mode: 'nonAsciiPrintable'})
         return {
             growth_area_ref: growth_area_ref,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
-            italian_description: cl.italian_description,
-            english_description: cl.english_description
+            italian_title: italian_title,
+            english_title: english_title,
+            italian_description: italian_description,
+            english_description: english_description
         };
     });
     let path = "/api/v1/courses/"+course_id+"/growth_areas"

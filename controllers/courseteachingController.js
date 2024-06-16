@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const adminModel = require('../models/adminModel');
 const coursesModel = require('../models/coursesModel');
 const courseteachingSchema = require('../models/courseteachingModel');
@@ -33,10 +34,12 @@ module.exports.get_teachings = async (req, res) => {
                 id: tc.teaching_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(tc.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(tc.english_title, {mode: 'nonAsciiPrintable'})
         return {
             teaching_ref: teaching_ref,
-            italian_title: tc.italian_title,
-            english_title: tc.english_title
+            italian_title: italian_title,
+            english_title: english_title
         };
     });
     let path = "/api/v1/courses/"+course_id+"/teachings";

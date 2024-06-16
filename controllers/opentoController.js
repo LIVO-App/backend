@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const adminModel = require('../models/adminModel');
 const coursesModel = require('../models/coursesModel');
 const learningContextsModel = require('../models/learningContextsModel');
@@ -51,11 +52,13 @@ module.exports.get_institute_classes = async (req, res) => {
                 id: cl.learning_context_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
+            italian_title: italian_title,
+            english_title: english_title,
             presidium: cl.presidium,
             main_study_year: cl.main_study_year,
             learning_context_ref: learning_context_ref

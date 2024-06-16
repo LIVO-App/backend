@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const announcementSchema = require('../models/generalAnnouncementsModel');
 const teacherSchema = require('../models/teacherModel');
 const adminSchema = require('../models/adminModel');
@@ -58,13 +59,17 @@ module.exports.get_announcement = async (req, res) => {
         console.log('General announcement: resource not found ('+new Date()+')');
         return;
     }
+    let italian_title = htmlentitiesenc.encode(announcement.italian_title, {mode: 'nonAsciiPrintable'})
+    let english_title = htmlentitiesenc.encode(announcement.english_title, {mode: 'nonAsciiPrintable'})
+    let italian_message = htmlentitiesenc.encode(announcement.italian_message, {mode: 'nonAsciiPrintable'})
+    let english_message = htmlentitiesenc.encode(announcement.english_message, {mode: 'nonAsciiPrintable'})
     let data_announcement = {
         id: announcement.id,
-        italian_title: announcement.italian_title,
-        english_title: announcement.english_title,
+        italian_title: italian_title,
+        english_title: english_title,
         publishment: announcement.publishment,
-        italian_message: announcement.italian_message,
-        english_message: announcement.english_message
+        italian_message: italian_message,
+        english_message: english_message
     }
     let response = {
         path: '/api/v1/general_announcements/'+announcement.id,
@@ -106,10 +111,12 @@ module.exports.get_general_announcements = async (req, res) => {
     }
     let announcements = await announcementSchema.list();
     let data_announcement = announcements.map((announcement) => {
+        let italian_title = htmlentitiesenc.encode(announcement.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(announcement.english_title, {mode: 'nonAsciiPrintable'})
         return {
             id: announcement.id,
-            italian_title: announcement.italian_title,
-            english_title: announcement.english_title,
+            italian_title: italian_title,
+            english_title: english_title,
             publishment: announcement.publishment
         }
     })
@@ -140,10 +147,10 @@ module.exports.publish_announcement = async (req, res) => {
         console.log('general announcements publishment: unauthorized access ('+new Date()+')');
         return;
     }
-    let italian_title = req.body.italian_title;
-    let english_title = req.body.english_title;
-    let italian_message = req.body.italian_message;
-    let english_message = req.body.english_message;
+    let italian_title = htmlentitiesenc.encode(req.body.italian_title);
+    let english_title = htmlentitiesenc.encode(req.body.english_title);
+    let italian_message = htmlentitiesenc.encode(req.body.italian_message);
+    let english_message = htmlentitiesenc.encode(req.body.english_message);
     let publish_date = req.body.publish_date;
     let publish = await announcementSchema.add(admin_id, italian_title, english_title, italian_message, english_message, publish_date);
     if(!publish){

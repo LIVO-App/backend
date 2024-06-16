@@ -1,5 +1,6 @@
 'use strict';
 
+const htmlentitiesenc = require("html-entities")
 const classesSchema = require('../models/classesTeacherModel');
 const ord_classSchema = require('../models/ordinaryclassModel');
 const teacherSchema = require('../models/teacherModel');
@@ -53,12 +54,17 @@ module.exports.get_teachers = async (req, res) => {
         let gender = teacher.gender != null ? crypto.decipher(teacher.gender.toString()) : undefined
         let birth_date = teacher.birth_date != null ? crypto.decipher(teacher.birth_date.toString()) : undefined
         let address = teacher.address != null ? crypto.decipher(teacher.address.toString()) : undefined
+        cf = htmlentitiesenc.encode(cf, {mode: 'nonAsciiPrintable'})
+        let name = htmlentitiesenc.encode(teacher.name, {mode: 'nonAsciiPrintable'})
+        let surname = htmlentitiesenc.encode(teacher.surname, {mode: 'nonAsciiPrintable'})
+        gender = htmlentitiesenc.encode(gender, {mode: 'nonAsciiPrintable'})
+        address = htmlentitiesenc.encode(address, {mode: 'nonAsciiPrintable'})
         return {
             id: teacher.id,
             cf: cf,
             username: teacher.username,
-            name: teacher.name,
-            surname: teacher.surname,
+            name: name,
+            surname: surname,
             gender: gender,
             birth_date: birth_date,
             address: address,
@@ -94,11 +100,14 @@ module.exports.get_my_project_classes = async (req, res) => {
                 id: cl.teaching_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             id: cl.id,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
-            section: cl.section,
+            italian_title: italian_title,
+            english_title: english_title,
+            section: section,
             teaching_ref: teaching_ref,
             my_teaching: cl.my_teaching
         }
@@ -132,11 +141,14 @@ module.exports.get_associated_project_classes = async (req, res) => {
                 id: cl.teaching_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             id: cl.id,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
-            section: cl.section,
+            italian_title: italian_title,
+            english_title: english_title,
+            section: section,
             teaching_ref: teaching_ref,
         }
     });
@@ -187,11 +199,14 @@ module.exports.get_my_project_classes_v2 = async (req, res) => {
                 id: cl.teaching_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             id: cl.id,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
-            section: cl.section,
+            italian_title: italian_title,
+            english_title: english_title,
+            section: section,
             teaching_ref: teaching_ref,
             my_teaching: cl.my_teaching
         }
@@ -243,11 +258,14 @@ module.exports.get_associated_project_classes_v2 = async (req, res) => {
                 id: cl.teaching_id
             }
         }
+        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             id: cl.id,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
-            section: cl.section,
+            italian_title: italian_title,
+            english_title: english_title,
+            section: section,
             teaching_ref: teaching_ref,
         }
     });
@@ -298,11 +316,12 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
         return;
     }
     let data_classes = cls.map((cl) => {
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             study_year: cl.ordinary_class_study_year,
             address: cl.ordinary_class_address,
             school_year: cl.ordinary_class_school_year,
-            section: cl.section,
+            section: section,
             teaching: cl.teaching_id
         }
     });
@@ -370,6 +389,10 @@ module.exports.update_info = async (req, res) => {
         return;
     }
     let information = req.body.teacher_info
+    information.name = htmlentitiesenc.encode(information.name)
+    information.surname = htmlentitiesenc.encode(information.surname)
+    information.gender = htmlentitiesenc.encode(information.gender)
+    information.address = htmlentitiesenc.encode(information.address)
     let update_info = await teacherSchema.update(teacher_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameter});
@@ -614,14 +637,14 @@ module.exports.add_teachers = async (req, res) => {
     let teacher_inserted = []
     let teacher_list = req.body.teacher_list;
     for(let teacher in teacher_list){
-        let teacher_cf = teacher_list[teacher].cf
+        let teacher_cf = htmlentitiesenc.encode(teacher_list[teacher].cf)
         let teacher_name = teacher_list[teacher].name
         let teacher_name_arr = teacher_name.split(" ")
         let teacher_surname = teacher_list[teacher].surname
         let teacher_surname_arr = teacher_surname.split(" ")
-        let teacher_gender = teacher_list[teacher].gender
+        let teacher_gender = htmlentitiesenc.encode(teacher_list[teacher].gender)
         let teacher_birth_date = teacher_list[teacher].birth_date
-        let teacher_address = teacher_list[teacher].address
+        let teacher_address = htmlentitiesenc.encode(teacher_list[teacher].address)
         let teacher_email = teacher_list[teacher].email
         let username = teacher_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+teacher_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         for(let i=0; i<teacher_surname_arr.length;i++){
@@ -636,6 +659,8 @@ module.exports.add_teachers = async (req, res) => {
         let teacher_psw = Math.random().toString(36).slice(-8)
         let assets_link_name = username.split(".")[1]
         let assets_link = "/assets/users/teachers/"+assets_link_name
+        teacher_name = htmlentitiesenc.encode(teacher_name)
+        teacher_surname = htmlentitiesenc.encode(teacher_surname)
         let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address, assets_link)
         if(!teacher_insert){
             wrong_teacher = true
@@ -734,6 +759,7 @@ module.exports.get_tutor_classes = async (req, res) => {
         return;
     }
     let data_classes = cls.map((cl) => {
+        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
         return {
             study_year: cl.ordinary_class_study_year,
             address: cl.ordinary_class_address,

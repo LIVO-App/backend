@@ -1,6 +1,7 @@
 'use strict';
 
 const adminModel = require('../models/adminModel');
+const htmlentitiesenc = require("html-entities")
 const fs = require('fs')
 const readline = require('readline');
 
@@ -34,6 +35,10 @@ module.exports.update_info = async (req, res) => {
         return;
     }
     let information = req.body.admin_info
+    information.name = htmlentitiesenc.encode(information.name)
+    information.surname = htmlentitiesenc.encode(information.surname)
+    information.gender = htmlentitiesenc.encode(information.gender)
+    information.address = htmlentitiesenc.encode(information.address)
     let update_info = await adminModel.update(admin_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameter});
@@ -117,6 +122,11 @@ module.exports.add_admins = async (req, res) => {
         let admin_psw = Math.random().toString(36).slice(-8)
         let assets_link_name = username.split(".")[1]
         let assets_link = "/assets/users/admins/"+assets_link_name
+        admin_cf = htmlentitiesenc.encode(admin_cf)
+        admin_name = htmlentitiesenc.encode(admin_name)
+        admin_surname = htmlentitiesenc.encode(admin_surname)
+        admin_gender = htmlentitiesenc.encode(admin_gender)
+        admin_address = htmlentitiesenc.encode(admin_address)
         let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address, assets_link)
         if(!admin_insert){
             wrong_admin = true

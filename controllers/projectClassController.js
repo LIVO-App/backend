@@ -172,11 +172,11 @@ module.exports.get_class = async (req, res) => {
         }
     }
     let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
-        let teacher_name = htmlentitiesenc.encode(cl.teacher_name, {mode: 'nonAsciiPrintable'})
-        let teacher_surname = htmlentitiesenc.encode(cl.teacher_surname, {mode: 'nonAsciiPrintable'})
-        let admin_name = htmlentitiesenc.encode(cl.admin_name, {mode: 'nonAsciiPrintable'})
-        let admin_surname = htmlentitiesenc.encode(cl.admin_surname, {mode: 'nonAsciiPrintable'})
+    let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+    let teacher_name = htmlentitiesenc.encode(cl.teacher_name, {mode: 'nonAsciiPrintable'})
+    let teacher_surname = htmlentitiesenc.encode(cl.teacher_surname, {mode: 'nonAsciiPrintable'})
+    let admin_name = htmlentitiesenc.encode(cl.admin_name, {mode: 'nonAsciiPrintable'})
+    let admin_surname = htmlentitiesenc.encode(cl.admin_surname, {mode: 'nonAsciiPrintable'})
     let data_class ={
         course_id: cl.course_id,
         learning_session: cl.learning_session_id,

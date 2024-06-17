@@ -1,7 +1,7 @@
 'use strict';
 
 const htmlentitiesenc = require("html-entities")
-
+const sanitizer = require("../utils/sanitizer");
 const courseSchema = require('../models/coursesModel');
 const projectclassSchema = require('../models/projectClassModel');
 const teachingCourseSchema = require('../models/courseteachingModel');
@@ -66,9 +66,9 @@ module.exports.get_courses = async (req, res) => {
                 id: course.learning_area_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(course.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(course.english_title, {mode: 'nonAsciiPrintable'})
-        let section = htmlentitiesenc.encode(course.section, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(course.italian_title)
+        let english_title = sanitizer.encode_output(course.english_title)
+        let section = sanitizer.encode_output(course.section)
         return {
             id: course.id,
             italian_title: italian_title,
@@ -144,7 +144,8 @@ module.exports.get_courses_v2 = async (req, res) => {
                 id: course.learning_area_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(course.italian_title, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(course.italian_title)
+        console.log(italian_title)
         let english_title = htmlentitiesenc.encode(course.english_title, {mode: 'nonAsciiPrintable'})
         let section = htmlentitiesenc.encode(course.section, {mode: 'nonAsciiPrintable'})
         return {

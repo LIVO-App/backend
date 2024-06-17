@@ -2,9 +2,15 @@
 
 const htmlentitiesenc = require("html-entities");
 
-function encode_output(text) {
-    var output = htmlentitiesenc.decode(text)
-    output = htmlentitiesenc.encode(text)
+function encode_output(text, debug = false) {
+    let output = htmlentitiesenc.decode(text)
+    if (debug) {
+        console.log(output)
+    }
+    output = htmlentitiesenc.encode(output)
+    if (debug) {
+        console.log(output)
+    }
     return output
 }
 
@@ -21,6 +27,9 @@ function encode_special_output(text) {
 }
 
 function encode_input(input) {
+    if (input == undefined) {
+        return undefined
+    }
     return htmlentitiesenc.encode(input)
 }
 

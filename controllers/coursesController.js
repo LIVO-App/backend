@@ -1564,9 +1564,9 @@ module.exports.get_courses_for_tutors = async (req, res) => {
                 id: course.learning_area_id
             }
         }
-        let italian_title = sanitizer.encode_output(course.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = sanitizer.encode_output(course.english_title, {mode: 'nonAsciiPrintable'})
-        let section = sanitizer.encode_output(course.section, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(course.italian_title)
+        let english_title = sanitizer.encode_output(course.english_title)
+        let section = sanitizer.encode_output(course.section)
         return {
             id: course.id,
             italian_title: italian_title,

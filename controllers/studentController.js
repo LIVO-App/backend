@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const courseSchema = require('../models/coursesModel');
 const ordinaryclassSchema = require('../models/ordinaryclassModel');
 const projectClassesSchema = require('../models/projectClassModel')
@@ -72,12 +72,12 @@ module.exports.get_student = async (req, res) => {
                 study_address: student.ordinary_class_address
             }
     }
-    cf = htmlentitiesenc.encode(cf, {mode: 'nonAsciiPrintable'})
-    let name = htmlentitiesenc.encode(student.name, {mode: 'nonAsciiPrintable'})
-    let surname = htmlentitiesenc.encode(student.surname, {mode: 'nonAsciiPrintable'})
-    gender = htmlentitiesenc.encode(gender, {mode: 'nonAsciiPrintable'})
-    address = htmlentitiesenc.encode(address, {mode: 'nonAsciiPrintable'})
-    class_section = htmlentitiesenc.encode(student.section, {mode: 'nonAsciiPrintable'})
+    cf = sanitizer.encode_output(cf)
+    let name = sanitizer.encode_output(student.name)
+    let surname = sanitizer.encode_output(student.surname)
+    gender = sanitizer.encode_output(gender)
+    address = sanitizer.encode_output(address)
+    class_section = sanitizer.encode_output(student.section)
     let student_data = {
         cf: cf,
         username: student.username,
@@ -221,11 +221,11 @@ module.exports.get_curriculum = async (req, res) => {
                 id: curr.learning_context_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(curr.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(curr.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_displayed_name = htmlentitiesenc.encode(curr.italian_displayed_name, {mode: 'nonAsciiPrintable'})
-        let english_displayed_name = htmlentitiesenc.encode(curr.english_displayed_name, {mode: 'nonAsciiPrintable'})
-        let section= htmlentitiesenc.encode(curr.section, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(curr.italian_title)
+        let english_title = sanitizer.encode_output(curr.english_title)
+        let italian_displayed_name = sanitizer.encode_output(curr.italian_displayed_name)
+        let english_displayed_name = sanitizer.encode_output(curr.english_displayed_name)
+        let section= sanitizer.encode_output(curr.section)
         return {
             id: curr.course_id,
             italian_title: italian_title,
@@ -298,11 +298,11 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                     id: curr.learning_context_id
                 }
             }
-            let italian_title = htmlentitiesenc.encode(curr.italian_title, {mode: 'nonAsciiPrintable'})
-            let english_title = htmlentitiesenc.encode(curr.english_title, {mode: 'nonAsciiPrintable'})
-            let italian_displayed_name = htmlentitiesenc.encode(curr.italian_displayed_name, {mode: 'nonAsciiPrintable'})
-            let english_displayed_name = htmlentitiesenc.encode(curr.english_displayed_name, {mode: 'nonAsciiPrintable'})
-            let section= htmlentitiesenc.encode(curr.section, {mode: 'nonAsciiPrintable'})
+            let italian_title = sanitizer.encode_output(curr.italian_title)
+            let english_title = sanitizer.encode_output(curr.english_title)
+            let italian_displayed_name = sanitizer.encode_output(curr.italian_displayed_name)
+            let english_displayed_name = sanitizer.encode_output(curr.english_displayed_name)
+            let section= sanitizer.encode_output(curr.section)
             return {
                 id: curr.course_id,
                 italian_title: italian_title,
@@ -360,11 +360,11 @@ module.exports.get_curriculum_v2 = async (req, res) => {
                     id: curr.learning_context_id
                 }
             }
-            let italian_title = htmlentitiesenc.encode(curr.italian_title, {mode: 'nonAsciiPrintable'})
-            let english_title = htmlentitiesenc.encode(curr.english_title, {mode: 'nonAsciiPrintable'})
-            let italian_displayed_name = htmlentitiesenc.encode(curr.italian_displayed_name, {mode: 'nonAsciiPrintable'})
-            let english_displayed_name = htmlentitiesenc.encode(curr.english_displayed_name, {mode: 'nonAsciiPrintable'})
-            let section= htmlentitiesenc.encode(curr.section, {mode: 'nonAsciiPrintable'})
+            let italian_title = sanitizer.encode_output(curr.italian_title)
+            let english_title = sanitizer.encode_output(curr.english_title)
+            let italian_displayed_name = sanitizer.encode_output(curr.italian_displayed_name)
+            let english_displayed_name = sanitizer.encode_output(curr.english_displayed_name)
+            let section= sanitizer.encode_output(curr.section)
             return {
                 id: curr.course_id,
                 italian_title: italian_title,
@@ -427,9 +427,9 @@ module.exports.get_project_classes = async (req,res) => {
         return;
     }
     let data_cls = cls.map((cl) => {
-        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
-        let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(cl.italian_title)
+        let english_title = sanitizer.encode_output(cl.english_title)
+        let section = sanitizer.encode_output(cl.section)
         return {
             id: cl.course_id,
             italian_title: italian_title,
@@ -468,10 +468,10 @@ module.exports.update_info = async (req, res) => {
         return;
     }
     let information = req.body.student_info
-    information.name = htmlentitiesenc.encode(information.name)
-    information.surname = htmlentitiesenc.encode(information.surname)
-    information.gender = htmlentitiesenc.encode(information.gender)
-    information.address = htmlentitiesenc.encode(information.address)
+    information.name = sanitizer.encode_input(information.name)
+    information.surname = sanitizer.encode_input(information.surname)
+    information.gender = sanitizer.encode_input(information.gender)
+    information.address = sanitizer.encode_input(information.address)
     let update_info = await studentModel.update(student_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameters});
@@ -746,14 +746,14 @@ module.exports.add_students = async (req, res) => {
     let student_inserted = []
     let student_list = req.body.student_list;
     for(let student in student_list){
-        let student_cf = htmlentitiesenc.encode(student_list[student].cf)
+        let student_cf = sanitizer.encode_input(student_list[student].cf)
         let student_name = student_list[student].name
         let student_name_arr = student_name.split(" ")
         let student_surname = student_list[student].surname
         let student_surname_arr = student_surname.split(" ")
-        let student_gender = htmlentitiesenc.encode(student_list[student].gender)
+        let student_gender = sanitizer.encode_input(student_list[student].gender)
         let student_birth_date = student_list[student].birth_date
-        let student_address = htmlentitiesenc.encode(student_list[student].address)
+        let student_address = sanitizer.encode_input(student_list[student].address)
         let student_email = student_list[student].email
         let username = student_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+student_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         for(let i=1;i<student_surname_arr.length;i++){
@@ -768,8 +768,8 @@ module.exports.add_students = async (req, res) => {
         let student_psw = Math.random().toString(36).slice(-8)
         let assets_link_name = username.split(".")[1]
         let assets_link = "/assets/users/students/"+assets_link_name
-        student_name = htmlentitiesenc.encode(student_name)
-        student_surname = htmlentitiesenc.encode(student_surname)
+        student_name = sanitizer.encode_input(student_name)
+        student_surname = sanitizer.encode_input(student_surname)
         let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address, assets_link)
         if(!student_insert){
             wrong_student = true

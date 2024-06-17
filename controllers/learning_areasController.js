@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const learningAreaSchema = require('../models/learning_areaModel');
 
 let MSG = {
@@ -27,10 +27,10 @@ module.exports.get_areas = async (req, res) => {
         areas = await learningAreaSchema.list();
     }
     let data_areas = areas.map((area) => {
-        let italian_title = htmlentitiesenc.encode(area.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(area.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(area.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(area.english_description, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(area.italian_title)
+        let english_title = sanitizer.encode_output(area.english_title)
+        let italian_description = sanitizer.encode_output(area.italian_description)
+        let english_description = sanitizer.encode_output(area.english_description)
         return {
             id: area.id,
             italian_title: italian_title,
@@ -60,10 +60,10 @@ module.exports.get_area = async (req, res) => {
         console.log('single learning area: resource not found ('+new Date()+')');
         return;
     }
-    let italian_title = htmlentitiesenc.encode(area.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(area.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(area.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(area.english_description, {mode: 'nonAsciiPrintable'})
+    let italian_title = sanitizer.encode_output(area.italian_title)
+        let english_title = sanitizer.encode_output(area.english_title)
+        let italian_description = sanitizer.encode_output(area.italian_description)
+        let english_description = sanitizer.encode_output(area.english_description)
     let data_area = {
         id: area.id,
         italian_title: italian_title,

@@ -1,6 +1,5 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
 const sanitizer = require("../utils/sanitizer");
 const courseSchema = require('../models/coursesModel');
 const projectclassSchema = require('../models/projectClassModel');
@@ -145,9 +144,8 @@ module.exports.get_courses_v2 = async (req, res) => {
             }
         }
         let italian_title = sanitizer.encode_output(course.italian_title)
-        console.log(italian_title)
-        let english_title = htmlentitiesenc.encode(course.english_title, {mode: 'nonAsciiPrintable'})
-        let section = htmlentitiesenc.encode(course.section, {mode: 'nonAsciiPrintable'})
+        let english_title = sanitizer.encode_output(course.english_title)
+        let section = sanitizer.encode_output(course.section)
         return {
             id: course.id,
             italian_title: italian_title,
@@ -209,65 +207,24 @@ module.exports.get_course = async (req, res) => {
             id: course.learning_area_id
         }
     }
-    let italian_title = htmlentitiesenc.encode(course.italian_title, {mode: 'nonAsciiPrintable'})
-    let english_title = htmlentitiesenc.encode(course.english_title, {mode: 'nonAsciiPrintable'})
-    let italian_description, english_description, italian_expected_learning_results, english_expected_learning_results, italian_criterions, english_criterions, italian_activities, english_activities
-    if (course.italian_description.includes("<script>") || course.italian_description.includes("</script>")) {
-        italian_description = course.italian_description.replace("<script>", htmlentitiesenc.encode("<script>"))
-        italian_description = italian_description.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        italian_description = course.italian_description
-    }
-    if (course.english_description.includes("<script>") || course.english_description.includes("</script>")) {
-        english_description = course.english_description.replace("<script>", htmlentitiesenc.encode("<script>"))
-        english_description = english_description.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        english_description = course.english_description
-    }
-    if (course.italian_expected_learning_results.includes("<script>") || course.italian_expected_learning_results.includes("</script>")) {
-        italian_expected_learning_results = course.italian_expected_learning_results.replace("<script>", htmlentitiesenc.encode("<script>"))
-        italian_expected_learning_results = italian_expected_learning_results.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        italian_expected_learning_results = course.italian_expected_learning_results
-    }
-    if (course.english_expected_learning_results.includes("<script>") || course.english_expected_learning_results.includes("</script>")) {
-        english_expected_learning_results = course.english_expected_learning_results.replace("<script>", htmlentitiesenc.encode("<script>"))
-        english_expected_learning_results = english_expected_learning_results.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        english_expected_learning_results = course.english_expected_learning_results
-    }
-    if (course.italian_criterions.includes("<script>") || course.italian_criterions.includes("</script>")) {
-        italian_criterions = course.italian_criterions.replace("<script>", htmlentitiesenc.encode("<script>"))
-        italian_criterions = italian_criterions.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        italian_criterions = course.italian_criterions
-    }
-    if (course.english_criterions.includes("<script>") || course.english_criterions.includes("</script>")) {
-        english_criterions = course.english_criterions.replace("<script>", htmlentitiesenc.encode("<script>"))
-        english_criterions = english_criterions.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        english_criterions = course.english_criterions
-    }
-    if (course.italian_activities.includes("<script>") || course.italian_activities.includes("</script>")) {
-        italian_activities = course.italian_activities.replace("<script>", htmlentitiesenc.encode("<script>"))
-        italian_activities = italian_activities.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        italian_activities = course.italian_activities
-    }
-    if (course.english_activities.includes("<script>") || course.english_activities.includes("</script>")) {
-        english_activities = course.english_activities.replace("<script>", htmlentitiesenc.encode("<script>"))
-        english_activities = english_activities.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        english_activities = course.english_activities
-    }
-    let learning_area_ita = htmlentitiesenc.encode(course.learning_area_ita, {mode: 'nonAsciiPrintable'})
-    let learning_area_eng = htmlentitiesenc.encode(course.learning_area_eng, {mode: 'nonAsciiPrintable'})
-    let growth_area_ita = htmlentitiesenc.encode(course.italian_growth_area, {mode: 'nonAsciiPrintable'})
-    let growth_area_eng = htmlentitiesenc.encode(course.english_growth_area, {mode: 'nonAsciiPrintable'})
-    let teacher_name = htmlentitiesenc.encode(course.teacher_name, {mode: 'nonAsciiPrintable'})
-    let teacher_surname = htmlentitiesenc.encode(course.teacher_surname, {mode: 'nonAsciiPrintable'})
-    let admin_name = htmlentitiesenc.encode(course.admin_name, {mode: 'nonAsciiPrintable'})
-    let admin_surname = htmlentitiesenc.encode(course.admin_surname, {mode: 'nonAsciiPrintable'})
+    let italian_title = sanitizer.encode_output(course.italian_title)
+    let english_title = sanitizer.encode_output(course.english_title)
+    let italian_description = sanitizer.encode_special_output(course.italian_description)
+    let english_description = sanitizer.encode_special_output(course.english_description)
+    let italian_expected_learning_results = sanitizer.encode_special_output(course.italian_expected_learning_results)
+    let english_expected_learning_results = sanitizer.encode_special_output(course.english_expected_learning_results)
+    let italian_criterions = sanitizer.encode_special_output(course.italian_criterions)
+    let english_criterions = sanitizer.encode_special_output(course.english_criterions)
+    let italian_activities = sanitizer.encode_special_output(course.italian_activities)
+    let english_activities = sanitizer.encode_special_output(course.english_activities)
+    let learning_area_ita = sanitizer.encode_output(course.learning_area_ita)
+    let learning_area_eng = sanitizer.encode_output(course.learning_area_eng)
+    let growth_area_ita = sanitizer.encode_output(course.italian_growth_area)
+    let growth_area_eng = sanitizer.encode_output(course.english_growth_area)
+    let teacher_name = sanitizer.encode_output(course.teacher_name)
+    let teacher_surname = sanitizer.encode_output(course.teacher_surname)
+    let admin_name = sanitizer.encode_output(course.admin_name)
+    let admin_surname = sanitizer.encode_output(course.admin_surname)
     let data_course = {
         id: course.id,
         italian_title: italian_title,
@@ -440,12 +397,12 @@ module.exports.get_courses_model = async (req, res) => {
                 }
             };
         }
-        let italian_title = htmlentitiesenc.encode(model.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(model.english_title, {mode: 'nonAsciiPrintable'})
-        let admin_name = htmlentitiesenc.encode(model.admin_name, {mode: 'nonAsciiPrintable'})
-        let admin_surname = htmlentitiesenc.encode(model.admin_surname, {mode: 'nonAsciiPrintable'})
-        let teacher_name = htmlentitiesenc.encode(model.teacher_name, {mode: 'nonAsciiPrintable'})
-        let teacher_surname = htmlentitiesenc.encode(model.teacher_surname, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(model.italian_title)
+        let english_title = sanitizer.encode_output(model.english_title)
+        let admin_name = sanitizer.encode_output(model.admin_name)
+        let admin_surname = sanitizer.encode_output(model.admin_surname)
+        let teacher_name = sanitizer.encode_output(model.teacher_name)
+        let teacher_surname = sanitizer.encode_output(model.teacher_surname)
         return{
             course_ref: course_ref,
             italian_title: italian_title,
@@ -500,59 +457,18 @@ module.exports.add_proposition = async (req, res) => {
         return;
     }
     let course_id = req.body.course_id;
-    let ita_title = htmlentitiesenc.encode(req.body.italian_title);
-    let eng_title = htmlentitiesenc.encode(req.body.english_title);
-    let ita_descr, eng_descr, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act;
-    if (req.body.italian_descr.includes("<script>") || req.body.italian_descr.includes("</script>")){
-        ita_descr = req.body.italian_descr.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_descr = ita_descr.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_descr = req.body.italian_descr
-    }
-    if (req.body.english_descr.includes("<script>") || req.body.english_descr.includes("</script>")){
-        eng_descr = req.body.english_descr.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_descr = eng_descr.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else { 
-        eng_descr = req.body.english_descr;
-    }
+    let ita_title = sanitizer.encode_input(req.body.italian_title);
+    let eng_title = sanitizer.encode_input(req.body.english_title);
+    let ita_descr = sanitizer.encode_special_output(req.body.italian_descr);
+    let eng_descr = sanitizer.encode_special_output(req.body.english_descr);
+    let ita_exp_l = sanitizer.encode_special_output(req.body.italian_exp_l);
+    let eng_exp_l = sanitizer.encode_special_output(req.body.english_exp_l);
+    let ita_cri = sanitizer.encode_special_output(req.body.italian_cri);
+    let eng_cri = sanitizer.encode_special_output(req.body.english_cri);
+    let ita_act = sanitizer.encode_special_output(req.body.italian_act);
+    let eng_act = sanitizer.encode_special_output(req.body.english_act);
     let up_hours = req.body.up_hours;
     let credits = req.body.credits;
-    if (req.body.italian_exp_l.includes("<script>") || req.body.italian_exp_l.includes("</script>")) {
-        ita_exp_l = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_exp_l = ita_exp_l.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_exp_l = req.body.italian_exp_l
-    }
-    if (req.body.english_exp_l.includes("<script>") || req.body.english_exp_l.includes("</script>")) {
-        eng_exp_l = req.body.english_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_exp_l = eng_exp_l.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_exp_l = req.body.english_exp_l;
-    }
-    if (req.body.italian_cri.includes("<script>") || req.body.italian_cri.includes("</script>")) {
-        ita_cri = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_cri = ita_cri.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_cri = req.body.italian_cri;
-    }
-    if (req.body.english_cri.includes("<script>") || req.body.english_cri.includes("</script>")) {
-        eng_cri = req.body.english_cri.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_cri = eng_cri.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_cri = req.body.english_cri;
-    }
-    if (req.body.italian_act.includes("<script>") || req.body.italian_act.includes("</script>")) {
-        ita_act = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_act = ita_act.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_act = req.body.italian_act;
-    }
-    if (req.body.english_act.includes("<script>") || req.body.english_act.includes("</script>")) {
-        eng_act = req.body.english_act.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_act = eng_act.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_act = req.body.english_act;
-    }
     let area_id = req.body.area_id;
     let growth_list = req.body.growth_list; //Its an array like teaching_list
     let min_students = req.body.min_students;
@@ -591,8 +507,8 @@ module.exports.add_proposition = async (req, res) => {
     // Add new teachings
     let teaching_list = req.body.teaching_list;
     // Add new project class proposal (no confirmation of admin yet)
-    let ita_class_name = htmlentitiesenc.encode(req.body.italian_class_name);
-    let eng_class_name = htmlentitiesenc.encode(req.body.english_class_name);
+    let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
+    let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;
     let num_section = req.body.num_section;
     // Add teachers of the course into project_teach
@@ -1120,59 +1036,18 @@ module.exports.update_course = async (req, res) => {
         console.log('course update: course not found ('+new Date()+')');
         return;
     }
-    let ita_title = htmlentitiesenc.encode(req.body.italian_title);
-    let eng_title = htmlentitiesenc.encode(req.body.english_title);
-    let ita_descr, eng_descr, ita_exp_l, eng_exp_l, ita_cri, eng_cri, ita_act, eng_act;
-    if (req.body.italian_descr.includes("<script>") || req.body.italian_descr.includes("</script>")){
-        ita_descr = req.body.italian_descr.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_descr = ita_descr.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_descr = req.body.italian_descr
-    }
-    if (req.body.english_descr.includes("<script>") || req.body.english_descr.includes("</script>")){
-        eng_descr = req.body.english_descr.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_descr = eng_descr.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else { 
-        eng_descr = req.body.english_descr;
-    }
+    let ita_title = sanitizer.encode_input(req.body.italian_title);
+    let eng_title = sanitizer.encode_input(req.body.english_title);
+    let ita_descr = sanitizer.encode_special_output(req.body.italian_descr);
+    let eng_descr = sanitizer.encode_special_output(req.body.english_descr);
+    let ita_exp_l = sanitizer.encode_special_output(req.body.italian_exp_l);
+    let eng_exp_l = sanitizer.encode_special_output(req.body.english_exp_l);
+    let ita_cri = sanitizer.encode_special_output(req.body.italian_cri);
+    let eng_cri = sanitizer.encode_special_output(req.body.english_cri);
+    let ita_act = sanitizer.encode_special_output(req.body.italian_act);
+    let eng_act = sanitizer.encode_special_output(req.body.english_act);
     let up_hours = req.body.up_hours;
     let credits = req.body.credits;
-    if (req.body.italian_exp_l.includes("<script>") || req.body.italian_exp_l.includes("</script>")) {
-        ita_exp_l = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_exp_l = ita_exp_l.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_exp_l = req.body.italian_exp_l
-    }
-    if (req.body.english_exp_l.includes("<script>") || req.body.english_exp_l.includes("</script>")) {
-        eng_exp_l = req.body.english_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_exp_l = eng_exp_l.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_exp_l = req.body.english_exp_l;
-    }
-    if (req.body.italian_cri.includes("<script>") || req.body.italian_cri.includes("</script>")) {
-        ita_cri = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_cri = ita_cri.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_cri = req.body.italian_cri;
-    }
-    if (req.body.english_cri.includes("<script>") || req.body.english_cri.includes("</script>")) {
-        eng_cri = req.body.english_cri.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_cri = eng_cri.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_cri = req.body.english_cri;
-    }
-    if (req.body.italian_act.includes("<script>") || req.body.italian_act.includes("</script>")) {
-        ita_act = req.body.italian_exp_l.replace("<script>", htmlentitiesenc.encode("<script>"))
-        ita_act = ita_act.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        ita_act = req.body.italian_act;
-    }
-    if (req.body.english_act.includes("<script>") || req.body.english_act.includes("</script>")) {
-        eng_act = req.body.english_act.replace("<script>", htmlentitiesenc.encode("<script>"))
-        eng_act = eng_act.replace("</script>", htmlentitiesenc.encode("</script>"))
-    } else {
-        eng_act = req.body.english_act;
-    }
     let area_id = req.body.area_id;
     let growth_list = req.body.growth_list;
     let min_students = req.body.min_students;
@@ -1217,8 +1092,8 @@ module.exports.update_course = async (req, res) => {
     }
     let access_object = req.body.access_object;
     let teaching_list = req.body.teaching_list;
-    let ita_class_name = htmlentitiesenc.encode(req.body.italian_class_name);
-    let eng_class_name = htmlentitiesenc.encode(req.body.english_class_name);
+    let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
+    let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;
     let num_section = req.body.num_section;
     let teacher_list = req.body.teacher_list;
@@ -1549,10 +1424,10 @@ module.exports.propositions_export = async (req, res) => {
         let course_data = await courseSchema.read(course_id, true);
         let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
         let opento_data = await opentoSchema.read_from_course(course_id);
-        titolo_italiano = htmlentitiesenc.decode(non_confirmed_proj_class[i].italian_title)
-        titolo_inglese = htmlentitiesenc.decode(non_confirmed_proj_class[i].english_title)
+        titolo_italiano = sanitizer.decode_text(non_confirmed_proj_class[i].italian_title)
+        titolo_inglese = sanitizer.decode_text(non_confirmed_proj_class[i].english_title)
         gruppo = class_data.group
-        insegnante_proposto = htmlentitiesenc.decode(non_confirmed_proj_class[i].teacher_surname) + '_'+htmlentitiesenc.decode(non_confirmed_proj_class[i].teacher_name)
+        insegnante_proposto = sanitizer.decode_text(non_confirmed_proj_class[i].teacher_surname) + '_'+sanitizer.decode_text(non_confirmed_proj_class[i].teacher_name)
         area_di_apprendimento = course_data.learning_area_id
         crediti = course_data.credits
         min_studenti = course_data.min_students
@@ -1593,10 +1468,10 @@ module.exports.propositions_export = async (req, res) => {
         let course_data = await courseSchema.read(course_id, true);
         let class_data = undefined;
         let opento_data = await opentoSchema.read_from_course(course_id);
-        titolo_italiano = htmlentitiesenc.decode(confirmed_courses_without_class[i].italian_title)
-        titolo_inglese = htmlentitiesenc.decode(confirmed_courses_without_class[i].english_title)
+        titolo_italiano = sanitizer.decode_text(confirmed_courses_without_class[i].italian_title)
+        titolo_inglese = sanitizer.decode_text(confirmed_courses_without_class[i].english_title)
         gruppo = class_data == undefined
-        insegnante_proposto = htmlentitiesenc.decode(confirmed_courses_without_class[i].teacher_surname) + '_'+htmlentitiesenc.decode(confirmed_courses_without_class[i].teacher_name)
+        insegnante_proposto = sanitizer.decode_text(confirmed_courses_without_class[i].teacher_surname) + '_'+sanitizer.decode_text(confirmed_courses_without_class[i].teacher_name)
         area_di_apprendimento = course_data.learning_area_id
         crediti = course_data.credits
         min_studenti = course_data.min_students
@@ -1689,9 +1564,9 @@ module.exports.get_courses_for_tutors = async (req, res) => {
                 id: course.learning_area_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(course.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(course.english_title, {mode: 'nonAsciiPrintable'})
-        let section = htmlentitiesenc.encode(course.section, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(course.italian_title, {mode: 'nonAsciiPrintable'})
+        let english_title = sanitizer.encode_output(course.english_title, {mode: 'nonAsciiPrintable'})
+        let section = sanitizer.encode_output(course.section, {mode: 'nonAsciiPrintable'})
         return {
             id: course.id,
             italian_title: italian_title,

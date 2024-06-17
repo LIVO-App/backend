@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const learningContextModel = require('../models/learningContextsModel');
 
 let MSG = {
@@ -15,10 +15,10 @@ module.exports.get_contexts = async (req, res) => {
     let session_id = req.query.session_id;
     let contexts = await learningContextModel.list(student_id, session_id);
     let data_contexts = contexts.map((context) => {
-        let italian_title = htmlentitiesenc.encode(context.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(context.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(context.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(context.english_description, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(context.italian_title)
+        let english_title = sanitizer.encode_output(context.english_title)
+        let italian_description = sanitizer.encode_output(context.italian_description)
+        let english_description = sanitizer.encode_output(context.english_description)
         return {
             id: context.id,
             italian_title: italian_title,

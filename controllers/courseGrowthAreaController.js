@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer');
 const adminModel = require('../models/adminModel');
 const growthAreaModel = require('../models/courseGrowthAreaModel');
 const coursesModel = require('../models/coursesModel');
@@ -34,10 +34,10 @@ module.exports.get_growth_areas = async (req, res) => {
                 id: cl.growth_area_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(cl.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(cl.english_description, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(cl.italian_title)
+        let english_title = sanitizer.encode_output(cl.english_title)
+        let italian_description = sanitizer.encode_output(cl.italian_description)
+        let english_description = sanitizer.encode_output(cl.english_description)
         return {
             growth_area_ref: growth_area_ref,
             italian_title: italian_title,

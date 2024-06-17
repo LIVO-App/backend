@@ -24,4 +24,8 @@ function encode_input(input) {
     return htmlentitiesenc.encode(input)
 }
 
-module.exports = {encode_output, encode_special_output, encode_input}
+function decode_text(text){
+    return htmlentitiesenc.decode(text)
+}
+
+module.exports = {encode_output, encode_special_output, encode_input, decode_text}

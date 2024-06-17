@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const ordinary_classSchema = require('../models/ordinaryclassModel');
 
 let MSG = {
@@ -13,10 +13,10 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_addresses = async (req, res) => {
     let cls = await ordinary_classSchema.get_study_address();
     let data_cls = cls.map((cl) => {
-        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(cl.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(cl.english_description, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(cl.italian_title)
+        let english_title = sanitizer.encode_output(cl.english_title)
+        let italian_description = sanitizer.encode_output(cl.italian_description)
+        let english_description = sanitizer.encode_output(cl.english_description)
         return {
             id: cl.id,
             italian_title: italian_title,

@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer');
 const adminModel = require('../models/adminModel');
 const coursesModel = require('../models/coursesModel');
 const learningContextsModel = require('../models/learningContextsModel');
@@ -52,8 +52,8 @@ module.exports.get_institute_classes = async (req, res) => {
                 id: cl.learning_context_id
             }
         }
-        let italian_title = htmlentitiesenc.encode(cl.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(cl.english_title, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(cl.italian_title)
+        let english_title = sanitizer.encode_output(cl.english_title)
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,

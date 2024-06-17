@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const announcementSchema = require('../models/generalAnnouncementsModel');
 const teacherSchema = require('../models/teacherModel');
 const adminSchema = require('../models/adminModel');
@@ -59,10 +59,10 @@ module.exports.get_announcement = async (req, res) => {
         console.log('General announcement: resource not found ('+new Date()+')');
         return;
     }
-    let italian_title = htmlentitiesenc.encode(announcement.italian_title, {mode: 'nonAsciiPrintable'})
-    let english_title = htmlentitiesenc.encode(announcement.english_title, {mode: 'nonAsciiPrintable'})
-    let italian_message = htmlentitiesenc.encode(announcement.italian_message, {mode: 'nonAsciiPrintable'})
-    let english_message = htmlentitiesenc.encode(announcement.english_message, {mode: 'nonAsciiPrintable'})
+    let italian_title = sanitizer.encode_output(announcement.italian_title)
+    let english_title = sanitizer.encode_output(announcement.english_title)
+    let italian_message = sanitizer.encode_output(announcement.italian_message)
+    let english_message = sanitizer.encode_output(announcement.english_message)
     let data_announcement = {
         id: announcement.id,
         italian_title: italian_title,
@@ -111,8 +111,8 @@ module.exports.get_general_announcements = async (req, res) => {
     }
     let announcements = await announcementSchema.list();
     let data_announcement = announcements.map((announcement) => {
-        let italian_title = htmlentitiesenc.encode(announcement.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(announcement.english_title, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(announcement.italian_title)
+        let english_title = sanitizer.encode_output(announcement.english_title)
         return {
             id: announcement.id,
             italian_title: italian_title,
@@ -147,10 +147,10 @@ module.exports.publish_announcement = async (req, res) => {
         console.log('general announcements publishment: unauthorized access ('+new Date()+')');
         return;
     }
-    let italian_title = htmlentitiesenc.encode(req.body.italian_title);
-    let english_title = htmlentitiesenc.encode(req.body.english_title);
-    let italian_message = htmlentitiesenc.encode(req.body.italian_message);
-    let english_message = htmlentitiesenc.encode(req.body.english_message);
+    let italian_title = sanitizer.encode_input(req.body.italian_title);
+    let english_title = sanitizer.encode_input(req.body.english_title);
+    let italian_message = sanitizer.encode_input(req.body.italian_message);
+    let english_message = sanitizer.encode_input(req.body.english_message);
     let publish_date = req.body.publish_date;
     let publish = await announcementSchema.add(admin_id, italian_title, english_title, italian_message, english_message, publish_date);
     if(!publish){
@@ -167,7 +167,7 @@ module.exports.publish_announcement = async (req, res) => {
         from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
         to: 'pietro.fronza@studenti.unitn.it',
         subject: italian_title,
-        text: italian_message
+        text: sanitizer.decode_text(italian_message)
     };
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {

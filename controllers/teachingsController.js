@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const teachingsSchema = require('../models/teachingModel');
 
 let MSG = {
@@ -13,10 +13,10 @@ process.env.TZ = 'Etc/Universal';
 module.exports.get_teachings = async (req, res) => {
     let teachings = await teachingsSchema.list();
     let data_teachings = teachings.map((teaching) => {
-        let italian_title = htmlentitiesenc.encode(teaching.italian_title, {mode: 'nonAsciiPrintable'})
-        let english_title = htmlentitiesenc.encode(teaching.english_title, {mode: 'nonAsciiPrintable'})
-        let italian_description = htmlentitiesenc.encode(teaching.italian_description, {mode: 'nonAsciiPrintable'})
-        let english_description = htmlentitiesenc.encode(teaching.english_description, {mode: 'nonAsciiPrintable'})
+        let italian_title = sanitizer.encode_output(teaching.italian_title)
+        let english_title = sanitizer.encode_output(teaching.english_title)
+        let italian_description = sanitizer.encode_output(teaching.italian_description)
+        let english_description = sanitizer.encode_output(teaching.english_description)
         return {
             id: teaching.id,
             italian_title: italian_title,
@@ -43,10 +43,10 @@ module.exports.get_teaching = async (req, res) => {
         console.log('single teaching: resource not found ('+new Date()+')');
         return;
     }
-    let italian_title = htmlentitiesenc.encode(teaching.italian_title, {mode: 'nonAsciiPrintable'})
-    let english_title = htmlentitiesenc.encode(teaching.english_title, {mode: 'nonAsciiPrintable'})
-    let italian_description = htmlentitiesenc.encode(teaching.italian_description, {mode: 'nonAsciiPrintable'})
-    let english_description = htmlentitiesenc.encode(teaching.english_description, {mode: 'nonAsciiPrintable'})
+    let italian_title = sanitizer.encode_output(teaching.italian_title)
+    let english_title = sanitizer.encode_output(teaching.english_title)
+    let italian_description = sanitizer.encode_output(teaching.italian_description)
+    let english_description = sanitizer.encode_output(teaching.english_description)
     let data_teachings = {
         id: teaching.id,
         italian_title: italian_title,

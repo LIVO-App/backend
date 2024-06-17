@@ -1,6 +1,6 @@
 'use strict';
 
-const htmlentitiesenc = require("html-entities")
+const sanitizer = require('../utils/sanitizer')
 const courseSchema = require('../models/ordinaryclassModel');
 const ordinaryclassModel = require('../models/ordinaryclassModel');
 const teacherModel = require('../models/teacherModel');
@@ -57,8 +57,8 @@ module.exports.get_classes = async (req, res) => {
                     definition_year: cls.annual_credits_definition_year
                 }
         };
-        let italian_displayed_name = htmlentitiesenc.encode(cls.italian_displayed_name, {mode: 'nonAsciiPrintable'})
-        let english_displayed_name = htmlentitiesenc.encode(cls.english_displayed_name, {mode: 'nonAsciiPrintable'})
+        let italian_displayed_name = sanitizer.encode_output(cls.italian_displayed_name)
+        let english_displayed_name = sanitizer.encode_output(cls.english_displayed_name)
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,
@@ -122,8 +122,8 @@ module.exports.get_components = async (req, res) => {
         return;
     }
     let data_cmps = cmps.map((cmp) => {
-        let name = htmlentitiesenc.encode(cmp.name, {mode: 'nonAsciiPrintable'})
-        let surname = htmlentitiesenc.encode(cmp.surname, {mode: 'nonAsciiPrintable'})
+        let name = sanitizer.encode_output(cmp.name)
+        let surname = sanitizer.encode_output(cmp.surname)
         return {
             id: cmp.id,
             name: name,
@@ -199,8 +199,8 @@ module.exports.get_not_in_order_components = async (req, res) => {
         return;
     }
     let data_cmps = cmps.map((cmp) => {
-        let name = htmlentitiesenc.encode(cmp.name, {mode: 'nonAsciiPrintable'})
-        let surname = htmlentitiesenc.encode(cmp.surname, {mode: 'nonAsciiPrintable'})
+        let name = sanitizer.encode_output(cmp.name)
+        let surname = sanitizer.encode_output(cmp.surname)
         return {
             id: cmp.id,
             name: name,
@@ -234,7 +234,7 @@ module.exports.get_student_class = async (req, res) => {
         console.log('ordinary class components: resource not found ('+new Date()+')');
         return;
     }
-    let section = htmlentitiesenc.encode(cl.section, {mode: 'nonAsciiPrintable'})
+    let section = sanitizer.encode_output(cl.section)
     let data_cl = {
         study_year: cl.ordinary_class_study_year,
         address: cl.ordinary_class_address,
@@ -277,8 +277,8 @@ module.exports.add_ordinary_classes = async (req, res) => {
             continue
         }
         let cl_school_year = classes_list[cl].school_year
-        let cl_italian_displayed_name = htmlentitiesenc.encode(classes_list[cl].italian_displayed_name)
-        let cl_english_displayed_name = htmlentitiesenc.encode(classes_list[cl].english_displayed_name)
+        let cl_italian_displayed_name = sanitizer.encode_input(classes_list[cl].italian_displayed_name)
+        let cl_english_displayed_name = sanitizer.encode_input(classes_list[cl].english_displayed_name)
         let class_exist = await ordinaryclassModel.read_with_year(cl_study_year, cl_study_address, cl_school_year)
         if(class_exist){
             existing_class = true

@@ -3376,6 +3376,116 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/images/{obj_type}/{obj_id}/:
+    get:
+      description: Get list of images related to the resouce requested (obj_type can be 'admin', 'teacher', 'student', 'class')
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      summary: Get list of files related to resource
+      responses:
+        '200':
+          description: "List of signed URL to access resources on Google bucket"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/images_object'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      description: Upload images for a certain object
+      summary: Upload images
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        description: List of images to be uploaded
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          $ref: '#/components/responses/ImagesUpload'
+        '400':
+          $ref: '#/components/responses/ImagesUpload'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Delete image related to the object specified
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/query_name'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -3821,6 +3931,21 @@ components:
                 type: string
               previous_pending:
                 $ref: '#/components/schemas/project_class_single_component_data'
+    ImagesUpload:
+      description: Response for image uploading
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              sliced_files:
+                type: boolean
+              non_valid_files:
+                type: boolean
   schemas:
     learning_session_data:
       type: object
@@ -5292,6 +5417,15 @@ components:
               type: string
               description: "Section of the project class where you want to move the student to"
           description: "Information of the project class you want to move the student from"
+    images_object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "File name of the object referred"
+        url:
+          type: string
+          description: "URL for access resource on the Google Bucket"
     course_update_data:
       type: object
       required:
@@ -5950,3 +6084,24 @@ components:
       description: Id of the growth area
       schema:
         type: integer
+    query_name:
+      name: name
+      in: query
+      description: Name of the file to be deleted
+      schema:
+        type: string
+    path_obj_type:
+      name: obj_type
+      in: path
+      description: Type of the object to refer in the image management
+      schema:
+        type: string
+      required: true
+      example: "course"
+    path_obj_id:
+      name: obj_id
+      in: path
+      description: Id of the object to refer in the image management
+      schema:
+        type: integer
+      required: true

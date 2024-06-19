@@ -14,9 +14,9 @@ router.get('/:obj_type/:obj_id/', imageHandler.retrieve_files);
 router.delete('/:obj_type/:obj_id/', tokenChecker);
 router.delete('/:obj_type/:obj_id/', upload.none());
 router.delete('/:obj_type/:obj_id/', imageHandler.delete_files);
-router.post('/:obj_type/:obj_id/upload', tokenChecker);
-router.post('/:obj_type/:obj_id/upload', upload.array('images'));
-router.post('/:obj_type/:obj_id/upload', imageHandler.upload_files);
+router.post('/:obj_type/:obj_id/', tokenChecker);
+router.post('/:obj_type/:obj_id/', upload.array('images'));
+router.post('/:obj_type/:obj_id/', imageHandler.upload_files);
 
 
 module.exports = router;

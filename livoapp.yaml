@@ -4206,9 +4206,6 @@ components:
           type: string
           format: date
           description: "Date of the approval of the admin for that course"
-        assets:
-          type: string
-          description: "Path to assets directory in the server"
     course_ref:
       type: object
       properties:
@@ -4907,9 +4904,6 @@ components:
         class_section:
           type: string
           description: "Section of the current ordinary class of the student"
-        assets:
-          type: string
-          description: "Path to assets directory in the server"
     student_ordinary_class_data:
       type: object
       properties:

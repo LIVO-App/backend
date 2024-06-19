@@ -253,8 +253,7 @@ module.exports.get_course = async (req, res) => {
         certifying_admin_ref: certifying_admin_ref,
         admin_name: admin_name,
         admin_surname: admin_surname,
-        admin_confirmation: course.admin_confirmation,
-        assets: course.assets
+        admin_confirmation: course.admin_confirmation
     };
     let response = {
         path: "/api/v1/courses",
@@ -692,14 +691,6 @@ module.exports.add_proposition = async (req, res) => {
         // If course_id was setted from request, we update it with the new instance model
         course_id = new_course.rows.insertId.toString()
         publication = new_course.date
-        let add_assets = await courseSchema.add_assets(course_id)
-        if(!add_assets){
-            // If error occurs and the course added is new, delete entry added in course
-            res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, course_exist: class_exist})
-            console.log('missing required information: new course proposal addition. Add assets to course ('+new Date()+')');
-            await courseSchema.deleteProposal(course_id);
-            return
-        }
         let opentoIns = await opentoSchema.add(course_id, access_object);
         if(!opentoIns){
             if(new_course_id){

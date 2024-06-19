@@ -88,8 +88,7 @@ module.exports.get_student = async (req, res) => {
         address: address,
         email: student.email,
         ordinary_class_ref: ordinary_class_ref,
-        class_section: section,
-        assets: student.assets
+        class_section: section
     }
     let path = "/api/v1/students/"+student_id
     let response = {
@@ -766,11 +765,9 @@ module.exports.add_students = async (req, res) => {
             continue
         }
         let student_psw = Math.random().toString(36).slice(-8)
-        let assets_link_name = username.split(".")[1]
-        let assets_link = "/assets/users/students/"+assets_link_name
         student_name = sanitizer.encode_input(student_name)
         student_surname = sanitizer.encode_input(student_surname)
-        let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address, assets_link)
+        let student_insert = await studentModel.add_student(student_cf, username, student_email, student_psw, student_name, student_surname, student_gender, student_birth_date, student_address)
         if(!student_insert){
             wrong_student = true
             console.log("User not added")

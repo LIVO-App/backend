@@ -8,7 +8,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_school_year, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, c.learning_area_id, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation, c.assets FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
+            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_school_year, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, c.learning_area_id, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
             if(admin){
                 sql += 'LEFT ';
             }
@@ -627,25 +627,6 @@ module.exports = {
             conn.release()
         }
 
-    },
-    async add_assets(course_id){
-        try{
-            conn = await pool.getConnection()
-            if(!course_id){
-                conn.release()
-                return false
-            }
-            let assets_link = '/assets/courses/course_'+course_id
-            let sql = 'UPDATE course SET assets = ? WHERE id = ?'
-            let values = [assets_link, course_id]
-            const rows = await conn.query(sql, values)
-            conn.release()
-            return rows
-        } catch (err) {
-            console.log("Something went wrong: add assets to course")
-        } finally {
-            conn.release()
-        }
     }
 };
 

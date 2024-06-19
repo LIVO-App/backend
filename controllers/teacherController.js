@@ -657,11 +657,9 @@ module.exports.add_teachers = async (req, res) => {
             continue
         }
         let teacher_psw = Math.random().toString(36).slice(-8)
-        let assets_link_name = username.split(".")[1]
-        let assets_link = "/assets/users/teachers/"+assets_link_name
         teacher_name = sanitizer.encode_input(teacher_name)
         teacher_surname = sanitizer.encode_input(teacher_surname)
-        let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address, assets_link)
+        let teacher_insert = await teacherSchema.add_teacher(teacher_cf, username, teacher_email, teacher_psw, teacher_name, teacher_surname, teacher_gender, teacher_birth_date, teacher_address)
         if(!teacher_insert){
             wrong_teacher = true
             console.log("User not added")

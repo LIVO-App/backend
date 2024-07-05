@@ -529,9 +529,10 @@ module.exports.subscription_export = async (req, res) => {
         }
     }
     const csv = await converter.json2csv(csv_data);
+    
     let _filename = 'subscriptions'+new Date().toLocaleDateString('en-GB')+'.csv'
     let filename = _filename.replace(/[/]/g,"")
-    let mailOptions = {
+    /*let mailOptions = {
         from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
         to: 'pietro.fronza@studenti.unitn.it',
         subject: "Iscrizioni da controllare",
@@ -544,8 +545,9 @@ module.exports.subscription_export = async (req, res) => {
         } else {
             console.log('Email sent: ' + info.response);
         }
-    });
-    res.status(200).json({status: 'success', description: 'Data exported'})
+    });*/
+    //res.status(200).json({status: 'success', description: 'Data exported'})
+    res.attachment(filename).send(csv)
 }
 /*subscribe_schema.isClassFull(3,7)
     .then((msg) => {

@@ -1498,6 +1498,7 @@ module.exports.propositions_export = async (req, res) => {
         csv_data.push(csv_row)
     }
     const csv = await converter.json2csv(csv_data);
+    /*
     let mailOptions = {
         from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
         to: 'pietro.fronza@studenti.unitn.it',
@@ -1511,8 +1512,8 @@ module.exports.propositions_export = async (req, res) => {
         } else {
             console.log('Email sent: ' + info.response);
         }
-    });
-    res.status(200).json({status: 'success', description: 'Data exported'})
+    });*/
+    res.attachment('propositions.csv').send(csv)
 }
 
 module.exports.get_courses_for_tutors = async (req, res) => {

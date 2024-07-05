@@ -3886,14 +3886,10 @@ components:
     DataExported:
       description: Exportation of data ended successfully
       content:
-        application/json:
+        application/csv:
           schema:
-            type: object
-            properties:
-              status:
-                type: string
-              description:
-                type: string
+            type: string
+            format: binary
     GradeInsert:
       description: Multiple grades insertion to the system response
       content:

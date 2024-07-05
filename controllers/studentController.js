@@ -77,7 +77,7 @@ module.exports.get_student = async (req, res) => {
     let surname = sanitizer.encode_output(student.surname)
     gender = sanitizer.encode_output(gender)
     address = sanitizer.encode_output(address)
-    class_section = sanitizer.encode_output(student.section)
+    let class_section = sanitizer.encode_output(student.section)
     let student_data = {
         cf: cf,
         username: student.username,
@@ -88,7 +88,7 @@ module.exports.get_student = async (req, res) => {
         address: address,
         email: student.email,
         ordinary_class_ref: ordinary_class_ref,
-        class_section: section
+        class_section: class_section
     }
     let path = "/api/v1/students/"+student_id
     let response = {
@@ -256,17 +256,27 @@ module.exports.get_curriculum_v2 = async (req, res) => {
     let school_year = req.query.school_year;
     let context_id = req.query.context_id;
     //console.log(req.loggedUser);
-    if(req.loggedUser.role == "student"){
+    if(req.loggedUser.role == "student" || req.loggedUser.role == "admin"){
         let student_exist = await studentModel.read_id(student_id)
         if(!student_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_courses_v2: unauthorized access ('+new Date()+')');
-            return;
-        }
-        if(req.loggedUser._id != student_id){
-            res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('get_curriculum: unauthorized access ('+new Date()+')');
             return;
+        }
+        if (req.loggedUser.role == "student") {
+            if(req.loggedUser._id != student_id){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_curriculum: unauthorized access ('+new Date()+')');
+                return;
+            }
+        } else {
+            let admin_id = req.loggedUser._id;
+            let admin_exist = await adminModel.read_id(admin_id)
+            if (!admin_exist){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('get_curriculum: unauthorized access ('+new Date()+')');
+                return;
+            }
         }
         let check = await ordinaryclassSchema.list(student_id, school_year);
         if(!check){

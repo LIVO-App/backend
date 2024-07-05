@@ -176,7 +176,6 @@ module.exports.get_not_in_order_components = async (req, res) => {
             return;
         }
         is_tutor = is_tutor_req ? true : false
-        console.log(is_tutor)
     } else if (req.loggedUser.role == "admin") {
         let adminexists = await adminSchema.read_id(req.loggedUser._id)
         if(!adminexists){

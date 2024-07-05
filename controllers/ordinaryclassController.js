@@ -147,6 +147,7 @@ module.exports.get_not_in_order_components = async (req, res) => {
     let study_year = req.params.study_year;
     let address = req.params.address;
     let session_id = req.query.session_id;
+    let is_tutor;
     let session_exist = await learningSessionModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
@@ -168,6 +169,14 @@ module.exports.get_not_in_order_components = async (req, res) => {
             console.log('my_ordinary_class: unauthorized access. Not my class ('+new Date()+')');
             return;
         }
+        let is_tutor_req = await teacherModel.isTeacherTutor(req.loggedUser._id, study_year, address, school_year, section)
+        if(is_tutor_req == null){
+            res.status(400).json({status: "error", description: MSG.missingParameter});
+            console.log('ordinary_class components: missing parameters teacher ('+new Date()+')');
+            return;
+        }
+        is_tutor = is_tutor_req ? true : false
+        console.log(is_tutor)
     } else if (req.loggedUser.role == "admin") {
         let adminexists = await adminSchema.read_id(req.loggedUser._id)
         if(!adminexists){
@@ -192,7 +201,7 @@ module.exports.get_not_in_order_components = async (req, res) => {
             learning_context_id: constraint.learning_context_id
         }
     })
-    let cmps = await ordinaryclassModel.not_in_order_students(study_year, address, session_id, section, constraints_list);
+    let cmps = await ordinaryclassModel.not_in_order_students(study_year, address, session_id, section, constraints_list, is_tutor);
     if (!cmps) {
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('ordinary class components not in order: missing parameters ('+new Date()+')');

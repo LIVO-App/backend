@@ -303,5 +303,27 @@ module.exports = {
         } finally {
             conn.release();
         }
+    },
+    async isTeacherTutor(teacher_id, study_year, address, school_year, section){
+        try{
+            conn = await pool.getConnection();
+            if(!teacher_id || !study_year || !address || !school_year || !section) {
+                conn.release();
+                return null;
+            }
+            let sql = 'SELECT * FROM ordinary_teach AS ot WHERE ot.teacher_id = ? AND ot.ordinary_class_study_year = ? AND ot.ordinary_class_address = ? AND ot.ordinary_class_school_year = ? AND ot.section = ? AND ot.tutor = 1';            
+            values = [teacher_id, study_year, address, school_year, section];
+            const rows = await conn.query(sql, values);
+            conn.release();
+            if(rows.length>=1){
+                return rows;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log("Something went wrong: ordinary classes teacher tutor");
+        } finally {
+            conn.release();
+        }
     }
 };

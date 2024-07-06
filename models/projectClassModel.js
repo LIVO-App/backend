@@ -1,7 +1,7 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async read(course_id, session_id, admin=false){
+    async read(course_id, session_id, student=false){
         try{
             conn = await pool.getConnection();
             if(!course_id || !session_id){
@@ -10,7 +10,7 @@ module.exports = {
                 return null;
             }
             let sql = 'SELECT pc.course_id, pc.learning_session_id, '
-            if (admin) {
+            if (!student) {
                 sql += 'pc.project_class_code,'
             }
             sql += ' CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_session_id = ?';

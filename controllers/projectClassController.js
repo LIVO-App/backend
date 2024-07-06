@@ -102,7 +102,7 @@ module.exports.get_classes = async (req, res) => {
 }
 
 module.exports.get_class = async (req, res) => {
-    let admin = false;
+    let student = false;
     if(req.loggedUser.role=="admin"){
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
@@ -110,7 +110,6 @@ module.exports.get_class = async (req, res) => {
             console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
-        admin = true
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherModel.read_id(req.loggedUser._id);
         if(!teacher_exist){
@@ -125,6 +124,7 @@ module.exports.get_class = async (req, res) => {
             console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
+        student = true
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
         console.log('project_class: unauthorized access ('+new Date()+')');
@@ -132,7 +132,7 @@ module.exports.get_class = async (req, res) => {
     }
     let course_id = req.params.course
     let session_id = req.params.session;
-    let cl = await projectClassesSchema.read(course_id, session_id, admin);
+    let cl = await projectClassesSchema.read(course_id, session_id, student);
     if(cl==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('project class: missing parameters ('+new Date()+')');

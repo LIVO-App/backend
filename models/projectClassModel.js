@@ -167,17 +167,17 @@ module.exports = {
             conn.release();
         }
     },
-    async add(course_id, session_id, ita_name, eng_name, group, num_section, teacher_id){
+    async add(course_id, session_id, project_class_code, ita_name, eng_name, group, num_section, teacher_id){
         try{
             conn = await pool.getConnection()
-            if(!course_id || ! session_id || !group || !num_section || !teacher_id){
+            if(!course_id || ! session_id || !project_class_code || !group || !num_section || !teacher_id){
                 conn.release()
                 return false;
             }
             ita_name = ita_name == undefined ? null : ita_name
             eng_name = eng_name == undefined ? null : eng_name
-            let sql = 'INSERT INTO project_class (course_id, learning_session_id, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?,?)'
-            let values = [course_id, session_id, ita_name, eng_name, group, num_section, teacher_id]
+            let sql = 'INSERT INTO project_class (course_id, learning_session_id, project_class_code, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?)'
+            let values = [course_id, session_id, project_class_code, ita_name, eng_name, group, num_section, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
@@ -331,15 +331,19 @@ module.exports = {
             conn.release()
         }
     },
-    async update(course_id, session_id, ita_name, eng_name, group, num_section){
+    async update(course_id, session_id, project_class_code, ita_name, eng_name, group, num_section){
         try {   
             conn = await pool.getConnection()
-            if(!course_id || !session_id || (ita_name == undefined && eng_name == undefined && group == undefined && num_section == undefined)){
+            if(!course_id || !session_id || !project_class_code || (ita_name == undefined && eng_name == undefined && group == undefined && num_section == undefined)){
                 conn.release()
                 return false
             }
             let sql = 'UPDATE project_class SET'
             let values = []
+            if(project_class_code != undefined){
+                sql += ' project_class_code=?,'
+                values.push(project_class_code)
+            }
             if(ita_name != undefined){
                 sql += ' italian_displayed_name=?,'
                 values.push(ita_name)

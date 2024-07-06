@@ -9,6 +9,9 @@ function encode_output(text) {
 }
 
 function encode_special_output(text) {
+    if (text == undefined) {
+        return undefined
+    }
     let output
     if (text.includes("<script>") || text.includes("</script>")) {
         output = text.replace("<script>", htmlentitiesenc.encode("<script>"))

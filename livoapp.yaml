@@ -4993,6 +4993,7 @@ components:
         - min_students
         - max_students
         - session_id
+        - project_class_code
         - access_object
         - teaching_list
         - class_group
@@ -5056,6 +5057,9 @@ components:
         session_id:
           type: integer
           description: "Learning session in which the teacher wants to hold the course"
+        project_class_code:
+          type: string
+          description: "8 character Project class code used for identification"
         access_object:
           type: object
           additionalProperties:
@@ -5475,6 +5479,9 @@ components:
         session_id:
           type: integer
           description: "Learning session in which the teacher wants to hold the course"
+        project_class_code:
+          type: string
+          description: "8 character project class identifier"
         access_object:
           type: object
           additionalProperties:

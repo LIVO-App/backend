@@ -39,7 +39,8 @@ let MSG = {
     pastSession: "Session already expired or imminent",
     notAuthorized: "Not authorized request",
     courseConfirmed: "The proposition you want to reject was already confirmed. In fact some students are already present",
-    changedUniqueInformation: "Some information you wanted to change must remain the same. If you want to change them, please, create a new course model."
+    changedUniqueInformation: "Some information you wanted to change must remain the same. If you want to change them, please, create a new course model.",
+    wrong_code: "The code length is not correct. Please try again"
 }
 
 process.env.TZ = 'Etc/Universal';
@@ -506,6 +507,13 @@ module.exports.add_proposition = async (req, res) => {
     // Add new teachings
     let teaching_list = req.body.teaching_list;
     // Add new project class proposal (no confirmation of admin yet)
+    if (req.body.project_class_code != undefined && req.body.project_class_code.length != 8) {
+        res.status(400).json({status: "error", description: MSG.wrong_code})
+        console.log('course proposition: project class code is not of the correct size ('+new Date()+')');
+        return;
+    }
+    // TODO: Remove placeholder for project class code
+    let project_class_code = req.body.project_class_code != undefined ? sanitizer.encode_input(req.body.project_class_code) : sanitizer.encode_input("AAAAAAAA");
     let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
     let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;
@@ -815,7 +823,7 @@ module.exports.add_proposition = async (req, res) => {
         }
     }
     //console.log(course_id)
-    let proj_class_ins = await projectclassSchema.add(course_id, session_id, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
+    let proj_class_ins = await projectclassSchema.add(course_id, session_id, project_class_code, ita_class_name, eng_class_name, class_group, num_section, teacher_id);
     if(!proj_class_ins){
         if(!course_exist){ // If the course was not inside the database, delete all the information about it
             res.status(400).json({status: "error", description: MSG.missing_params, wrong_ord_class: wrong_ord_class, wrong_context: wrong_context, wrong_teaching: wrong_teaching, wrong_growth_area: wrong_growth_area, course_exist: course_exist})
@@ -1083,6 +1091,13 @@ module.exports.update_course = async (req, res) => {
     }
     let access_object = req.body.access_object;
     let teaching_list = req.body.teaching_list;
+    if (req.body.project_class_code != undefined && req.body.project_class_code.length != 8) {
+        res.status(400).json({status: "error", description: MSG.wrong_code})
+        console.log('course proposition: project class code is not of the correct size ('+new Date()+')');
+        return;
+    }
+    // TODO: Remove placeholder for project class code
+    let project_class_code = req.body.project_class_code != undefined ? sanitizer.encode_input(req.body.project_class_code) : sanitizer.encode_input("AAAAAAAA");
     let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
     let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;
@@ -1274,7 +1289,7 @@ module.exports.update_course = async (req, res) => {
     let project_class_update = false
     let teacher_update
     if(!new_project_class || new_project_class == undefined){
-        project_class_update = await projectclassSchema.update(course_id, session_id, ita_class_name, eng_class_name, class_group, num_section)
+        project_class_update = await projectclassSchema.update(course_id, session_id, project_class_code, ita_class_name, eng_class_name, class_group, num_section)
         let possible_sections = await projectclassSchema.get_section_number(course_id, session_id)
         possible_sections = possible_sections == 0 ? 0 : possible_sections.num_section
         if(teacher_list!=undefined){
@@ -1408,13 +1423,14 @@ module.exports.propositions_export = async (req, res) => {
     let non_confirmed_proj_class = await courseSchema.get_class_models(undefined, true, true, future_session_id);
     let confirmed_courses_without_class = await courseSchema.get_models(undefined, false, true, session_id_exists.school_year);
     let csv_data = []
-    let titolo_italiano, titolo_inglese,sessione_di_apprendimento,gruppo,insegnante_proposto,area_di_apprendimento,crediti,min_studenti,max_studenti,contesto_specifico,contesto_personale;
+    let codice_classe_progetto, titolo_italiano, titolo_inglese,sessione_di_apprendimento,gruppo,insegnante_proposto,area_di_apprendimento,crediti,min_studenti,max_studenti,contesto_specifico,contesto_personale;
     for(let i in non_confirmed_proj_class){
         let course_id = non_confirmed_proj_class[i].id
         sessione_di_apprendimento = non_confirmed_proj_class[i].learning_session_id
         let course_data = await courseSchema.read(course_id, true);
         let class_data = await projectclassSchema.read(course_id, sessione_di_apprendimento);
         let opento_data = await opentoSchema.read_from_course(course_id);
+        codice_classe_progetto = sanitizer.decode_text(non_confirmed_proj_class[i].project_class_code)
         titolo_italiano = sanitizer.decode_text(non_confirmed_proj_class[i].italian_title)
         titolo_inglese = sanitizer.decode_text(non_confirmed_proj_class[i].english_title)
         gruppo = class_data.group
@@ -1439,6 +1455,7 @@ module.exports.propositions_export = async (req, res) => {
             contesto_personale = contesto_personale.slice(0,-1);
         }
         let csv_row = {
+            codice_classe_progetto: codice_classe_progetto,
             titolo_italiano: titolo_italiano,
             titolo_inglese: titolo_inglese,
             sessione_di_apprendimento: sessione_di_apprendimento,
@@ -1459,6 +1476,7 @@ module.exports.propositions_export = async (req, res) => {
         let course_data = await courseSchema.read(course_id, true);
         let class_data = undefined;
         let opento_data = await opentoSchema.read_from_course(course_id);
+        codice_classe_progetto = sanitizer.decode_text(confirmed_courses_without_class[i].project_class_code)
         titolo_italiano = sanitizer.decode_text(confirmed_courses_without_class[i].italian_title)
         titolo_inglese = sanitizer.decode_text(confirmed_courses_without_class[i].english_title)
         gruppo = class_data == undefined

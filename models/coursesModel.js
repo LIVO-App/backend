@@ -304,7 +304,7 @@ module.exports = {
             let sql = `SELECT c.id , c.italian_title, c.english_title, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified', c.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
             let values = []
             if(admin){
-                sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname', pc.project_class_code`
             }
             sql += ` FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = c.certifying_admin_id`
             if(admin){
@@ -350,7 +350,7 @@ module.exports = {
             conn = await pool.getConnection()
             let sql = `SELECT c.id, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id , pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
             if(admin){
-                sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname', pc.project_class_code `
             }
             sql +=  `FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
             let values = []

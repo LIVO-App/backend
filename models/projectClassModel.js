@@ -1,7 +1,7 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async read(course_id, session_id){
+    async read(course_id, session_id, admin=false){
         try{
             conn = await pool.getConnection();
             if(!course_id || !session_id){
@@ -9,7 +9,11 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT pc.course_id, pc.learning_session_id, CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_session_id = ?';
+            let sql = 'SELECT pc.course_id, pc.learning_session_id, '
+            if (admin) {
+                sql += 'pc.project_class_code,'
+            }
+            sql += ' CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_session_id = ?';
             values = [course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -31,7 +35,7 @@ module.exports = {
                 conn.release()
                 return false
             }
-            let sql = 'SELECT pc.course_id, pc.learning_session_id, CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id JOIN admin AS a ON a.id = pc.certifying_admin_id';
+            let sql = 'SELECT pc.course_id, pc.learning_session_id, pc.project_class_code, CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id JOIN admin AS a ON a.id = pc.certifying_admin_id';
             let values = [];
             if(session_id!=undefined){
                 if(year){

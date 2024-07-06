@@ -66,6 +66,7 @@ module.exports.get_classes = async (req, res) => {
                 id: cl.admin_id
             }
         }
+        let project_class_code = sanitizer.encode_output(cl.project_class_code)
         let italian_title = sanitizer.encode_output(cl.italian_title)
         let english_title = sanitizer.encode_output(cl.english_title)
         let teacher_name = sanitizer.encode_output(cl.teacher_name)
@@ -75,6 +76,7 @@ module.exports.get_classes = async (req, res) => {
         return {
             course_id: cl.course_id,
             learning_session: cl.learning_session_id,
+            project_class_code: project_class_code,
             italian_title: italian_title,
             english_title: english_title,
             group: cl.group,
@@ -100,6 +102,7 @@ module.exports.get_classes = async (req, res) => {
 }
 
 module.exports.get_class = async (req, res) => {
+    let admin = false;
     if(req.loggedUser.role=="admin"){
         let admin_exist = await adminModel.read_id(req.loggedUser._id);
         if(!admin_exist){
@@ -107,6 +110,7 @@ module.exports.get_class = async (req, res) => {
             console.log('project_class: unauthorized access ('+new Date()+')');
             return;
         }
+        admin = true
     } else if (req.loggedUser.role == "teacher") {
         let teacher_exist = await teacherModel.read_id(req.loggedUser._id);
         if(!teacher_exist){
@@ -128,7 +132,7 @@ module.exports.get_class = async (req, res) => {
     }
     let course_id = req.params.course
     let session_id = req.params.session;
-    let cl = await projectClassesSchema.read(course_id, session_id);
+    let cl = await projectClassesSchema.read(course_id, session_id, admin);
     if(cl==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('project class: missing parameters ('+new Date()+')');
@@ -171,6 +175,7 @@ module.exports.get_class = async (req, res) => {
             preferences = pending_students.length;
         }
     }
+    let project_class_code = sanitizer.encode_output(cl.project_class_code)
     let italian_title = sanitizer.encode_output(cl.italian_title)
     let english_title = sanitizer.encode_output(cl.english_title)
     let teacher_name = sanitizer.encode_output(cl.teacher_name)
@@ -180,6 +185,7 @@ module.exports.get_class = async (req, res) => {
     let data_class ={
         course_id: cl.course_id,
         learning_session: cl.learning_session_id,
+        project_class_code: project_class_code,
         italian_title: italian_title,
         english_title: english_title,
         group: cl.group,

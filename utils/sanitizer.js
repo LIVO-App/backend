@@ -3,6 +3,9 @@
 const htmlentitiesenc = require("html-entities");
 
 function encode_output(text) {
+    if (text == undefined) {
+        return undefined
+    }
     let output = htmlentitiesenc.decode(text)
     output = htmlentitiesenc.encode(output)
     return output
@@ -31,6 +34,9 @@ function encode_input(input) {
 }
 
 function decode_text(text){
+    if (input == undefined) {
+        return undefined
+    }
     return htmlentitiesenc.decode(text)
 }
 

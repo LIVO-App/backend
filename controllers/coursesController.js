@@ -397,6 +397,7 @@ module.exports.get_courses_model = async (req, res) => {
                 }
             };
         }
+        let project_class_code = sanitizer.encode_output(model.project_class_code)
         let italian_title = sanitizer.encode_output(model.italian_title)
         let english_title = sanitizer.encode_output(model.english_title)
         let admin_name = sanitizer.encode_output(model.admin_name)
@@ -411,6 +412,7 @@ module.exports.get_courses_model = async (req, res) => {
             learning_session_id: model.learning_session_id,
             project_class_confirmation_date: model.project_class_confirmation_date,
             project_class_to_be_modified: model.project_class_to_be_modified,
+            project_class_code: project_class_code,
             course_confirmation_date: model.course_confirmation_date,
             course_to_be_modified: model.course_to_be_modified,
             certifying_admin_ref: certifying_admin_ref,

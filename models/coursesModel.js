@@ -336,7 +336,7 @@ module.exports = {
                 values.push(school_year)
             }
             if (admin){
-                sql += ` ORDER BY pc.project_class_code ASC`
+                sql += ` ORDER BY pc.project_class_code ASC, c.italian_title ASC, c.creation_school_year DESC`
             } else {
                 sql += ` ORDER BY c.italian_title ASC, c.creation_school_year DESC`
             }
@@ -386,7 +386,7 @@ module.exports = {
                 values.push(session_id)
             }
             if (admin){
-                sql += ` ORDER BY pc.project_class_code ASC`
+                sql += ` ORDER BY pc.project_class_code ASC, pc.learning_session_id ASC, c.italian_title ASC, c.creation_school_year DESC`
             } else {
                 sql += ` ORDER BY pc.learning_session_id ASC, c.italian_title ASC, c.creation_school_year DESC`
             }

@@ -273,6 +273,8 @@ module.exports.insert_grades = async (req, res) => {
     let grade_error_students = [];
     let inserted_students = [];
     let inserted_rows = 0;
+    let actual_publication;
+    let grades_id = [];
     // Needed to add grades to existing student
     if(grades_list!=undefined){
         for(var grade in grades_list){
@@ -327,6 +329,8 @@ module.exports.insert_grades = async (req, res) => {
                 }
             }
             let ins_grade = await gradesSchema.add(student_id, teacher_id, course_id, session_id, ita_descr, eng_descr, grade_value, publication_date, final);
+            grades_id.push({id: ins_grade.grade.id, student_id: student_id})
+            actual_publication = ins_grade.grade.publication
             if(!ins_grade.rows){
                 console.log(`Grade for student with id ${student_id} not inserted. Adding it to the response list`)
                 grade_error_students.push(student_id)
@@ -342,6 +346,8 @@ module.exports.insert_grades = async (req, res) => {
     let response = {
         status: "accepted",
         description: res_des,
+        grades_id: grades_id,
+        publication: actual_publication,
         wrong_entry: wrong_entry,
         duplicate_entry: duplicate_entry,
         students_with_errors: grade_error_students

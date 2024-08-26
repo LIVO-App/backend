@@ -33,11 +33,11 @@ function encode_input(input) {
     return htmlentitiesenc.encode(input)
 }
 
-function decode_text(text){
+function decode_text(input){
     if (input == undefined) {
         return undefined
     }
-    return htmlentitiesenc.decode(text)
+    return htmlentitiesenc.decode(input)
 }
 
 module.exports = {encode_output, encode_special_output, encode_input, decode_text}

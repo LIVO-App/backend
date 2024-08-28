@@ -61,8 +61,8 @@ module.exports.get_announcement = async (req, res) => {
     }
     let italian_title = sanitizer.encode_output(announcement.italian_title)
     let english_title = sanitizer.encode_output(announcement.english_title)
-    let italian_message = sanitizer.encode_output(announcement.italian_message)
-    let english_message = sanitizer.encode_output(announcement.english_message)
+    let italian_message = sanitizer.encode_special_output(announcement.italian_message)
+    let english_message = sanitizer.encode_special_output(announcement.english_message)
     let data_announcement = {
         id: announcement.id,
         italian_title: italian_title,
@@ -149,8 +149,8 @@ module.exports.publish_announcement = async (req, res) => {
     }
     let italian_title = sanitizer.encode_input(req.body.italian_title);
     let english_title = sanitizer.encode_input(req.body.english_title);
-    let italian_message = sanitizer.encode_input(req.body.italian_message);
-    let english_message = sanitizer.encode_input(req.body.english_message);
+    let italian_message = sanitizer.encode_special_output(req.body.italian_message);
+    let english_message = sanitizer.encode_special_output(req.body.english_message);
     let publish_date = req.body.publish_date;
     let publish = await announcementSchema.add(admin_id, italian_title, english_title, italian_message, english_message, publish_date);
     if(!publish){
@@ -163,7 +163,7 @@ module.exports.publish_announcement = async (req, res) => {
         status: "accepted", 
         description: res_des,
     };
-    let mailOptions = {
+    /*let mailOptions = {
         from: process.env.GOOGLE_ANNOUNCEMENT_EMAIL,
         to: 'pietro.fronza@studenti.unitn.it',
         subject: italian_title,
@@ -175,6 +175,6 @@ module.exports.publish_announcement = async (req, res) => {
         } else {
             console.log('Email sent: ' + info.response);
         }
-    });
+    });*/
     res.status(201).json(response);
 }

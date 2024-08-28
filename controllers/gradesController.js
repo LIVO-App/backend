@@ -34,8 +34,8 @@ module.exports.get_grades = async (req, res) => {
     }
     let grades = await gradesSchema.list(student_id, course_id, session_id);
     let data_grade = grades.map((grade) => {
-        let italian_description = sanitizer.encode_output(grade.italian_description)
-        let english_description = sanitizer.encode_output(grade.english_description)
+        let italian_description = sanitizer.encode_special_output(grade.italian_description)
+        let english_description = sanitizer.encode_special_output(grade.english_description)
         return {
             id: grade.id,
             italian_description: italian_description,
@@ -85,8 +85,8 @@ module.exports.get_grades_v2 = async (req, res) => {
     }
     let grades = await gradesSchema.list(student_id, course_id, session_id);
     let data_grade = grades.map((grade) => {
-        let italian_description = sanitizer.encode_output(grade.italian_description)
-        let english_description = sanitizer.encode_output(grade.english_description)
+        let italian_description = sanitizer.encode_special_output(grade.italian_description)
+        let english_description = sanitizer.encode_special_output(grade.english_description)
         return {
             id: grade.id,
             italian_description: italian_description,
@@ -151,8 +151,8 @@ module.exports.insert_grade = async (req, res) => {
         return;
     }
     let student_id = req.params.student_id;
-    let ita_descr = sanitizer.encode_input(req.body.ita_description);
-    let eng_descr = sanitizer.encode_input(req.body.eng_description);
+    let ita_descr = sanitizer.encode_special_output(req.body.ita_description);
+    let eng_descr = sanitizer.encode_special_output(req.body.eng_description);
     let publication_date = req.body.publication_date;
     let grade = req.body.grade;
     let final = req.body.final;
@@ -257,8 +257,8 @@ module.exports.insert_grades = async (req, res) => {
         return;
     }
     let grades_list = req.body.grades_list;
-    let ita_descr = sanitizer.encode_input(req.body.ita_description);
-    let eng_descr = sanitizer.encode_input(req.body.eng_description);
+    let ita_descr = sanitizer.encode_special_output(req.body.ita_description);
+    let eng_descr = sanitizer.encode_special_output(req.body.eng_description);
     let publication_date = req.body.publication_date;
     if(publication_date!=undefined){    
         if(new Date(publication_date) > new Date()){
@@ -419,8 +419,8 @@ module.exports.update_grade = async (req, res) => {
             return
         }
     }
-    let ita_description = sanitizer.encode_input(req.body.ita_description);
-    let eng_description = sanitizer.encode_input(req.body.eng_description);
+    let ita_description = sanitizer.encode_special_output(req.body.ita_description);
+    let eng_description = sanitizer.encode_special_output(req.body.eng_description);
     let grade_value = req.body.grade;
     let publication_date = req.body.publication_date;
     let update_grade = await gradesSchema.update(grade_id, ita_description, eng_description, grade_value, publication_date)

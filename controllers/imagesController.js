@@ -81,7 +81,7 @@ module.exports.upload_files = async (req, res) => {
                 console.log('upload image course: unauthorized access ('+new Date()+')');
                 return;
             }
-            let course_exists = coursesModel.read(obj_id, true)
+            let course_exists = await coursesModel.read(obj_id, true)
             if(!course_exists){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});
                 console.log('upload image course: unauthorized access ('+new Date()+')');
@@ -108,7 +108,7 @@ module.exports.upload_files = async (req, res) => {
         console.log('upload image course: something went wrong ('+new Date()+')');
         return;
     }
-    console.log(files_already_present.length)
+    //console.log(files_already_present.length)
     if(files_already_present.length == 4){
         res.status(400).json({status: "error", description: MSG.maxFileUploaded});
         console.log('upload image course: maximum number of file uploaded ('+new Date()+')');
@@ -221,7 +221,7 @@ module.exports.retrieve_files = async (req, res) => {
             return;
         }
     } else if (obj_type == 'course'){
-        let course_exists = coursesModel.read(obj_id, true)
+        let course_exists = await coursesModel.read(obj_id, true)
         if(!course_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('retrieve image course: unauthorized access ('+new Date()+')');
@@ -240,10 +240,10 @@ module.exports.retrieve_files = async (req, res) => {
                 return;
             }
         } else if(req.loggedUser.role == 'admin'){
-            let admin_exist = await adminModel.read_id(obj_id);
+            let admin_exist = await adminModel.read_id(req.loggedUser._id);
             if(!admin_exist){
-                res.status(404).json({status: "error", description: MSG.notFound});
-                console.log('retrieve image admin: admin does not exists ('+new Date()+')');
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('retrieve image course: unauthorized access ('+new Date()+')');
                 return;
             }
         } else {
@@ -355,7 +355,7 @@ module.exports.delete_files = async (req, res) => {
             return;
         }
     } else if (obj_type == 'course'){
-        let course_exists = coursesModel.read(obj_id, true)
+        let course_exists = await coursesModel.read(obj_id, true)
         if(!course_exists){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
             console.log('delete image course: unauthorized access ('+new Date()+')');
@@ -374,10 +374,10 @@ module.exports.delete_files = async (req, res) => {
                 return;
             }
         } else if(req.loggedUser.role == 'admin'){
-            let admin_exist = await adminModel.read_id(obj_id);
+            let admin_exist = await adminModel.read_id(req.loggedUser._id);
             if(!admin_exist){
-                res.status(404).json({status: "error", description: MSG.notFound});
-                console.log('delete image admin: admin does not exists ('+new Date()+')');
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('delete image course: unauthorized access ('+new Date()+')');
                 return;
             }
         } else {

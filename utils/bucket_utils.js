@@ -23,10 +23,10 @@ async function upload_file(prefix, identifier, file_name, file_stream){
         // File upload completed
         });
 
-        console.log("File uploaded successfully");
+        console.log(prefix + ": file uploaded successfully ("+new Date()+")");
         return true;
     } catch (err) {
-        console.log("Something went wrong: file upload");
+        console.log("Something went wrong: " + prefix + " file upload ("+new Date()+")");
         return false;
     }
 }
@@ -40,11 +40,11 @@ async function delete_single_file(prefix, identifier, file_name, gen_num){
     };
     try {
         await myBucket.file(destFileName).delete(deleteOptions);
-        console.log("File deleted") 
+        console.log(prefix + ": file deleted successfully ("+new Date()+")"); 
         return true   
     } catch (err) {
         console.log(err)
-        console.log("Something went wrong: file deletion")
+        console.log("Something went wrong: " + prefix + " file deletion ("+new Date()+")")
         return false
     }
 }
@@ -59,7 +59,7 @@ async function get_file_list(pref, identifier){
         const [files] = await myBucket.getFiles(options);
         return files;
     } catch (err) {
-        console.log("Something went wrong: files retrieval")
+        console.log("Something went wrong: " + pref + " files retrieval ("+new Date()+")")
         return false
     }
     

@@ -1107,7 +1107,7 @@ module.exports.update_course = async (req, res) => {
     let teacher_list = req.body.teacher_list;
     let starting_date = session_id_exists.start
     let today = new Date()
-    let _10days = today.setDate(today.getDate() + 10)
+    let _10days = new Date(today).setDate(today.getDate() + 10)
     if (starting_date < today){
         res.status(400).json({status: "error", description: MSG.pastSession});
         console.log('course update: the session is a past session. The data of the project class were not updated ('+new Date()+')');

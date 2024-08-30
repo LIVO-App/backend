@@ -509,13 +509,12 @@ module.exports.add_proposition = async (req, res) => {
     // Add new teachings
     let teaching_list = req.body.teaching_list;
     // Add new project class proposal (no confirmation of admin yet)
-    if (req.body.project_class_code != undefined && req.body.project_class_code.length != 8) {
+    if (req.body.project_class_code == undefined || req.body.project_class_code.length != 8) {
         res.status(400).json({status: "error", description: MSG.wrong_code})
         console.log('course proposition: project class code is not of the correct size ('+new Date()+')');
         return;
     }
-    // TODO: Remove placeholder for project class code
-    let project_class_code = req.body.project_class_code != undefined ? sanitizer.encode_input(req.body.project_class_code) : sanitizer.encode_input("AAAAAAAA");
+    let project_class_code = sanitizer.encode_input(req.body.project_class_code);
     let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
     let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;
@@ -1093,13 +1092,12 @@ module.exports.update_course = async (req, res) => {
     }
     let access_object = req.body.access_object;
     let teaching_list = req.body.teaching_list;
-    if (req.body.project_class_code != undefined && req.body.project_class_code.length != 8) {
+    if (req.body.project_class_code == undefined || req.body.project_class_code.length != 8) {
         res.status(400).json({status: "error", description: MSG.wrong_code})
         console.log('course proposition: project class code is not of the correct size ('+new Date()+')');
         return;
     }
-    // TODO: Remove placeholder for project class code
-    let project_class_code = req.body.project_class_code != undefined ? sanitizer.encode_input(req.body.project_class_code) : sanitizer.encode_input("AAAAAAAA");
+    let project_class_code = sanitizer.encode_input(req.body.project_class_code);
     let ita_class_name = sanitizer.encode_input(req.body.italian_class_name);
     let eng_class_name = sanitizer.encode_input(req.body.english_class_name);
     let class_group = req.body.class_group;

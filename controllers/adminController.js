@@ -1,6 +1,7 @@
 'use strict';
 
 const adminModel = require('../models/adminModel');
+const sanitizer = require('../utils/sanitizer');
 const fs = require('fs')
 const readline = require('readline');
 
@@ -20,24 +21,28 @@ module.exports.update_info = async (req, res) => {
         let admin_exist = await adminModel.read_id(admin_id);
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update admin information: student does not exists');
+            console.log('update admin information: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != admin_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update admin information: unauthorized access');
+            console.log('update admin information: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update admin information: unauthorized access');
+        console.log('update admin information: unauthorized access ('+new Date()+')');
         return;
     }
     let information = req.body.admin_info
+    information.name = sanitizer.encode_input(information.name)
+    information.surname = sanitizer.encode_input(information.surname)
+    information.gender = sanitizer.encode_input(information.gender)
+    information.address = sanitizer.encode_input(information.address)
     let update_info = await adminModel.update(admin_id, information)
     if(!update_info){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('update admin information: no parameters to change')
+        console.log('update admin information: no parameters to change ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Information updated successfully"})
@@ -49,29 +54,29 @@ module.exports.update_password = async (req, res) => {
         let admin_exist = await adminModel.read_id(admin_id);
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update admin psw: student does not exists');
+            console.log('update admin psw: student does not exists ('+new Date()+')');
             return;
         }
         if(req.loggedUser._id != admin_id){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update admin psw: unauthorized access');
+            console.log('update admin psw: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update admin psw: unauthorized access');
+        console.log('update admin psw: unauthorized access ('+new Date()+')');
         return;
     }
     let psw = req.body.psw
     let update_psw = await adminModel.change_psw(admin_id, psw)
     if(update_psw==null){
         res.status(400).json({status: "error", description: MSG.missingParameter});
-        console.log('update admin psw: no parameters to change')
+        console.log('update admin psw: no parameters to change ('+new Date()+')')
         return
     }
     if(!update_psw){
         res.status(400).json({status: "error", description: "The password is the same. Please change it."});
-        console.log('update admin psw: same password')
+        console.log('update admin psw: same password ('+new Date()+')')
         return
     }
     res.status(200).json({status: "updated", description: "Password updated successfully"})
@@ -83,12 +88,12 @@ module.exports.add_admins = async (req, res) => {
         let admin_exist = await adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('add admins: not authorized');
+            console.log('add admins: not authorized ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('add admins: not authorized');
+        console.log('add admins: not authorized ('+new Date()+')');
         return;
     }
     let existing_admin, wrong_admin, admin_added;
@@ -115,9 +120,12 @@ module.exports.add_admins = async (req, res) => {
             continue
         }
         let admin_psw = Math.random().toString(36).slice(-8)
-        let assets_link_name = username.split(".")[1]
-        let assets_link = "/assets/users/admins/"+assets_link_name
-        let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address, assets_link)
+        admin_cf = sanitizer.encode_input(admin_cf)
+        admin_name = sanitizer.encode_input(admin_name)
+        admin_surname = sanitizer.encode_input(admin_surname)
+        admin_gender = sanitizer.encode_input(admin_gender)
+        admin_address = sanitizer.encode_input(admin_address)
+        let admin_insert = await adminModel.add_admin(admin_cf, username, admin_email, admin_psw, admin_name, admin_surname, admin_gender, admin_birth_date, admin_address)
         if(!admin_insert){
             wrong_admin = true
             console.log("User not added")
@@ -130,11 +138,11 @@ module.exports.add_admins = async (req, res) => {
     if(!admin_added){
         if(existing_admin){
             res.status(409).json({status: "error", description: "All the users were already present in the database", wrong_admin: wrong_admin})
-            console.log("Admin insertion: users already present")
+            console.log('Admin insertion: users already present ('+new Date()+')')
             return
         } else {
             res.status(400).json({status: "error", description: "All the users tried to insert were wrong. Please, check them", wrong_admin: wrong_admin})
-            console.log("Admin insertion: missing parameters")
+            console.log('Admin insertion: missing parameters ('+new Date()+')')
             return
         }
     }

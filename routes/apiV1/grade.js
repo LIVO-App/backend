@@ -6,6 +6,8 @@ const router = express.Router();
 const gradeHandler = require('../../controllers/gradesController');
 const tokenChecker = require('../tokenChecker');
 
+router.post('/', tokenChecker);
+router.post('/', gradeHandler.insert_grades);
 router.put('/:grade_id', tokenChecker)
 router.put('/:grade_id', gradeHandler.update_grade);
 router.delete('/:grade_id', tokenChecker)

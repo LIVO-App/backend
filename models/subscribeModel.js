@@ -145,7 +145,7 @@ module.exports = {
             rows = await conn.query(sql, values);
             conn.release();
             if(rows.length >= 1){
-                return rows[0];
+                return rows.reduce((max, row) => max.project_class_session > row.project_class_session ? max : row);
             } else {
                 return false;
             }
@@ -209,6 +209,32 @@ module.exports = {
             return rows
         } catch (err) {
             console.log("Something went wrong: pending students")
+        } finally {
+            conn.release()
+        }
+    },
+    async check_subscription(student_id, session_id, context_id, area_id){
+        try {
+            conn = await pool.getConnection()
+            if(student_id == undefined || session_id==undefined || !context_id){
+                conn.release()
+                return false
+            }
+            let sql = 'SELECT * FROM subscribed AS subs JOIN course AS c ON c.id = subs.project_class_course_id WHERE subs.student_id = ? AND subs.project_class_session = ? AND subs.learning_context_id = ? AND subs.pending IS NULL'
+            let values = [student_id, session_id, context_id]
+            if(context_id!="PER"){
+                sql += ' AND c.learning_area_id = ?'
+                values.push(area_id)
+            }
+            const rows = await conn.query(sql, values)
+            conn.release()
+            if(rows.length>=1){
+                return rows
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log("Something went wrong: check subscription of student")
         } finally {
             conn.release()
         }

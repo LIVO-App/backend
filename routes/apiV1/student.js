@@ -16,6 +16,8 @@ router.get('/:student_id/curriculum', studentHandler.get_curriculum);
 router.get('/:student_id/grades', gradeHandler.get_grades);
 router.post('/:student_id/subscribe', subscribeHandler.subscribe_project_class);
 router.delete('/:student_id/unsubscribe', subscribeHandler.unsubscribe_project_class);
+router.delete('/:student_id/remove_class', tokenChecker);
+router.delete('/:student_id/remove_class', studentHandler.remove_student);
 router.patch('/:student_id/confirmation', tokenChecker);
 router.patch('/:student_id/confirmation', subscribeHandler.subscription_confirmation);
 router.post('/:student_id/grades', tokenChecker);

@@ -5,7 +5,7 @@ const crypto = require('../utils/cipher.js');
 async function read(condition,param){
     try {
         conn = await pool.getConnection();
-        sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, s.first_access, att.ordinary_class_study_year, att.ordinary_class_address, att.section, s.assets FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
+        sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, s.first_access, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student AS s JOIN attend AS att ON s.id = att.student_id WHERE " + condition + " ORDER BY att.ordinary_class_school_year DESC";
         const rows = await conn.query(sql,[param]);
         conn.release();
         if (rows.length>=1){
@@ -277,20 +277,20 @@ module.exports = {
             conn.release()
         }
     },
-    async add_student(cf, username, email, psw, name, surname, gender, birth_date, address, assets_link, google = false){
+    async add_student(cf, username, email, psw, name, surname, gender, birth_date, address, google = false){
         try {
             conn = await pool.getConnection()
-            if(!username || !email || !psw || !name || !surname || !assets_link){
+            if(!username || !email || !psw || !name || !surname){
                 conn.release()
                 return false
             }
-            let sql = 'INSERT INTO student (cf, username, email, `password`, name, surname, gender, birth_date, address, google, first_access, assets) VALUES (?,?,?,?,?,?,?,?,?,?, 1,?)'
+            let sql = 'INSERT INTO student (cf, username, email, `password`, name, surname, gender, birth_date, address, google, first_access) VALUES (?,?,?,?,?,?,?,?,?,?, 1,?)'
             let cicf = cf!=undefined ? crypto.cipher(cf).toString() : null
             let cipsw = crypto.encrypt_password(psw)
             let cigen = gender!=undefined ? crypto.cipher(gender).toString() : null
             let cibirth = birth_date!=undefined ? crypto.cipher(birth_date).toString() : null
             let ciaddr = address!=undefined ? crypto.cipher(address).toString() : null
-            let values = [cicf, username, email, cipsw.toString(), name, surname, cigen, cibirth, ciaddr, google, assets_link]
+            let values = [cicf, username, email, cipsw.toString(), name, surname, cigen, cibirth, ciaddr, google]
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
@@ -298,6 +298,20 @@ module.exports = {
             console.log("Something went wrong: add student")
         } finally {
             conn.release()
+        }
+    },
+    async list_with_class(school_year){
+        try{
+            conn = await pool.getConnection();
+            sql = `SELECT s.id, s.name, s.surname, att.ordinary_class_study_year, att.ordinary_class_address FROM student AS s JOIN attend AS att ON att.student_id = s.id WHERE att.ordinary_class_school_year = ? ORDER BY att.ordinary_class_address, att.ordinary_class_study_year, s.surname`;
+            let values = [school_year]
+            const rows = await conn.query(sql, values);
+            conn.release();
+            return rows;
+        } catch (err) {
+            console.log("Something went wrong: list student with class");
+        } finally {
+            conn.release();
         }
     }
 };

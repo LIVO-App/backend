@@ -20,7 +20,9 @@ const constraintRouter = require('./apiV1/constraints');
 const adminRouter = require('./apiV1/admin');
 const studyAddressRouter = require('./apiV1/study_address')
 const gradeRouter = require('./apiV1/grade');
-const generalAnnouncementRouter = require('./apiV1/general_announcement')
+const generalAnnouncementRouter = require('./apiV1/general_announcement');
+const subscribeRouter = require('./apiV1/subscribe');
+const imageRouter = require('./apiV1/images');
 
 apiV1.use('/auth', authRouter);
 apiV1.use('/learning_sessions', sessionsRouter);
@@ -39,6 +41,8 @@ apiV1.use('/constraints', constraintRouter);
 apiV1.use('/admins', adminRouter);
 apiV1.use('/study_addresses', studyAddressRouter);
 apiV1.use('/grades', gradeRouter);
-apiV1.use('/general_announcements', generalAnnouncementRouter)
+apiV1.use('/general_announcements', generalAnnouncementRouter);
+apiV1.use('/subscriptions', subscribeRouter);
+apiV1.use('/images', imageRouter);
 
 module.exports = apiV1;

@@ -140,7 +140,7 @@ module.exports = {
             const rows = await conn.query(sql, values)
             conn.release()
             if(rows.length == 1){
-                return true
+                return rows[0].learning_context_id
             } else {
                 return false
             }

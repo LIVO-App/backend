@@ -1,5 +1,6 @@
 'use strict';
 
+const sanitizer = require('../utils/sanitizer');
 const adminModel = require('../models/adminModel');
 const coursesModel = require('../models/coursesModel');
 const learningContextsModel = require('../models/learningContextsModel');
@@ -23,7 +24,7 @@ module.exports.get_institute_classes = async (req, res) => {
     let cls = await opentoSchema.read_from_course(course_id);
     if(!cls){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to: resource not found');
+        console.log('open_to: resource not found ('+new Date()+')');
         return;
     }
     let data_cls = cls.map((cl) => {
@@ -51,11 +52,13 @@ module.exports.get_institute_classes = async (req, res) => {
                 id: cl.learning_context_id
             }
         }
+        let italian_title = sanitizer.encode_output(cl.italian_title)
+        let english_title = sanitizer.encode_output(cl.english_title)
         return {
             study_year_ref: study_year_ref,
             study_address_ref: study_address_ref,
-            italian_title: cl.italian_title,
-            english_title: cl.english_title,
+            italian_title: italian_title,
+            english_title: english_title,
             presidium: cl.presidium,
             main_study_year: cl.main_study_year,
             learning_context_ref: learning_context_ref
@@ -78,59 +81,59 @@ module.exports.add_single_access = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('open_to single addition: unauthorized access');
+            console.log('open_to single addition: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('open_to single addition: unauthorized access');
+        console.log('open_to single addition: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await coursesModel.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: course not found');
+        console.log('open_to single addition: course not found ('+new Date()+')');
         return;
     }
     let context_id = req.query.context_id;
     let context_exist = await learningContextsModel.read(context_id)
     if(!context_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: context not found');
+        console.log('open_to single addition: context not found ('+new Date()+')');
         return;
     }
     let study_address = req.query.study_address;
     let study_address_exists = await ordinaryclassModel.check_study_address(study_address);
     if(!study_address_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: study address not found');
+        console.log('open_to single addition: study address not found ('+new Date()+')');
         return;
     }
     let study_year = req.query.study_year;
     let study_year_exist = await ordinaryclassModel.check_study_year(study_year)
     if(!study_year_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: study year not found');
+        console.log('open_to single addition: study year not found ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id;
     let session_exist = await learning_sessionsModel.read(session_id)
     if(!session_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: session not found');
+        console.log('open_to single addition: session not found ('+new Date()+')');
         return;
     }
     let ord_class_exist = await ordinaryclassModel.read(study_year, study_address, session_id)
     if(!ord_class_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single addition: ordinary class not found');
+        console.log('open_to single addition: ordinary class not found ('+new Date()+')');
         return;
     }
     let access_exist = await opentoSchema.is_present(course_id, context_id, study_year, study_address)
     if(access_exist){
         res.status(409).json({status: "error", description: MSG.duplicateEntry});
-        console.log('open_to single addition: duplicate entry');
+        console.log('open_to single addition: duplicate entry ('+new Date()+')');
         return;
     }
     let main_study_year = req.query.main_study_year === "true" ? true : false;
@@ -138,7 +141,7 @@ module.exports.add_single_access = async (req, res) => {
     let class_access_insert = await opentoSchema.add_single(course_id, context_id, study_year, study_address, presidium, main_study_year);
     if(!class_access_insert){
         res.status(400).json({status: "error", description: MSG.missingParameters})
-        console.log('open_to single addition: missing parameters')
+        console.log('open_to single addition: missing parameters ('+new Date()+')')
         return
     }
     res.status(201).json({status: "inserted", description: MSG.insertSuccess})
@@ -150,45 +153,45 @@ module.exports.delete_access = async (req, res) => {
         let user_exist = await adminModel.read_id(admin_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('open_to single remove: unauthorized access');
+            console.log('open_to single remove: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('open_to single remove: unauthorized access');
+        console.log('open_to single remove: unauthorized access ('+new Date()+')');
         return;
     }
     let course_id = req.params.course_id;
     let course_exist = await coursesModel.read(course_id, true);
     if(!course_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single remove: course not found');
+        console.log('open_to single remove: course not found ('+new Date()+')');
         return;
     }
     let context_id = req.query.context_id;
     let context_exist = await learningContextsModel.read(context_id)
     if(!context_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single remove: context not found');
+        console.log('open_to single remove: context not found ('+new Date()+')');
         return;
     }
     let study_address = req.query.study_address;
     let study_address_exists = await ordinaryclassModel.check_study_address(study_address);
     if(!study_address_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single remove: study address not found');
+        console.log('open_to single remove: study address not found ('+new Date()+')');
         return;
     }
     let study_year = req.query.study_year;
     let study_year_exist = await ordinaryclassModel.check_study_year(study_year)
     if(!study_year_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single remove: study year not found');
+        console.log('open_to single remove: study year not found ('+new Date()+')');
         return;
     }
     if(study_address_exists.max_classes<study_year){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('open_to single remove: study year not planned for the study address');
+        console.log('open_to single remove: study year not planned for the study address ('+new Date()+')');
         return;
     }
     let access_revoke = await opentoSchema.remove(course_id, context_id, study_year, study_address)

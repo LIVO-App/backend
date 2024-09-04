@@ -1,6 +1,7 @@
 'use strict';
 
 const constraintSchema = require('../models/constraintModel');
+const studentSchema = require('../models/studentModel');
 const adminSchema = require('../models/adminModel');
 const learning_sessionsModel = require('../models/learning_sessionsModel');
 const learning_areaModel = require('../models/learning_areaModel');
@@ -20,17 +21,25 @@ let MSG = {
 process.env.TZ = 'Etc/Universal';
 
 module.exports.get_constraints = async (req, res) => {
-    if(req.loggedUser.role == "admin"){
+    if (req.loggedUser.role == "student") {
+        let user_id = req.loggedUser._id
+        let user_exist = await studentSchema.read_id(user_id)
+        if (!user_exist) {
+            res.status(401).json({ status: "error", description: MSG.notAuthorized });
+            console.log('get constraints: unauthorized access (' + new Date() + ')');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
         let user_id = req.loggedUser._id
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get constraints: unauthorized access');
+            console.log('get constraints: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get constraints: unauthorized access');
+        console.log('get constraints: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.query.session_id
@@ -43,7 +52,7 @@ module.exports.get_constraints = async (req, res) => {
         let session_exists = await learning_sessionsModel.read(session_id)
         if(!session_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('get constraints session_id: resource not found');
+            console.log('get constraints session_id: resource not found ('+new Date()+')');
             return;
         }
     }
@@ -51,7 +60,7 @@ module.exports.get_constraints = async (req, res) => {
         let area_exists = await learning_areaModel.read(area_id)
         if(!area_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('get constraints area_id: resource not found');
+            console.log('get constraints area_id: resource not found ('+new Date()+')');
             return;
         }
     }
@@ -59,7 +68,7 @@ module.exports.get_constraints = async (req, res) => {
         let context_exists = await learningContextsModel.read(context_id)
         if(!context_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('get constraints context_id: resource not found');
+            console.log('get constraints context_id: resource not found ('+new Date()+')');
             return;
         }
     }
@@ -67,7 +76,7 @@ module.exports.get_constraints = async (req, res) => {
         let ord_class_exists = await ordinaryclassModel.read(study_year, study_address, session_id)
         if(!ord_class_exists){
             res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('get constraints ordinary_class: resource not found');
+            console.log('get constraints ordinary_class: resource not found ('+new Date()+')');
             return;
         }
     }
@@ -75,7 +84,7 @@ module.exports.get_constraints = async (req, res) => {
     let constraints = await constraintSchema.get_constraints(session_id,year_of,context_id, area_id, study_year, study_address);
     if(!constraints){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('get constraints: missing parameters');
+        console.log('get constraints: missing parameters ('+new Date()+')');
         return;
     }
     let data_constraints = constraints.map((constraint) => {
@@ -145,12 +154,12 @@ module.exports.insert_constraints = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('constraints insertion: unauthorized access');
+            console.log('constraints insertion: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('constraints insertion: unauthorized access');
+        console.log('constraints insertion: unauthorized access ('+new Date()+')');
         return;
     }
     let constraints_object = req.body.constraints_object;
@@ -248,11 +257,11 @@ module.exports.insert_constraints = async (req, res) => {
     if(!constraints_insert){
         if(!constraint_present){
             res.status(400).json({status: "error", description: MSG.missingParameters, wrong_session: wrong_session, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
-            console.log('missing required information: new session constraints addition');
+            console.log('missing required information: new session constraints addition ('+new Date()+')');
             return;
         } else {
             res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_session: wrong_session, wrong_area: wrong_area, wrong_context: wrong_context, wrong_class: wrong_class, constraint_present: constraint_present})
-            console.log('duplicated information: new session constraints addition');
+            console.log('duplicated information: new session constraints addition ('+new Date()+')');
             return;
         }
     }
@@ -328,19 +337,19 @@ module.exports.delete_constraint = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('deletion constraints: unauthorized access');
+            console.log('deletion constraints: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('delete constraints: unauthorized access');
+        console.log('delete constraints: unauthorized access ('+new Date()+')');
         return;
     }
     let constr_id = req.params.constr_id
     let constr_exist = await constraintSchema.read(constr_id)
     if(!constr_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('constraint deletion: resource not found');
+        console.log('constraint deletion: resource not found ('+new Date()+')');
         return;
     }
     let session_id = constr_exist.learning_session_id
@@ -350,7 +359,7 @@ module.exports.delete_constraint = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('constraint deletion: the session is a past, current or imminent session. Abort delete');
+        console.log('constraint deletion: the session is a past, current or imminent session. Abort delete ('+new Date()+')');
         return;
     } else {
         let past_session = await learning_sessionsModel.read(session_id-1)
@@ -358,7 +367,7 @@ module.exports.delete_constraint = async (req, res) => {
             let past_starting_date = new Date(past_session.start)
             if(past_starting_date <= today || past_starting_date <= _10days){
                 res.status(400).json({status: "error", description: MSG.firstFutureSession});
-                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort delete');
+                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort delete ('+new Date()+')');
                 return;
             }
         }
@@ -373,19 +382,19 @@ module.exports.update_constraints = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('update constraints: unauthorized access');
+            console.log('update constraints: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('update constraints: unauthorized access');
+        console.log('update constraints: unauthorized access ('+new Date()+')');
         return;
     }
     let constr_id = req.params.constr_id
     let constr_exist = await constraintSchema.read(constr_id)
     if(!constr_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('constraint update: resource not found');
+        console.log('constraint update: resource not found ('+new Date()+')');
         return;
     }
     let session_id = constr_exist.learning_session_id
@@ -395,7 +404,7 @@ module.exports.update_constraints = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('constraint deletion: the session is a past, current or imminent session. Abort update');
+        console.log('constraint deletion: the session is a past, current or imminent session. Abort update ('+new Date()+')');
         return;
     } else {
         let past_session = await learning_sessionsModel.read(session_id-1)
@@ -403,7 +412,7 @@ module.exports.update_constraints = async (req, res) => {
             let past_starting_date = new Date(past_session.start)
             if(past_starting_date <= today || past_starting_date <= _10days){
                 res.status(400).json({status: "error", description: MSG.firstFutureSession});
-                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort update');
+                console.log('constraint deletion: the session is the first future session, where the students are choosing the next courses. You can\'t change the constraints. Abort update ('+new Date()+')');
                 return;
             }
         }
@@ -412,7 +421,7 @@ module.exports.update_constraints = async (req, res) => {
     let update_constraints = await constraintSchema.update(constr_id, num_credits)
     if(!update_constraints){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('constraint update: missing parameters');
+        console.log('constraint update: missing parameters ('+new Date()+')');
         return;
     }
     res.status(200).json({status: "updated", description: "Constraint updated successfully"})

@@ -184,7 +184,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/path_session_id'
         - $ref: '#/components/parameters/header_token'
-      summary: Delete course
+      summary: Update course
       tags:
         - project classes
         - v1
@@ -1009,14 +1009,17 @@ paths:
         - $ref: '#/components/parameters/query_teacher_id'
         - $ref: '#/components/parameters/query_course_id'
         - $ref: '#/components/parameters/query_session_id'
-        - $ref: '#/components/parameters/query_ita_descr'
-        - $ref: '#/components/parameters/query_eng_descr'
-        - $ref: '#/components/parameters/query_grade'
-        - $ref: '#/components/parameters/query_final'
       summary: Insertion of a student grade
       tags:
         - students
         - v1
+      requestBody:
+        description: Data of grade insertion
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/grade_insert'
       responses:
         '201':
           $ref: '#/components/responses/AcceptInsert'
@@ -1069,6 +1072,36 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/grades:
+    post:
+      description: Insert a list of grades for a single project class related to a single test
+      parameters:
+        - $ref: '#/components/parameters/query_teacher_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+      summary: Insertion of a list of grades
+      tags:
+        - grades
+        - students
+        - v1
+      requestBody:
+        description: Data of multiple grade insertion
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/multiple_grade_insert'
+      responses:
+        '201':
+          $ref: '#/components/responses/GradeInsert'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
           $ref: '#/components/responses/NotFound'
   /v1/grades/{grade_id}:
     put:
@@ -1664,7 +1697,7 @@ paths:
             schema:
               $ref: '#/components/schemas/final_confirmation_data'
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/AcceptUpdate'
         '400':
           $ref: '#/components/responses/BadInputs'
@@ -2586,6 +2619,26 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/subscriptions/export:
+    get:
+      description: Creates a .csv file with all students and their subscriptions for the next learning session. The csv file will be send via email at the end of the creation.
+      summary: Subscriptions export
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      responses:
+        '200':
+          $ref: '#/components/responses/DataExported'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/propositions/approval:
     put:
       description: Confirmation of course proposals. If the approved parameter is true, it will approve the course. If it is false, it will delete the project class from the database. If the course of reference has no other classes, it will delete the course completely.
@@ -3052,8 +3105,8 @@ paths:
             schema:
               $ref: '#/components/schemas/move_class'
       responses:
-        '200':
-          $ref: '#/components/responses/AcceptUpdate'
+        '201':
+          $ref: '#/components/responses/MoveStudents'
         '400':
           $ref: '#/components/responses/BadInputs'
         '401':
@@ -3061,6 +3114,29 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden' 
         '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/students/{student_id}/remove_class: 
+    delete:
+      description: Remove the student from a project class he is currently enrolled in.
+      summary: Remove of subscription
+      tags:
+        - students
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_student_id'
+        - $ref: '#/components/parameters/query_course_id'
+        - $ref: '#/components/parameters/query_session_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/MoveStudents'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
           $ref: '#/components/responses/NotFound'
   /v1/study_addresses:
     get:
@@ -3258,6 +3334,158 @@ paths:
           $ref: '#/components/responses/MissingToken'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /v1/{teacher_id}/tutor_years:
+    get:
+      description: Get list of years in which the teacher was a tutor for at least an ordinary class
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - teachers
+        - v1
+      summary: Get list of teacher's tutor school years
+      responses:
+        '200':
+          description: "List of school years in which the teacher was a tutor for an ordinary class"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: object
+                    $ref: '#/components/schemas/tutor_school_years'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/images/{obj_type}/{obj_id}/:
+    get:
+      description: Get list of images related to the resouce requested (obj_type can be 'admin', 'teacher', 'student', 'class')
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/header_token'
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      summary: Get list of files related to resource
+      responses:
+        '200':
+          description: "List of signed URL to access resources on Google bucket"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/images_object'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      description: Upload images for a certain object
+      summary: Upload images
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        description: List of images to be uploaded
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          $ref: '#/components/responses/ImagesUpload'
+        '400':
+          $ref: '#/components/responses/ImagesUpload'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      description: Delete image related to the object specified
+      parameters:
+        - $ref: '#/components/parameters/path_obj_type'
+        - $ref: '#/components/parameters/path_obj_id'
+        - $ref: '#/components/parameters/query_name'
+        - $ref: '#/components/parameters/header_token'
+      summary: Delete course
+      tags:
+        - admins
+        - teachers
+        - students
+        - courses
+        - v1
+      responses:
+        '200':
+          $ref: '#/components/responses/AcceptDelete'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404': 
+          $ref: '#/components/responses/NotFound'
 components:
   responses:
     NotFound:
@@ -3658,14 +3886,62 @@ components:
     DataExported:
       description: Exportation of data ended successfully
       content:
+        application/csv:
+          schema:
+            type: string
+            format: binary
+    GradeInsert:
+      description: Multiple grades insertion to the system response
+      content:
         application/json:
           schema:
             type: object
             properties:
               status:
                 type: string
-              description:
+              description: 
                 type: string
+              duplicate_entry:
+                type: boolean
+                description: "Tells if a grade for some student was already inserted in the same day"
+              wrong_entry:
+                type: boolean
+                description: "Tells if a grade the teacher tried to add was not correct and consequently not added"
+              students_with_errors:
+                type: array
+                description: "List of student_ids which very not inserted because of an error in the actual insert. They must be communicated to the teacher"
+                items:
+                  type: integer
+    MoveStudents:
+      description: Response for move and remove student from project class
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              pending:
+                type: string
+              previous_pending:
+                $ref: '#/components/schemas/project_class_single_component_data'
+    ImagesUpload:
+      description: Response for image uploading
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              description: 
+                type: string
+              sliced_files:
+                type: boolean
+              non_valid_files:
+                type: boolean
   schemas:
     learning_session_data:
       type: object
@@ -3926,9 +4202,6 @@ components:
           type: string
           format: date
           description: "Date of the approval of the admin for that course"
-        assets:
-          type: string
-          description: "Path to assets directory in the server"
     course_ref:
       type: object
       properties:
@@ -3994,6 +4267,9 @@ components:
         teacher_surname:
           type: string
           description: "Surname of the proposer teacher of the proposition"
+        preferences:
+          type: integer
+          description: Number of students that wanted to attend the course but cannot since it was already full. Visible when the user does not want the recent models.
     annual_credits_ref:
       type: object
       properties:
@@ -4500,6 +4776,13 @@ components:
         to_be_modified:
           type: boolean
           description: Tells if the class is to be modified
+        final_confirmation:
+          type: string
+          format: date
+          description: Date in which the project class was confirmed definetely
+        preferences:
+          type: integer
+          description: Number of students that wanted to attend the course but cannot since it was already full. Visible only by the proposer teacher and by the admin.
     ordinary_class_component_data:
       type: object
       properties:
@@ -4617,9 +4900,6 @@ components:
         class_section:
           type: string
           description: "Section of the current ordinary class of the student"
-        assets:
-          type: string
-          description: "Path to assets directory in the server"
     student_ordinary_class_data:
       type: object
       properties:
@@ -4713,6 +4993,7 @@ components:
         - min_students
         - max_students
         - session_id
+        - project_class_code
         - access_object
         - teaching_list
         - class_group
@@ -4776,6 +5057,9 @@ components:
         session_id:
           type: integer
           description: "Learning session in which the teacher wants to hold the course"
+        project_class_code:
+          type: string
+          description: "8 character Project class code used for identification"
         access_object:
           type: object
           additionalProperties:
@@ -5127,6 +5411,15 @@ components:
               type: string
               description: "Section of the project class where you want to move the student to"
           description: "Information of the project class you want to move the student from"
+    images_object:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "File name of the object referred"
+        url:
+          type: string
+          description: "URL for access resource on the Google Bucket"
     course_update_data:
       type: object
       required:
@@ -5186,6 +5479,9 @@ components:
         session_id:
           type: integer
           description: "Learning session in which the teacher wants to hold the course"
+        project_class_code:
+          type: string
+          description: "8 character project class identifier"
         access_object:
           type: object
           additionalProperties:
@@ -5373,12 +5669,14 @@ components:
           items:
             type: string
             description: "Id of the teaching the teacher will teach in the class"      
-    grade_update:
+    grade_insert:
       type: object
       required:
         - ita_description
         - eng_description
         - grade
+        - final
+        - publication_date
       properties:
         ita_description:  
           type: string
@@ -5389,6 +5687,74 @@ components:
         grade:
           type: integer
           description: "Grade of the student"
+        final:
+          type: boolean
+          description: "Tells if the grade is a final grade or not"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
+    grades_list:
+      type: object
+      required:
+        - student_id
+        - grade_value
+      properties:
+        student_id:
+          type: integer
+          description: "Student id that obtained a grade"
+        grade_value:
+          type: integer
+          description: "Actual grade obtained by the student"
+    multiple_grade_insert:
+      type: object
+      required:
+        - ita_description
+        - eng_description
+        - grades_list
+        - final
+        - publication_date
+      properties:
+        ita_description:  
+          type: string
+          description: "Italian description of the grade"
+        eng_description:
+          type: string
+          description: "English description of the grade"
+        grades_list:
+          type: array
+          description: "List of grades with their student"
+          items:
+            $ref: '#/components/schemas/grades_list'
+        final:
+          type: boolean
+          description: "Tells if the grade is a final grade or not"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
+    grade_update:
+      type: object
+      properties:
+        ita_description:  
+          type: string
+          description: "Italian description of the grade"
+        eng_description:
+          type: string
+          description: "English description of the grade"
+        grade:
+          type: integer
+          description: "Grade of the student"
+        publication_date:
+          type: string
+          format: date
+          description: "Publication date of the grade"
+    tutor_school_years:
+      type: object
+      properties:
+        school_year:
+          type: integer
+          description: "Starting year of the school year in which the teacher was a tutor for at least one ordinary class. E.g., for the school year 2023/2024, school_year will have the value 2023."
   parameters:
     query_school_year:
       name: school_year
@@ -5545,30 +5911,6 @@ components:
       schema:
         type: string
       required: true
-    query_ita_descr:
-      name: ita_description
-      in: query
-      description: Italian description of the resource we want to search/add
-      schema:
-        type: string
-    query_eng_descr:
-      name: eng_description
-      in: query
-      description: English description of the resource we want to search/add
-      schema:
-        type: string
-    query_grade:
-      name: grade
-      in: query
-      description: Grade the user want to add
-      schema:
-        type: integer
-    query_final:
-      name: final
-      in: query
-      description: Specifies if the grade the user want to add is a final grade
-      schema:
-        type: string
     path_study_year:
       name: study_year
       in: path
@@ -5739,3 +6081,24 @@ components:
       description: Id of the growth area
       schema:
         type: integer
+    query_name:
+      name: name
+      in: query
+      description: Name of the file to be deleted
+      schema:
+        type: string
+    path_obj_type:
+      name: obj_type
+      in: path
+      description: Type of the object to refer in the image management
+      schema:
+        type: string
+      required: true
+      example: "course"
+    path_obj_id:
+      name: obj_id
+      in: path
+      description: Id of the object to refer in the image management
+      schema:
+        type: integer
+      required: true

@@ -1,7 +1,7 @@
 const pool = require('../utils/db.js');
 
 module.exports = {
-    async read(course_id, session_id){
+    async read(course_id, session_id, student=false){
         try{
             conn = await pool.getConnection();
             if(!course_id || !session_id){
@@ -9,7 +9,11 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT pc.course_id, pc.learning_session_id, pc.italian_displayed_name, pc.english_displayed_name, pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_session_id = ?';
+            let sql = 'SELECT pc.course_id, pc.learning_session_id, '
+            if (!student) {
+                sql += 'pc.project_class_code,'
+            }
+            sql += ' CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, pc.num_section, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id WHERE pc.course_id = ? AND pc.learning_session_id = ?';
             values = [course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -31,7 +35,7 @@ module.exports = {
                 conn.release()
                 return false
             }
-            let sql = 'SELECT pc.course_id, pc.learning_session_id, CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id JOIN admin AS a ON a.id = pc.certifying_admin_id';
+            let sql = 'SELECT pc.course_id, pc.learning_session_id, pc.project_class_code, CASE WHEN pc.italian_displayed_name IS NULL THEN (SELECT c.italian_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.italian_displayed_name END AS \'italian_title\', CASE WHEN pc.english_displayed_name IS NULL THEN (SELECT c.english_title FROM course AS c WHERE c.id = pc.course_id) ELSE pc.english_displayed_name END AS \'english_title\', pc.group, t.id as "teacher_id", t.name as "teacher_name", t.surname as "teacher_surname", a.id as "admin_id", a.name AS "admin_name", a.surname AS "admin_surname", pc.admin_confirmation, pc.to_be_modified, pc.final_confirmation FROM project_class AS pc JOIN teacher AS t ON t.id = pc.proposer_teacher_id JOIN admin AS a ON a.id = pc.certifying_admin_id';
             let values = [];
             if(session_id!=undefined){
                 if(year){
@@ -102,7 +106,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND subs.pending IS NULL AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
             let values = [course_id, session_id, section, session_id];
             if(associated_class){
                 if(!teacher_id){
@@ -151,7 +155,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            let sql = 'SELECT DISTINCT subs.section FROM subscribed AS subs WHERE subs.project_class_course_id = ? AND subs.project_class_session = ?';
+            let sql = 'SELECT DISTINCT subs.section FROM subscribed AS subs WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.pending IS NULL';
             let values = [course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -167,17 +171,17 @@ module.exports = {
             conn.release();
         }
     },
-    async add(course_id, session_id, ita_name, eng_name, group, num_section, teacher_id){
+    async add(course_id, session_id, project_class_code, ita_name, eng_name, group, num_section, teacher_id){
         try{
             conn = await pool.getConnection()
-            if(!course_id || ! session_id || !group || !num_section || !teacher_id){
+            if(!course_id || ! session_id || !project_class_code || !group || !num_section || !teacher_id){
                 conn.release()
                 return false;
             }
             ita_name = ita_name == undefined ? null : ita_name
             eng_name = eng_name == undefined ? null : eng_name
-            let sql = 'INSERT INTO project_class (course_id, learning_session_id, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?,?)'
-            let values = [course_id, session_id, ita_name, eng_name, group, num_section, teacher_id]
+            let sql = 'INSERT INTO project_class (course_id, learning_session_id, project_class_code, italian_displayed_name, english_displayed_name, `group`, num_section, proposer_teacher_id) VALUES (?,?,?,?,?,?,?,?)'
+            let values = [course_id, session_id, project_class_code, ita_name, eng_name, group, num_section, teacher_id]
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
@@ -331,15 +335,19 @@ module.exports = {
             conn.release()
         }
     },
-    async update(course_id, session_id, ita_name, eng_name, group, num_section){
+    async update(course_id, session_id, project_class_code, ita_name, eng_name, group, num_section){
         try {   
             conn = await pool.getConnection()
-            if(!course_id || !session_id || (ita_name == undefined && eng_name == undefined && group == undefined && num_section == undefined)){
+            if(!course_id || !session_id || !project_class_code || (ita_name == undefined && eng_name == undefined && group == undefined && num_section == undefined)){
                 conn.release()
                 return false
             }
             let sql = 'UPDATE project_class SET'
             let values = []
+            if(project_class_code != undefined){
+                sql += ' project_class_code=?,'
+                values.push(project_class_code)
+            }
             if(ita_name != undefined){
                 sql += ' italian_displayed_name=?,'
                 values.push(ita_name)

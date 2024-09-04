@@ -55,7 +55,7 @@ module.exports.get_session = async (req, res) => {
     let session = await learningSessionSchema.read(id,school_year);
     if(!session){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('single session: resource not found');
+        console.log('single session: resource not found ('+new Date()+')');
         return;
     }
     let data_session = {
@@ -85,7 +85,7 @@ module.exports.get_sessions_from_courses = async (req, res) => {
     let sessions = await learningSessionSchema.list_from_list_of_courses(student_id, courses);
     if(sessions==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('list of session: missing list of courses');
+        console.log('list of session: missing list of courses ('+new Date()+')');
         return;
     }
     let data_sessions = sessions.map( (session) => {
@@ -112,12 +112,12 @@ module.exports.add_sessions = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('learning sessions addition: unauthorized access');
+            console.log('learning sessions addition: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('learning sessions addition: unauthorized access');
+        console.log('learning sessions addition: unauthorized access ('+new Date()+')');
         return;
     }
     let sessions_list = req.body.sessions_list;
@@ -125,7 +125,7 @@ module.exports.add_sessions = async (req, res) => {
     let future_sessions_existing = await learningSessionSchema.list(undefined, undefined, true);
     if(!future_sessions_existing){
         res.status(400).json({status: "error", description: MSG.somethingWrong});
-        console.log('learning sessions addition: something went wrong in get future sessions');
+        console.log('learning sessions addition: something went wrong in get future sessions ('+new Date()+')');
         return;
     }
     future_sessions_existing.reverse()
@@ -203,7 +203,7 @@ module.exports.add_sessions = async (req, res) => {
                         //console.log(future_session_end)
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again');
+                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
                         return;
                     }
                 } else {
@@ -214,7 +214,7 @@ module.exports.add_sessions = async (req, res) => {
                         //console.log(future_session_start)
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again');
+                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
                         return;
                     }
                 }
@@ -222,7 +222,7 @@ module.exports.add_sessions = async (req, res) => {
             if(!valid_session){
                 overlapping = true
                 res.status(400).json({status: "error", description: MSG.pastSession, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                console.log('learning sessions addition: the sessions you wanted to add is a past session. Please try again');
+                console.log('learning sessions addition: the sessions you wanted to add is a past session. Please try again ('+new Date()+')');
                 return;
             }
             // The control for the overlap with future sessions already present is successful
@@ -231,7 +231,7 @@ module.exports.add_sessions = async (req, res) => {
                 if(start_date<=dates_session[j]){
                     overlapping = true
                     res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                    console.log('learning sessions addition: the sessions you wanted to add are overlapping with each others. Please try again');
+                    console.log('learning sessions addition: the sessions you wanted to add are overlapping with each others. Please try again ('+new Date()+')');
                     return;
                 }               
             }
@@ -251,11 +251,11 @@ module.exports.add_sessions = async (req, res) => {
     if(!insert_sessions){
         if(existing_session && !wrong_session){
             res.status(409).json({status: "error", description: MSG.itemAlreadyExists, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping})
-            console.log('duplicated information: new learning session addition');
+            console.log('duplicated information: new learning session addition ('+new Date()+')');
             return;
         } else {
             res.status(400).json({status: "error", description: MSG.missingParameters, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping})
-            console.log('missing required information: new learning session addition');
+            console.log('missing required information: new learning session addition ('+new Date()+')');
             return;
         }
     }
@@ -278,12 +278,12 @@ module.exports.update_session = async (req, res) => {
         let user_exist = await adminSchema.read_id(user_id)
         if(!user_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('learning sessions update: unauthorized access');
+            console.log('learning sessions update: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('learning sessions update: unauthorized access');
+        console.log('learning sessions update: unauthorized access ('+new Date()+')');
         return;
     }
     let session_id = req.params.session_id
@@ -296,7 +296,7 @@ module.exports.update_session = async (req, res) => {
             both_date = true
             if(end_date<=start_date){
                 res.status(400).json({status: "error", description: MSG.wrongData});
-                console.log('learning session update: the session has wrong data. Abort update');
+                console.log('learning session update: the session has wrong data. Abort update ('+new Date()+')');
                 return;
             }
         } 
@@ -304,21 +304,21 @@ module.exports.update_session = async (req, res) => {
     let session_exists = await learningSessionSchema.read(session_id)
     if(!session_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('learning session update: session does not exist');
+        console.log('learning session update: session does not exist ('+new Date()+')');
         return;
     }
     if(!both_date){
         if(start_date!=undefined && start_date != ""){
             if(start_date>=new Date(session_exists.end)){
                 res.status(400).json({status: "error", description: MSG.wrongData});
-                console.log('learning session update: the session has wrong data. Abort update');
+                console.log('learning session update: the session has wrong data. Abort update ('+new Date()+')');
                 return;
             }
         }
         if(end_date!=undefined && end_date != ""){
             if(end_date>=session_exists.start){
                 res.status(400).json({status: "error", description: MSG.wrongData});
-                console.log('learning session update: the session has wrong data. Abort update');
+                console.log('learning session update: the session has wrong data. Abort update ('+new Date()+')');
                 return;
             }
         }
@@ -328,13 +328,13 @@ module.exports.update_session = async (req, res) => {
     let _10days = today.setDate(today.getDate() + 10)
     if (starting_date <= today || starting_date <= _10days){
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('learning session update: the session is a past, current or imminent session. Abort update');
+        console.log('learning session update: the session is a past, current or imminent session. Abort update ('+new Date()+')');
         return;
     }
     let future_sessions_existing = await learningSessionSchema.list(undefined, undefined, true);
     if(!future_sessions_existing){
         res.status(400).json({status: "error", description: MSG.somethingWrong});
-        console.log('learning sessions update: something went wrong in get future sessions');
+        console.log('learning sessions update: something went wrong in get future sessions ('+new Date()+')');
         return;
     }
     future_sessions_existing.reverse()
@@ -356,7 +356,7 @@ module.exports.update_session = async (req, res) => {
                     } else {
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions});
-                        console.log('learning sessions update: the session you wanted to update is overlapping with already existing ones. Please try again');
+                        console.log('learning sessions update: the session you wanted to update is overlapping with already existing ones. Please try again ('+new Date()+')');
                         return;
                     }
                 } else {
@@ -364,7 +364,7 @@ module.exports.update_session = async (req, res) => {
                     if(end_date_update>future_session_start){
                         overlapping = true
                         res.status(400).json({status: "error", description: MSG.overlappingSessions});
-                        console.log('learning sessions update: the session you wanted to update is overlapping with already existing ones. Please try again');
+                        console.log('learning sessions update: the session you wanted to update is overlapping with already existing ones. Please try again ('+new Date()+')');
                         return;
                     }
                 }        
@@ -380,13 +380,13 @@ module.exports.update_session = async (req, res) => {
     if(!valid_session){
         overlapping = true
         res.status(400).json({status: "error", description: MSG.pastSession});
-        console.log('learning sessions update: you can\'t change a session and move it to the past. Please try again');
+        console.log('learning sessions update: you can\'t change a session and move it to the past. Please try again ('+new Date()+')');
         return;
     }
     let update_session = await learningSessionSchema.update(session_id, session_info);
     if(!update_session){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('learning sessions update: missing parameters');
+        console.log('learning sessions update: missing parameters ('+new Date()+')');
         return;
     }
     res.status(200).json({status: "updated", description: "Learning session updated successfully"})

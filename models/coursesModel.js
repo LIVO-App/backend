@@ -8,7 +8,7 @@ module.exports = {
                 conn.release();
                 return false;
             }
-            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_school_year, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, c.learning_area_id, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation, c.assets FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
+            sql = 'SELECT DISTINCT c.id, c.italian_title, c.english_title, c.creation_school_year, c.italian_description, c.english_description, c.up_hours, c.credits, c.italian_expected_learning_results, c.english_expected_learning_results, c.italian_criterions, c.english_criterions, c.italian_activities, c.english_activities, c.learning_area_id, la.italian_title  AS "learning_area_ita",la.english_title  AS "learning_area_eng",c.min_students, c.max_students, c.proposer_teacher_id, t.name AS "teacher_name", t.surname AS "teacher_surname", c.certifying_admin_id, ad.name AS "admin_name", ad.surname AS "admin_surname", c.admin_confirmation FROM course AS c JOIN learning_area AS la ON c.learning_area_id = la.id JOIN teacher AS t ON t.id = c.proposer_teacher_id ';
             if(admin){
                 sql += 'LEFT ';
             }
@@ -30,7 +30,7 @@ module.exports = {
         try {
             //console.log(learn_area_id);
             conn = await pool.getConnection();
-            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group`;
+            let sql = `SELECT c.id, CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', c.credits, c.learning_area_id, pc.group, pc.final_confirmation`;
             let values = []
             if(student_id != undefined){
                 sql += `, CASE WHEN c.id IN (SELECT c.id FROM course AS c INNER JOIN project_class AS pc ON c.id = pc.course_id INNER JOIN subscribed AS subs ON pc.course_id = subs.project_class_course_id AND pc.learning_session_id = subs.project_class_session WHERE `;
@@ -284,7 +284,7 @@ module.exports = {
                 sql += ` AND c.creation_school_year = ?`
                 values.push(school_year)
             }
-            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
+            sql += ` ORDER BY c.italian_title ASC, c.creation_school_year DESC`
             const rows = await conn.query(sql, values)
             conn.release()
             if (typeof(recent_models) == "number"){
@@ -293,7 +293,6 @@ module.exports = {
                 return rows 
             } 
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -305,7 +304,7 @@ module.exports = {
             let sql = `SELECT c.id , c.italian_title, c.english_title, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', c.to_be_modified AS 'course_to_be_modified', c.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
             let values = []
             if(admin){
-                sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                sql += `, c.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname', pc.project_class_code`
             }
             sql += ` FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = c.certifying_admin_id`
             if(admin){
@@ -336,12 +335,15 @@ module.exports = {
                 sql += ` AND c.creation_school_year = ?`
                 values.push(school_year)
             }
-            sql += ` ORDER BY c.id ASC, c.creation_school_year DESC`
+            if (admin){
+                sql += ` ORDER BY pc.project_class_code ASC, c.italian_title ASC, c.creation_school_year DESC`
+            } else {
+                sql += ` ORDER BY c.italian_title ASC, c.creation_school_year DESC`
+            }
             const rows = await conn.query(sql, values)
             conn.release()
             return rows
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -352,7 +354,7 @@ module.exports = {
             conn = await pool.getConnection()
             let sql = `SELECT c.id, c.creation_school_year, c.admin_confirmation AS 'course_confirmation_date', CASE WHEN pc.italian_displayed_name IS NULL THEN c.italian_title ELSE pc.italian_displayed_name END AS 'italian_title', CASE WHEN pc.english_displayed_name IS NULL THEN c.english_title ELSE pc.english_displayed_name END AS 'english_title', pc.admin_confirmation AS 'project_class_confirmation_date', pc.to_be_modified AS 'project_class_to_be_modified', pc.learning_session_id , pc.certifying_admin_id, a.name AS 'admin_name', a.surname AS 'admin_surname'`
             if(admin){
-                sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname'`
+                sql += `, pc.proposer_teacher_id, t.name AS 'teacher_name', t.surname AS 'teacher_surname', pc.project_class_code `
             }
             sql +=  `FROM course AS c LEFT JOIN project_class AS pc ON pc.course_id = c.id LEFT JOIN admin AS a ON a.id = pc.certifying_admin_id `
             let values = []
@@ -383,13 +385,15 @@ module.exports = {
                 sql += ` WHERE pc.learning_session_id = ?`
                 values.push(session_id)
             }
-            sql += ` ORDER BY pc.learning_session_id ASC, c.id ASC, c.creation_school_year DESC`
-            //console.log(sql);
+            if (admin){
+                sql += ` ORDER BY pc.project_class_code ASC, pc.learning_session_id ASC, c.italian_title ASC, c.creation_school_year DESC`
+            } else {
+                sql += ` ORDER BY pc.learning_session_id ASC, c.italian_title ASC, c.creation_school_year DESC`
+            }
             const rows = await conn.query(sql, values)
             conn.release()
             return rows 
         } catch (err) {
-            console.log(err)
             console.log("Something went wrong: list of course models")
         } finally {
             conn.release()
@@ -631,25 +635,6 @@ module.exports = {
             conn.release()
         }
 
-    },
-    async add_assets(course_id){
-        try{
-            conn = await pool.getConnection()
-            if(!course_id){
-                conn.release()
-                return false
-            }
-            let assets_link = '/assets/courses/course_'+course_id
-            let sql = 'UPDATE course SET assets = ? WHERE id = ?'
-            let values = [assets_link, course_id]
-            const rows = await conn.query(sql, values)
-            conn.release()
-            return rows
-        } catch (err) {
-            console.log("Something went wrong: add assets to course")
-        } finally {
-            conn.release()
-        }
     }
 };
 

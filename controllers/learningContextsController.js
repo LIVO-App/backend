@@ -1,5 +1,6 @@
 'use strict';
 
+const sanitizer = require('../utils/sanitizer')
 const learningContextModel = require('../models/learningContextsModel');
 
 let MSG = {
@@ -14,12 +15,16 @@ module.exports.get_contexts = async (req, res) => {
     let session_id = req.query.session_id;
     let contexts = await learningContextModel.list(student_id, session_id);
     let data_contexts = contexts.map((context) => {
+        let italian_title = sanitizer.encode_output(context.italian_title)
+        let english_title = sanitizer.encode_output(context.english_title)
+        let italian_description = sanitizer.encode_output(context.italian_description)
+        let english_description = sanitizer.encode_output(context.english_description)
         return {
             id: context.id,
-            italian_title: context.italian_title,
-            english_title: context.english_title,
-            italian_description: context.italian_description,
-            english_description: context.english_description,
+            italian_title: italian_title,
+            english_title: english_title,
+            italian_description: italian_description,
+            english_description: english_description,
             credits: context.credits
         };
     });
@@ -40,7 +45,7 @@ module.exports.get_contexts_from_courses = async (req, res) => {
     let contexts = await learningContextModel.list_from_list_of_courses(student_id, session_id, courses);
     if(contexts==null){
         res.status(400).json({status: "error", description: MSG.missingParameters});
-        console.log('list of session: missing list of courses');
+        console.log('list of session: missing list of courses ('+new Date()+')');
         return;
     }
     let data_contexts = contexts.map( (context) => {

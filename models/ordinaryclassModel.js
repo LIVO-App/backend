@@ -126,7 +126,7 @@ module.exports = {
             conn.release();
         }
     },
-    async not_in_order_students(study_year, study_address, session_id, section, constraints_list){
+    async not_in_order_students(study_year, study_address, session_id, section, constraints_list, is_tutor = false){
         try {
             conn = await pool.getConnection();
             if((!study_year || !study_address || !session_id || !section) && constraints_list!=undefined && constraints_list.length!=0){
@@ -138,6 +138,9 @@ module.exports = {
             for(let i = 0; i<constraints_list.length; i++){
                 let area_id = constraints_list[i].learning_area_id
                 let context_id = constraints_list[i].learning_context_id
+                if (context_id == "PER" && is_tutor){
+                    continue
+                }
                 sql += 'SELECT att.student_id, IFNULL((SELECT lm.credits FROM limited AS lm WHERE lm.learning_session_id = ? AND lm.ordinary_class_study_year = att.ordinary_class_study_year AND lm.ordinary_class_address = att.ordinary_class_address AND lm.ordinary_class_school_year = att.ordinary_class_school_year AND'
                 values.push(session_id)
                 if(context_id=="PER"){
@@ -149,7 +152,7 @@ module.exports = {
                 } 
                 sql += '),0) - (SELECT IFNULL(SUM(c.credits),0) FROM subscribed AS subs JOIN project_class AS pc ON subs.project_class_course_id = pc.course_id AND subs.project_class_session = pc.learning_session_id JOIN course AS c ON pc.course_id = c.id WHERE subs.student_id = att.student_id AND '
                 if(context_id == "PER"){
-                    sql += ' subs.learning_context_id = ? AND c.learning_area_id IS NULL '
+                    sql += ' subs.learning_context_id = ? '
                     values.push(context_id)
                 } else {
                     sql += ' subs.learning_context_id = ? AND c.learning_area_id = ? '

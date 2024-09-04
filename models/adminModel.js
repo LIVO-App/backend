@@ -157,7 +157,7 @@ module.exports = {
                 conn.release()
                 return false
             }
-            let sql = 'INSERT INTO admin (cf, username, email, `password`, name, surname, gender, birth_date, address, google, first_access) VALUES (?,?,?,?,?,?,?,?,?,?, 1,?)'
+            let sql = 'INSERT INTO admin (cf, username, email, `password`, name, surname, gender, birth_date, address, google, first_access) VALUES (?,?,?,?,?,?,?,?,?,?, 1)'
             let cicf = cf != undefined ? crypto.cipher(cf).toString() : null
             let cipsw = crypto.encrypt_password(psw)
             let cigen = gender!=undefined ? crypto.cipher(gender).toString() : null

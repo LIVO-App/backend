@@ -227,7 +227,14 @@ module.exports.retrieve_files = async (req, res) => {
             console.log('retrieve image course: unauthorized access ('+new Date()+')');
             return;
         }
-        if(req.loggedUser.role == "teacher"){
+        if (req.loggedUser.role == "student") {
+            let student_esist = studentSchema.read_id(req.loggedUser._id);
+            if(!student_esist){
+                res.status(401).json({status: "error", description: MSG.notAuthorized});
+                console.log('retrieve image student: unauthorized access ('+new Date()+')');
+                return;
+            }
+        } else if(req.loggedUser.role == "teacher"){
             let teacher_esist = teacherSchema.read_id(obj_id);
             if(!teacher_esist){
                 res.status(401).json({status: "error", description: MSG.notAuthorized});

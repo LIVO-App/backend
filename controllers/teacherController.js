@@ -647,7 +647,7 @@ module.exports.add_teachers = async (req, res) => {
         let teacher_address = sanitizer.encode_input(teacher_list[teacher].address)
         let teacher_email = teacher_list[teacher].email
         let username = teacher_name_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()+"."+teacher_surname_arr[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-        for(let i=0; i<teacher_surname_arr.length;i++){
+        for(let i=1; i<teacher_surname_arr.length;i++){
             username += teacher_surname_arr[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
         }
         let user_exist = await teacherSchema.read_email(teacher_email)

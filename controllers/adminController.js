@@ -146,7 +146,7 @@ module.exports.add_admins = async (req, res) => {
             return
         }
     }
-    if(!fs.existsSync('admin.txt')){
+    /*if(!fs.existsSync('admin.txt')){
         fs.writeFileAsync('admin.txt', "", function(err){
             if(err) console.log(err)
             console.log("Created");
@@ -173,6 +173,6 @@ module.exports.add_admins = async (req, res) => {
     fs.appendFile("admin.txt", admin_txt, function(err){
         if(err) console.log(err)
         console.log("File created successfully")
-    });
+    });*/
     res.status(201).json({status: "accepted", description: "New admin users added", existing_admin: existing_admin, wrong_admin: wrong_admin})
 }

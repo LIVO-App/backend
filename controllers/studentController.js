@@ -798,7 +798,7 @@ module.exports.add_students = async (req, res) => {
             return
         }
     }
-    if(!fs.existsSync('student.txt')){
+    /*if(!fs.existsSync('student.txt')){
         fs.writeFileSync('student.txt', '', function(err){
             if(err) console.log("Ciao")
             console.log("Created");
@@ -825,7 +825,7 @@ module.exports.add_students = async (req, res) => {
     fs.appendFile("student.txt", student_txt, function(err){
         if(err) console.log(err)
         console.log("File created successfully")
-    });
+    });*/
     res.status(201).json({status: "accepted", description: "New student users added", existing_student: existing_student, wrong_student: wrong_student})
 }
 

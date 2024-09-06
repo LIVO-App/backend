@@ -680,7 +680,7 @@ module.exports.add_teachers = async (req, res) => {
             return
         }
     }
-    if(!fs.existsSync('teacher.txt')){
+    /*if(!fs.existsSync('teacher.txt')){
         fs.writeFileSync('teacher.txt', "", function(err){
             if(err) console.log(err)
             console.log("Created");
@@ -707,7 +707,7 @@ module.exports.add_teachers = async (req, res) => {
     fs.appendFile("teacher.txt", teacher_txt, function(err){
         if(err) console.log(err)
         console.log("File created successfully")
-    });
+    });*/
     res.status(201).json({status: "accepted", description: "New teacher users added", existing_teacher: existing_teacher, wrong_teacher: wrong_teacher})
 }
 /*classesSchema.read_project_classes_associated(3,7).then(msg => {

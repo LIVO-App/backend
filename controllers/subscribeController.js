@@ -450,21 +450,30 @@ module.exports.subscription_export = async (req, res) => {
         console.log('subscription export: unauthorized access ('+new Date()+')');
         return;
     }
+    let future_session_id = 0;
+    let school_year = 0;
     let current_session = await sessionSchema.read_current_session();
     if(!current_session){
-        res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
-        console.log('export_propositions: not in a session period ('+new Date()+')')
-        return
+        let first_session_curr_year = await sessionSchema.get_first_session_of_current_year();
+        if (!first_session_curr_year){
+            res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
+            console.log('export_propositions: not in a session period ('+new Date()+')')
+            return
+        }
+        future_session_id = first_session_curr_year.id;
+        school_year = first_session_curr_year.school_year
+    } else {
+        let current_session_id = current_session.id;
+        school_year = current_session.school_year;
+        future_session_id = current_session_id+1;
     }
-    let current_session_id = current_session.id;
-    let future_session_id = current_session_id+1;
     let session_id_exists = await sessionSchema.read(future_session_id); // Is learning session present in the database
     if(!session_id_exists){
         res.status(404).json({status: "error", description: MSG.notFound});
         console.log('resource not found: future learning session ('+new Date()+')');
         return;
     }
-    if(current_session.school_year!=session_id_exists.school_year){
+    if(school_year!=session_id_exists.school_year){
         res.status(400).json({status: "error", description: "The current learning session is the last one of the school year."})
         console.log('export_propositions: last session of the school year ('+new Date()+')')
         return;

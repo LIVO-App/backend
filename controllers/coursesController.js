@@ -1430,10 +1430,10 @@ module.exports.propositions_export = async (req, res) => {
         console.log('export_propositions: last session of the school year ('+new Date()+')')
         return;
     }
-    let non_confirmed_proj_class = await courseSchema.get_class_models(undefined, true, true, future_session_id);
+    let non_confirmed_proj_class = await courseSchema.get_class_models(undefined, false, true, future_session_id);
     let confirmed_courses_without_class = await courseSchema.get_models(undefined, false, true, session_id_exists.school_year);
     let csv_data = []
-    let codice_classe_progetto, titolo_italiano, titolo_inglese,sessione_di_apprendimento,gruppo,insegnante_proposto,area_di_apprendimento,crediti,min_studenti,max_studenti,contesto_specifico,contesto_personale;
+    let codice_classe_progetto, titolo_italiano, titolo_inglese,sessione_di_apprendimento,gruppo,insegnante_proposto,area_di_apprendimento,crediti,min_studenti,max_studenti,contesto_specifico,contesto_personale,confirmed;
     for(let i in non_confirmed_proj_class){
         let course_id = non_confirmed_proj_class[i].id
         sessione_di_apprendimento = non_confirmed_proj_class[i].learning_session_id
@@ -1443,6 +1443,7 @@ module.exports.propositions_export = async (req, res) => {
         codice_classe_progetto = sanitizer.decode_text(non_confirmed_proj_class[i].project_class_code)
         titolo_italiano = sanitizer.decode_text(non_confirmed_proj_class[i].italian_title)
         titolo_inglese = sanitizer.decode_text(non_confirmed_proj_class[i].english_title)
+        confirmed = !non_confirmed_proj_class[i].certifying_admin_id ? "NO" : "CONFERMATO"
         gruppo = class_data.group
         insegnante_proposto = sanitizer.decode_text(non_confirmed_proj_class[i].teacher_surname) + '_'+sanitizer.decode_text(non_confirmed_proj_class[i].teacher_name)
         area_di_apprendimento = course_data.learning_area_id
@@ -1476,7 +1477,8 @@ module.exports.propositions_export = async (req, res) => {
             min_studenti: min_studenti,
             max_studenti: max_studenti,
             contesto_specifico: contesto_specifico,
-            contesto_personale: contesto_personale
+            contesto_personale: contesto_personale,
+            confirmed: confirmed
         }
         csv_data.push(csv_row)
     }
@@ -1521,7 +1523,8 @@ module.exports.propositions_export = async (req, res) => {
             min_studenti: min_studenti,
             max_studenti: max_studenti,
             contesto_specifico: contesto_specifico,
-            contesto_personale: contesto_personale
+            contesto_personale: contesto_personale,
+            confirmed: "NO"
         }
         csv_data.push(csv_row)
     }

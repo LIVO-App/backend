@@ -1116,7 +1116,7 @@ module.exports.update_course = async (req, res) => {
         class_group = undefined
     } else {
         let orientation_day = new Date(session_id_exists.open_day)
-        if(orientation_day <= today || orientation_day <= _10days){
+        if(orientation_day <= today){
             class_group = undefined
         }
     }

@@ -357,7 +357,7 @@ module.exports = {
                 values.push(eng_name)
             }
             if(group != undefined){
-                sql += ' group=?,'
+                sql += ' `group`=?,'
                 values.push(group)
             }
             if(num_section != undefined){

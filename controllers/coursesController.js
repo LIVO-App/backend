@@ -1115,12 +1115,9 @@ module.exports.update_course = async (req, res) => {
     if(starting_date == today || starting_date <= _10days) {
         class_group = undefined
     } else {
-        let past_session = await sessionSchema.read(session_id-1)
-        if(past_session){
-            let past_starting_date = new Date(past_session.start)
-            if(past_starting_date <= today || past_starting_date <= _10days){
-                class_group = undefined
-            }
+        let orientation_day = new Date(session_id_exists.open_day)
+        if(orientation_day <= today || orientation_day <= _10days){
+            class_group = undefined
         }
     }
     let wrong_context, wrong_ord_class, wrong_teacher, wrong_teaching, wrong_growth_area

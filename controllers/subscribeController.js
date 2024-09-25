@@ -83,7 +83,6 @@ module.exports.subscribe_project_class = async (req, res) => {
         console.log('missing required information: is max ('+new Date()+')');
         return;
     }
-    console.log(Number(isMax.credits),Number(cour.credits),Number(isMax.max_credits));
     if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached ('+new Date()+')');

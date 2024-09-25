@@ -83,6 +83,7 @@ module.exports.subscribe_project_class = async (req, res) => {
         console.log('missing required information: is max ('+new Date()+')');
         return;
     }
+    console.log(Number(isMax.credits),Number(cour.credits),Number(isMax.max_credits));
     if((Number(isMax.credits)+Number(cour.credits)) > Number(isMax.max_credits)){
         res.status(403).json({status: "error", description: MSG.maxCreditsLimit});
         console.log('max credits limit reached ('+new Date()+')');
@@ -199,7 +200,7 @@ module.exports.subscribe_project_class_v2 = async (req, res) => {
         console.log('resource not found: learning area ('+new Date()+')');
         return;
     }
-    let isMax = await studentModel.retrieve_credits(student_id, session_id, cour.learning_area_id, context_id);
+    let isMax = await studentModel.retrieve_credits(student_id, session_id, cour.learning_area_id, context_id, session_exist.school_year);
     if(!isMax){
         res.status(400).json({status: "error", description: MSG.missing_params});
         console.log('missing required information: is max ('+new Date()+')');

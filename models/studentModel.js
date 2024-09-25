@@ -68,7 +68,7 @@ module.exports = {
             conn.release();
         }
     },
-    async retrieve_credits(student_id, session_id, area_id, context_id){
+    async retrieve_credits(student_id, session_id, area_id, context_id, school_year){
         try {
             conn = await pool.getConnection();
             if(!student_id || !session_id || !area_id || !context_id){
@@ -94,8 +94,13 @@ module.exports = {
                 sql += ` AND lm.learning_area_id = ? AND lm.learning_context_id=?`;
                 values.push(area_id, context_id)
             }
-            sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?;`
+            sql += ` ),0) AS max_credits FROM attend AS att WHERE att.student_id = ?`
             values.push(student_id)
+            if (school_year != undefined) {
+                sql += "AND att.ordinary_class_school_year = ?"
+                values.push(school_year)
+            }
+            sql += ";"
             const rows = await conn.query(sql, values);
             conn.release();
             return rows[0];

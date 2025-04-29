@@ -249,13 +249,13 @@ module.exports = {
             conn.release();
         }
     },
-    async get_first_session_of_current_year(){
+    async get_last_available_session(){
         try {
             conn = await pool.getConnection();
-            let sql = "SELECT id, number, school_year, start, end, num_groups, open_day FROM learning_session WHERE number = 1 AND school_year = YEAR(CURRENT_DATE)";
+            let sql = "SELECT id, number, school_year, start, end, num_groups, open_day FROM learning_session WHERE end < CURRENT_DATE ORDER BY id DESC";
             let rows = await conn.query(sql);
             conn.release();
-            if(rows.length == 1){
+            if(rows.length >= 1){
                 return rows[0];
             } else {
                 return false;

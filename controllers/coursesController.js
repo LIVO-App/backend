@@ -1402,14 +1402,15 @@ module.exports.propositions_export = async (req, res) => {
     let school_year = 0;
     let current_session = await sessionSchema.read_current_session();
     if(!current_session){
-        let first_session_curr_year = await sessionSchema.get_first_session_of_current_year();
-        if (!first_session_curr_year){
-            res.status(404).json({status: "error", description: "We are in a period that is not covered by a learning session"})
-            console.log('export_propositions: not in a session period ('+new Date()+')')
+        let last_available_session = await sessionSchema.get_last_available_session();
+        if (!last_available_session){
+            res.status(404).json({status: "error", description: "There are not available sessions to use"})
+            console.log('export_propositions: no available sessions ('+new Date()+')')
             return
         }
-        future_session_id = first_session_curr_year.id;
-        school_year = first_session_curr_year.school_year
+        let last_available_session_id = last_available_session.id
+        future_session_id = last_available_session_id+1;
+        school_year = last_available_session.school_year
     } else {
         let current_session_id = current_session.id;
         school_year = current_session.school_year;

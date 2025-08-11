@@ -1205,7 +1205,7 @@ paths:
         '409':
           $ref: '#/components/responses/Conflict'
   /v1/students/{student_id}/unsubscribe:
-    post:
+    delete:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
       tags:
@@ -1224,7 +1224,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
   /v2/students/{student_id}/unsubscribe:
-    post:
+    delete:
       description: Delete of a subscription to a project class by a student
       summary: Delete a subscription to a course
       tags:
@@ -1566,6 +1566,51 @@ paths:
                     items:
                       $ref: '#/components/schemas/course_data_short_tutor'
                     description: "Data return from the api"
+        '401':
+          $ref: '#/components/responses/MissingToken'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/teachers/{teacher_id}/tutor_years:
+    get:
+      description: Get all the years in the system where the teacher with teacher_id is the tutor, independently from the class.
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/path_teacher_id'
+      summary: View of all years in which the teacher is tutor
+      tags:
+        - teachers
+        - years
+        - v1
+      responses:
+        '200':
+          description: "Collection of years for tutor teacher"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tutor_school_years'
+                    description: "Data return from the api"
+        '400':
+          $ref: '#/components/responses/BadInputs'
         '401':
           $ref: '#/components/responses/MissingToken'
         '403':
@@ -2188,35 +2233,6 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/students/{student_id}:
-    put:
-      description: Update of information of the student
-      summary: Update student information
-      parameters:
-        - $ref: '#/components/parameters/header_token'
-        - $ref: '#/components/parameters/path_student_id'
-      tags:
-        - admins
-        - v1
-      requestBody:
-        description: Object to be inserted
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                student_info:
-                  $ref: '#/components/schemas/update_user_info_data'
-      responses:
-        '200':
-          $ref: '#/components/responses/AcceptUpdate'
-        '401':
-          $ref: '#/components/responses/MissingToken'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
   /v1/admins/{admin_id}/password:
     put:
       description: Update of password of the admin
@@ -2696,7 +2712,7 @@ paths:
                     type: object
                     $ref: '#/components/schemas/growth_area_data'
                     description: "Data return from the api"
-  /v1/student/{student_id}:
+  /v1/students/{student_id}:
     get:
       description: information of the student
       summary: Student information
@@ -2752,7 +2768,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_user_info_data'
+              type: object
+              properties:
+                student_info:
+                  $ref: '#/components/schemas/update_user_info_data'
       responses:
         '200':
           $ref: '#/components/responses/AcceptUpdate'
@@ -2762,7 +2781,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/student/{student_id}/password:
+  /v1/students/{student_id}/password:
     put:
       description: Update of password of the student
       summary: Update student password
@@ -2789,7 +2808,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'      
-  /v1/student/{student_id}/annual_credits:
+  /v1/students/{student_id}/annual_credits:
     get:
       description: Annual credits situation of the student
       summary: Student annual credits
@@ -4078,6 +4097,12 @@ components:
         section:
           type: string
           description: "Section of the project class in case the student is subscribed to it"
+    year_data_tutor:
+      type: object
+      properties:
+        school_year:
+          type: number
+          description: "School year in which the teacher was tutor"
     proposer_teacher_ref:
       type: object
       properties:

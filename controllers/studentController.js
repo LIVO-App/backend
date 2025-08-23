@@ -580,17 +580,19 @@ module.exports.move_class_component = async (req, res) => {
     let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, start_course_id, start_session_id)
     if(!is_student_present){
         res.status(400).json({status: "error", description: MSG.student_not_enrolled});
-        console.log('project class update components: student is not enrolled to start project class. Abort move class ('+new Date()+')');
+        console.log('project class update components: student does not exist in the start project class. Abort move class ('+new Date()+')');
         return;
     }
     let start_class_section = is_student_present.section
     let start_class_context = is_student_present.learning_context_id
-    // Check if the components go under min_students
-    let start_components = await projectClassesSchema.classComponents(start_course_id, start_session_id, start_class_section)
-    if(start_components.length==course_exist.min_students){
-        res.status(400).json({status: "error", description: MSG.minStudents});
-        console.log('project course update components: project class will not have min students required ('+new Date()+')');
-        return;
+    // Check if the components go under min_students. If he is pending (start_class_section == "") start class has max_students
+    if (start_class_section != "") {
+        let start_components = await projectClassesSchema.classComponents(start_course_id, start_session_id, start_class_section)
+        if(start_components.length==course_exist.min_students){
+            res.status(400).json({status: "error", description: MSG.minStudents});
+            console.log('project course update components: project class will not have min students required ('+new Date()+')');
+            return;
+        }
     }
     let arrival_class = req.body.to
     let arrival_course_id = arrival_class.course_id
@@ -671,7 +673,7 @@ module.exports.move_class_component = async (req, res) => {
     // Check if destination is already full
     let arrival_components = await projectClassesSchema.classComponents(arrival_course_id, arrival_session_id, arrival_class_section)
     if(arrival_components.length>=arrival_course_exist.max_students){
-        res.status(400).json({status: "error", description: MSG.minStudents});
+        res.status(400).json({status: "error", description: MSG.maxStudents});
         console.log('project course update components: project class has max students required ('+new Date()+')');
         return;
     }
@@ -884,17 +886,19 @@ module.exports.remove_student = async (req, res) => {
     let is_student_present = await projectClassesSchema.getStudentSectionandContext(student_id, course_id, session_id)
     if(!is_student_present){
         res.status(400).json({status: "error", description: MSG.student_not_enrolled});
-        console.log('project class remove component: student is not enrolled to the project class. Abort remove component ('+new Date()+')');
+        console.log('project class remove component: student does not exists in the project class. Abort remove component ('+new Date()+')');
         return;
     }
     let class_section = is_student_present.section
     let class_context = is_student_present.learning_context_id
-    // Check if the components go under min_students
-    let components = await projectClassesSchema.classComponents(course_id, session_id, class_section)
-    if(components.length==course_exist.min_students){
-        res.status(400).json({status: "error", description: MSG.minStudents});
-        console.log('project course remove component: project class will not have min students required ('+new Date()+')');
-        return;
+    // Check if the components go under min_students. If he is pending (start_class_section == "") start class has max_students
+    if (class_section != "") {
+        let components = await projectClassesSchema.classComponents(course_id, session_id, class_section)
+        if(components.length==course_exist.min_students){
+            res.status(400).json({status: "error", description: MSG.minStudents});
+            console.log('project course remove component: project class will not have min students required ('+new Date()+')');
+            return;
+        }
     }
     let unsubscribeStudent = await subscribeModel.remove(student_id, course_id, session_id, class_context);
     let response = {

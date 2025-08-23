@@ -84,7 +84,7 @@ module.exports = {
                 conn.release();
                 return null;
             }
-            sql = "SELECT section, learning_context_id FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ? AND pending IS NULL";
+            sql = "SELECT section, learning_context_id FROM subscribed WHERE student_id = ? AND project_class_course_id = ? AND project_class_session = ?";
             let values = [student_id, course_id, session_id];
             const rows = await conn.query(sql, values);
             conn.release();
@@ -102,19 +102,25 @@ module.exports = {
     async classComponents(course_id, session_id, section, teacher_id, associated_class = false){
         try {
             conn = await pool.getConnection();
-            if(!course_id || !session_id || !section){
+            if(!course_id || !session_id || (section == undefined && associated_class)){
                 conn.release();
                 return false;
             }
-            sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND subs.pending IS NULL AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
-            let values = [course_id, session_id, section, session_id];
-            if(associated_class){
-                if(!teacher_id){
-                    conn.release();
-                    return false;
+            let values = [course_id, session_id];
+            if (section != undefined) {
+                sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.section = ? AND subs.pending IS NULL AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+                values.push(section, session_id);
+                if(associated_class){
+                    if(!teacher_id){
+                        conn.release();
+                        return false;
+                    }
+                    sql += ' AND s.id IN (SELECT att.student_id FROM attend AS att WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_school_year = (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?))'
+                    values.push(teacher_id, teacher_id, session_id);
                 }
-                sql += ' AND s.id IN (SELECT att.student_id FROM attend AS att WHERE att.ordinary_class_study_year IN (SELECT ot.ordinary_class_study_year FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_address IN (SELECT ot.ordinary_class_address FROM ordinary_teach AS ot WHERE ot.teacher_id = ?) AND att.ordinary_class_school_year = (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?))'
-                values.push(teacher_id, teacher_id, session_id);
+            } else {
+                sql = 'SELECT s.id, s.name, s.surname, subs.learning_context_id, att.ordinary_class_study_year, att.ordinary_class_address, att.section FROM student as s JOIN subscribed AS subs on subs.student_id = s.id JOIN attend AS att ON att.student_id = s.id WHERE subs.project_class_course_id = ? AND subs.project_class_session = ? AND subs.pending IS NOT NULL AND att.ordinary_class_school_year IN (SELECT ls.school_year FROM learning_session AS ls WHERE ls.id = ?)';
+                values.push(session_id);
             }
             sql += ' ORDER BY s.surname'
             const rows = await conn.query(sql, values);

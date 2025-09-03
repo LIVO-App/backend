@@ -264,8 +264,8 @@ module.exports.add_ordinary_classes = async (req, res) => {
     if(req.loggedUser.role == "admin"){
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
-            res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists ('+new Date()+')');
+            res.status(401).json({status: "error", description: MSG.notFound});
+            console.log('Class insertion: unauthorized access ('+new Date()+')');
             return;
         }
     }
@@ -304,7 +304,7 @@ module.exports.add_ordinary_classes = async (req, res) => {
     }
     if(!class_added){
         if(existing_class){
-            res.status(409).json({status: "error", description: "All the classes were already present in the database", wrong_class: wrong_class})
+            res.status(409).json({status: "error", description: "All the classes were already present in the database", existing_class: existing_class})
             console.log('Class insertion: classes already present ('+new Date()+')')
             return
         } else {
@@ -321,8 +321,8 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
     if(req.loggedUser.role == "admin"){
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
-            res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists ('+new Date()+')');
+            res.status(401).json({status: "error", description: MSG.notFound});
+            console.log('add students to class: unauthorized access ('+new Date()+')');
             return;
         }
     }
@@ -384,8 +384,8 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
     if(req.loggedUser.role == "admin"){
         let admin_exist = await adminSchema.read_id(user_id)
         if(!admin_exist){
-            res.status(404).json({status: "error", description: MSG.notFound});
-            console.log('update student psw: student does not exists ('+new Date()+')');
+            res.status(401).json({status: "error", description: MSG.notFound});
+            console.log('add teachers to class: unauthorized access ('+new Date()+')');
             return;
         }
     }
@@ -393,14 +393,14 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
     let year_exist = await ordinaryclassModel.check_study_year(study_year)
     if(!year_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found ('+new Date()+')');
+        console.log('add teachers to class: study year not found ('+new Date()+')');
         return;
     }
     let study_address = req.params.address
     let address_exist = await ordinaryclassModel.check_study_address(study_address)
     if(!address_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found ('+new Date()+')');
+        console.log('add teachers to class: study year not found ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year

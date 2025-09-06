@@ -786,9 +786,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/ordinary_classes_insert_data'
+              type: object
+              properties:
+                classes_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/ordinary_classes_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/OrdClassInsert'
@@ -1863,10 +1866,13 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: integer
-                description: "Id of the students to be added to the class"
+              type: object
+              properties:
+                student_list:
+                  type: array
+                  items: 
+                    type: integer
+                    description: "Id of the students to be added to the class"
       responses:
         '201':
           $ref: '#/components/responses/OrdClassComponentsInsert'
@@ -1899,9 +1905,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/teacher_ord_class_data'
+              type: object
+              properties:
+                teacher_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/teacher_ord_class_data'
       responses:
         '201':
           $ref: '#/components/responses/OrdClassTeachersInsert'
@@ -1972,9 +1981,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: string
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items: 
+                    type: string
       responses:
         '200':
           description: "Learning sessions with courses"
@@ -2018,9 +2030,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: string
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items: 
+                    type: string
       responses:
         '200':
           description: "Learning contexts with courses"
@@ -2163,9 +2178,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/admin_data'
+              type: object
+              properties:
+                admin_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/admin_data'
       responses:
         '201':
           $ref: '#/components/responses/AdminInsert'
@@ -2194,9 +2212,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/student_insert_data'
+              type: object
+              properties:
+                student_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/student_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/StudentInsert'
@@ -2984,9 +3005,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/teacher_insert_data'
+              type: object
+              properties:
+                teacher_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/teacher_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/TeacherInsert'

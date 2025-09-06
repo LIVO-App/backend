@@ -3087,7 +3087,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/constraints_object'
+              type: object
+              properties:
+                constraints_object:
+                  $ref: '#/components/schemas/constraints_object'
       responses:
         '201':
           $ref: '#/components/responses/ConstraintsInsertion'
@@ -5290,9 +5293,9 @@ components:
     constraints_object:
       type: object
       properties:
-        additionalProperties:
-            $ref: "#/components/schemas/session_property"
-            description: "Refers to the session id you want to add new constraints to"
+        session_id:
+          $ref: "#/components/schemas/session_property"
+          description: "Refers to the session id you want to add new constraints to"
     session_property:
       type: array
       items:

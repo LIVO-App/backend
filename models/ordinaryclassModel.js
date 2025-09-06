@@ -80,7 +80,7 @@ module.exports = {
                 sql += ' AND ot.ordinary_class_address = ?';
                 values.push(study_address);
             }
-            if (teaching != undefined && Number.isInteger(teaching)){
+            if (teaching != undefined && (teaching.toLowerCase() !== 'true' || teaching.toLowerCase() !== 'false')){
                 sql += ' AND ot.teaching_id = ?';
                 values.push(teaching);
             }

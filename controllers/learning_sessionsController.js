@@ -186,39 +186,45 @@ module.exports.add_sessions = async (req, res) => {
                 continue
             }
             // Check if it is a future session and if there is a hole between them (start from the most recent one)
-            let valid_session = false
-            for(let j in future_sessions_existing){
-                let future_session_start = new Date(future_sessions_existing[j].start)
-                let future_session_end = new Date(future_sessions_existing[j].end)
-                if(start_date > future_session_start){
-                    if(start_date > future_session_end){
-                        console.log("Session number "+number+" school year "+school_year)
-                        // If we are in the most recent future session we are safe
-                        // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
-                        valid_session = true
-                        break
+            let valid_session;
+            if (future_sessions_existing.length!=0){
+                valid_session = false
+                for(let j in future_sessions_existing){
+                    let future_session_start = new Date(future_sessions_existing[j].start)
+                    let future_session_end = new Date(future_sessions_existing[j].end)
+                    if(start_date > future_session_start){
+                        if(start_date > future_session_end){
+                            console.log("Session number "+number+" school year "+school_year)
+                            // If we are in the most recent future session we are safe
+                            // If we find a hole, it is also fine. We continue the iteration until we find the hole and then we can safely add
+                            valid_session = true
+                            break
+                        } else {
+                            console.log("Overlapping start date. Session number "+number+" school year "+school_year)
+                            //console.log(end_date)
+                            //console.log(future_session_end)
+                            overlapping = true
+                            res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
+                            console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
+                            return;
+                        }
                     } else {
-                        console.log("Overlapping start date. Session number "+number+" school year "+school_year)
-                        //console.log(end_date)
-                        //console.log(future_session_end)
-                        overlapping = true
-                        res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
-                        return;
-                    }
-                } else {
-                    // Check ending date to see if it is still overlapping or not
-                    if(end_date>future_session_start){
-                        console.log("Overlapping end date. Session number "+number+" school year "+school_year)
-                        //console.log(end_date)
-                        //console.log(future_session_start)
-                        overlapping = true
-                        res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
-                        console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
-                        return;
+                        // Check ending date to see if it is still overlapping or not
+                        if(end_date>future_session_start){
+                            console.log("Overlapping end date. Session number "+number+" school year "+school_year)
+                            //console.log(end_date)
+                            //console.log(future_session_start)
+                            overlapping = true
+                            res.status(400).json({status: "error", description: MSG.overlappingSessions, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});
+                            console.log('learning sessions addition: the sessions you wanted to add are overlapping with already existing ones. Please try again ('+new Date()+')');
+                            return;
+                        }
                     }
                 }
+            } else {
+                valid_session = true
             }
+            
             if(!valid_session){
                 overlapping = true
                 res.status(400).json({status: "error", description: MSG.pastSession, wrong_session: wrong_session, existing_session: existing_session, overlapping: overlapping});

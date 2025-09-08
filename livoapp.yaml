@@ -786,9 +786,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/ordinary_classes_insert_data'
+              type: object
+              properties:
+                classes_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/ordinary_classes_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/OrdClassInsert'
@@ -1445,7 +1448,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/header_token'
         - $ref: '#/components/parameters/path_teacher_id'
-        - $ref: '#/components/parameters/query_teaching_id'
+        - $ref: '#/components/parameters/query_teaching'
         - $ref: '#/components/parameters/query_school_year'
       summary: Get all teacher ordinary classes
       tags:
@@ -1863,10 +1866,13 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: integer
-                description: "Id of the students to be added to the class"
+              type: object
+              properties:
+                student_list:
+                  type: array
+                  items: 
+                    type: integer
+                    description: "Id of the students to be added to the class"
       responses:
         '201':
           $ref: '#/components/responses/OrdClassComponentsInsert'
@@ -1899,9 +1905,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/teacher_ord_class_data'
+              type: object
+              properties:
+                teacher_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/teacher_ord_class_data'
       responses:
         '201':
           $ref: '#/components/responses/OrdClassTeachersInsert'
@@ -1972,9 +1981,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: string
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items: 
+                    type: string
       responses:
         '200':
           description: "Learning sessions with courses"
@@ -2018,9 +2030,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                type: string
+              type: object
+              properties:
+                courses:
+                  type: array
+                  items: 
+                    type: string
       responses:
         '200':
           description: "Learning contexts with courses"
@@ -2163,9 +2178,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/admin_data'
+              type: object
+              properties:
+                admin_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/admin_data'
       responses:
         '201':
           $ref: '#/components/responses/AdminInsert'
@@ -2194,9 +2212,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/student_insert_data'
+              type: object
+              properties:
+                student_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/student_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/StudentInsert'
@@ -2984,9 +3005,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items: 
-                $ref: '#/components/schemas/teacher_insert_data'
+              type: object
+              properties:
+                teacher_list:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/teacher_insert_data'
       responses:
         '201':
           $ref: '#/components/responses/TeacherInsert'
@@ -3063,7 +3087,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/constraints_object'
+              type: object
+              properties:
+                constraints_object:
+                  $ref: '#/components/schemas/constraints_object'
       responses:
         '201':
           $ref: '#/components/responses/ConstraintsInsertion'
@@ -5266,9 +5293,9 @@ components:
     constraints_object:
       type: object
       properties:
-        additionalProperties:
-            $ref: "#/components/schemas/session_property"
-            description: "Refers to the session id you want to add new constraints to"
+        session_id:
+          $ref: "#/components/schemas/session_property"
+          description: "Refers to the session id you want to add new constraints to"
     session_property:
       type: array
       items:
@@ -6093,7 +6120,7 @@ components:
       in: path
       description: Id of the grade
       schema:
-        type: boolean
+        type: integer
       required: true
     query_proj_class:
       name: proj_class
@@ -6146,3 +6173,9 @@ components:
       schema:
         type: integer
       required: true
+    query_teaching:
+      name: teaching
+      in: query
+      description: Boolean value that tells if the user wants a bigger separation based on the teachings for each ordinary class
+      schema:
+        type: boolean

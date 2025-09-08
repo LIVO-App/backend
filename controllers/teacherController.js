@@ -309,7 +309,7 @@ module.exports.get_my_ordinary_classes = async (req, res) => {
             return;
         }
     }
-    let cls = await ord_classSchema.teachers_classes(teacher_id, school_year, teaching);
+    let cls = await ord_classSchema.teachers_classes(teacher_id, school_year, undefined, undefined, teaching);
     if(!cls){
         res.status(400).json({status: "error", description: MSG.missingParameter});
         console.log('teacher ordinary class: missing parameters ('+new Date()+')');

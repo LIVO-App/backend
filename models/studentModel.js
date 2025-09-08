@@ -39,6 +39,23 @@ module.exports = {
         }
         return read("id = ?",student_id);
     },
+    async student_exists(student_id){
+        try {
+            conn = await pool.getConnection();
+            sql = "SELECT s.id, s.cf, s.username, s.name, s.surname, s.gender, s.birth_date, s.address, s.email, s.google, s.first_access FROM student AS s WHERE id=?";
+            const rows = await conn.query(sql,[student_id]);
+            conn.release();
+            if (rows.length>=1){
+                return rows[0];
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log("Something went wrong: read student");
+        } finally {
+            conn.release();
+        }
+    },
     async list() {
         try{
             conn = await pool.getConnection();

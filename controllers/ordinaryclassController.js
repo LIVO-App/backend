@@ -346,7 +346,7 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
     let student_list = req.body.student_list;
     for(let student in student_list){
         let student_id = student_list[student]
-        let student_exist = await studentModel.read_id(student_id)
+        let student_exist = await studentModel.student_exists(student_id)
         if(!student_exist){
             wrong_comp = true
             continue
@@ -415,17 +415,17 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
             wrong_teach = true
             continue
         }
-        let teachers_exist = await ordinaryclassModel.teachers_classes(teacher_id, school_year)
-        if(teachers_exist.length!=0){
-            existing_teach = true
-            continue
-        }
         let teaching_list = teacher_list[teacher].teaching_list;
         for(let teaching in teaching_list){
             let teaching_id = teaching_list[teaching];
             let teaching_exist = await teachingModel.read(teaching_id)
             if(!teaching_exist){
                 wrong_teach = true
+                continue
+            }
+            let teachers_exist = await ordinaryclassModel.teachers_classes(teacher_id, school_year, study_year, study_address, teaching_id)
+            if(teachers_exist.length!=0){
+                existing_teach = true
                 continue
             }
             let teacher_insert = await ordinaryclassModel.add_teacher_to_class(teacher_id, study_year, study_address, school_year, section, teaching_id, teacher_coordinator)

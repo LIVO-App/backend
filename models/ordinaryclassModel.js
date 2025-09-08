@@ -51,7 +51,7 @@ module.exports = {
             conn.release();
         }
     },
-    async teachers_classes(teacher_id, school_year, teaching){
+    async teachers_classes(teacher_id, school_year, study_year, study_address, teaching){
         try {
             conn = await pool.getConnection();
             if(!teacher_id){
@@ -71,6 +71,18 @@ module.exports = {
             if (school_year != undefined){
                 sql += ' AND ot.ordinary_class_school_year = ?';
                 values.push(school_year);
+            }
+            if (study_year != undefined){
+                sql += ' AND ot.ordinary_class_study_year = ?';
+                values.push(study_year);
+            }
+            if (study_address != undefined){
+                sql += ' AND ot.ordinary_class_address = ?';
+                values.push(study_address);
+            }
+            if (teaching != undefined && (teaching.toLowerCase() !== 'true' || teaching.toLowerCase() !== 'false')){
+                sql += ' AND ot.teaching_id = ?';
+                values.push(teaching);
             }
             const rows = await conn.query(sql, values);
             conn.release();

@@ -184,14 +184,16 @@ module.exports.insert_constraints = async (req, res) => {
                 delete constraints_object[session];
                 continue;
             } else {
-                let past_session = await learning_sessionsModel.read(session-1)
-                if(past_session){
-                    let past_starting_date = new Date(past_session.start)
-                    if(past_starting_date <= today || past_starting_date <= _10days){
-                        console.log(`The session with id ${session} is the first future session where students are choosing new constraints. Removing it from constraints_object`);
-                        wrong_session = true;
-                        delete constraints_object[session];
-                        continue;
+                if (session_exists.number != 1 && today) {
+                    let past_session = await learning_sessionsModel.read(session-1)
+                    if(past_session){
+                        let past_starting_date = new Date(past_session.start)
+                        if(past_starting_date <= today || past_starting_date <= _10days){
+                            console.log(`The session with id ${session} is the first future session where students are choosing new constraints. Removing it from constraints_object`);
+                            wrong_session = true;
+                            delete constraints_object[session];
+                            continue;
+                        }
                     }
                 }
             }

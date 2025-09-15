@@ -31,6 +31,61 @@ let MSG = {
 
 process.env.TZ = 'Etc/Universal';
 
+module.exports.get_students = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    if(req.loggedUser.role == "admin"){
+        let admin_exist = adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_teacher: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_teacher: unauthorized access ('+new Date()+')');
+        return;
+    }
+    let no_attend_ordinary_classes = req.query.no_attend_ordinary_classes == 'true';
+    let from_school_year = req.query.from_school_year ? parseInt(req.query.from_school_year) : undefined;
+    if (from_school_year && isNaN(from_school_year)) {
+        res.status(400).json({status: "error", description: MSG.missingParameters});
+        console.log('get_students: wrong from_school_year ('+new Date()+')');
+        return;
+    }
+    let students = await studentModel.list(no_attend_ordinary_classes, from_school_year);
+    let data_students = students.map((student) => {
+        let cf = student.cf != null ? crypto.decipher(student.cf.toString()) : undefined;
+        let gender = student.gender != null ? crypto.decipher(student.gender.toString()) : undefined
+        let birth_date = student.birth_date != null ? crypto.decipher(student.birth_date.toString()) : undefined
+        let address = student.address != null ? crypto.decipher(student.address.toString()) : undefined
+        cf = sanitizer.encode_output(cf)
+        let name = sanitizer.encode_output(student.name)
+        let surname = sanitizer.encode_output(student.surname)
+        gender = sanitizer.encode_output(gender)
+        address = sanitizer.encode_output(address)
+        return {
+            id: student.id,
+            cf: cf,
+            username: student.username,
+            name: name,
+            surname: surname,
+            gender: gender,
+            birth_date: birth_date,
+            address: address,
+            email: student.email
+        }
+    })
+    let path = "/api/v1/students/"
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: data_students,
+    };
+    res.status(200).json(response);
+}
+
 module.exports.get_student = async (req, res) => {
     let user_id = req.loggedUser._id;
     if(req.loggedUser.role == "teacher"){

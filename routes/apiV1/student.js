@@ -8,6 +8,8 @@ const subscribeHandler = require('../../controllers/subscribeController');
 const gradeHandler = require('../../controllers/gradesController');
 const tokenChecker = require('../tokenChecker');
 
+router.get('/', tokenChecker)
+router.get('/', studentHandler.get_students)
 router.post('/', tokenChecker)
 router.post('/', studentHandler.add_students)
 router.get('/:student_id', tokenChecker)

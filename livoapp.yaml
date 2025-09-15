@@ -2198,6 +2198,42 @@ paths:
         '409':
           $ref: '#/components/responses/AdminInsert'
   /v1/students:
+    get:
+      description: Get all the students in the system
+      summary: View of all the students
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+        - $ref: '#/components/parameters/no_attend_ordinary_classes'
+        - $ref: '#/components/parameters/from_school_year'
+      tags:
+        - students
+        - v1
+      responses:
+        '200':
+          description: "Collection of students"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: "Link of the API that returns this data"
+                  single:
+                    type: boolean
+                    description: "Tells if the data are referring to the API in origin or not"
+                  query:
+                    type: object
+                    description: "List of eventual parameters for the API"
+                  date:
+                    type: string
+                    format: date
+                    description: "Date of the current call to the API"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/teacher_data'
+                    description: "Data return from the api"
     post:
       description: Add new students to the system
       parameters:
@@ -6179,3 +6215,15 @@ components:
       description: Boolean value that tells if the user wants a bigger separation based on the teachings for each ordinary class
       schema:
         type: boolean
+    no_attend_ordinary_classes:
+      name: no_attend_ordinary_classes
+      in: query
+      description: Specifies if we want only the students that do not attend at least one ordinary class
+      schema:
+        type: boolean
+    from_school_year:
+      name: from_school_year
+      in: query
+      description: Specifies the school year from which to retrieve students
+      schema:
+        type: integer

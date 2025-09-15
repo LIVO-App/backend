@@ -56,10 +56,22 @@ module.exports = {
             conn.release();
         }
     },
-    async list() {
+    async list(no_attend_ordinary_classes = false, from_school_year = undefined) {
         try{
             conn = await pool.getConnection();
-            sql = `SELECT cf, username, name, surname, gender, birth_date, address, email FROM student ORDER BY surname`;
+            sql = `SELECT DISTINCT id, cf, username, name, surname, gender, birth_date, address, email FROM student`;
+            if(no_attend_ordinary_classes){
+                sql += ` LEFT JOIN attend AS att ON att.student_id = student.id WHERE att.student_id IS NULL`;
+            }
+            if(from_school_year != undefined && !isNaN(from_school_year)){
+                if(no_attend_ordinary_classes){
+                    sql += ` AND `;
+                } else {
+                    sql += ` LEFT JOIN attend AS att ON att.student_id = student.id WHERE `;
+                }
+                sql += `(att.ordinary_class_school_year IS NULL OR att.ordinary_class_school_year >= ${from_school_year})`;
+            }
+            sql += ` ORDER BY surname`;
             //console.log(sql);
             const rows = await conn.query(sql);
             //console.log("rows");

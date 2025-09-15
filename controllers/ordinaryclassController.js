@@ -337,7 +337,7 @@ module.exports.add_student_to_ordinary_classes = async (req, res) => {
     let address_exist = await ordinaryclassModel.check_study_address(study_address)
     if(!address_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add students to class: study year not found ('+new Date()+')');
+        console.log('add students to class: study address not found ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year
@@ -400,7 +400,7 @@ module.exports.add_teacher_to_ordinary_classes = async (req, res) => {
     let address_exist = await ordinaryclassModel.check_study_address(study_address)
     if(!address_exist){
         res.status(404).json({status: "error", description: MSG.notFound});
-        console.log('add teachers to class: study year not found ('+new Date()+')');
+        console.log('add teachers to class: study address not found ('+new Date()+')');
         return;
     }
     let school_year = req.query.school_year

@@ -11,6 +11,8 @@ router.get('/', tokenChecker)
 router.get('/', teacherHandler.get_teachers)
 router.post('/', tokenChecker)
 router.post('/', teacherHandler.add_teachers)
+router.get('/:teacher_id', tokenChecker)
+router.get('/:teacher_id', teacherHandler.get_teacher);
 router.get('/:teacher_id/my_project_classes', teacherHandler.get_my_project_classes);
 router.get('/:teacher_id/associated_project_classes', teacherHandler.get_associated_project_classes);
 router.get('/:teacher_id/my_ordinary_classes', tokenChecker);

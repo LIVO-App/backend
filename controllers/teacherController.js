@@ -40,12 +40,12 @@ module.exports.get_teachers = async (req, res) => {
         let admin_exist = adminModel.read_id(user_id)
         if(!admin_exist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});
-            console.log('get_teacher: unauthorized access ('+new Date()+')');
+            console.log('get_teachers: unauthorized access ('+new Date()+')');
             return;
         }
     } else {
         res.status(401).json({status: "error", description: MSG.notAuthorized});
-        console.log('get_teacher: unauthorized access ('+new Date()+')');
+        console.log('get_teachers: unauthorized access ('+new Date()+')');
         return;
     }
     let teachers = await teacherSchema.list()
@@ -78,6 +78,63 @@ module.exports.get_teachers = async (req, res) => {
         query: {},
         date: new Date(),
         data: data_teachers
+    };
+    res.status(200).json(response);
+}
+
+module.exports.get_teacher = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    let teacher_id = req.params.teacher_id;
+    if(req.loggedUser.role == "teacher"){
+        if (user_id != teacher_id) {
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_teacher: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else if(req.loggedUser.role == "admin"){
+        let admin_exist = adminModel.read_id(user_id)
+        if(!admin_exist){
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_teacher: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_teacher: unauthorized access ('+new Date()+')');
+        return;
+    }
+    let teacher = await teacherSchema.read_id(teacher_id)
+    if(!teacher){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get_teacher: teacher not found ('+new Date()+')');
+        return;
+    }
+    let cf = teacher.cf != null ? crypto.decipher(teacher.cf.toString()) : undefined
+    let gender = teacher.gender != null ? crypto.decipher(teacher.gender.toString()) : undefined
+    let birth_date = teacher.birth_date != null ? crypto.decipher(teacher.birth_date.toString()) : undefined
+    let address = teacher.address != null ? crypto.decipher(teacher.address.toString()) : undefined
+    cf = sanitizer.encode_output(cf)
+    let name = sanitizer.encode_output(teacher.name)
+    let surname = sanitizer.encode_output(teacher.surname)
+    gender = sanitizer.encode_output(gender)
+    address = sanitizer.encode_output(address)
+    let teacher_data = {
+        cf: cf,
+        username: teacher.username,
+        name: name,
+        surname: surname,
+        gender: gender,
+        birth_date: birth_date,
+        address: address,
+        email: teacher.email,
+    }
+    let path = "/api/v1/teachers/"+teacher_id
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: teacher_data
     };
     res.status(200).json(response);
 }

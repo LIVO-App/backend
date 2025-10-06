@@ -106,8 +106,8 @@ module.exports = {
                 let finded_session = false
                 let number = session_list[i].number
                 let school_year = session_list[i].school_year
-                let start_date = session_list[i].start_date
-                let end_date = session_list[i].end_date
+                let start_date = session_list[i].start
+                let end_date = session_list[i].end
                 let num_groups = session_list[i].num_groups
                 let open_day = session_list[i].open_day
                 for(let j=0;j<inserted_sessions.length;j=j+2){
@@ -163,8 +163,8 @@ module.exports = {
             }
             let sql = 'UPDATE learning_session SET'
             let values = []
-            let start_date = session_info.start_date
-            let end_date = session_info.end_date
+            let start_date = session_info.start
+            let end_date = session_info.end
             let num_groups = session_info.num_groups
             let open_day = session_info.open_day
             if(start_date == "" && end_date == "" && num_groups == ""){

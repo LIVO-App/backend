@@ -13,15 +13,15 @@ describe('/api/v1/learning_sessions', () => {
     describe('POST methods tests', () => {
         let empty_data = {}
         let empty_array = {sessions_list: []}
-        let wrong_open_day_date = {sessions_list: [{number: 1, school_year: 2023, start_date: "2023/10/01", end_date: "2023/10/31", num_groups: 2, open_day: "2023/10/18"}]}
-        let already_inserted_session = {sessions_list: [{number: 5, school_year: 2021, start_date: "2022/03/01", end_date: "2022/04/30", num_groups: 1, open_day: "2022/02/18"}]}
-        let wrong_session_dates = {sessions_list: [{number: 1, school_year: 2023, start_date: "2022/03/01", end_date: "2022/01/30", num_groups: 1, open_day: "2022/02/18"}]}
-        let overlapping_sessions = {sessions_list: [{number: 1, school_year: 2023, start_date: "2023/09/01", end_date: "2023/11/30", num_groups: 1, open_day: "2023/08/10"},{number: 2, school_year: 2023, start_date: "2023/10/01", end_date: "2023/12/30", num_groups: 1, open_day: "2023/09/18"}]}
+        let wrong_open_day_date = {sessions_list: [{number: 1, school_year: 2023, start: "2023/10/01", end: "2023/10/31", num_groups: 2, open_day: "2023/10/18"}]}
+        let already_inserted_session = {sessions_list: [{number: 5, school_year: 2021, start: "2022/03/01", end: "2022/04/30", num_groups: 1, open_day: "2022/02/18"}]}
+        let wrong_session_dates = {sessions_list: [{number: 1, school_year: 2023, start: "2022/03/01", end: "2022/01/30", num_groups: 1, open_day: "2022/02/18"}]}
+        let overlapping_sessions = {sessions_list: [{number: 1, school_year: 2023, start: "2023/09/01", end: "2023/11/30", num_groups: 1, open_day: "2023/08/10"},{number: 2, school_year: 2023, start: "2023/10/01", end: "2023/12/30", num_groups: 1, open_day: "2023/09/18"}]}
         let valid_sessions = {
             sessions_list: [
-                {number: 1, school_year: 2023, start_date: "2023/10/01", end_date: "2023/10/31", num_groups: 2, open_day: "2023/09/18"},
-                {number: 2, school_year: 2023, start_date: "2023/11/01", end_date: "2023/12/31", num_groups: 1, open_day: "2023/10/18"},
-                {number: 3, school_year: 2023, start_date: "2024/01/01", end_date: "2024/02/02", num_groups: 1, open_day: "2023/12/18"}
+                {number: 1, school_year: 2023, start: "2023/10/01", end: "2023/10/31", num_groups: 2, open_day: "2023/09/18"},
+                {number: 2, school_year: 2023, start: "2023/11/01", end: "2023/12/31", num_groups: 1, open_day: "2023/10/18"},
+                {number: 3, school_year: 2023, start: "2024/01/01", end: "2024/02/02", num_groups: 1, open_day: "2023/12/18"}
             ]
         }
 
@@ -160,11 +160,11 @@ describe('/api/v1/learning_sessions', () => {
         describe('PUT /api/v1/learning_sessions/:session_id', () => {
             let empty_data = {}
             let no_data = {session_info: {}}
-            let wrong_date = {session_info: {start_date: "2022/03/01", end_date: "2022/01/30"}}
-            let start_date_overlap = {session_info: {start_date: "2022/09/29"}}
-            let end_date_overlap = {session_info: {start_date: "2022/11/01"}}
-            let moved_to_past = {session_info: {start_date: "2022/01/30", end_date: "2022/02/28"}}
-            let valid_update = {session_info: {start_date: "2023/10/10", end_date: "2023/10/30", num_groups: 2}}
+            let wrong_date = {session_info: {start: "2022/03/01", end: "2022/01/30"}}
+            let start_date_overlap = {session_info: {start: "2022/09/29"}}
+            let end_date_overlap = {session_info: {start: "2022/11/01"}}
+            let moved_to_past = {session_info: {start: "2022/01/30", end: "2022/02/28"}}
+            let valid_update = {session_info: {start: "2023/10/10", end: "2023/10/30", num_groups: 2}}
             // Session to be changed it the first one inserted
             // No token
             test('PUT /api/v1/learning_sessions/:session_id without token should respond with status 401', async () => {

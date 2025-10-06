@@ -5373,8 +5373,8 @@ components:
       required:
         - number
         - school_year
-        - start_date
-        - end_date
+        - start
+        - end
         - num_groups
       properties:
         number:
@@ -5383,11 +5383,11 @@ components:
         school_year:
           type: integer
           description: "School year of the session to be add. It is only the first year of the school year of reference (e.g. school year 2022/2023 => school_year = 2022)"
-        start_date:
+        start:
           type: string
           format: date
           description: "Starting date of the session to be add"
-        end_date:
+        end:
           type: string
           format: date
           description: "Ending date of the session to be add"
@@ -5481,11 +5481,11 @@ components:
     update_session_data:
       type: object
       properties:
-        start_date:
+        start:
           type: string
           format: date
           description: "New starting date to be updated"
-        end_date:
+        end:
           type: string
           format: date
           description: "New ending date to be updated"

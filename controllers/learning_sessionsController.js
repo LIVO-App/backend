@@ -136,8 +136,8 @@ module.exports.add_sessions = async (req, res) => {
         sessions_list.sort((a,b) => {
             let school_year_a = a.school_year
             let school_year_b = b.school_year
-            let start_date_a = new Date(a.start_date)
-            let start_date_b = new Date(b.start_date)
+            let start_date_a = new Date(a.start)
+            let start_date_b = new Date(b.start)
             if(school_year_a<school_year_b){
                 return -1
             }
@@ -157,8 +157,8 @@ module.exports.add_sessions = async (req, res) => {
         for(let i=0;i<sessions_list.length;i++){
             let number = sessions_list[i].number;
             let school_year = sessions_list[i].school_year
-            let start_date = new Date(sessions_list[i].start_date)
-            let end_date = new Date(sessions_list[i].end_date)
+            let start_date = new Date(sessions_list[i].start)
+            let end_date = new Date(sessions_list[i].end)
             let open_day = sessions_list[i].open_day != undefined ? new Date(sessions_list[i].open_day) : undefined
             // If ending_date smaller than or equal to starting_date
             if(end_date<=start_date){
@@ -244,7 +244,7 @@ module.exports.add_sessions = async (req, res) => {
             // Fill also the date of open_day parameter if they are undefined
             if(open_day == undefined){
                 if(i!=0){
-                    sessions_list[i].open_day = sessions_list[i-1].start_date
+                    sessions_list[i].open_day = sessions_list[i-1].start
                 } else {
                     sessions_list[i].open_day = future_sessions_existing[0].start
                 }
@@ -295,8 +295,8 @@ module.exports.update_session = async (req, res) => {
     let session_id = req.params.session_id
     let session_info = req.body.session_info
     let both_date = false
-    let start_date = session_info!=undefined ? new Date(session_info.start_date) : undefined
-    let end_date = session_info!=undefined ? new Date(session_info.end_date) : undefined
+    let start_date = session_info!=undefined ? new Date(session_info.start) : undefined
+    let end_date = session_info!=undefined ? new Date(session_info.end) : undefined
     if(session_info!=undefined){
         if(end_date != undefined && start_date != undefined){
             both_date = true
@@ -417,8 +417,8 @@ module.exports.get_school_years = async (req, res) => {
 /*obj.sort((a,b) => {
 	let school_year_a = a.school_year
     let school_year_b = b.school_year
-	let start_date_a = new Date(a.start_date)
-    let start_date_b = new Date(b.start_date)
+	let start_date_a = new Date(a.start)
+    let start_date_b = new Date(b.start)
     if(school_year_a<school_year_b){
     	return -1
     }

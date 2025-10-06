@@ -15,6 +15,56 @@ let MSG = {
 
 process.env.TZ = 'Etc/Universal';
 
+module.exports.get_admin = async (req, res) => {
+    let user_id = req.loggedUser._id;
+    let admin_id = req.params.admin_id;
+    if(req.loggedUser.role == "admin"){
+        if (user_id != admin_id) {
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_admin: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else {
+        res.status(401).json({status: "error", description: MSG.notAuthorized});
+        console.log('get_admin: unauthorized access ('+new Date()+')');
+        return;
+    }
+    let admin = await adminModel.read_id(admin_id)
+    if(!admin){
+        res.status(404).json({status: "error", description: MSG.notFound});
+        console.log('get_admin: admin not found ('+new Date()+')');
+        return;
+    }
+    let cf = admin.cf != null ? crypto.decipher(admin.cf.toString()) : undefined
+    let gender = admin.gender != null ? crypto.decipher(admin.gender.toString()) : undefined
+    let birth_date = admin.birth_date != null ? crypto.decipher(admin.birth_date.toString()) : undefined
+    let address = admin.address != null ? crypto.decipher(admin.address.toString()) : undefined
+    cf = sanitizer.encode_output(cf)
+    let name = sanitizer.encode_output(admin.name)
+    let surname = sanitizer.encode_output(admin.surname)
+    gender = sanitizer.encode_output(gender)
+    address = sanitizer.encode_output(address)
+    let teacher_data = {
+        cf: cf,
+        username: admin.username,
+        name: name,
+        surname: surname,
+        gender: gender,
+        birth_date: birth_date,
+        address: address,
+        email: admin.email,
+    }
+    let path = "/api/v1/admins/"+admin_id
+    let response = {
+        path: path,
+        single: true,
+        query: {},
+        date: new Date(),
+        data: teacher_data
+    };
+    res.status(200).json(response);
+}
+
 module.exports.update_info = async (req, res) => {
     let admin_id = req.params.admin_id
     if(req.loggedUser.role == "admin"){

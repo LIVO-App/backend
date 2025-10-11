@@ -88,7 +88,13 @@ module.exports.get_students = async (req, res) => {
 
 module.exports.get_student = async (req, res) => {
     let user_id = req.loggedUser._id;
-    if(req.loggedUser.role == "teacher"){
+    if(req.loggedUser.role == "student"){
+        if (user_id != user_id) {
+            res.status(401).json({status: "error", description: MSG.notAuthorized});
+            console.log('get_student: unauthorized access ('+new Date()+')');
+            return;
+        }
+    } else if(req.loggedUser.role == "teacher"){
         let teacher_esist = teacherModel.read_id(user_id);
         if(!teacher_esist){
             res.status(401).json({status: "error", description: MSG.notAuthorized});

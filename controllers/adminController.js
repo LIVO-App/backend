@@ -2,6 +2,7 @@
 
 const adminModel = require('../models/adminModel');
 const sanitizer = require('../utils/sanitizer');
+const crypto = require('../utils/cipher');
 const fs = require('fs')
 const readline = require('readline');
 
@@ -100,7 +101,7 @@ module.exports.update_info = async (req, res) => {
 
 module.exports.update_password = async (req, res) => {
     let admin_id = req.params.admin_id
-    if(req.loggedUser.role == "student"){
+    if(req.loggedUser.role == "admin"){
         let admin_exist = await adminModel.read_id(admin_id);
         if(!admin_exist){
             res.status(404).json({status: "error", description: MSG.notFound});

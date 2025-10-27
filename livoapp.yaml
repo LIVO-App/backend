@@ -880,6 +880,67 @@ paths:
           description: Redirect to Google authentication page.
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /v1/auth/refresh:
+    post:
+      description: Refresh the access token using a valid refresh token. The old refresh token will be invalidated and a new one will be issued.
+      summary: Refresh access token
+      tags:
+        - authentication
+        - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/refresh_token_request'
+      responses:
+        '200':
+          description: "Token refreshed successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication_res'
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/auth/logout:
+    post:
+      description: Logout from a specific device by invalidating the refresh token. Requires authentication via access token.
+      summary: Logout from device
+      tags:
+        - authentication
+        - v1
+      parameters:
+        - $ref: '#/components/parameters/header_token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/logout_request'
+      responses:
+        '200':
+          description: "Logout successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Logout successful"
+        '400':
+          $ref: '#/components/responses/BadInputs'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/students/{student_id}/curriculum:
     get:
       description: Get all the courses in the curriculum of a student for a certain school year.
@@ -4613,6 +4674,10 @@ components:
         password:
           type: string
           description: "Password of the user that wants to login"
+        device_uuid:
+          type: string
+          description: "Unique identifier for the device (UUID format recommended). Used to manage multiple device sessions."
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
     teacher_auth: 
       type: object
       required:
@@ -4625,6 +4690,10 @@ components:
         password:
           type: string
           description: "Password of the user that wants to login"
+        device_uuid:
+          type: string
+          description: "Unique identifier for the device (UUID format recommended). Used to manage multiple device sessions."
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
     admin_auth: 
       type: object
       required:
@@ -4637,6 +4706,10 @@ components:
         password:
           type: string
           description: "Password of the user that wants to login"
+        device_uuid:
+          type: string
+          description: "Unique identifier for the device (UUID format recommended). Used to manage multiple device sessions."
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
     authentication_res:
       type: object
       properties:
@@ -4654,7 +4727,10 @@ components:
           example: "student"
         token:
           type: string
-          description: "Authentication token"
+          description: "Access token (JWT) valid for 24 hours"
+        refresh_token:
+          type: string
+          description: "Refresh token for obtaining new access tokens. Valid for 90 days on mobile devices, 7 days on web browsers."
         username:
           type: string
           description: "User's username"
@@ -4664,7 +4740,25 @@ components:
         expirationDate:
           type: string
           format: date
-          description: "Date of expiration of the token"
+          description: "Date of expiration of the access token"
+    refresh_token_request:
+      type: object
+      required:
+        - "refresh_token"
+      properties:
+        refresh_token:
+          type: string
+          description: "The refresh token obtained during login"
+          example: "a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890"
+    logout_request:
+      type: object
+      required:
+        - "refresh_token"
+      properties:
+        refresh_token:
+          type: string
+          description: "The refresh token to invalidate"
+          example: "a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890a1b2c3d4e5f67890abcdef1234567890"
     curriculum_data:
       type: object
       properties:

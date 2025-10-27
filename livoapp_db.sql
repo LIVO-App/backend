@@ -788,6 +788,30 @@ INSERT INTO `teaching` (`id`, `italian_title`, `english_title`, `italian_descrip
 ('TL', 'Terza lingua', 'Third language', NULL, NULL),
 ('TTRG', 'Tecnologie e tecniche di rappresentazione grafica', 'Graphic representation technologies and techniques', NULL, NULL);
 
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `refresh_tokens`
+--
+
+CREATE TABLE `refresh_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `user_type` enum('student','teacher','admin') NOT NULL,
+  `device_uuid` varchar(255) NOT NULL,
+  `device_type` enum('mobile','web') NOT NULL,
+  `token` varchar(500) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token` (`token`),
+  UNIQUE KEY `user_device` (`user_id`,`user_type`,`device_uuid`),
+  KEY `user_id` (`user_id`,`user_type`),
+  KEY `expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE INDEX `idx_expires_at` ON `refresh_tokens` (`expires_at`);
+
 --
 -- Indici per le tabelle scaricate
 --
